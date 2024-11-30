@@ -1,0 +1,22 @@
+dependencies {
+
+    implementation project(path: ":modules-utils:common-utils", configuration: 'default')
+    implementation project(path: ":modules-user:user-api", configuration: 'default')
+
+    implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
+
+    implementation "com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-discovery"
+    implementation 'com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-config'
+
+    implementation 'com.auth0:java-jwt:3.16.0'
+    implementation "jakarta.servlet:jakarta.servlet-api"
+
+    implementation 'org.redisson:redisson-spring-boot-starter'
+
+    implementation 'io.springfox:springfox-swagger2'
+    implementation 'io.springfox:springfox-swagger-ui'
+    implementation 'io.swagger.core.v3:swagger-models'
+    implementation 'io.swagger.core.v3:swagger-annotations'
+
+}

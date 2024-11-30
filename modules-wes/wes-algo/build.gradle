@@ -1,0 +1,10 @@
+dependencies {
+    implementation project(path: ":modules-wes:wes-api", configuration: 'default')
+    implementation project(path: ":modules-utils:common-utils", configuration: 'default')
+    implementation files('lib/ws-wms-algorithm-order-dispatch-1.0.3.jar')
+
+    implementation 'org.apache.commons:commons-lang3'
+    implementation 'org.apache.commons:commons-collections4'
+    implementation 'com.google.guava:guava'
+
+}

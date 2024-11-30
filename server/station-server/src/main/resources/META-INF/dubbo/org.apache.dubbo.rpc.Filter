@@ -1,0 +1,3 @@
+dubboProviderFilter=config.com.open.wes.station.DubboProviderFilter
+dubboConsumerFilter=config.com.open.wes.station.DubboConsumerFilter
+dubboExceptionFilter=config.com.open.wes.station.DubboExceptionFilter

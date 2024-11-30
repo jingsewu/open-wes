@@ -1,0 +1,69 @@
+# 忽略所有的包含 .gradle 的文件或者目录
+.gradle
+.history
+.vscode
+.idea
+*.hprof
+# 忽略根目录下面的 build 目录。
+/build
+/classes
+/logs
+/log
+/out
+/null
+out/
+build/
+plugins
+### IntelliJ IDEA ###
+*.iws
+*.iml
+*.ipr
+# 其他要忽略的文件
+.DS_Store
+ignore
+~*.xls
+~*.xlsx
+# 其他要忽略的目录
+/generated/
+/build/
+*/generated/
+*/build/
+**/generated/
+**/build/
+*generated*
+### Gitbook ###
+_book
+### NODEJS ###
+node_modules
+package-lock.json
+### Python ###
+*.pyc
+*.pyo
+*.pyd
+__pycache__
+.pytest_cache
+.coverage
+*.egg-info
+### Java ###
+*.class
+### Vim ###
+*.swp
+### Pid ###
+*.pid
+### Log ###
+nohup.out
+*.log
+*.log.gz
+persistence/logs
+### OSX ###
+*.DS_Store
+/${user.home}/
+### remove lint config ###
+commitlint.config.js
+.commitlintrc.js
+package.json
+*/logs/*
+### grf ###
+printTemplateStorage/*.grf
+persistence/printTemplateStorage/*.grf
+bootstrap-gary.yml

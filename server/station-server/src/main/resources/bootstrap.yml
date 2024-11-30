@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: station
+  profiles:
+    active: test
+  cloud:
+    nacos:
+      config:
+        server-addr: ${nacos.openwes.com:nacos.openwes.com}:${nacos.port:8848}
+        prefix: ${spring.application.name}
+        file-extension: yml
+        namespace: ${spring.profiles.active}
+        group: openwes
+        username: nacos
+        password: nacos
+
+server:
+  port: 9040

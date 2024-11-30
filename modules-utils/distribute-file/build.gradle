@@ -1,0 +1,23 @@
+dependencies {
+    implementation project(path: ":modules-utils:common-utils", configuration: 'default')
+    implementation 'com.github.tobato:fastdfs-client:1.27.2'
+    implementation 'javax.annotation:javax.annotation-api:1.3.2'
+}
+
+bootJar {
+    enabled = false
+}
+
+jar {
+    enabled = true
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allJava
+    archiveClassifier.set('sources')
+}
+
+task javadocJar(type: Jar) {
+    from javadoc
+    archiveClassifier.set('javadoc')
+}

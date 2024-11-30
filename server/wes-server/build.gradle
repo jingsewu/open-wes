@@ -1,0 +1,39 @@
+dependencies {
+
+    implementation project(path: ":modules-utils:exception-handler", configuration: 'default')
+
+    implementation project(path: ":modules-api-platform:api-platform", configuration: 'default')
+    implementation project(path: ":modules-search:search-core", configuration: 'default')
+    implementation project(path: ":modules-user:user", configuration: 'default')
+    implementation project(path: ":modules-wes:wes-basic", configuration: 'default')
+    implementation project(path: ":modules-wes:wes-stock", configuration: 'default')
+    implementation project(path: ":modules-wes:wes-task", configuration: 'default')
+    implementation project(path: ":modules-wes:wes-inbound", configuration: 'default')
+    implementation project(path: ":modules-wes:wes-outbound", configuration: 'default')
+    implementation project(path: ":modules-wes:wes-config", configuration: 'default')
+    implementation project(path: ":modules-wes:wes-algo", configuration: 'default')
+    implementation project(path: ":modules-wes:wes-printer", configuration: 'default')
+    implementation project(path: ":modules-wes:wes-ems-proxy", configuration: 'default')
+    implementation project(path: ":modules-wes:wes-stocktake", configuration: 'default')
+
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    implementation 'org.springframework.cloud:spring-cloud-starter-bootstrap'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui'
+
+    implementation 'com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-config'
+    implementation 'com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-discovery'
+
+    implementation 'org.apache.skywalking:apm-toolkit-logback-1.x'
+
+    implementation 'mysql:mysql-connector-java'
+
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    implementation 'org.liquibase:liquibase-core'
+
+}
+
+test {
+    useJUnitPlatform()
+}

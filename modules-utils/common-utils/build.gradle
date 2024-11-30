@@ -1,0 +1,37 @@
+dependencies {
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+    implementation 'com.google.guava:guava'
+    implementation 'com.alibaba:transmittable-thread-local'
+
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.apache.commons:commons-lang3'
+    implementation 'org.apache.commons:commons-collections4'
+
+    implementation 'io.swagger.core.v3:swagger-annotations'
+
+    compileOnly 'org.hibernate.orm:hibernate-core'
+    compileOnly 'org.springframework.boot:spring-boot-starter-web'
+    compileOnly 'org.redisson:redisson-spring-boot-starter'
+    compileOnly 'org.apache.dubbo:dubbo-spring-boot-starter'
+    compileOnly 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+
+}
+
+bootJar {
+    enabled = false
+}
+
+jar {
+    enabled = true
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allJava
+    archiveClassifier.set('sources')
+}
+
+task javadocJar(type: Jar) {
+    from javadoc
+    archiveClassifier.set('javadoc')
+}

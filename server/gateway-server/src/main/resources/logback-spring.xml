@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+    <springProperty scope="context" name="springAppName" source="spring.application.name"/>
+
+    <!-- Example for logging into the build folder of your project -->
+    <property name="LOG_HOME" value="logs"/>
+
+    <conversionRule conversionWord="ip" converterClass="org.openwes.common.utils.logback.LogIpConfig"/>
+
+    <property name="CONSOLE_LOG_PATTERN"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} | %ip | %-5level | ${PID:-} | %thread | %tid | %logger{5}#%method | %msg%n"/>
+
+    <property name="CONSOLE_LOG_PATTERN_COLOR"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} | %ip | %highlight(%-5level) | ${PID:-} | %boldYellow(%thread) | {%tid} | %boldBlue(%logger{5}#%method) | %msg%n"/>
+
+    <!-- Console 输出设置 -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="org.apache.skywalking.apm.toolkit.log.logback.v1.x.TraceIdPatternLogbackLayout">
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+        </layout>
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+    </appender>
+
+    <!-- 按照每天生成日志文件 -->
+    <appender name="DAY_DEBUG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+        <!-- 注意这里要用 SizeAndTimeBasedRollingPolicy 这个策略，可以兼容日期和大小 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- daily rollover 保存历史记录到这个文件夹一日起为后缀 -->
+            <fileNamePattern>${LOG_HOME}/${springAppName}_debug-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <!-- 每个log的最大值 -->
+            <maxFileSize>100MB</maxFileSize>
+            <!-- 保存多少天的日志 -->
+            <maxHistory>5</maxHistory>
+        </rollingPolicy>
+
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>DEBUG</level>
+        </filter>
+
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <layout class="org.apache.skywalking.apm.toolkit.log.logback.v1.x.TraceIdPatternLogbackLayout">
+                <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+            </layout>
+            <charset>utf8</charset>
+        </encoder>
+    </appender>
+
+    <!-- 按照每天生成日志文件 -->
+    <appender name="DAY_INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+        <!-- 注意这里要用 SizeAndTimeBasedRollingPolicy 这个策略，可以兼容日期和大小 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- daily rollover 保存历史记录到这个文件夹一日起为后缀 -->
+            <fileNamePattern>${LOG_HOME}/${springAppName}_info-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <!-- 每个log的最大值 -->
+            <maxFileSize>100MB</maxFileSize>
+            <!-- 保存多少天的日志 -->
+            <maxHistory>10</maxHistory>
+        </rollingPolicy>
+
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <layout class="org.apache.skywalking.apm.toolkit.log.logback.v1.x.TraceIdPatternLogbackLayout">
+                <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+            </layout>
+            <charset>utf8</charset>
+        </encoder>
+    </appender>
+
+    <appender name="DAY_ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 注意这里要用 SizeAndTimeBasedRollingPolicy 这个策略，可以兼容日期和大小 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- daily rollover 保存历史记录到这个文件夹一日起为后缀 -->
+            <fileNamePattern>${LOG_HOME}/${springAppName}_error-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <!-- 每个log的最大值 -->
+            <maxFileSize>100MB</maxFileSize>
+            <!-- 保存多少天的日志 -->
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <layout class="org.apache.skywalking.apm.toolkit.log.logback.v1.x.TraceIdPatternLogbackLayout">
+                <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+            </layout>
+            <charset>utf8</charset>
+        </encoder>
+
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+
+    </appender>
+
+    <!-- 将控制指定name包下的所有类的日志的打印，通过level设置打印级别 -->
+    <logger name="org.springframework" level="ERROR"/>
+    <logger name="org.apache.commons" level="ERROR"/>
+    <logger name="org.apache.kafka" level="WARN"/>
+    <logger name="org.apache.kafka.clients.producer.ProducerConfig" level="WARN"/>
+    <logger name="org.apache.kafka.clients.consumer.ConsumerConfig" level="WARN"/>
+    <logger name="com.alibaba.nacos.client.config.impl" level="WARN"/>
+    <logger name="org.apache.kafka.clients.consumer.internals.AbstractCoordinator" level="WARN"/>
+    <logger name="org.apache.kafka.clients.consumer.internals.ConsumerCoordinator" level="WARN"/>
+    <logger name="org.apache.kafka.clients.FetchSessionHandler" level="WARN"/>
+    <logger name="org.apache.kafka.clients.consumer.internals.Fetcher" level="WARN"/>
+    <logger name="springfox.documentation.spring.web.readers.operation.CachingOperationNameGenerator" level="WARN"/>
+    <logger name="org.hibernate.engine.QueryParameters" level="WARN"/>
+    <logger name="org.springframework.jdbc.core.JdbcTemplate" level="WARN"/>
+    <logger name="org.springframework.jdbc.core.StatementCreatorUtils" level="WARN"/>
+    <logger name="com.alibaba.cloud.dubbo" level="WARN"/>
+    <logger name="org.apache.dubbo" level="WARN"/>
+    <logger name="com.alibaba.nacos.client" level="WARN"/>
+
+    <!--log4jdbc 日志配置-->
+    <logger name="jdbc.sqlonly" level="ERROR"/>
+    <logger name="jdbc.audit" level="ERROR"/>
+    <logger name="jdbc.resultset" level="ERROR"/>
+    <logger name="jdbc.connection" level="ERROR"/>
+    <logger name="jdbc.sqltiming" level="DEBUG" additivity="false">
+        <appender-ref ref="DAY_DEBUG"/>
+        <!--        <appender-ref ref="STDOUT"/>-->
+    </logger>
+    <logger name="jdbc.resultsettable" level="OFF"/>
+
+    <logger name="org.openwes" level="DEBUG" additivity="false">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="DAY_ERROR"/>
+        <appender-ref ref="DAY_INFO"/>
+        <appender-ref ref="DAY_DEBUG"/>
+    </logger>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+        <!--        <appender-ref ref="FLUENT"/>-->
+        <appender-ref ref="DAY_ERROR"/>
+        <appender-ref ref="DAY_INFO"/>
+        <appender-ref ref="DAY_DEBUG"/>
+    </root>
+
+</configuration>

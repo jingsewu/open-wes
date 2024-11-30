@@ -1,0 +1,88 @@
+[
+  {
+    "operationTaskDTO": {
+      "id": 1,
+      "skuCode": "sku1",
+      "skuName": "skuName1",
+      "skuUrl": "www.baidu.com",
+      "skuBatchStockId": 1,
+      "skuBatchAttributeId": 1,
+      "batchAttributeJson": {},
+      "sourceContainerCode": "containerCode1",
+      "sourceContainerSlot": "1",
+      "processed": false,
+      "requiredQty": 10,
+      "operatedQty": 0,
+      "toBeOperatedQty": 10,
+      "targetLocationCode": "slo1",
+      "targetContainerCode": "targetContainer1",
+      "targetContainerSlot": "target1"
+    },
+    "skuMainDataDTO": {
+      "id": 74,
+      "skuCode": "sku1",
+      "warehouseCode": "skuName1",
+      "ownerCode": "g1tNX6QVKt4rE",
+      "skuName": "t7rQ93ckuQ1eU",
+      "style": "X7kL4l6hzH7B2",
+      "color": "aKuv4AsnqRo3K",
+      "size": "Q73q1Eph6MSd9",
+      "brand": "AHJHQraxyRVBm",
+      "weight": {
+        "grossWeight": 95,
+        "netWeight": 46
+      },
+      "volumeDTO": {
+        "volume": 94,
+        "height": 75,
+        "width": 22,
+        "length": 33
+      },
+      "skuAttribute": {
+        "imageUrl": "5XfPKMlfamimJ",
+        "unit": "DFSszbJ4ztRgI",
+        "skuFirstCategory": "RGRxAu28rrQUg",
+        "skuSecondCategory": "OKoTQmvZSraGv",
+        "skuThirdCategory": "WzKGgwFUivH5P",
+        "skuAttributeCategory": "V359aFMXDUvSy",
+        "skuAttributeSubCategory": "KTnMMkEwxaEad"
+      },
+      "skuConfig": {
+        "enableSn": true,
+        "enableEffective": false,
+        "shelfLife": 88,
+        "effectiveDays": 87,
+        "barcodeRuleCode": "W7T8pF9Okwb8d",
+        "heat": "FO8UhdeI4I7QS",
+        "maxStock": 99,
+        "minStock": 52,
+        "calculateHeat": true,
+        "noBarcode": true
+      },
+      "skuPackage": {
+        "skuPackageDetails": [
+          {
+            "level": 4,
+            "packageCode": "YF0yCFHHQOXok",
+            "unit": "Ecq25pYpbgWFB",
+            "enableSplit": true,
+            "height": 36,
+            "width": 20,
+            "length": 47,
+            "weight": 4
+          }
+        ]
+      },
+      "skuBarcode": {
+        "barcodes": [
+          "4U9oAS5hRIRej"
+        ]
+      },
+      "version": 2
+    },
+    "skuBatchAttributeDTO": {
+      "id": 1,
+      "skuId": 1
+    }
+  }
+]

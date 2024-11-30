@@ -1,0 +1,49 @@
+spring:
+  application:
+    name: wes
+  profiles:
+    active: test
+  cloud:
+    nacos:
+      config:
+        server-addr: ${nacos.openwes.com:nacos.openwes.com}:${nacos.port:8848}
+        prefix: ${spring.application.name}
+        file-extension: yml
+        namespace: ${spring.profiles.active}
+        group: openwes
+        username: nacos
+        password: nacos
+  liquibase:
+    enabled: true
+    change-log: classpath:/db/changelog/db.changelog-master.xml
+    database-change-log-table: l_change_log
+    database-change-log-lock-table: l_change_log_lock
+
+server:
+  port: 9010
+
+bean-searcher:
+  params:
+    pagination:
+      maxAllowedSize: 100000
+      start: 1
+      size: perPage
+
+logging:
+  level:
+    cn.zhxu.bs: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - info
+          - metrics
+          - env
+          - scheduledtasks
+
+  endpoint:
+    health:
+      show-details: always

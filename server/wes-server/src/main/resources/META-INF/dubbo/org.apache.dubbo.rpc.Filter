@@ -1,0 +1,3 @@
+dubboProviderFilter=config.org.openwes.DubboProviderFilter
+dubboConsumerFilter=config.org.openwes.DubboConsumerFilter
+dubboExceptionFilter=config.org.openwes.DubboExceptionFilter

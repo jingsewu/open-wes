@@ -1,0 +1,15 @@
+dependencies {
+
+    implementation project(path: ":modules-utils:common-utils", configuration: 'default')
+
+    implementation 'jakarta.validation:jakarta.validation-api'
+    implementation 'org.slf4j:slf4j-api'
+
+    compileOnly "jakarta.servlet:jakarta.servlet-api"
+    compileOnly 'org.springframework:spring-webmvc'
+    compileOnly 'com.auth0:java-jwt'
+    compileOnly 'org.springframework.security.oauth:spring-security-oauth2'
+
+    //TODO consider remove it
+    compileOnly 'io.jsonwebtoken:jjwt:0.9.1'
+}
