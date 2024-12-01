@@ -1,4 +1,4 @@
-# Open Warehouse Execute System (WES)
+# Open Warehouse Execution System (WES)
 
 **Open WES** is a customizable, open-source Warehouse Execution System designed to streamline warehouse operations. It
 integrates seamlessly with various automation technologies, providing efficient workflow management, task scheduling,
@@ -16,10 +16,10 @@ and real-time data tracking.
 
 ### Prerequisites
 
-- [Java](https://www.java.com/) (17+)
-- [Mysql](https://www.mysql.com/) (8.0+)
-- [Nacos](https://nacos.io/) (2.0+)
-- [Redis](https://redis.io/) (5.0+)
+- [Java](https://www.java.com/) (17+): For running the backend server applications.
+- [MySQL](https://www.mysql.com/) (8.0+): Used as the relational database for storing warehouse data.
+- [Nacos](https://nacos.io/) (2.0+): A service registry and configuration management tool.
+- [Redis](https://redis.io/) (5.0+): Used for caching and session management.
 
 ### Steps
 
@@ -28,8 +28,8 @@ and real-time data tracking.
    git clone https://github.com/jinsewu/open-wes.git
    ```
 2. Add nacos config through executing the scripts in the /script folder
-3. Configure host: nacos.openwes.com with your ip address
-   ```eg: nacos.openwes.com 172.0.0.1```
+3. Configure the hostname `nacos.openwes.com` by editing your hosts file (e.g., `/etc/hosts` on Linux or `C:\Windows\System32\drivers\etc\hosts` on Windows):  
+   ```172.0.0.1 nacos.openwes.com```
 4. Create database openwes
 5. Start the servers: WesApplication, GatewayApplication and StationApplication located in the /server directory
 
@@ -85,5 +85,12 @@ our [GitHub Issues](https://github.com/jingsewu/open-wes/issues) page.
 Thank you for using and contributing to the Smart Warehouse Management System!
 
 ## Architecture
+The architecture of Open WES is modular and scalable, designed to handle complex warehouse operations. Below is a high-level overview of its components:
 
 ![Architecture](./doc/image/architecture.png)
+
+## Getting Help
+
+If you encounter issues or have questions, check out the following resources:
+- [GitHub Issues](https://github.com/jingsewu/open-wes/issues): Report bugs or request features.
+- [Documentation](./doc): Find detailed guides and API documentation.  
