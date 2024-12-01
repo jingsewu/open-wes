@@ -21,6 +21,8 @@ and real-time data tracking.
 - [Nacos](https://nacos.io/) (2.0+): A service registry and configuration management tool.
 - [Redis](https://redis.io/) (5.0+): Used for caching and session management.
 
+> Mysql, Nacos and Redis should be installed on the same machine.
+
 ### Steps
 
 1. Clone the repository:
