@@ -1,6 +1,8 @@
 package org.openwes.wes.basic.work_station.application;
 
 import com.google.common.collect.Lists;
+import lombok.RequiredArgsConstructor;
+import org.apache.dubbo.config.annotation.DubboService;
 import org.openwes.common.utils.exception.WmsException;
 import org.openwes.common.utils.validate.ValidationSequence;
 import org.openwes.domain.event.DomainEventPublisher;
@@ -19,8 +21,6 @@ import org.openwes.wes.basic.work_station.domain.repository.PutWallSlotRepositor
 import org.openwes.wes.basic.work_station.domain.service.PutWallService;
 import org.openwes.wes.basic.work_station.domain.transfer.PutWallSlotTransfer;
 import org.openwes.wes.basic.work_station.domain.transfer.PutWallTransfer;
-import lombok.RequiredArgsConstructor;
-import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;

@@ -1,15 +1,15 @@
 package org.openwes.wes.basic.work_station.domain.entity;
 
-import org.openwes.common.utils.exception.WmsException;
-import org.openwes.common.utils.exception.code_enum.StationErrorDescEnum;
-import org.openwes.wes.api.basic.constants.PutWallSlotStatusEnum;
-import org.openwes.wes.api.basic.constants.PutWallStatusEnum;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
+import org.openwes.common.utils.exception.WmsException;
+import org.openwes.common.utils.exception.code_enum.StationErrorDescEnum;
+import org.openwes.wes.api.basic.constants.PutWallSlotStatusEnum;
+import org.openwes.wes.api.basic.constants.PutWallStatusEnum;
 
 import java.util.List;
 import java.util.Set;
@@ -61,6 +61,9 @@ public class PutWall {
     }
 
     public void delete() {
+        if (this.putWallStatus != PutWallStatusEnum.IDLE) {
+            throw new IllegalStateException("put wall status is not IDLE, cannot delete it");
+        }
         this.deleted = true;
     }
 
