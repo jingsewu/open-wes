@@ -17,8 +17,7 @@ dependencies {
     implementation "org.springframework.cloud:spring-cloud-starter"
     implementation "org.springframework.boot:spring-boot-starter-web-services"
     implementation 'org.springframework.security:spring-security-core'
-    implementation 'org.springframework.security.oauth.boot:spring-security-oauth2-autoconfigure'
-    implementation 'org.springframework.security.oauth:spring-security-oauth2'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
     implementation 'com.auth0:java-jwt'
 

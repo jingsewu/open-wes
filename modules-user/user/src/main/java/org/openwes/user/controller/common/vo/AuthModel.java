@@ -3,6 +3,7 @@ package org.openwes.user.controller.common.vo;
 import lombok.Builder;
 import lombok.Data;
 
+
 @Builder
 @Data
 public class AuthModel {

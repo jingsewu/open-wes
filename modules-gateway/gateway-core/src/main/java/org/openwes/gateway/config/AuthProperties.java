@@ -28,6 +28,7 @@ public class AuthProperties {
     private List<String> authenticateUrlWhiteList = new ArrayList<>();
     private static final String[] DEFAULT_AUTHENTICATE_WHITE_LIST = {
             "/oauth2/**",
+            "/login/oauth2/**",
             "/actuator/**",
             "/v2/api-docs/**",
             "/v2/api-docs-ext/**",
@@ -44,17 +45,12 @@ public class AuthProperties {
      */
     private final List<String> authorizeUrlWhiteList = new ArrayList<>();
     private static final String[] DEFAULT_AUTHORIZE_WHITE_LIST = {
-            "/user/api/currentUser/getAuth",
-            "/user/api/currentUser/password",
-            "/user/api/currentUser/updateUserInfo",
-            "/user/api/currentUser/getMenuTree",
+            "/user/api/currentUser/*",
             "/user/api/auth/signout",
             "/search/search",
             "/search/search/searchSelectResult",
             "/mdm/dictionary/getAll",
             "/api-platform/api/execute",
-            "/station/sse/connect",
-            "/station/sse/disconnect",
             "/station/api"
     };
 }
