@@ -1,10 +1,10 @@
 package org.openwes.wes.stocktake.domain.entity;
 
-import org.openwes.common.utils.base.UpdateUserDTO;
-import org.openwes.wes.api.stocktake.constants.StocktakeTaskDetailStatusEnum;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
+import org.openwes.common.utils.base.UpdateUserDTO;
+import org.openwes.wes.api.stocktake.constants.StocktakeTaskDetailStatusEnum;
 
 import java.util.List;
 
@@ -40,7 +40,7 @@ public class StocktakeTaskDetail extends UpdateUserDTO {
         log.info("stocktake order: {} stocktake task: {}  stocktake detail: {} generate records", this.stocktakeOrderId, this.stocktakeTaskId, this.id);
 
         if (this.stocktakeTaskDetailStatus != StocktakeTaskDetailStatusEnum.NEW) {
-            throw new IllegalStateException("can not generate records, illegal status: " + this.stocktakeTaskDetailStatus);
+            throw new IllegalStateException("stocktake task detail can not generate records, illegal status: " + this.stocktakeTaskDetailStatus);
         }
         this.stocktakeTaskDetailStatus = StocktakeTaskDetailStatusEnum.STARTED;
     }
@@ -50,7 +50,7 @@ public class StocktakeTaskDetail extends UpdateUserDTO {
         log.info("stocktake order: {} stocktake task: {}  stocktake detail: {} complete", this.stocktakeOrderId, this.stocktakeTaskId, this.id);
 
         if (this.stocktakeTaskDetailStatus != StocktakeTaskDetailStatusEnum.STARTED) {
-            throw new IllegalStateException("can not complete illegal status: " + this.stocktakeTaskDetailStatus);
+            throw new IllegalStateException("stocktake task detail can not complete illegal status: " + this.stocktakeTaskDetailStatus);
         }
         this.stocktakeTaskDetailStatus = StocktakeTaskDetailStatusEnum.DONE;
     }
@@ -64,8 +64,8 @@ public class StocktakeTaskDetail extends UpdateUserDTO {
 
         log.info("stocktake order: {} stocktake task: {}  stocktake detail: {} close", this.stocktakeOrderId, this.stocktakeTaskId, this.id);
 
-        if (StocktakeTaskDetailStatusEnum.isCloseable(this.stocktakeTaskDetailStatus)) {
-            throw new IllegalStateException("can not close, illegal status: " + this.stocktakeTaskDetailStatus);
+        if (!StocktakeTaskDetailStatusEnum.isCloseable(this.stocktakeTaskDetailStatus)) {
+            throw new IllegalStateException("stocktake task detail can not close, illegal status: " + this.stocktakeTaskDetailStatus);
         }
         this.stocktakeTaskDetailStatus = StocktakeTaskDetailStatusEnum.CLOSE;
     }

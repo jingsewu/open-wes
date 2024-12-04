@@ -1,11 +1,11 @@
 package org.openwes.wes.stocktake.domain.entity;
 
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.openwes.domain.event.DomainEventPublisher;
 import org.openwes.wes.api.stocktake.constants.StocktakeTaskDetailStatusEnum;
 import org.openwes.wes.api.stocktake.constants.StocktakeTaskStatusEnum;
 import org.openwes.wes.api.stocktake.event.StocktakeTaskCloseEvent;
-import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Objects;
@@ -70,7 +70,7 @@ public class StocktakeTask {
 
         log.info("stocktake order: {} stocktake task: {} closed", this.stocktakeOrderId, this.taskNo);
 
-        if (this.stocktakeTaskStatus != StocktakeTaskStatusEnum.NEW && this.stocktakeTaskStatus != StocktakeTaskStatusEnum.STARTED) {
+        if (!StocktakeTaskStatusEnum.isCloseable(this.stocktakeTaskStatus)) {
             throw new IllegalStateException("stocktake task status is not new or started, can not be closed");
         }
 
