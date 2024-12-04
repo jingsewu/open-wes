@@ -1,6 +1,11 @@
 package org.openwes.station.controller.view.handler;
 
 import com.google.common.collect.Sets;
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.openwes.station.api.dto.ArrivedContainerCacheDTO;
 import org.openwes.station.api.vo.WorkLocationExtend;
 import org.openwes.station.api.vo.WorkStationVO;
 import org.openwes.station.controller.view.context.ViewContext;
@@ -10,9 +15,6 @@ import org.openwes.station.domain.entity.WorkStationCache;
 import org.openwes.station.domain.transfer.ArriveContainerCacheTransfer;
 import org.openwes.wes.api.task.dto.OperationTaskDTO;
 import org.openwes.wes.api.task.dto.OperationTaskVO;
-import lombok.RequiredArgsConstructor;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -55,9 +57,10 @@ public class ContainerAreaHandler<T extends WorkStationCache> implements IViewHa
             return;
         }
 
-        setActiveContainerSlots(workStationCache, arrivedContainers);
-
         setContainersOnLocation(arrivedContainers, workLocationViews);
+
+        setActiveContainerSlots(workStationCache, workLocationViews);
+
     }
 
     private void setContainersOnLocation(List<ArrivedContainerCache> arrivedContainers, List<WorkLocationExtend> workLocationViews) {
@@ -85,16 +88,24 @@ public class ContainerAreaHandler<T extends WorkStationCache> implements IViewHa
         }
     }
 
-    private void setActiveContainerSlots(WorkStationCache workStationCache, List<ArrivedContainerCache> arrivedContainers) {
+    private void setActiveContainerSlots(WorkStationCache workStationCache, List<WorkLocationExtend> workLocationViews) {
         OperationTaskVO firstOperationTask = workStationCache.getFirstOperationTaskVO();
-        if (firstOperationTask != null && firstOperationTask.getOperationTaskDTO() != null) {
-            OperationTaskDTO operationTaskDTO = firstOperationTask.getOperationTaskDTO();
-            arrivedContainers.stream()
-                    .filter(c -> c.getContainerCode().equals(operationTaskDTO.getSourceContainerCode())
-                            && c.getFace().equals(operationTaskDTO.getSourceContainerFace()))
-                    .findFirst()
-                    .ifPresent(c -> c.setActiveSlotCodes(Sets.newHashSet(operationTaskDTO.getSourceContainerSlot())));
+        if (firstOperationTask == null || firstOperationTask.getOperationTaskDTO() == null) {
+            return;
         }
+        OperationTaskDTO operationTaskDTO = firstOperationTask.getOperationTaskDTO();
+
+
+        workLocationViews.stream().filter(v -> v.getWorkLocationSlots() != null)
+                .flatMap(v -> v.getWorkLocationSlots().stream())
+                .filter(v -> v.getArrivedContainer() != null)
+                .forEach(v -> {
+                    ArrivedContainerCacheDTO arrivedContainer = v.getArrivedContainer();
+                    if (StringUtils.equals(operationTaskDTO.getSourceContainerCode(), arrivedContainer.getContainerCode())
+                            && StringUtils.equals(operationTaskDTO.getSourceContainerFace(), arrivedContainer.getFace())) {
+                        arrivedContainer.setActiveSlotCodes(Sets.newHashSet(operationTaskDTO.getSourceContainerSlot()));
+                    }
+                });
     }
 
     protected WorkLocationExtend.WorkLocationSlotExtend getWorkLocationSlotExtend(WorkLocationExtend workLocationView, ArrivedContainerCache container) {

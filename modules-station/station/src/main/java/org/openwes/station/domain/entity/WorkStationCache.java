@@ -57,8 +57,6 @@ public class WorkStationCache {
 
     protected ApiCodeEnum eventCode;
 
-    private WorkStationProcessingStatusEnum stationProcessingStatus;
-
     protected String scannedBarcode;
 
     public void online(WorkStationModeEnum workStationMode) {

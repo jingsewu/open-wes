@@ -48,7 +48,7 @@ public class StocktakeService {
             operationTaskDTO.setAbnormalQty(0);
             operationTaskDTO.setOperatedQty(0);
             operationTaskDTO.setSourceContainerCode(containerCode);
-            operationTaskDTO.setSourceContainerCode(face);
+            operationTaskDTO.setSourceContainerFace(face);
             operationTaskDTO.setSkuId(v.getSkuId());
             operationTaskDTO.setSkuBatchAttributeId(v.getSkuBatchAttributeId());
             return operationTaskDTO;

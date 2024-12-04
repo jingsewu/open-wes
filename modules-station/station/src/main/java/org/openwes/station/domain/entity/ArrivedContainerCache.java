@@ -58,8 +58,6 @@ public class ArrivedContainerCache {
      */
     private ProcessStatusEnum processStatus;
 
-    private Set<String> activeSlotCodes;
-
     /**
      * when container arrived , it's contains other attributes. like height, weight, temperature, etc.
      */

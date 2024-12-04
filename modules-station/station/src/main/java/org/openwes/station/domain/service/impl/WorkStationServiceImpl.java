@@ -59,7 +59,7 @@ public class WorkStationServiceImpl<T extends WorkStationCache> implements WorkS
 
         BeanUtils.copyProperties(workStationDTO, workStationCache);
         workStationCache.setPutWallSlots(workStationDTO.getPutWalls().stream().flatMap(v -> v.getPutWallSlots().stream()).toList());
-        workStationCache.setStationProcessingStatus(WorkStationProcessingStatusEnum.NOT_TASK);
+        workStationCache.setStationProcessingStatus(WorkStationProcessingStatusEnum.NO_TASK);
         return (T) workStationCache;
     }
 

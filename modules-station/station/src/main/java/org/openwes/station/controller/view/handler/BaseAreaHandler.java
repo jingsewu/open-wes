@@ -1,9 +1,11 @@
 package org.openwes.station.controller.view.handler;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.openwes.station.api.vo.WorkStationVO;
 import org.openwes.station.controller.view.context.ViewContext;
 import org.openwes.station.controller.view.context.ViewHandlerTypeEnum;
 import org.openwes.station.domain.entity.WorkStationCache;
+import org.openwes.wes.api.basic.constants.WorkStationProcessingStatusEnum;
 import org.openwes.wes.api.basic.dto.WorkStationDTO;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -29,7 +31,7 @@ public class BaseAreaHandler<T extends WorkStationCache> implements IViewHandler
         workStationVO.setWorkStationMode(workStationDTO.getWorkStationMode());
         workStationVO.setWorkStationId(workStationDTO.getId());
         if (Objects.nonNull(workStationCache)) {
-            workStationVO.setStationProcessingStatus(workStationCache.getStationProcessingStatus());
+            setStationProcessingStatus(workStationVO, workStationCache);
         }
         workStationVO.setWarehouseAreaId(String.valueOf(workStationDTO.getWarehouseAreaId()));
 
@@ -37,6 +39,19 @@ public class BaseAreaHandler<T extends WorkStationCache> implements IViewHandler
 
         setChooseArea(viewContext);
         setToolbar(viewContext);
+    }
+
+    private void setStationProcessingStatus(WorkStationVO workStationVO, T workStationCache) {
+
+        if (ObjectUtils.isNotEmpty(workStationCache.getOperateTasks())) {
+            workStationVO.setStationProcessingStatus(WorkStationProcessingStatusEnum.NO_TASK);
+            return;
+        }
+
+        if (ObjectUtils.isEmpty(workStationCache.getArrivedContainers())) {
+            workStationVO.setStationProcessingStatus(WorkStationProcessingStatusEnum.WAIT_CALL_CONTAINER);
+            return;
+        }
     }
 
     @Override

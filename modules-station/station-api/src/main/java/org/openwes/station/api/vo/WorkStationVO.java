@@ -1,5 +1,7 @@
 package org.openwes.station.api.vo;
 
+import lombok.*;
+import org.apache.commons.lang3.ObjectUtils;
 import org.openwes.wes.api.basic.constants.WorkStationModeEnum;
 import org.openwes.wes.api.basic.constants.WorkStationProcessingStatusEnum;
 import org.openwes.wes.api.basic.constants.WorkStationStatusEnum;
@@ -9,8 +11,6 @@ import org.openwes.wes.api.basic.dto.WorkStationDTO;
 import org.openwes.wes.api.main.data.dto.SkuMainDataDTO;
 import org.openwes.wes.api.stock.dto.SkuBatchAttributeDTO;
 import org.openwes.wes.api.task.dto.OperationTaskDTO;
-import lombok.*;
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.CollectionUtils;
 
