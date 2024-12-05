@@ -1,5 +1,9 @@
 package org.openwes.station.infrastructure.remote;
 
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.openwes.wes.api.main.data.ISkuMainDataApi;
 import org.openwes.wes.api.main.data.dto.SkuMainDataDTO;
 import org.openwes.wes.api.stock.ISkuBatchAttributeApi;
@@ -7,15 +11,14 @@ import org.openwes.wes.api.stock.dto.SkuBatchAttributeDTO;
 import org.openwes.wes.api.stocktake.IStocktakeApi;
 import org.openwes.wes.api.stocktake.dto.StocktakeRecordDTO;
 import org.openwes.wes.api.stocktake.dto.StocktakeRecordSubmitDTO;
+import org.openwes.wes.api.stocktake.dto.StocktakeTaskDTO;
 import org.openwes.wes.api.task.constants.OperationTaskStatusEnum;
 import org.openwes.wes.api.task.constants.OperationTaskTypeEnum;
 import org.openwes.wes.api.task.dto.OperationTaskDTO;
 import org.openwes.wes.api.task.dto.OperationTaskVO;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -37,6 +40,10 @@ public class StocktakeService {
     public List<OperationTaskVO> generateStocktakeRecords(String containerCode, String face, Long workStationId) {
         List<StocktakeRecordDTO> stocktakeRecordDTOS = stocktakeApi.generateStocktakeRecords(containerCode, face, workStationId);
 
+        if (ObjectUtils.isEmpty(stocktakeRecordDTOS)) {
+            return Collections.emptyList();
+        }
+
         List<OperationTaskDTO> operationTaskDTOS = stocktakeRecordDTOS.stream().map(v -> {
             OperationTaskDTO operationTaskDTO = new OperationTaskDTO();
             operationTaskDTO.setId(v.getId());
@@ -47,10 +54,15 @@ public class StocktakeService {
             operationTaskDTO.setRequiredQty(v.getQtyOriginal());
             operationTaskDTO.setAbnormalQty(0);
             operationTaskDTO.setOperatedQty(0);
-            operationTaskDTO.setSourceContainerCode(containerCode);
-            operationTaskDTO.setSourceContainerFace(face);
+            operationTaskDTO.setSourceContainerCode(v.getContainerCode());
+            operationTaskDTO.setSourceContainerFace(v.getContainerFace());
+            operationTaskDTO.setSourceContainerSlot(v.getContainerSlotCode());
             operationTaskDTO.setSkuId(v.getSkuId());
             operationTaskDTO.setSkuBatchAttributeId(v.getSkuBatchAttributeId());
+            operationTaskDTO.setWorkStationId(workStationId);
+            operationTaskDTO.setSkuBatchStockId(v.getSkuBatchStockId());
+            operationTaskDTO.setOrderId(v.getStocktakeTaskId());
+            operationTaskDTO.setDetailId(v.getStocktakeTaskDetailId());
             return operationTaskDTO;
         }).toList();
 
@@ -79,5 +91,9 @@ public class StocktakeService {
 
     public void closeStocktakeTasks(Long workStationId) {
         stocktakeApi.closeStocktakeTask(workStationId);
+    }
+
+    public List<StocktakeTaskDTO> getStocktakeTasks(Long workStationId) {
+        return stocktakeApi.getStocktakeTasksByWorkStationId(workStationId);
     }
 }

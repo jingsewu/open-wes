@@ -1,13 +1,13 @@
 package org.openwes.wes.basic.work_station.infrastructure.persistence.po;
 
-import org.openwes.common.utils.base.UpdateUserPO;
-import org.openwes.wes.api.basic.constants.PutWallStatusEnum;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Where;
+import org.openwes.common.utils.base.UpdateUserPO;
+import org.openwes.wes.api.basic.constants.PutWallStatusEnum;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @EqualsAndHashCode(callSuper = true)
@@ -17,7 +17,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Table(
         name = "w_put_wall",
         indexes = {
-                @Index(unique = true, name = "uk_put_wall_work_station", columnList = "putWallCode,workStationId,deleteTime")
+                @Index(unique = true, name = "uk_put_wall_work_station", columnList = "putWallCode,workStationId,deleteTime"),
+                @Index(name = "idx_work_station", columnList = "workStationId")
         }
 )
 @DynamicUpdate

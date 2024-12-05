@@ -52,7 +52,6 @@ public class SearchParam {
             return SearchParam.builder().build();
         }
 
-        //TODO by Kinser 这里修改下，把这个SearchParam当成前端的参数，防止重复的序列化，反序列化
         SearchParam searchParam = SearchParam.builder().searchIdentity(parameters.getOrDefault("searchIdentity", "").toString())
                 .showColumns(JsonUtils.string2List(JsonUtils.obj2String(parameters.get("showColumns")), Column.class))
                 .searchObject(JsonUtils.string2Object(JsonUtils.obj2String(parameters.get("searchObject")), SearchObject.class))

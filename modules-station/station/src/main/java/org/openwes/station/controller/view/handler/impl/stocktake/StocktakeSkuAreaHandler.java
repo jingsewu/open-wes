@@ -25,7 +25,6 @@ public class StocktakeSkuAreaHandler extends SkuAreaHandler<StocktakeWorkStation
         }
 
         WorkStationVO workStationVO = viewContext.getWorkStationVO();
-        workStationVO.setStationProcessingStatus(workStationCache.getStationProcessingStatus());
 
         OperationTaskVO operationTaskVO = workStationCache.getFirstOperationTaskVO();
 

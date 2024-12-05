@@ -1,10 +1,12 @@
 package org.openwes.wes.ems.proxy.application;
 
+import com.google.common.collect.Lists;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.dubbo.config.annotation.DubboService;
 import org.openwes.api.platform.api.constants.CallbackApiTypeEnum;
-import org.openwes.wes.ems.proxy.domain.entity.ContainerTask;
-import org.openwes.wes.ems.proxy.domain.repository.ContainerTaskRepository;
-import org.openwes.wes.ems.proxy.domain.service.ContainerTaskService;
-import org.openwes.wes.ems.proxy.infrastructure.remote.WmsTaskCallbackFacade;
 import org.openwes.wes.api.ems.proxy.IContainerTaskApi;
 import org.openwes.wes.api.ems.proxy.constants.BusinessTaskTypeEnum;
 import org.openwes.wes.api.ems.proxy.constants.ContainerTaskStatusEnum;
@@ -12,11 +14,10 @@ import org.openwes.wes.api.ems.proxy.constants.ContainerTaskTypeEnum;
 import org.openwes.wes.api.ems.proxy.dto.CreateContainerTaskDTO;
 import org.openwes.wes.api.ems.proxy.dto.UpdateContainerTaskDTO;
 import org.openwes.wes.common.facade.CallbackApiFacade;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.dubbo.config.annotation.DubboService;
+import org.openwes.wes.ems.proxy.domain.entity.ContainerTask;
+import org.openwes.wes.ems.proxy.domain.repository.ContainerTaskRepository;
+import org.openwes.wes.ems.proxy.domain.service.ContainerTaskService;
+import org.openwes.wes.ems.proxy.infrastructure.remote.WmsTaskCallbackFacade;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -104,11 +105,12 @@ public class ContainerTaskApiImpl implements IContainerTaskApi {
         }
 
         List<ContainerTask> canceledContainerTasks = containerTasks.stream().filter(ContainerTask::cancel).toList();
-        containerTaskRepository.saveAll(canceledContainerTasks);
 
         if (CollectionUtils.isEmpty(canceledContainerTasks)) {
             return;
         }
+
+        containerTaskRepository.saveAll(canceledContainerTasks);
 
         ContainerTask containerTask = canceledContainerTasks.iterator().next();
 

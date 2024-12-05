@@ -1,6 +1,8 @@
 package org.openwes.wes.api.inbound.dto;
 
 import org.openwes.common.utils.base.UpdateUserDTO;
+import org.openwes.common.utils.utils.JsonUtils;
+import org.openwes.common.utils.utils.ObjectUtils;
 import org.openwes.wes.api.inbound.constants.InboundPlanOrderStatusEnum;
 import org.openwes.wes.api.inbound.constants.StorageTypeEnum;
 import io.swagger.v3.oas.annotations.Hidden;
@@ -98,4 +100,8 @@ public class InboundPlanOrderDTO extends UpdateUserDTO implements Serializable {
     @NotEmpty
     @Schema(description = "入库计划单明细列表", requiredMode = Schema.RequiredMode.REQUIRED)
     private List<InboundPlanOrderDetailDTO> details;
+
+    public static void main(String[] args) {
+        System.out.println(JsonUtils.obj2String(ObjectUtils.getRandomObject(InboundPlanOrderDTO.class)));
+    }
 }

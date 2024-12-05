@@ -1,5 +1,6 @@
 package org.openwes.station.domain.service.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.openwes.common.utils.exception.WmsException;
 import org.openwes.common.utils.exception.code_enum.StationErrorDescEnum;
 import org.openwes.station.domain.entity.InboundWorkStationCache;
@@ -11,10 +12,8 @@ import org.openwes.station.domain.service.WorkStationService;
 import org.openwes.station.infrastructure.remote.RemoteWorkStationService;
 import org.openwes.wes.api.basic.constants.PutWallSlotStatusEnum;
 import org.openwes.wes.api.basic.constants.WorkStationModeEnum;
-import org.openwes.wes.api.basic.constants.WorkStationProcessingStatusEnum;
 import org.openwes.wes.api.basic.dto.PutWallSlotDTO;
 import org.openwes.wes.api.basic.dto.WorkStationDTO;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -59,7 +58,6 @@ public class WorkStationServiceImpl<T extends WorkStationCache> implements WorkS
 
         BeanUtils.copyProperties(workStationDTO, workStationCache);
         workStationCache.setPutWallSlots(workStationDTO.getPutWalls().stream().flatMap(v -> v.getPutWallSlots().stream()).toList());
-        workStationCache.setStationProcessingStatus(WorkStationProcessingStatusEnum.NO_TASK);
         return (T) workStationCache;
     }
 

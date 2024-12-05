@@ -1,8 +1,5 @@
 package org.openwes.wes.inbound.infrastructure.persistence.po;
 
-import org.openwes.common.utils.base.AuditUserPO;
-import org.openwes.wes.api.inbound.constants.InboundPlanOrderStatusEnum;
-import org.openwes.wes.api.inbound.constants.StorageTypeEnum;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -11,6 +8,9 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+import org.openwes.common.utils.base.AuditUserPO;
+import org.openwes.wes.api.inbound.constants.InboundPlanOrderStatusEnum;
+import org.openwes.wes.api.inbound.constants.StorageTypeEnum;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.Map;
@@ -24,7 +24,8 @@ import java.util.Map;
         indexes = {
                 @Index(name = "idx_customer_order_no", columnList = "customerOrderNo"),
                 @Index(name = "idx_lpn", columnList = "lpnCode"),
-                @Index(unique = true, name = "uk_order_no", columnList = "orderNo")
+                @Index(unique = true, name = "uk_order_no", columnList = "orderNo"),
+                @Index(name = "idx_inbound_plan_order_status", columnList = "inboundPlanOrderStatus")
         }
 )
 @DynamicUpdate

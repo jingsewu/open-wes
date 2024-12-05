@@ -10,6 +10,10 @@ import org.openwes.wes.api.basic.dto.PutWallTagConfigDTO;
 import org.openwes.wes.api.basic.dto.WorkStationDTO;
 import org.openwes.wes.api.main.data.dto.SkuMainDataDTO;
 import org.openwes.wes.api.stock.dto.SkuBatchAttributeDTO;
+import org.openwes.wes.api.stocktake.constants.StocktakeCreateMethodEnum;
+import org.openwes.wes.api.stocktake.constants.StocktakeMethodEnum;
+import org.openwes.wes.api.stocktake.constants.StocktakeTypeEnum;
+import org.openwes.wes.api.stocktake.constants.StocktakeUnitTypeEnum;
 import org.openwes.wes.api.task.dto.OperationTaskDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.CollectionUtils;
@@ -42,10 +46,8 @@ public class WorkStationVO {
     private SkuArea skuArea;
     private PutWallArea putWallArea;
     private Toolbar toolbar;
+    private OrderArea orderArea;
 
-    /**
-     * 工作站任务状态 /NOT_TASK/CALL_ROBOT/
-     */
     private WorkStationProcessingStatusEnum stationProcessingStatus;
 
 
@@ -195,5 +197,26 @@ public class WorkStationVO {
         private PutWallTagConfigDTO putWallTagConfigDTO;
         private List<PutWallDTO> putWallViews;
     }
+
+    @Data
+    @Builder
+    @AllArgsConstructor
+    public static class OrderArea {
+        private OrderVO currentOrder;
+    }
+
+    @Data
+    @Builder
+    @AllArgsConstructor
+    public static class OrderVO {
+        //common
+
+        //stocktake
+        private String taskNo;
+        private StocktakeCreateMethodEnum stocktakeCreateMethod;
+        private StocktakeMethodEnum stocktakeMethod;
+        private StocktakeTypeEnum stocktakeType;
+    }
+
 
 }

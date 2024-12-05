@@ -1,6 +1,11 @@
 package org.openwes.wes.stocktake.application;
 
 import com.google.common.collect.Lists;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.dubbo.config.annotation.DubboService;
 import org.openwes.common.utils.exception.WmsException;
 import org.openwes.common.utils.exception.code_enum.StocktakeErrorDescEnum;
 import org.openwes.wes.api.main.data.ISkuMainDataApi;
@@ -12,6 +17,7 @@ import org.openwes.wes.api.stocktake.constants.StocktakeOrderStatusEnum;
 import org.openwes.wes.api.stocktake.constants.StocktakeRecordStatusEnum;
 import org.openwes.wes.api.stocktake.constants.StocktakeTaskDetailStatusEnum;
 import org.openwes.wes.api.stocktake.constants.StocktakeTaskStatusEnum;
+import org.openwes.wes.api.stocktake.dto.*;
 import org.openwes.wes.stocktake.domain.aggregate.StocktakeAggregate;
 import org.openwes.wes.stocktake.domain.entity.*;
 import org.openwes.wes.stocktake.domain.repository.StocktakeOrderRepository;
@@ -21,12 +27,7 @@ import org.openwes.wes.stocktake.domain.service.StocktakeOrderService;
 import org.openwes.wes.stocktake.domain.service.StocktakeRecordService;
 import org.openwes.wes.stocktake.domain.transfer.StocktakeOrderTransfer;
 import org.openwes.wes.stocktake.domain.transfer.StocktakeRecordTransfer;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.dubbo.config.annotation.DubboService;
-import org.openwes.wes.api.stocktake.dto.*;
+import org.openwes.wes.stocktake.domain.transfer.StocktakeTaskTransfer;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -47,6 +48,7 @@ public class StocktakeApiImpl implements IStocktakeApi {
     private final StocktakeRecordService stocktakeRecordService;
     private final StocktakeAggregate stocktakeAggregate;
     private final StocktakeOrderTransfer stocktakeOrderTransfer;
+    private final StocktakeTaskTransfer stocktakeTaskTransfer;
     private final StocktakeRecordTransfer stocktakeRecordTransfer;
     private final IStockApi stockApi;
     private final ISkuMainDataApi skuMainDataApi;
@@ -176,5 +178,12 @@ public class StocktakeApiImpl implements IStocktakeApi {
         List<StocktakeRecord> savedList = stocktakeAggregate.createStocktakeRecord(stocktakeRecords, stocktakeTaskDetail);
 
         return stocktakeRecordTransfer.toDTOS(savedList);
+    }
+
+    @Override
+    public List<StocktakeTaskDTO> getStocktakeTasksByWorkStationId(Long workStationId) {
+        List<StocktakeTask> stocktakeTasks = stocktakeTaskRepository.findAllTasksByWorkStationIdAndStatus(workStationId,
+                Lists.newArrayList(StocktakeTaskStatusEnum.NEW, StocktakeTaskStatusEnum.STARTED));
+        return stocktakeTaskTransfer.toDTOS(stocktakeTasks);
     }
 }

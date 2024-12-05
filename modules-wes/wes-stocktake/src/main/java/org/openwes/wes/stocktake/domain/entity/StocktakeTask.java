@@ -3,8 +3,7 @@ package org.openwes.wes.stocktake.domain.entity;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.openwes.domain.event.DomainEventPublisher;
-import org.openwes.wes.api.stocktake.constants.StocktakeTaskDetailStatusEnum;
-import org.openwes.wes.api.stocktake.constants.StocktakeTaskStatusEnum;
+import org.openwes.wes.api.stocktake.constants.*;
 import org.openwes.wes.api.stocktake.event.StocktakeTaskCloseEvent;
 
 import java.util.List;
@@ -19,6 +18,14 @@ public class StocktakeTask {
     private Long stocktakeOrderId;
 
     private String taskNo;
+
+    private StocktakeTypeEnum stocktakeType;
+
+    private StocktakeCreateMethodEnum stocktakeCreateMethod;
+
+    private StocktakeMethodEnum stocktakeMethod;
+
+    private StocktakeUnitTypeEnum stocktakeUnitType;
 
     private StocktakeTaskStatusEnum stocktakeTaskStatus;
 

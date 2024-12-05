@@ -5,6 +5,7 @@ import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openwes.common.utils.exception.WmsException;
 import org.openwes.wes.api.config.IBatchAttributeConfigApi;
 import org.openwes.wes.api.config.dto.BatchAttributeConfigDTO;
@@ -31,6 +32,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -109,11 +111,12 @@ public class InboundPlanOrderServiceImpl implements InboundPlanOrderService {
                 .setWarehouseCode(acceptRecord.getWarehouseCode()));
 
         SkuMainDataDTO skuMainDataDTO = skyMainDataApi.getById(skuId);
-        BatchAttributeConfigDTO skuFirstCategory = batchAttributeConfigApi.getByOwnerAndSkuFirstCategory(skuMainDataDTO.getOwnerCode(),
-                skuMainDataDTO.getSkuAttribute().getSkuFirstCategory());
+        BatchAttributeConfigDTO batchAttributeConfigDTO = batchAttributeConfigApi.getByOwnerAndSkuFirstCategory(skuMainDataDTO.getOwnerCode(),
+                Optional.ofNullable(skuMainDataDTO.getSkuAttribute().getSkuFirstCategory()).orElse(StringUtils.EMPTY)
+        );
 
-        if (skuFirstCategory != null) {
-            skuFirstCategory.validateBatchAttribute(acceptRecord.getBatchAttributes());
+        if (batchAttributeConfigDTO != null) {
+            batchAttributeConfigDTO.validateBatchAttribute(acceptRecord.getBatchAttributes());
         }
 
     }

@@ -11,14 +11,16 @@ import java.util.List;
 
 public interface OperationTaskPORepository extends JpaRepository<OperationTaskPO, Long> {
 
-    List<OperationTaskPO> findAllByTaskStatusInAndTaskTypeAndSourceContainerCodeAndSourceContainerFace(List<OperationTaskStatusEnum> taskStatuses,
-                                                                                                       OperationTaskTypeEnum taskType,
-                                                                                                       String containerCodes, String face);
+    List<OperationTaskPO> findAllByTaskStatusInAndTaskTypeAndSourceContainerCodeAndSourceContainerFace(
+            List<OperationTaskStatusEnum> taskStatuses,
+            OperationTaskTypeEnum taskType,
+            String containerCode, String face);
 
 
-    List<OperationTaskPO> findAllByTaskStatusAndWarehouseCodeAndTaskTypeAndCreateTimeAfter(OperationTaskStatusEnum taskStatus,
-                                                                                           String warehouseCode,
-                                                                                           OperationTaskTypeEnum taskType, long createTime, Pageable limitCount);
+    List<OperationTaskPO> findAllByTaskStatusAndWarehouseCodeAndTaskTypeAndCreateTimeAfter(
+            OperationTaskStatusEnum taskStatus,
+            String warehouseCode,
+            OperationTaskTypeEnum taskType, long createTime, Pageable limitCount);
 
     List<OperationTaskPO> findAllByOrderIdIn(Collection<Long> orderIds);
 

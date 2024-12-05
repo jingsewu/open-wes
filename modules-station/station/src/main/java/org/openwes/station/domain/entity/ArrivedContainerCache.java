@@ -68,14 +68,6 @@ public class ArrivedContainerCache {
      */
     private ContainerSpecDTO containerSpec;
 
-    /**
-     * use configuration to get the rotation angle,identify two scan type. e.g. manual scan and equipment scan .
-     * equipment scan used to container arrived and manual scan used to operator scan container.
-     */
-    public void setRotationAngle() {
-        //TODO
-    }
-
     public void init() {
         this.processStatus = ProcessStatusEnum.UNDO;
     }

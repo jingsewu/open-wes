@@ -2,21 +2,20 @@ package org.openwes.station.domain.entity;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import org.openwes.station.api.constants.ApiCodeEnum;
-import org.openwes.station.api.constants.ProcessStatusEnum;
-import org.openwes.station.api.vo.WorkStationVO;
-import org.openwes.wes.api.basic.constants.WorkStationModeEnum;
-import org.openwes.wes.api.basic.constants.WorkStationProcessingStatusEnum;
-import org.openwes.wes.api.basic.dto.PutWallSlotDTO;
-import org.openwes.wes.api.basic.dto.WorkStationConfigDTO;
-import org.openwes.wes.api.task.constants.OperationTaskStatusEnum;
-import org.openwes.wes.api.task.dto.OperationTaskVO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.openwes.station.api.constants.ApiCodeEnum;
+import org.openwes.station.api.constants.ProcessStatusEnum;
+import org.openwes.station.api.vo.WorkStationVO;
+import org.openwes.wes.api.basic.constants.WorkStationModeEnum;
+import org.openwes.wes.api.basic.dto.PutWallSlotDTO;
+import org.openwes.wes.api.basic.dto.WorkStationConfigDTO;
+import org.openwes.wes.api.task.constants.OperationTaskStatusEnum;
+import org.openwes.wes.api.task.dto.OperationTaskVO;
 
 import java.util.Collection;
 import java.util.List;
@@ -216,5 +215,13 @@ public class WorkStationCache {
     }
 
     protected void resetActivePutWall(String skuCode) {
+    }
+
+    public OperationTaskVO getFirstProcessingTask() {
+        if (this.operateTasks == null) {
+            return null;
+        }
+        return this.operateTasks.stream().filter(v -> v.getOperationTaskDTO().getTaskStatus()
+                == OperationTaskStatusEnum.PROCESSING).findFirst().orElse(null);
     }
 }

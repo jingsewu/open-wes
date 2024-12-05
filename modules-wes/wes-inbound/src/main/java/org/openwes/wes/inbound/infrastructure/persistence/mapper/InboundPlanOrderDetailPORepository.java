@@ -12,10 +12,6 @@ public interface InboundPlanOrderDetailPORepository extends JpaRepository<Inboun
 
     List<InboundPlanOrderDetailPO> findByInboundPlanOrderIdIn(Collection<Long> inboundPlanOrderIds);
 
-    List<InboundPlanOrderDetailPO> findByBoxNo(String boxNo);
-
     List<InboundPlanOrderDetailPO> findByBoxNoIn(Collection<String> boxNos);
-
-    List<InboundPlanOrderDetailPO> findAllBySkuCode(String skuCode);
 
 }

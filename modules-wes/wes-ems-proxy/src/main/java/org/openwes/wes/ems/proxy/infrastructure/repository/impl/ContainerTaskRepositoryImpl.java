@@ -1,6 +1,8 @@
 package org.openwes.wes.ems.proxy.infrastructure.repository.impl;
 
 import com.google.common.collect.Lists;
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
 import org.openwes.wes.ems.proxy.domain.entity.ContainerTask;
 import org.openwes.wes.ems.proxy.domain.repository.ContainerTaskAndBusinessTaskRelation;
 import org.openwes.wes.ems.proxy.domain.repository.ContainerTaskRepository;
@@ -10,8 +12,6 @@ import org.openwes.wes.ems.proxy.infrastructure.persistence.po.ContainerTaskAndB
 import org.openwes.wes.ems.proxy.infrastructure.persistence.po.ContainerTaskPO;
 import org.openwes.wes.ems.proxy.infrastructure.persistence.transfer.ContainerTaskAndBusinessTaskRelationPOTransfer;
 import org.openwes.wes.ems.proxy.infrastructure.persistence.transfer.ContainerTaskPOTransfer;
-import lombok.RequiredArgsConstructor;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,14 +34,17 @@ public class ContainerTaskRepositoryImpl implements ContainerTaskRepository {
     @Transactional(rollbackFor = Exception.class)
     public void saveAll(List<ContainerTask> containerTasks) {
 
-        containerTasks.forEach(this::setParentId);
-        containerTasks.addAll(containerTasks.stream()
+        List<ContainerTask> newContainerTasks = Lists.newArrayList(containerTasks);
+
+        //TODO these logic should be outside of this method
+        newContainerTasks.forEach(this::setParentId);
+        newContainerTasks.addAll(newContainerTasks.stream()
                 .flatMap(containerTask -> flat(containerTask, Lists.newArrayList()).stream()).toList());
 
-        List<ContainerTaskPO> containerTaskPOS = containerTaskPOTransfer.toPOs(containerTasks);
+        List<ContainerTaskPO> containerTaskPOS = containerTaskPOTransfer.toPOs(newContainerTasks);
         containerTaskPORepository.saveAll(containerTaskPOS);
 
-        List<ContainerTaskAndBusinessTaskRelation> relations = containerTasks.stream()
+        List<ContainerTaskAndBusinessTaskRelation> relations = newContainerTasks.stream()
                 .filter(task -> CollectionUtils.isNotEmpty(task.getRelations()))
                 .flatMap(task -> task.getRelations().stream()).toList();
 

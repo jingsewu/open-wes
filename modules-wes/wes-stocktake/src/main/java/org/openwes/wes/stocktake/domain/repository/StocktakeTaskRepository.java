@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface StocktakeTaskRepository {
 
-    StocktakeTask saveOrderAndDetail(StocktakeTask stocktakeTask);
+    void saveOrderAndDetail(StocktakeTask stocktakeTask);
 
     void saveAllTaskAndDetails(List<StocktakeTask> stocktakeTaskList);
 
@@ -19,9 +19,12 @@ public interface StocktakeTaskRepository {
 
     List<StocktakeTask> findAllById(List<Long> stocktakeOrderIds);
 
+    List<StocktakeTask> findAllTasksByWorkStationIdAndStatus(Long workStationId, Collection<StocktakeTaskStatusEnum> statuses);
+
     List<StocktakeTask> findAllByWorkStationIdAndStatus(Long workStationId, Collection<StocktakeTaskStatusEnum> statuses);
 
     List<StocktakeTaskDetail> findAllByContainerCodeAndFaceAndStocktakeTaskId(String containerCode, String face, List<Long> stocktakeTaskIds);
 
     List<StocktakeTask> findAllByStocktakeOrderId(Long stocktakeOrderId);
+
 }

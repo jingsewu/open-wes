@@ -1,8 +1,5 @@
 package org.openwes.wes.task.infrastructure.persistence.po;
 
-import org.openwes.common.utils.base.UpdateUserPO;
-import org.openwes.wes.api.task.constants.OperationTaskStatusEnum;
-import org.openwes.wes.api.task.constants.OperationTaskTypeEnum;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -10,6 +7,9 @@ import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+import org.openwes.common.utils.base.UpdateUserPO;
+import org.openwes.wes.api.task.constants.OperationTaskStatusEnum;
+import org.openwes.wes.api.task.constants.OperationTaskTypeEnum;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.Map;
@@ -21,8 +21,7 @@ import java.util.Map;
 @Table(
         name = "w_operation_task",
         indexes = {
-                @Index(name = "idx_source_container_code", columnList = "sourceContainerCode"),
-                @Index(name = "idx_work_station_target_location", columnList = "workStationId,targetLocationCode"),
+                @Index(name = "idx_status_source_container_code", columnList = "taskStatus,sourceContainerCode"),
                 @Index(name = "idx_transfer_container_record_id", columnList = "transferContainerRecordId"),
                 @Index(name = "idx_picking_order_id", columnList = "orderId,detailId")
         }

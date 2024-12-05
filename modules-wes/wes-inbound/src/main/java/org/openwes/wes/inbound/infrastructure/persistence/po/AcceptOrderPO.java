@@ -18,7 +18,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Table(
         name = "w_accept_order",
         indexes = {
-                @Index(unique = true, name = "uk_order_no", columnList = "orderNo")
+                @Index(unique = true, name = "uk_order_no", columnList = "orderNo"),
+                @Index(name = "idx_identify_no", columnList = "identifyNo")
         }
 )
 @DynamicUpdate

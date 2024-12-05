@@ -10,8 +10,6 @@ public interface SkuBarCodeDataPORepository extends JpaRepository<SkuBarCodeData
 
     List<SkuBarCodeDataPO> findAllBySkuId(Long skuId);
 
-    void deleteBySkuId(Long skuId);
-
     List<SkuBarCodeDataPO> findAllBySkuIdIn(Collection<Long> skuIds);
 
     List<SkuBarCodeDataPO> findAllByBarCodeOrSkuCode(String barCode, String skuCode);

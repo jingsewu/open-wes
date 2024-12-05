@@ -22,7 +22,8 @@ import java.util.List;
 @Table(
         name = "w_container",
         indexes = {
-                @Index(unique = true, name = "uk_container_code_warehouse_code", columnList = "containerCode,warehouseCode")
+                @Index(unique = true, name = "uk_container_code_warehouse_code", columnList = "containerCode,warehouseCode"),
+                @Index(name = "idx_container_spec_code", columnList = "containerSpecCode")
         }
 )
 @DynamicUpdate

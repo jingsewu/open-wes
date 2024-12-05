@@ -1,13 +1,13 @@
 package org.openwes.wes.stocktake.infrastructure.persistence.po;
 
-import org.openwes.common.utils.base.UpdateUserPO;
-import org.openwes.wes.api.stocktake.constants.StocktakeTaskStatusEnum;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
+import org.openwes.common.utils.base.UpdateUserPO;
+import org.openwes.wes.api.stocktake.constants.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @EqualsAndHashCode(callSuper = true)
@@ -19,6 +19,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
         indexes = {
                 @Index(unique = true, name = "idx_task_no", columnList = "taskNo"),
                 @Index(name = "idx_stocktake_order_id", columnList = "stocktakeOrderId"),
+                @Index(name = "idx_stocktake_task_status", columnList = "stocktakeTaskStatus"),
         }
 )
 @DynamicUpdate
@@ -45,6 +46,23 @@ public class StocktakeTaskPO extends UpdateUserPO {
     @Column(nullable = false, length = 20)
     @Comment("状态")
     private StocktakeTaskStatusEnum stocktakeTaskStatus;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, columnDefinition = "varchar(20) comment '盘点单类型'")
+    private StocktakeTypeEnum stocktakeType;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, columnDefinition = "varchar(20) comment '创建方式'")
+    private StocktakeCreateMethodEnum stocktakeCreateMethod;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    @Comment("盘点方式")
+    private StocktakeMethodEnum stocktakeMethod;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, columnDefinition = "varchar(20) comment '创建类型'")
+    private StocktakeUnitTypeEnum stocktakeUnitType;
 
     @Column
     @Comment("工作站")

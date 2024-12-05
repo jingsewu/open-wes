@@ -1,6 +1,9 @@
 package org.openwes.wes.stocktake.domain.service.impl;
 
 import com.google.common.collect.Lists;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.openwes.wes.api.stock.IStockApi;
 import org.openwes.wes.api.stock.dto.ContainerStockDTO;
 import org.openwes.wes.api.stocktake.constants.StocktakeTaskDetailStatusEnum;
@@ -10,9 +13,6 @@ import org.openwes.wes.stocktake.domain.entity.StocktakeOrder;
 import org.openwes.wes.stocktake.domain.entity.StocktakeTask;
 import org.openwes.wes.stocktake.domain.entity.StocktakeTaskDetail;
 import org.openwes.wes.stocktake.domain.service.StocktakeOrderService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -53,6 +53,7 @@ public class StocktakeOrderServiceImpl implements StocktakeOrderService {
         }
 
         if (ObjectUtils.isEmpty(containerCodes) || ObjectUtils.isEmpty(containerStockList)) {
+            log.warn("stock order: {} can not found any stocks, so can not create any stock tasks.", stocktakeOrder.getOrderNo());
             return Collections.emptyList();
         }
 
@@ -84,6 +85,10 @@ public class StocktakeOrderServiceImpl implements StocktakeOrderService {
                     return stocktakeTaskDetail;
                 }).toList().stream()).toList();
         StocktakeTask stocktakeTask = new StocktakeTask();
+        stocktakeTask.setStocktakeMethod(stocktakeOrder.getStocktakeMethod());
+        stocktakeTask.setStocktakeUnitType(stocktakeOrder.getStocktakeUnitType());
+        stocktakeTask.setStocktakeType(stocktakeOrder.getStocktakeType());
+        stocktakeTask.setStocktakeCreateMethod(stocktakeOrder.getStocktakeCreateMethod());
         stocktakeTask.setStocktakeOrderId(stocktakeOrder.getId());
         stocktakeTask.setStocktakeTaskStatus(StocktakeTaskStatusEnum.NEW);
         stocktakeTask.setWarehouseCode(stocktakeOrder.getWarehouseCode());

@@ -6,9 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Collection;
 
 public interface OwnerMainDataPORepository extends JpaRepository<OwnerMainDataPO, Long> {
-    OwnerMainDataPO findByOwnerCode(String ownerCode);
-
-    Collection<OwnerMainDataPO> findAllByOwnerCodeIn(Collection<String> ownerCodes);
 
     Collection<OwnerMainDataPO> findAllByOwnerCodeInAndWarehouseCode(Collection<String> ownCodes, String warehouseCode);
 }

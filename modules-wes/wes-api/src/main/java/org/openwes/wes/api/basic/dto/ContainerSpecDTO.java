@@ -2,14 +2,14 @@ package org.openwes.wes.api.basic.dto;
 
 
 import com.google.common.collect.Lists;
-import org.openwes.common.utils.exception.WmsException;
-import org.openwes.common.utils.validate.IValidate;
-import org.openwes.wes.api.basic.constants.ContainerTypeEnum;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.apache.commons.collections4.CollectionUtils;
+import org.openwes.common.utils.exception.WmsException;
+import org.openwes.common.utils.validate.IValidate;
+import org.openwes.wes.api.basic.constants.ContainerTypeEnum;
 
 import java.io.Serializable;
 import java.util.List;
@@ -82,7 +82,7 @@ public class ContainerSpecDTO implements IValidate, Serializable {
         @NotEmpty
         private String containerSlotSpecCode;
 
-        private String face;
+        private String face = "";
 
         @Min(1)
         private Integer length;
@@ -125,7 +125,7 @@ public class ContainerSpecDTO implements IValidate, Serializable {
 
         public List<String> getAllLevelBay(List<ContainerSlotSpec> children) {
 
-            List<String> allLevelBay = Lists.newArrayList(locLevel + "-" + locBay);
+            List<String> allLevelBay = Lists.newArrayList(this.face + "-" + this.locLevel + "-" + this.locBay);
 
             if (CollectionUtils.isEmpty(children)) {
                 return allLevelBay;

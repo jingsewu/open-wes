@@ -9,7 +9,7 @@ import org.openwes.wes.basic.container.domain.repository.ContainerRepository;
 import org.openwes.wes.basic.container.domain.repository.ContainerSpecRepository;
 import org.openwes.wes.basic.container.domain.transfer.ContainerSpecTransfer;
 import org.openwes.wes.basic.container.domain.transfer.ContainerTransfer;
-import org.openwes.wes.basic.container.infrastructure.aggregate.ContainerLocationAggregate;
+import org.openwes.wes.basic.container.domain.aggregate.ContainerLocationAggregate;
 import org.openwes.wes.basic.warehouse.domain.entity.Location;
 import org.openwes.wes.basic.warehouse.domain.repository.LocationRepository;
 import lombok.RequiredArgsConstructor;

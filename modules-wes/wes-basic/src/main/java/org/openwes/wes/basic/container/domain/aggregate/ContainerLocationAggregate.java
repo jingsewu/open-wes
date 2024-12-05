@@ -1,4 +1,4 @@
-package org.openwes.wes.basic.container.infrastructure.aggregate;
+package org.openwes.wes.basic.container.domain.aggregate;
 
 import org.openwes.wes.api.basic.dto.ContainerLocationReportDTO;
 import org.openwes.wes.basic.container.domain.entity.Container;

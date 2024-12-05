@@ -29,7 +29,7 @@ public class StocktakeTaskRepositoryImpl implements StocktakeTaskRepository {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public StocktakeTask saveOrderAndDetail(StocktakeTask stocktakeTask) {
+    public void saveOrderAndDetail(StocktakeTask stocktakeTask) {
         StocktakeTaskPO stocktakeTaskPO = stocktakeTaskPORepository.save(stocktakeTaskPOTransfer.toPO(stocktakeTask));
 
         List<StocktakeTaskDetailPO> stocktakeTaskDetailPOS = stocktakeTaskPOTransfer.toDetailPOS(stocktakeTask.getDetails());
@@ -37,7 +37,7 @@ public class StocktakeTaskRepositoryImpl implements StocktakeTaskRepository {
 
         List<StocktakeTaskDetailPO> details = stocktakeTaskDetailPORepository.saveAll(stocktakeTaskDetailPOS);
 
-        return stocktakeTaskPOTransfer.toDO(stocktakeTaskPO, details);
+        stocktakeTaskPOTransfer.toDO(stocktakeTaskPO, details);
     }
 
     @Override
@@ -62,6 +62,12 @@ public class StocktakeTaskRepositoryImpl implements StocktakeTaskRepository {
                 .stream().collect(Collectors.groupingBy(StocktakeTaskDetailPO::getStocktakeTaskId));
         return stocktakeTaskPOs.stream().map(v -> stocktakeTaskPOTransfer.toDO(v, detailMap.get(v.getId())))
                 .toList();
+    }
+
+    @Override
+    public List<StocktakeTask> findAllTasksByWorkStationIdAndStatus(Long workStationId, Collection<StocktakeTaskStatusEnum> statuses) {
+        List<StocktakeTaskPO> stocktakeTaskPOs = stocktakeTaskPORepository.findAllByWorkStationIdAndStocktakeTaskStatusIn(workStationId, statuses);
+        return stocktakeTaskPOTransfer.toDOS(stocktakeTaskPOs);
     }
 
     @Override

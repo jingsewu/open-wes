@@ -9,15 +9,12 @@ import java.util.Collection;
 import java.util.List;
 
 public interface SkuBatchStockPORepository extends JpaRepository<SkuBatchStockPO, Long> {
+
     List<SkuBatchStockPO> findAllBySkuBatchAttributeId(Long skuBatchAttributeId);
 
     SkuBatchStockPO findBySkuBatchAttributeIdAndWarehouseAreaId(Long skuBatchAttributeId, Long warehouseAreaId);
 
     List<SkuBatchStockPO> findAllBySkuBatchAttributeIdIn(Collection<Long> skuBatchAttributeIds);
-
-    List<SkuBatchStockPO> findAllByWarehouseAreaIdInAndSkuBatchAttributeIdIn(Collection<Long> warehouseAreaIds, Collection<Long> skuBatchAttributeIds);
-
-    List<SkuBatchStockPO> findAllByWarehouseAreaIdAndSkuBatchAttributeIdIn(Long warehouseAreaId, Collection<Long> skuBatchAttributeIds);
 
     List<SkuBatchStockPO> findAllBySkuIdAndWarehouseAreaIdAndTotalQtyGreaterThan(Long skuId, Long warehouseAreaId, Integer totalQty);
 

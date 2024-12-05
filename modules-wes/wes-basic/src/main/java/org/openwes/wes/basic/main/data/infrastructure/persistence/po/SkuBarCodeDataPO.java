@@ -1,9 +1,9 @@
 package org.openwes.wes.basic.main.data.infrastructure.persistence.po;
 
-import org.openwes.common.utils.base.UpdateUserPO;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
+import org.openwes.common.utils.base.UpdateUserPO;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @EqualsAndHashCode(callSuper = true)
@@ -16,7 +16,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Table(
         name = "m_sku_barcode_data",
         indexes = {
-                @Index(unique = true, name = "uk_sku_id_and_barcode", columnList = "skuId,barCode")
+                @Index(unique = true, name = "uk_sku_id_and_barcode", columnList = "skuId,barCode"),
+                @Index(name = "idx_barcode", columnList = "barCode")
         }
 )
 public class SkuBarCodeDataPO extends UpdateUserPO {

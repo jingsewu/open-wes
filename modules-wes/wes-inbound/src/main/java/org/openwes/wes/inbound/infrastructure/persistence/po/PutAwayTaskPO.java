@@ -1,8 +1,5 @@
 package org.openwes.wes.inbound.infrastructure.persistence.po;
 
-import org.openwes.common.utils.base.AuditUserPO;
-import org.openwes.wes.api.inbound.constants.PutAwayTaskStatusEnum;
-import org.openwes.wes.api.inbound.constants.PutAwayTaskTypeEnum;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -10,6 +7,9 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+import org.openwes.common.utils.base.AuditUserPO;
+import org.openwes.wes.api.inbound.constants.PutAwayTaskStatusEnum;
+import org.openwes.wes.api.inbound.constants.PutAwayTaskTypeEnum;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.Map;

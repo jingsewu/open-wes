@@ -1,12 +1,12 @@
 package org.openwes.wes.stock.infrastructure.repository.impl;
 
 import com.google.common.collect.Lists;
+import lombok.RequiredArgsConstructor;
 import org.openwes.wes.stock.domain.entity.ContainerStock;
 import org.openwes.wes.stock.domain.repository.ContainerStockRepository;
 import org.openwes.wes.stock.infrastructure.persistence.mapper.ContainerStockPORepository;
 import org.openwes.wes.stock.infrastructure.persistence.po.ContainerStockPO;
 import org.openwes.wes.stock.infrastructure.persistence.transfer.ContainerStockPOTransfer;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;

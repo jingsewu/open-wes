@@ -1,9 +1,9 @@
 package org.openwes.wes.api.stocktake.dto;
 
-import org.openwes.wes.api.stocktake.constants.StocktakeTaskStatusEnum;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import org.openwes.wes.api.stocktake.constants.*;
 
 import java.io.Serializable;
 import java.util.List;
@@ -11,6 +11,7 @@ import java.util.List;
 @Data
 @Schema(description = "盘点任务")
 public class StocktakeTaskDTO implements Serializable {
+
     private Long id;
 
     private Long stocktakeOrderId;
@@ -18,6 +19,14 @@ public class StocktakeTaskDTO implements Serializable {
     private String taskNo;
 
     private String warehouseCode;
+
+    private StocktakeTypeEnum stocktakeType;
+
+    private StocktakeCreateMethodEnum stocktakeCreateMethod;
+
+    private StocktakeMethodEnum stocktakeMethod;
+
+    private StocktakeUnitTypeEnum stocktakeUnitType;
 
     private StocktakeTaskStatusEnum stocktakeTaskStatus;
 
