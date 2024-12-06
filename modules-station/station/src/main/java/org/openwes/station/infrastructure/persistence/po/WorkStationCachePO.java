@@ -1,17 +1,16 @@
 package org.openwes.station.infrastructure.persistence.po;
 
-import org.openwes.station.api.constants.ApiCodeEnum;
-import org.openwes.station.api.vo.WorkStationVO;
-import org.openwes.station.domain.entity.ArrivedContainerCache;
-import org.openwes.wes.api.basic.constants.WorkStationModeEnum;
-import org.openwes.wes.api.basic.constants.WorkStationProcessingStatusEnum;
-import org.openwes.wes.api.basic.dto.PutWallSlotDTO;
-import org.openwes.wes.api.basic.dto.WorkStationConfigDTO;
-import org.openwes.wes.api.task.dto.OperationTaskVO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.openwes.station.api.constants.ApiCodeEnum;
+import org.openwes.station.api.vo.WorkStationVO;
+import org.openwes.station.domain.entity.ArrivedContainerCache;
+import org.openwes.wes.api.basic.constants.WorkStationModeEnum;
+import org.openwes.wes.api.basic.dto.PutWallSlotDTO;
+import org.openwes.wes.api.basic.dto.WorkStationConfigDTO;
+import org.openwes.wes.api.task.dto.OperationTaskVO;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
@@ -49,14 +48,7 @@ public class WorkStationCachePO {
     protected WorkStationVO.ChooseAreaEnum chooseArea;
     protected List<WorkStationVO.Tip> tips;
 
-    /**
-     * 事件代码
-     */
     protected ApiCodeEnum eventCode;
 
-    /**
-     * 工作站任务状态 /NOT_TASK/CALL_ROBOT/
-     */
-    private WorkStationProcessingStatusEnum stationProcessingStatus;
-
+    protected String scannedBarcode;
 }

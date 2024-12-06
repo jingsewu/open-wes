@@ -186,6 +186,7 @@ public class WorkStationCache {
         log.info("work station: {} process sku: {} tasks", this.id, skuCode);
 
         this.chooseArea = null;
+        this.scannedBarcode = skuCode;
 
         if (CollectionUtils.isEmpty(this.operateTasks)) {
             return;

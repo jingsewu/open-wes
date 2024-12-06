@@ -1,5 +1,8 @@
 package org.openwes.station.application.business.handler.stocktake;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.openwes.common.utils.exception.WmsException;
 import org.openwes.common.utils.exception.code_enum.StocktakeErrorDescEnum;
 import org.openwes.station.api.constants.ApiCodeEnum;
@@ -15,9 +18,6 @@ import org.openwes.station.infrastructure.remote.StocktakeService;
 import org.openwes.wes.api.stocktake.dto.StocktakeRecordSubmitDTO;
 import org.openwes.wes.api.task.dto.OperationTaskDTO;
 import org.openwes.wes.api.task.dto.OperationTaskVO;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
@@ -44,7 +44,7 @@ public class StocktakeSubmitHandler implements IBusinessHandler<StocktakeSubmitE
         }
 
         OperationTaskDTO operationTaskDTO = operationTaskVO.getOperationTaskDTO();
-        if (!Objects.equals(detailId, operationTaskDTO.getDetailId())) {
+        if (!Objects.equals(detailId, operationTaskDTO.getId())) {
             throw WmsException.throwWmsException(StocktakeErrorDescEnum.STOCKTAKE_OPERATION_TASK_NOT_RIGHT);
         }
 

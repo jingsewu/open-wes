@@ -13,7 +13,6 @@ import org.openwes.wes.api.stock.dto.SkuBatchAttributeDTO;
 import org.openwes.wes.api.stocktake.constants.StocktakeCreateMethodEnum;
 import org.openwes.wes.api.stocktake.constants.StocktakeMethodEnum;
 import org.openwes.wes.api.stocktake.constants.StocktakeTypeEnum;
-import org.openwes.wes.api.stocktake.constants.StocktakeUnitTypeEnum;
 import org.openwes.wes.api.task.dto.OperationTaskDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.CollectionUtils;
@@ -46,7 +45,7 @@ public class WorkStationVO {
     private SkuArea skuArea;
     private PutWallArea putWallArea;
     private Toolbar toolbar;
-    private OrderArea orderArea;
+    private OrderArea operationOrderArea;
 
     private WorkStationProcessingStatusEnum stationProcessingStatus;
 
@@ -202,13 +201,13 @@ public class WorkStationVO {
     @Builder
     @AllArgsConstructor
     public static class OrderArea {
-        private OrderVO currentOrder;
+        private StocktakeOrderVO currentStocktakeOrder;
     }
 
     @Data
     @Builder
     @AllArgsConstructor
-    public static class OrderVO {
+    public static class StocktakeOrderVO {
         //common
 
         //stocktake

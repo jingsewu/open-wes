@@ -65,13 +65,14 @@ public class StocktakeBaseAreaHandler extends BaseAreaHandler<StocktakeWorkStati
         }
 
         if (currentTask != null) {
-            WorkStationVO.OrderArea orderArea = WorkStationVO.OrderArea.builder().currentOrder(WorkStationVO.OrderVO.builder()
+            WorkStationVO.OrderArea orderArea = WorkStationVO.OrderArea.builder().currentStocktakeOrder(WorkStationVO.StocktakeOrderVO.builder()
                     .stocktakeMethod(currentTask.getStocktakeMethod())
                     .stocktakeType(currentTask.getStocktakeType())
                     .stocktakeCreateMethod(currentTask.getStocktakeCreateMethod())
+                    .taskNo(currentTask.getTaskNo())
                     .build()).build();
 
-            viewContext.getWorkStationVO().setOrderArea(orderArea);
+            viewContext.getWorkStationVO().setOperationOrderArea(orderArea);
         }
 
     }
@@ -79,7 +80,7 @@ public class StocktakeBaseAreaHandler extends BaseAreaHandler<StocktakeWorkStati
     @Override
     public void setStationProcessingStatus(WorkStationVO workStationVO, StocktakeWorkStationCache workStationCache) {
 
-        if (workStationVO.getOrderArea() == null || workStationVO.getOrderArea().getCurrentOrder() == null) {
+        if (workStationVO.getOperationOrderArea() == null || workStationVO.getOperationOrderArea().getCurrentStocktakeOrder() == null) {
             workStationVO.setStationProcessingStatus(WorkStationProcessingStatusEnum.NO_TASK);
             return;
         }
@@ -88,7 +89,7 @@ public class StocktakeBaseAreaHandler extends BaseAreaHandler<StocktakeWorkStati
             return;
         }
 
-        workStationVO.setStationProcessingStatus(WorkStationProcessingStatusEnum.WAIT_CALL_CONTAINER);
+        workStationVO.setStationProcessingStatus(WorkStationProcessingStatusEnum.WAIT_ROBOT);
     }
 
     @Override

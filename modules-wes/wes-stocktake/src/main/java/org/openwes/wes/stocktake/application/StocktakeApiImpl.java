@@ -110,6 +110,8 @@ public class StocktakeApiImpl implements IStocktakeApi {
         StocktakeRecord stocktakeRecord = stocktakeRecordRepository.findById(submitDTO.getRecordId());
         StocktakeTask stocktakeTask = stocktakeTaskRepository.findById(stocktakeRecord.getStocktakeTaskId());
         SkuMainDataDTO skuMainDataDTO = skuMainDataApi.getById(stocktakeRecord.getSkuId());
+
+        stocktakeOrderService.validateSubmit(stocktakeRecord);
         stocktakeAggregate.submitStocktakeRecord(stocktakeRecord, stocktakeTask, skuMainDataDTO, submitDTO);
     }
 

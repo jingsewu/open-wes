@@ -4,12 +4,14 @@ import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
+import org.openwes.common.utils.exception.WmsException;
 import org.openwes.wes.api.stock.IStockApi;
 import org.openwes.wes.api.stock.dto.ContainerStockDTO;
 import org.openwes.wes.api.stocktake.constants.StocktakeTaskDetailStatusEnum;
 import org.openwes.wes.api.stocktake.constants.StocktakeTaskStatusEnum;
 import org.openwes.wes.api.stocktake.constants.StocktakeUnitTypeEnum;
 import org.openwes.wes.stocktake.domain.entity.StocktakeOrder;
+import org.openwes.wes.stocktake.domain.entity.StocktakeRecord;
 import org.openwes.wes.stocktake.domain.entity.StocktakeTask;
 import org.openwes.wes.stocktake.domain.entity.StocktakeTaskDetail;
 import org.openwes.wes.stocktake.domain.service.StocktakeOrderService;
@@ -20,6 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static org.openwes.common.utils.exception.code_enum.StocktakeErrorDescEnum.STOCKTAKE_EXCEEDING_THE_MIN_STOCKTAKE_LOSS_QTY;
 
 @Slf4j
 @Service
@@ -70,6 +74,25 @@ public class StocktakeOrderServiceImpl implements StocktakeOrderService {
         }
 
         return stocktakeTasks;
+    }
+
+    @Override
+    public void validateSubmit(StocktakeRecord stocktakeRecord) {
+        if (stocktakeRecord.getQtyAbnormal() <= 0) {
+            return;
+        }
+
+        List<ContainerStockDTO> containerStocks = stockApi.getContainerStocks(Lists.newArrayList(stocktakeRecord.getStockId()));
+        if (containerStocks.isEmpty()) {
+            throw new IllegalStateException("container stock not found");
+        }
+
+        ContainerStockDTO containerStockDTO = containerStocks.get(0);
+        if (containerStockDTO.getAvailableQty() < stocktakeRecord.getQtyAbnormal()) {
+            throw WmsException.throwWmsException(STOCKTAKE_EXCEEDING_THE_MIN_STOCKTAKE_LOSS_QTY,
+                    containerStockDTO.getOutboundLockedQty(), containerStockDTO.getNoOutboundLockedQty(), containerStockDTO.getAvailableQty());
+        }
+
     }
 
     private StocktakeTask buildStocktakeTask(StocktakeOrder stocktakeOrder, Map<String, Set<String>> containerFaceMap,

@@ -43,7 +43,7 @@ public class StocktakeRecordRepositoryImpl implements StocktakeRecordRepository 
 
     @Override
     public StocktakeRecord findById(Long id) {
-        return stocktakeRecordPOTransfer.toDO(stocktakeRecordPORepository.findById(id).orElse(null));
+        return stocktakeRecordPOTransfer.toDO(stocktakeRecordPORepository.findById(id).orElseThrow());
     }
 
     @Override
