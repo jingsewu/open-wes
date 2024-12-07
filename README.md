@@ -19,7 +19,7 @@ and real-time data tracking.
 - [Java](https://www.java.com/) (17+): For running the backend server applications.
 - [MySQL](https://www.mysql.com/) (8.0+): Used as the relational database for storing warehouse data.
 - [Nacos](https://nacos.io/) (2.0+): A service registry and configuration management tool.
-- [Redis](https://redis.io/) (5.0+): Used for caching and session management.
+- [Redis](https://redis.io/) (7.0+): Used for caching and session management.
 
 > Mysql, Nacos and Redis should be installed on the same machine.
 

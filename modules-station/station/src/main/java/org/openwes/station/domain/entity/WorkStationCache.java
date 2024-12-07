@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.openwes.common.utils.exception.WmsException;
 import org.openwes.station.api.constants.ApiCodeEnum;
 import org.openwes.station.api.constants.ProcessStatusEnum;
 import org.openwes.station.api.vo.WorkStationVO;
@@ -22,6 +23,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static org.openwes.common.utils.exception.code_enum.OperationTaskErrorDescEnum.INCORRECT_BARCODE;
 
 /**
  * definition：a place that operators working, only support one station one Operation Type at a time.
@@ -193,7 +196,11 @@ public class WorkStationCache {
         }
 
         OperationTaskVO firstTaskVO = this.operateTasks.stream()
-                .filter(vo -> skuCode.equals(vo.getSkuMainDataDTO().getSkuCode())).iterator().next();
+                .filter(vo -> skuCode.equals(vo.getSkuMainDataDTO().getSkuCode())).findFirst().orElse(null);
+
+        if (firstTaskVO == null) {
+            throw WmsException.throwWmsException(INCORRECT_BARCODE);
+        }
 
         for (OperationTaskVO operateTask : this.operateTasks) {
             // reset process status to avoid operator scan a barcode but not picking then
