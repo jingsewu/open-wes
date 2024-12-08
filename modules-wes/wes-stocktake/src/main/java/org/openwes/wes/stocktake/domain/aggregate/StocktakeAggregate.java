@@ -73,7 +73,7 @@ public class StocktakeAggregate {
                     .setSkuId(stocktakeRecord.getSkuId())
                     .setSkuCode(skuMainDataDTO.getSkuCode())
                     .setStockAbnormalType(StockAbnormalTypeEnum.STOCK_TAKE)
-                    .setStockAbnormalReason(stocktakeRecord.getAbnormalReason().name())
+                    .setAbnormalReason(stocktakeRecord.getAbnormalReason().name())
                     .setReasonDesc(Optional.ofNullable(stocktakeRecord.getAbnormalReason()).map(String::valueOf).orElse(StringUtils.EMPTY))
                     .setQtyAbnormal(stocktakeRecord.getQtyAbnormal());
             stockAbnormalRecordApi.createStockAbnormalRecords(Lists.newArrayList(stockAbnormalRecordDTO));

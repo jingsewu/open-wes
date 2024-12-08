@@ -82,7 +82,7 @@ public class StockAbnormalRecordPO extends UpdateUserPO {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, columnDefinition = "varchar(20)  comment '差异原因'")
-    private StockAbnormalReasonEnum stockAbnormalReason = StockAbnormalReasonEnum.LESS_ENTITY;
+    private StockAbnormalReasonEnum abnormalReason = StockAbnormalReasonEnum.LESS_ENTITY;
 
     @Column(columnDefinition = "varchar(512) default '' comment '原因描述'")
     private String reasonDesc;

@@ -46,7 +46,7 @@ public class StockAbnormalRecordDTO implements Serializable {
     @NotNull
     private Integer qtyAbnormal;
 
-    private String stockAbnormalReason;
+    private String abnormalReason;
     private String reasonDesc;
     private String abnormalOrderNo;
     private StockAbnormalStatusEnum stockAbnormalStatus = StockAbnormalStatusEnum.NEW;

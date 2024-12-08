@@ -1,6 +1,9 @@
 package org.openwes.wes.stock.domain.aggregate;
 
 import com.google.common.collect.Lists;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.openwes.api.platform.api.constants.CallbackApiTypeEnum;
 import org.openwes.domain.event.DomainEventPublisher;
 import org.openwes.wes.api.stock.IStockAbnormalRecordApi;
@@ -17,9 +20,6 @@ import org.openwes.wes.stock.domain.entity.StockAdjustmentDetail;
 import org.openwes.wes.stock.domain.entity.StockAdjustmentOrder;
 import org.openwes.wes.stock.domain.repository.StockAdjustmentRepository;
 import org.openwes.wes.stock.domain.transfer.StockAdjustmentDetailTransfer;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,8 +54,8 @@ public class StockAdjustmentAggregate {
             for (StockAdjustmentDetail detail : stockAdjustmentOrder.getDetails()) {
 
                 StockTransferDTO stockTransferDTO = stockAdjustmentDetailTransfer.toStockTransferDTO(detail, stockAdjustmentOrder);
-                DomainEventPublisher.sendAsyncDomainEvent(
-                        StockTransferEvent.builder().stockTransferDTO(stockTransferDTO).taskType(OperationTaskTypeEnum.ADJUST).build());
+
+                DomainEventPublisher.sendAsyncDomainEvent(new StockTransferEvent().setStockTransferDTO(stockTransferDTO).setTaskType(OperationTaskTypeEnum.ADJUST));
 
                 StockAdjustmentDetailDTO detailDTO = stockAdjustmentDetailTransfer.toDTO(detail);
                 detailDTO.setWarehouseCode(stockAdjustmentOrder.getWarehouseCode());

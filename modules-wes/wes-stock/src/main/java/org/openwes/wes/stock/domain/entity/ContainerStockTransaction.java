@@ -1,8 +1,8 @@
 package org.openwes.wes.stock.domain.entity;
 
-import org.openwes.wes.api.task.constants.OperationTaskTypeEnum;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.openwes.wes.api.task.constants.OperationTaskTypeEnum;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -11,6 +11,8 @@ public class ContainerStockTransaction {
     private Long id;
     private Long containerStockId;
     private Long skuBatchStockId;
+
+    private Long skuId;
 
     private OperationTaskTypeEnum operationTaskType;
 
@@ -21,6 +23,9 @@ public class ContainerStockTransaction {
 
     private String targetContainerCode;
     private String targetContainerSlotCode;
+
+    private String containerCode;
+    private String containerSlotCode;
 
     private String orderNo;
 

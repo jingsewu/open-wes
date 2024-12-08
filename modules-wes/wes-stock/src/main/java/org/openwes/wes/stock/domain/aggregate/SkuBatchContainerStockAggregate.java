@@ -92,8 +92,8 @@ public class SkuBatchContainerStockAggregate {
         SkuBatchStock targetSkuBatchStock = stockService.transferSkuBatchStock(skuBatchStock, stockTransferDTO, true);
 
         skuBatchStockRepository.save(skuBatchStock);
-        SkuBatchStock saveNewSkuBatchStock = skuBatchStockRepository.save(targetSkuBatchStock);
 
+        SkuBatchStock saveNewSkuBatchStock = skuBatchStockRepository.save(targetSkuBatchStock);
         ContainerStock targetContainerStock = stockService.transferContainerStock(stockTransferDTO, containerStock, saveNewSkuBatchStock.getId(), true);
 
         containerStockRepository.save(containerStock);
@@ -106,6 +106,8 @@ public class SkuBatchContainerStockAggregate {
         containerStockTransaction.setId(eventId);
         containerStockTransaction.setSourceContainerCode(containerStock.getContainerCode());
         containerStockTransaction.setSourceContainerSlotCode(containerStock.getContainerSlotCode());
+        containerStockTransaction.setContainerCode(containerStock.getContainerCode());
+        containerStockTransaction.setContainerSlotCode(containerStock.getContainerSlotCode());
         containerStockTransactionRepository.save(containerStockTransaction);
     }
 

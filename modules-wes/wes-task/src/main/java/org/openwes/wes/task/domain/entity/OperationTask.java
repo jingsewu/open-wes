@@ -219,7 +219,7 @@ public class OperationTask extends UpdateUserDTO {
                 .warehouseAreaId(this.transferToWarehouseAreaId(Collections.emptyList()))
                 .orderNo(this.orderNo)
                 .build();
-        DomainEventPublisher.sendAsyncDomainEvent(
-                StockTransferEvent.builder().stockTransferDTO(stockTransferDTO).taskType(this.taskType).build());
+
+        DomainEventPublisher.sendAsyncDomainEvent(new StockTransferEvent().setStockTransferDTO(stockTransferDTO).setTaskType(this.taskType));
     }
 }

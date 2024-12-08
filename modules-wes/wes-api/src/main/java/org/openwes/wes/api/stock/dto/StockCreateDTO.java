@@ -47,6 +47,7 @@ public class StockCreateDTO implements Serializable {
     @NotEmpty
     private String targetContainerCode;
     private String targetContainerFace;
+    @NotEmpty
     private String targetContainerSlotCode;
     private String boxNo;
     private boolean boxStock;

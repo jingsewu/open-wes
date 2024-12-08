@@ -152,7 +152,7 @@ public class OperationTaskStockAggregate {
                     .setSkuId(v.getSkuId())
                     .setSkuCode(skuMainDataDTO.getSkuCode())
                     .setStockAbnormalType(StockAbnormalTypeEnum.PICKING)
-                    .setStockAbnormalReason(reportAbnormalDTO.getAbnormalReason())
+                    .setAbnormalReason(reportAbnormalDTO.getAbnormalReason())
                     .setReasonDesc(Optional.ofNullable(reportAbnormalDTO.getAbnormalReason()).map(String::valueOf).orElse(StringUtils.EMPTY))
                     .setQtyAbnormal(-v.getAbnormalQty() - actualAvailableQty));
 

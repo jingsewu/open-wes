@@ -39,7 +39,7 @@ public class StockAbnormalRecord extends UpdateUserDTO {
 
     private Integer qtyAbnormal;
 
-    private StockAbnormalReasonEnum stockAbnormalReason;
+    private StockAbnormalReasonEnum abnormalReason;
     private String reasonDesc;
     private String abnormalOrderNo;
     private StockAbnormalStatusEnum stockAbnormalStatus = StockAbnormalStatusEnum.NEW;

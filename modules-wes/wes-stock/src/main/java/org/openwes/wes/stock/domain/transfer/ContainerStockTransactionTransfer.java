@@ -1,11 +1,12 @@
 package org.openwes.wes.stock.domain.transfer;
 
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.ReportingPolicy;
 import org.openwes.wes.api.stock.dto.StockCreateDTO;
 import org.openwes.wes.api.stock.dto.StockTransferDTO;
 import org.openwes.wes.stock.domain.entity.ContainerStockTransaction;
-import org.mapstruct.Mapper;
-import org.mapstruct.NullValuePropertyMappingStrategy;
-import org.mapstruct.ReportingPolicy;
 
 import static org.mapstruct.NullValueCheckStrategy.ALWAYS;
 import static org.mapstruct.NullValueMappingStrategy.RETURN_NULL;
@@ -17,7 +18,9 @@ import static org.mapstruct.NullValueMappingStrategy.RETURN_NULL;
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface ContainerStockTransactionTransfer {
 
-    ContainerStockTransaction toDO(StockTransferDTO stockTransferDTO);
-
+    @Mapping(target = "containerCode", source = "targetContainerCode")
+    @Mapping(target = "containerSlotCode", source = "targetContainerSlotCode")
     ContainerStockTransaction fromCreateDTOtoDO(StockCreateDTO stockCreateDTO, Long skuBatchStockId);
+
+    ContainerStockTransaction toDO(StockTransferDTO stockTransferDTO);
 }

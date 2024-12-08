@@ -1,16 +1,20 @@
 package org.openwes.wes.api.stock.event;
 
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 import org.openwes.domain.event.DomainEvent;
 import org.openwes.wes.api.stock.dto.StockTransferDTO;
 import org.openwes.wes.api.task.constants.OperationTaskTypeEnum;
-import jakarta.validation.constraints.NotNull;
-import lombok.*;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Accessors(chain = true)
 public class StockTransferEvent extends DomainEvent {
 
     @NotNull
@@ -19,8 +23,9 @@ public class StockTransferEvent extends DomainEvent {
     @NotNull
     private OperationTaskTypeEnum taskType;
 
-    public void setTaskType(OperationTaskTypeEnum taskType) {
+    public StockTransferEvent setTaskType(OperationTaskTypeEnum taskType) {
         this.taskType = taskType;
-        stockTransferDTO.setOperationTaskType(taskType);
+        this.stockTransferDTO.setOperationTaskType(taskType);
+        return this;
     }
 }
