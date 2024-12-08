@@ -1,5 +1,7 @@
 package org.openwes.wes.basic.work_station.infrastructure.repository.impl;
 
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.openwes.wes.basic.work_station.domain.entity.PutWall;
 import org.openwes.wes.basic.work_station.domain.repository.PutWallRepository;
 import org.openwes.wes.basic.work_station.infrastructure.persistence.mapper.PutWallPORepository;
@@ -7,7 +9,7 @@ import org.openwes.wes.basic.work_station.infrastructure.persistence.mapper.PutW
 import org.openwes.wes.basic.work_station.infrastructure.persistence.po.PutWallPO;
 import org.openwes.wes.basic.work_station.infrastructure.persistence.po.PutWallSlotPO;
 import org.openwes.wes.basic.work_station.infrastructure.persistence.transfer.PutWallPOTransfer;
-import lombok.RequiredArgsConstructor;
+import org.openwes.wes.basic.work_station.infrastructure.persistence.transfer.PutWallSlotPOTransfer;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -22,10 +24,14 @@ public class PutWallRepositoryImpl implements PutWallRepository {
     private final PutWallPORepository putWallPORepository;
     private final PutWallSlotPORepository putWallSlotPORepository;
     private final PutWallPOTransfer putWallPOTransfer;
+    private final PutWallSlotPOTransfer putWallSlotPOTransfer;
 
     @Override
+    @Transactional(rollbackOn = Exception.class)
     public PutWall save(PutWall putWall) {
         PutWallPO putWallPO = putWallPORepository.save(putWallPOTransfer.toPO(putWall));
+        putWall.getPutWallSlots().forEach(v -> v.initPutWallSlot(putWallPO.getId(), putWall.getPutWallCode(), putWall.getWorkStationId()));
+        putWallSlotPORepository.saveAll(putWallSlotPOTransfer.toPOs(putWall.getPutWallSlots()));
         return putWallPOTransfer.toDO(putWallPO);
     }
 

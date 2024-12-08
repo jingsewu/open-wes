@@ -2,6 +2,7 @@ package org.openwes.wes.basic.work_station.application;
 
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.openwes.common.utils.exception.WmsException;
 import org.openwes.common.utils.validate.ValidationSequence;
@@ -26,10 +27,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Primary
@@ -47,33 +46,18 @@ public class PutWallApiImpl implements IPutWallApi {
     private final PutWallService putWallService;
 
     @Override
-    public void create(CreatePutWallDTO createPutWallDTO) {
-        ContainerSpecDTO containerSpecDTO = containerSpecApi
-                .getContainerSpecDTO(createPutWallDTO.getContainerSpecCode(), createPutWallDTO.getWarehouseCode());
-
-        List<PutWallSlot> putWallSlots = putWallSlotTransfer.toDOs(containerSpecDTO.getContainerSlotSpecs());
-        PutWall putWall = new PutWall(createPutWallDTO.getWorkStationId(), createPutWallDTO.getPutWallCode(),
-                createPutWallDTO.getPutWallName(), createPutWallDTO.getContainerSpecCode(), containerSpecDTO.getLocation(),
-                putWallSlots);
-
-        putWallAggregate.save(putWall);
+    public void create(PutWallDTO putWallDTO) {
+        PutWall putWall = putWallTransfer.toDO(putWallDTO);
+        putWall.initial();
+        putWallRepository.save(putWall);
     }
 
     @Override
-    public void update(CreatePutWallDTO createPutWallDTO) {
-
-        PutWall putWall = putWallRepository.findById(createPutWallDTO.getId());
+    public void update(PutWallDTO putWallDTO) {
+        PutWall putWall = putWallTransfer.toDO(putWallDTO);
 
         List<PutWallSlot> exitSlots = putWallSlotRepository.findAllByPutWallId(putWall.getId());
-
-        ContainerSpecDTO containerSpecDTO = containerSpecApi
-                .getContainerSpecDTO(createPutWallDTO.getContainerSpecCode(), createPutWallDTO.getWarehouseCode());
-        List<PutWallSlot> containerSpecSlots = putWallSlotTransfer.toDOs(containerSpecDTO.getContainerSlotSpecs());
-        containerSpecSlots.forEach(v -> v.initPutWallSlot(putWall.getId(), putWall.getPutWallCode(), putWall.getWorkStationId()));
-
-        putWall.updateSlots(exitSlots, containerSpecSlots);
-
-        putWallTransfer.updateTarget(createPutWallDTO, putWall);
+        putWall.updateSlots(exitSlots);
 
         putWallAggregate.update(putWall, exitSlots);
     }

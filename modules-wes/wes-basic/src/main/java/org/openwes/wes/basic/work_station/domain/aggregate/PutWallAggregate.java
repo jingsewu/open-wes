@@ -31,6 +31,7 @@ public class PutWallAggregate {
 
         PutWall savePutWall = putWallRepository.save(putWall);
         putWall.getPutWallSlots().forEach(slot -> slot.initPutWallSlot(savePutWall.getId(), putWall.getPutWallCode(), putWall.getWorkStationId()));
+
         putWallSlotRepository.saveAll(putWall.getPutWallSlots());
 
         Set<String> putWallSlotCodes = putWall.getPutWallSlots().stream().map(PutWallSlot::getPutWallSlotCode).collect(Collectors.toSet());

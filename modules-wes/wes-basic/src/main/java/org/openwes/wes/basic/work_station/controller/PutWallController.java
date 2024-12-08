@@ -5,7 +5,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.openwes.common.utils.http.Response;
 import org.openwes.wes.api.basic.IPutWallApi;
-import org.openwes.wes.api.basic.dto.CreatePutWallDTO;
+import org.openwes.wes.api.basic.dto.PutWallDTO;
 import org.openwes.wes.basic.work_station.domain.entity.PutWall;
 import org.openwes.wes.basic.work_station.domain.repository.PutWallRepository;
 import org.openwes.wes.basic.work_station.domain.transfer.PutWallTransfer;
@@ -24,12 +24,12 @@ public class PutWallController {
     private final PutWallTransfer putWallTransfer;
 
     @PostMapping("createOrUpdate")
-    public Object createOrUpdate(@RequestBody @Valid CreatePutWallDTO createPutWallDTO) {
-        if (createPutWallDTO.getId() != null && createPutWallDTO.getId() > 0) {
-            putWallApi.update(createPutWallDTO);
+    public Object createOrUpdate(@RequestBody @Valid PutWallDTO putWallDTO) {
+        if (putWallDTO.getId() != null && putWallDTO.getId() > 0) {
+            putWallApi.update(putWallDTO);
             return Response.success();
         }
-        putWallApi.create(createPutWallDTO);
+        putWallApi.create(putWallDTO);
         return Response.success();
     }
 

@@ -1,6 +1,5 @@
 package org.openwes.wes.basic.work_station.domain.entity;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,8 +11,6 @@ import org.openwes.wes.api.basic.constants.PutWallSlotStatusEnum;
 import org.openwes.wes.api.basic.constants.PutWallStatusEnum;
 
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Definition: SomeWhere that operators put items.
@@ -36,19 +33,8 @@ public class PutWall {
     private Long version;
     private List<PutWallSlot> putWallSlots;
 
-    public PutWall(Long workStationId, String putWallCode, String putWallName, String containerSpecCode, String location,
-                   @NotNull List<PutWallSlot> putWallSlots) {
-        this.workStationId = workStationId;
-        this.putWallCode = putWallCode;
-        this.putWallName = putWallName;
-        this.putWallSlots = putWallSlots;
-        this.containerSpecCode = containerSpecCode;
-        this.putWallStatus = PutWallStatusEnum.IDLE;
-        this.location = location;
-        this.enable = true;
-    }
-
     private boolean deleted;
+    private Long deleteTime;
 
     private boolean enable;
 
@@ -65,6 +51,7 @@ public class PutWall {
             throw new IllegalStateException("put wall status is not IDLE, cannot delete it");
         }
         this.deleted = true;
+        this.deleteTime = System.currentTimeMillis();
     }
 
     public void occupy() {
@@ -93,19 +80,28 @@ public class PutWall {
         this.putWallStatus = PutWallStatusEnum.IDLE;
     }
 
-    public void updateSlots(List<PutWallSlot> exitSlots, List<PutWallSlot> containerSpecSlots) {
+    public void updateSlots(List<PutWallSlot> existSlots) {
         log.info("work station: {} put wall: {} update slots", this.workStationId, this.putWallCode);
 
         if (this.putWallStatus != PutWallStatusEnum.IDLE) {
             throw new IllegalStateException("put wall status is not IDLE,  can't update slots");
         }
 
-        if (ObjectUtils.isEmpty(exitSlots)) {
-            this.putWallSlots = containerSpecSlots;
+        if (ObjectUtils.isEmpty(existSlots)) {
             return;
         }
 
-        Set<String> exitSlotCodes = exitSlots.stream().map(PutWallSlot::getPutWallSlotCode).collect(Collectors.toSet());
-        this.putWallSlots = containerSpecSlots.stream().filter(slot -> !exitSlotCodes.contains(slot.getPutWallSlotCode())).toList();
+        existSlots.forEach(existSlot -> {
+            this.putWallSlots.forEach(putWallSlot -> {
+                if (existSlot.getPutWallSlotCode().equals(putWallSlot.getPutWallSlotCode())) {
+                    putWallSlot.update(existSlot);
+                }
+            });
+        });
+
+    }
+
+    public void initial() {
+        this.putWallStatus = PutWallStatusEnum.IDLE;
     }
 }

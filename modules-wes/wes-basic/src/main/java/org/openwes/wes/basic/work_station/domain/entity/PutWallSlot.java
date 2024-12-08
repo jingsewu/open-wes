@@ -1,9 +1,9 @@
 package org.openwes.wes.basic.work_station.domain.entity;
 
-import org.openwes.wes.api.basic.constants.PutWallSlotStatusEnum;
-import org.openwes.wes.api.task.dto.SplitContainerDTO;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.openwes.wes.api.basic.constants.PutWallSlotStatusEnum;
+import org.openwes.wes.api.task.dto.SplitContainerDTO;
 
 @Slf4j
 @Data
@@ -124,5 +124,9 @@ public class PutWallSlot {
 
         this.transferContainerCode = null;
         this.transferContainerRecordId = null;
+    }
+
+    public void update(PutWallSlot existSlot) {
+        this.id = existSlot.getId();
     }
 }
