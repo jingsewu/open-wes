@@ -13,7 +13,7 @@ public interface ITaskApi {
 
     List<OperationTaskDTO> createOperationTasks(@Valid List<OperationTaskDTO> operationTaskDTOS);
 
-    List<OperationTaskVO> getAndUpdateTasksWorkStation(@NotNull Long workStationId, @NotEmpty String containerCode, @NotEmpty String face,
+    List<OperationTaskVO> getAndUpdateTasksWorkStation(@NotNull Long workStationId, @NotEmpty String containerCode, @NotNull String face,
                                                        @NotNull OperationTaskTypeEnum taskType);
 
     List<OperationTaskDTO> queryTasks(@NotEmpty Collection<Long> taskIds);

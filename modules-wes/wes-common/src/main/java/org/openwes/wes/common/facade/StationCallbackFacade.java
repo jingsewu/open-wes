@@ -1,12 +1,12 @@
 package org.openwes.wes.common.facade;
 
 import com.google.common.collect.Lists;
+import lombok.RequiredArgsConstructor;
 import org.openwes.common.utils.constants.RedisConstants;
 import org.openwes.mq.MqClient;
 import org.openwes.wes.api.basic.dto.PutWallSlotAssignedDTO;
 import org.openwes.wes.api.basic.dto.PutWallSlotRemindSealedDTO;
 import org.openwes.wes.api.ems.proxy.dto.ContainerArrivedEvent;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,7 +24,7 @@ public class StationCallbackFacade {
     }
 
     public void assignOrder(List<PutWallSlotAssignedDTO> details) {
-        mqClient.sendMessage(RedisConstants.STATION_LISTEN_ORDER_ASSIGNED, details);
+        mqClient.sendMessage(RedisConstants.STATION_LISTEN_ORDER_ASSIGNED, Lists.newArrayList(details));
     }
 
     public void remindSealContainer(List<PutWallSlotRemindSealedDTO> details) {

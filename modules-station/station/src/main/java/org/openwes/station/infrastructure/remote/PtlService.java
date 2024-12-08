@@ -3,7 +3,7 @@ package org.openwes.station.infrastructure.remote;
 import org.openwes.api.platform.api.ICallbackApi;
 import org.openwes.api.platform.api.constants.CallbackApiTypeEnum;
 import org.openwes.api.platform.api.dto.callback.CallbackMessage;
-import org.openwes.api.platform.api.dto.callback.ems.PtlMessageDTO;
+import org.openwes.station.api.dto.PtlMessageDTO;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.stereotype.Service;
 

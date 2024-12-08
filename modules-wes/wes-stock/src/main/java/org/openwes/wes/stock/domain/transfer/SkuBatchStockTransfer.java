@@ -29,7 +29,7 @@ public interface SkuBatchStockTransfer {
     @Mapping(source = "stockTransferDTO.warehouseCode", target = "warehouseCode")
     @Mapping(source = "stockTransferDTO.warehouseAreaId", target = "warehouseAreaId")
     @Mapping(source = "stockTransferDTO.transferQty", target = "availableQty")
-    SkuBatchStock toDO(StockTransferDTO stockTransferDTO, Long skuBatchStockId);
+    SkuBatchStock toDO(StockTransferDTO stockTransferDTO);
 
     @Mapping(source = "transferQty", target = "totalQty")
     @Mapping(source = "transferQty", target = "availableQty")

@@ -18,8 +18,8 @@ import static org.mapstruct.NullValueMappingStrategy.RETURN_NULL;
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface ContainerStockTransactionTransfer {
 
-    @Mapping(target = "containerCode", source = "targetContainerCode")
-    @Mapping(target = "containerSlotCode", source = "targetContainerSlotCode")
+    @Mapping(target = "containerCode", source = "stockCreateDTO.targetContainerCode")
+    @Mapping(target = "containerSlotCode", source = "stockCreateDTO.targetContainerSlotCode")
     ContainerStockTransaction fromCreateDTOtoDO(StockCreateDTO stockCreateDTO, Long skuBatchStockId);
 
     ContainerStockTransaction toDO(StockTransferDTO stockTransferDTO);

@@ -10,6 +10,7 @@ import org.openwes.api.platform.utils.ConverterHelper;
 import org.openwes.common.utils.exception.code_enum.CommonErrorDescEnum;
 import org.openwes.common.utils.http.Response;
 import lombok.extern.slf4j.Slf4j;
+import org.openwes.common.utils.utils.JsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -57,7 +58,7 @@ public abstract class CallbackHandler implements CallbackHandlerService {
         if (convertResponse == null) {
             response = Response.builder().code(ApiPlatformErrorCodeEnum.API_TEMPLATE_PARSE_ERROR.getCode()).build();
         } else {
-            response = JSONObject.parseObject(convertResponse.toString(), Response.class);
+            response = JSONObject.parseObject(JsonUtils.obj2String(convertResponse), Response.class);
         }
         context.setResponse(response);
     }

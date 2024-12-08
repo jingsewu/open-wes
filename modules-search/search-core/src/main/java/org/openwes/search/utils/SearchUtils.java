@@ -99,7 +99,7 @@ public class SearchUtils {
             if (StringUtils.isNotEmpty(searchObject.getTables())) {
                 annotation.addMemberValue("tables", new StringMemberValue(searchObject.getTables(), dynamicClass.getClassFile().getConstPool()));
             }
-            if (StringUtils.isNotEmpty(searchObject.getWhere())) {
+                if (StringUtils.isNotEmpty(searchObject.getWhere())) {
                 annotation.addMemberValue("where", new StringMemberValue(searchObject.getWhere(), dynamicClass.getClassFile().getConstPool()));
             }
             if (StringUtils.isNotEmpty(searchObject.getGroupBy())) {

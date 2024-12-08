@@ -1,5 +1,7 @@
 package org.openwes.wes.stock.domain.aggregate;
 
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.openwes.wes.api.stock.dto.StockCreateDTO;
 import org.openwes.wes.api.stock.dto.StockTransferDTO;
 import org.openwes.wes.api.task.constants.OperationTaskTypeEnum;
@@ -13,16 +15,11 @@ import org.openwes.wes.stock.domain.service.StockService;
 import org.openwes.wes.stock.domain.transfer.ContainerStockTransactionTransfer;
 import org.openwes.wes.stock.domain.transfer.ContainerStockTransfer;
 import org.openwes.wes.stock.domain.transfer.SkuBatchStockTransfer;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -86,17 +83,40 @@ public class SkuBatchContainerStockAggregate {
 
     @Transactional(rollbackFor = Exception.class)
     public void transferAndUnlockStock(StockTransferDTO stockTransferDTO, ContainerStock containerStock, Long eventId) {
+
         saveTransactionRecord(stockTransferDTO, containerStock, eventId);
 
         SkuBatchStock skuBatchStock = skuBatchStockRepository.findById(stockTransferDTO.getSkuBatchStockId());
-        SkuBatchStock targetSkuBatchStock = stockService.transferSkuBatchStock(skuBatchStock, stockTransferDTO, true);
+        if (!Objects.equals(stockTransferDTO.getWarehouseAreaId(), skuBatchStock.getWarehouseAreaId())) {
+            skuBatchStock.subtractAndUnlockQty(stockTransferDTO.getTransferQty(), stockTransferDTO.getLockType());
+            skuBatchStockRepository.save(skuBatchStock);
+        }
 
-        skuBatchStockRepository.save(skuBatchStock);
-
-        SkuBatchStock saveNewSkuBatchStock = skuBatchStockRepository.save(targetSkuBatchStock);
-        ContainerStock targetContainerStock = stockService.transferContainerStock(stockTransferDTO, containerStock, saveNewSkuBatchStock.getId(), true);
-
+        containerStock.subtractAndUnlockQty(stockTransferDTO.getTransferQty(), stockTransferDTO.getLockType());
         containerStockRepository.save(containerStock);
+
+        if (stockTransferDTO.getOperationTaskType() == OperationTaskTypeEnum.ADJUST) {
+            return;
+        }
+
+        SkuBatchStock targetSkuBatchStock = skuBatchStockRepository.findBySkuBatchAttributeIdAndWarehouseAreaId(
+                stockTransferDTO.getSkuBatchAttributeId(), stockTransferDTO.getWarehouseAreaId());
+        if (targetSkuBatchStock == null) {
+            targetSkuBatchStock = skuBatchStockTransfer.toDO(stockTransferDTO);
+        } else {
+            targetSkuBatchStock.addQty(stockTransferDTO.getTransferQty());
+        }
+        SkuBatchStock saveNewSkuBatchStock = skuBatchStockRepository.save(targetSkuBatchStock);
+
+        //need add or update container stock
+        ContainerStock targetContainerStock = containerStockRepository.findByContainerAndSlotAndSkuBatch(
+                stockTransferDTO.getTargetContainerCode(), stockTransferDTO.getTargetContainerSlotCode(), saveNewSkuBatchStock.getId());
+        if (targetContainerStock != null) {
+            targetContainerStock.addQty(stockTransferDTO.getTransferQty());
+        } else {
+            targetContainerStock = containerStockTransfer.toDO(stockTransferDTO, saveNewSkuBatchStock.getId());
+        }
+
         containerStockRepository.save(targetContainerStock);
     }
 

@@ -6,12 +6,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Schema(description = "响应数据")
-public final class Response<T> {
+public final class Response<T> implements Serializable {
 
     /**
      * 默认成功代码

@@ -1,4 +1,4 @@
-package org.openwes.api.platform.api.dto.callback.ems;
+package org.openwes.station.api.dto;
 
 import org.openwes.wes.api.basic.constants.PtlColorEnum;
 import org.openwes.wes.api.basic.constants.PtlModeEnum;

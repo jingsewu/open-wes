@@ -1,6 +1,6 @@
 package org.openwes.station.application;
 
-import org.openwes.api.platform.api.dto.callback.ems.PtlMessageDTO;
+import org.openwes.station.api.dto.PtlMessageDTO;
 import org.openwes.station.api.IPtlApi;
 import org.openwes.station.domain.entity.OutboundWorkStationCache;
 import org.openwes.station.domain.service.WorkStationService;

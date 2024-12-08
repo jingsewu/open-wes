@@ -1,5 +1,7 @@
 package org.openwes.wes.api.outbound.dto;
 
+import org.openwes.common.utils.utils.JsonUtils;
+import org.openwes.common.utils.utils.ObjectUtils;
 import org.openwes.wes.api.outbound.constants.OutboundPlanOrderStatusEnum;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -125,5 +127,9 @@ public class OutboundPlanOrderDTO implements Serializable {
 //
 //        @Schema(title = "库区列表")
 //        private Collection<Long> warehouseAreaIds;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(JsonUtils.obj2String(ObjectUtils.getRandomObject(OutboundPlanOrderDTO.class)));
     }
 }

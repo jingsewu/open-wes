@@ -1,5 +1,6 @@
 package org.openwes.wes.stock.domain.service.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.openwes.wes.api.stock.dto.StockTransferDTO;
 import org.openwes.wes.stock.domain.entity.ContainerStock;
 import org.openwes.wes.stock.domain.entity.SkuBatchStock;
@@ -8,7 +9,6 @@ import org.openwes.wes.stock.domain.repository.SkuBatchStockRepository;
 import org.openwes.wes.stock.domain.service.StockService;
 import org.openwes.wes.stock.domain.transfer.ContainerStockTransfer;
 import org.openwes.wes.stock.domain.transfer.SkuBatchStockTransfer;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -57,7 +57,7 @@ public class StockServiceImpl implements StockService {
         SkuBatchStock targetSkuBatchStock = skuBatchStockRepository.findBySkuBatchAttributeIdAndWarehouseAreaId(
                 stockTransferDTO.getSkuBatchAttributeId(), stockTransferDTO.getWarehouseAreaId());
         if (targetSkuBatchStock == null) {
-            targetSkuBatchStock = skuBatchStockTransfer.toDO(stockTransferDTO, skuBatchStock.getId());
+            targetSkuBatchStock = skuBatchStockTransfer.toDO(stockTransferDTO);
         } else {
             targetSkuBatchStock.addQty(stockTransferDTO.getTransferQty());
         }
