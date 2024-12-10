@@ -1,0 +1,125 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    margin-bottom: 48px;
+    overflow-x: hidden;
+    overflow-y: scroll;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        display: none;
+    }
+
+    .header {
+        display: flex;
+        align-content: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+
+            .extra-title-info {
+                display: inline-block;
+                margin-left: 16px;
+                font-size: 14px;
+                font-weight: 700;
+                color: #333;
+            }
+
+            .station {
+                margin-right: 20px;
+            }
+        }
+    }
+
+    .body {
+        flex: 1;
+        height: calc(100% - 130px);
+        margin-bottom: 24px;
+
+        .operation-area {
+            height: 100%;
+            padding: 24px;
+            border-radius: 8px;
+
+            &.highlight {
+                border: 2px solid #004caa;
+                box-shadow: 0 0 0 4px rgb(24 144 255 / 20%);
+            }
+        }
+    }
+
+    .footer {
+        position: absolute;
+        bottom: 0;
+        display: flex;
+        flex-wrap: wrap;
+        align-content: center;
+        justify-content: center;
+        width: calc(100% - 30px);
+        height: 64px;
+        background: #fff;
+        border-radius: 8px 8px 0 0;
+        box-shadow: -1px 0 0 0 #d9d9d9 inset;
+
+        .item {
+            position: relative;
+            flex: 1 1 150px;
+            height: 64px;
+            font-size: 18px;
+            font-weight: 400;
+            line-height: 64px;
+            color: #004caa;
+            text-align: center;
+            cursor: pointer;
+
+            &.disabled {
+                color: #d9d9d9;
+                cursor: not-allowed;
+            }
+
+            &:not(:last-child)::after {
+                position: absolute;
+                top: 0;
+                right: 0;
+                display: block;
+                width: 1px;
+                height: 64px;
+                content: "";
+                background-color: #d9d9d9;
+            }
+        }
+    }
+}
+
+.toolbarBtn {
+    height: 40px;
+    margin-right: 10px;
+    border-radius: 5px;
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 17px;
+    font-size: 14px;
+    cursor: pointer;
+
+    &:hover {
+        background-color: #1890ff;
+        color: #fff;
+    }
+
+    &.disabled {
+        color: #ccc;
+        // border-color: #f5f5f5;
+        background-color: #f0f0f0;
+        cursor: not-allowed;
+    }
+}

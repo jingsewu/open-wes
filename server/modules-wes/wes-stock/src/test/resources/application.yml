@@ -1,0 +1,52 @@
+spring:
+  datasource:
+    driverClassName: com.mysql.cj.jdbc.Driver
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:mysql://192.168.83.128:3306/swms_wms_test?useSSL=false&serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf8&allowPublicKeyRetrieval=true
+    username: root
+    password: root
+    hikari:
+      minimum-idle: 5
+      idle-timeout: 180000
+      maximum-pool-size: 100
+      auto-commit: true
+      pool-name: test_datasource_pool
+      max-lifetime: 1800000
+      connection-timeout: 30000
+      connection-test-query: SELECT 1
+
+  jpa:
+    database: mysql
+    show-sql: false
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+  redis:
+    redisson:
+      config: |
+        singleServerConfig:
+          idleConnectionTimeout: 100000
+          connectTimeout: 10000
+          timeout: 3000
+          retryAttempts: 3
+          retryInterval: 1500
+          password: null
+          subscriptionsPerConnection: 5
+          clientName: null
+          address: redis://192.168.83.128:6379
+          subscriptionConnectionMinimumIdleSize: 1
+          subscriptionConnectionPoolSize: 50
+          connectionMinimumIdleSize: 32
+          connectionPoolSize: 64
+          database: 3
+          dnsMonitoringInterval: 5000
+        threads: 0
+        nettyThreads: 0
+        codec:
+          class: "org.redisson.codec.JsonJacksonCodec"
+        transportMode: "NIO"
+        lockWatchdogTimeout: 10000

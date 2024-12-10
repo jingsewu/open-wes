@@ -1,0 +1,10 @@
+@use "@/scss/style.scss";
+
+.counter {
+    width: 100%;
+
+    :global(.ant-input-number-input) {
+        font-weight: bold;
+        text-align: center;
+    }
+}

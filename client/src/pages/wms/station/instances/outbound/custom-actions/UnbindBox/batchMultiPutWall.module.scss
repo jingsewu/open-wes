@@ -1,0 +1,24 @@
+.root {
+    display: flex;
+    // flex-direction: column;
+    height: 50vh;
+
+    .hang-tip {
+        text-align: center;
+
+        .hang-img {
+            width: 70px;
+            height: 62px;
+        }
+
+        .hang-text {
+            display: block;
+            margin-top: 12px;
+            margin-bottom: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            color: #333;
+            text-align: center;
+        }
+    }
+}

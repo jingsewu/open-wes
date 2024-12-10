@@ -1,0 +1,10 @@
+dependencies {
+    implementation project(path: ":modules-wes:wes-api", configuration: 'default')
+    implementation project(path: ":modules-utils:common-utils", configuration: 'default')
+
+    compileOnly 'org.springframework.boot:spring-boot-starter-web'
+}
+
+test {
+    useJUnitPlatform()
+}

@@ -1,0 +1,32 @@
+dependencies {
+    implementation project(path: ":modules-utils:distribute-file", configuration: 'default')
+    implementation project(path: ":modules-utils:common-utils", configuration: 'default')
+
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    implementation group: 'org.apache.commons', name: 'commons-lang3'
+    implementation group: 'org.apache.commons', name: 'commons-collections4'
+
+    implementation 'org.reflections:reflections'
+    implementation 'cn.afterturn:easypoi-web'
+
+    implementation 'io.springfox:springfox-swagger2'
+}
+
+bootJar {
+    enabled = false
+}
+
+jar {
+    enabled = true
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allJava
+    archiveClassifier.set('sources')
+}
+
+task javadocJar(type: Jar) {
+    from javadoc
+    archiveClassifier.set('javadoc')
+}

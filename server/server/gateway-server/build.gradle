@@ -1,0 +1,16 @@
+dependencies {
+    implementation project(path: ":modules-gateway:gateway-core", configuration: 'default')
+
+    implementation('org.springframework.boot:spring-boot-starter') {
+        exclude module: 'commons-logging'
+    }
+    implementation 'org.springframework.cloud:spring-cloud-starter-bootstrap'
+
+    implementation 'org.apache.skywalking:apm-toolkit-logback-1.x'
+    implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
+
+}
+
+test {
+    useJUnitPlatform()
+}

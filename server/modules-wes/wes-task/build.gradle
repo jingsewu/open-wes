@@ -1,0 +1,25 @@
+dependencies {
+    implementation project(path: ":modules-wes:wes-common", configuration: 'default')
+    implementation project(path: ":modules-utils:domain-event", configuration: 'default')
+    implementation project(path: ":modules-utils:distribute-lock", configuration: 'default')
+
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework:spring-tx'
+
+    implementation 'org.apache.dubbo:dubbo-spring-boot-starter'
+
+    implementation 'com.google.guava:guava'
+    implementation 'org.apache.commons:commons-lang3'
+    implementation 'org.apache.commons:commons-collections4'
+
+    implementation 'org.mapstruct:mapstruct'
+    annotationProcessor 'org.mapstruct:mapstruct-processor'
+    implementation 'org.projectlombok:lombok-mapstruct-binding'
+}
+
+
+test {
+    useJUnitPlatform()
+}

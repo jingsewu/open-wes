@@ -1,0 +1,21 @@
+dependencies {
+
+    implementation project(path: ":modules-utils:exception-handler", configuration: 'default')
+    implementation project(path: ":modules-station:station", configuration: 'default')
+
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.cloud:spring-cloud-starter-bootstrap'
+    implementation 'org.redisson:redisson-spring-boot-starter'
+
+    implementation 'com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-config'
+    implementation 'com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-discovery'
+
+    implementation 'org.apache.skywalking:apm-toolkit-logback-1.x'
+
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui'
+}
+
+test {
+    useJUnitPlatform()
+}
+

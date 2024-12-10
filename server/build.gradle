@@ -1,0 +1,172 @@
+import org.springframework.boot.gradle.plugin.SpringBootPlugin
+
+plugins {
+    id 'java'
+    id "io.spring.dependency-management" version "1.1.0"
+    id "org.springframework.boot" version "3.0.4"
+}
+
+group 'com.open.wes'
+version '1.0-SNAPSHOT'
+
+allprojects {
+    apply plugin: 'java'
+    apply plugin: 'idea'
+    apply plugin: 'jacoco'
+    apply plugin: 'maven-publish'
+
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8'
+    }
+    repositories {
+        maven { url 'https://maven.aliyun.com/nexus/content/groups/public/' }
+        mavenCentral()
+    }
+}
+
+subprojects {
+    sourceCompatibility = 17
+    targetCompatibility = 17
+    apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'org.springframework.boot'
+
+    test {
+        useJUnitPlatform()
+        ignoreFailures = true
+    }
+
+    dependencies {
+        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+        testImplementation('org.springframework.boot:spring-boot-starter-test')
+        testImplementation 'org.mockito:mockito-inline'
+        testImplementation 'org.hibernate.orm:hibernate-core'
+        testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+        testImplementation 'mysql:mysql-connector-java'
+        testImplementation 'org.redisson:redisson-spring-boot-starter'
+
+        testImplementation 'org.powermock:powermock-module-junit4'
+        testImplementation 'org.powermock:powermock-api-mockito2'
+        testImplementation 'org.powermock:powermock-module-junit4-rule'
+        testImplementation 'org.powermock:powermock-classloading-xstream'
+
+        compileOnly 'org.projectlombok:lombok:1.18.26'
+        annotationProcessor 'org.projectlombok:lombok:1.18.26'
+        testCompileOnly 'org.projectlombok:lombok:1.18.26'
+        testAnnotationProcessor 'org.projectlombok:lombok:1.18.26'
+    }
+
+    dependencyManagement {
+        imports {
+            mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2022.0.2'
+        }
+
+        imports {
+            mavenBom(SpringBootPlugin.BOM_COORDINATES)
+        }
+
+        resolutionStrategy {
+            cacheChangingModulesFor 0, 'seconds'
+        }
+
+        dependencies {
+
+            dependency group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis', version: '3.0.4'
+            dependency group: 'org.springframework.boot', name: 'spring-boot-starter-websocket', version: '3.0.4'
+            dependency group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: '3.0.4'
+            dependency group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: '3.0.4'
+            dependency group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: '3.0.4'
+            dependency group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc', version: '3.0.4'
+            dependency group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client', version: '3.0.4'
+
+            dependency group: 'org.springframework', name: 'spring-tx', version: '6.0.6'
+            dependency group: 'org.springframework.security.oauth', name: 'spring-security-oauth2', version: '2.5.2.RELEASE'
+            dependency group: 'org.springframework.security.oauth.boot', name: 'spring-security-oauth2-autoconfigure', version: '2.6.8'
+            dependency group: 'org.springframework.security', name: 'spring-security-jwt', version: '1.1.1.RELEASE'
+
+            dependency group: 'org.apache.dubbo', name: 'dubbo-spring-boot-starter', version: '3.2.10'
+
+            dependency group: 'org.springframework.cloud', name: 'spring-cloud-starter-stream-kafka', version: '4.0.1'
+            dependency group: 'com.alibaba.cloud', name: 'spring-cloud-starter-alibaba-nacos-config', version: '2022.0.0.0-RC1'
+            dependency group: 'com.alibaba.cloud', name: 'spring-cloud-starter-alibaba-nacos-discovery', version: '2022.0.0.0-RC1'
+
+            dependency group: 'org.projectlombok', name: 'lombok', version: '1.18.26'
+            dependency group: 'com.google.guava', name: 'guava', version: '31.1-jre'
+            dependency group: 'org.redisson', name: 'redisson-spring-boot-starter', version: '3.20.1'
+            dependency group: 'com.alibaba', name: 'transmittable-thread-local', version: '2.14.2'
+
+            dependency group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
+            dependency group: 'org.apache.commons', name: 'commons-collections4', version: '4.4'
+            dependency group: 'org.apache.commons', name: 'commons-pool2', version: '2.11.1'
+            dependency group: 'org.apache.commons', name: 'commons-text', version: '1.10.0'
+            dependency group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
+            dependency group: 'org.apache.commons', name: 'commons-compress', version: '1.21'
+            dependency group: 'commons-io', name: 'commons-io', version: '2.13.0'
+
+            dependency group: 'commons-codec', name: 'commons-codec', version: '1.15'
+            dependency group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.3'
+            dependency group: 'org.javassist', name: 'javassist', version: '3.29.2-GA'
+            dependency group: 'org.reflections', name: 'reflections', version: '0.10.2'
+
+            dependency group: 'com.auth0', name: 'java-jwt', version: '4.4.0'
+
+            dependency group: 'jakarta.servlet', name: 'jakarta.servlet-api', version: '6.0.0'
+            dependency group: 'jakarta.validation', name: 'jakarta.validation-api', version: '3.0.2'
+
+            dependency group: 'io.springfox', name: 'springfox-swagger2', version: '3.0.0'
+            dependency group: 'io.springfox', name: 'springfox-swagger-ui', version: '3.0.0'
+            dependency group: 'io.swagger.core.v3', name: 'swagger-models', version: '2.2.8'
+            dependency group: 'io.swagger.core.v3', name: 'swagger-annotations', version: '2.2.8'
+
+            dependency group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.0.0'
+
+            dependency group: 'org.fluentd', name: 'fluent-logger', version: '0.7.0'
+            dependency group: 'com.sndyuk', name: 'logback-more-appenders', version: '1.8.4'
+
+            dependency group: 'org.mapstruct', name: 'mapstruct', version: '1.5.3.Final'
+            dependency group: 'org.mapstruct', name: 'mapstruct-processor', version: '1.5.3.Final'
+            dependency group: 'org.projectlombok', name: 'lombok-mapstruct-binding', version: '0.2.0'
+
+            dependency group: 'org.apache.skywalking', name: 'apm-toolkit-logback-1.x', version: '8.14.0'
+            dependency group: 'org.freemarker', name: 'freemarker', version: '2.3.31'
+
+            dependency group: 'cn.afterturn', name: 'easypoi-web', version: '3.2.0'
+
+            dependency group: 'org.apache.shardingsphere', name: 'shardingsphere-jdbc-core-spring-boot-starter', version: '5.2.1'
+            dependency group: 'org.liquibase', name: 'liquibase-core', version: '4.21.1'
+            dependency group: 'org.lazyluke', name: 'log4jdbc-remix', version: '0.2.7'
+            dependency group: 'mysql', name: 'mysql-connector-java', version: '8.0.32'
+            dependency group: 'cn.zhxu', name: 'bean-searcher-boot-starter', version: '4.2.4'
+
+            dependency group: 'org.powermock', name: 'powermock-module-junit4', version: '2.0.9'
+            dependency group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.9'
+            dependency group: 'org.powermock', name: 'powermock-module-junit4-rule', version: '2.0.9'
+            dependency group: 'org.powermock', name: 'powermock-classloading-xstream', version: '2.0.9'
+
+            dependency group: 'com.xuxueli', name: 'xxl-job-core', version: '2.4.0'
+
+            dependency group: 'dev.langchain4j', name: 'langchain4j', version: '0.18.0'
+
+            dependency group: 'org.pf4j', name: 'pf4j-spring', version: '0.8.0'
+
+            dependency group: 'org.graalvm.js', name: 'js', version: '22.3.1'
+            dependency group: 'org.graalvm.js', name: 'js-scriptengine', version: '22.3.1'
+
+            dependency group: 'org.liquibase', name: 'liquibase-core', version: '4.29.2'
+        }
+    }
+
+}
+
+test {
+    useJUnitPlatform()
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.annotationProcessorPath = configurations.annotationProcessor
+}
+
+bootRun {
+    // Make sure that the generated code is included in the classpath when running the application
+    classpath = sourceSets.main.runtimeClasspath + files("${project.buildDir}/generated/source/annotationProcessor/java/main")
+}

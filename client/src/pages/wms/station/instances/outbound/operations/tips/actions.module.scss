@@ -1,0 +1,66 @@
+@use "@/scss/style.scss";
+
+.abnormal {
+    width: 100%;
+
+    .sku-box {
+        margin-right: 24px;
+    }
+
+    .title {
+        display: flex;
+        padding: 16px 0;
+        margin-bottom: 24px;
+        font-size: 18px;
+        font-weight: 700;
+        background-color: #f2f2f2;
+
+        .title-block {
+            width: 4px;
+            height: 24px;
+            margin-right: 16px;
+            background: #004caa;
+            border-radius: 0 4px 4px 0;
+        }
+    }
+
+    .container-info {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+
+        .container-code {
+            margin-bottom: 16px;
+            font-size: 20px;
+            font-weight: demibold;
+            color: #666;
+        }
+    }
+
+    .sku-info {
+        display: flex;
+        flex-direction: column;
+        width: 640px;
+        margin: 24px auto;
+
+        .sku-label {
+            display: flex;
+            padding: 8px;
+            margin-top: 8px;
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+            background: #fafafa;
+        }
+
+        .sku-value {
+            width: 324px;
+        }
+    }
+
+    .slot-info {
+        flex: 1;
+        overflow: auto;
+    }
+}

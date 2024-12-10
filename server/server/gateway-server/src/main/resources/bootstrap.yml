@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: gateway
+  profiles:
+    active: test
+  cloud:
+    nacos:
+      config:
+        server-addr: ${nacos.openwes.com:nacos.openwes.com}:${nacos.port:8848}
+        prefix: ${spring.application.name}
+        file-extension: yml
+        namespace: ${spring.profiles.active}
+        group: openwes
+        username: nacos
+        password: nacos
+
+  main:
+    web-application-type: reactive
+
+server:
+  port: 8090

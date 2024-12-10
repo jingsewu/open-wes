@@ -1,0 +1,13 @@
+dependencies {
+    compileOnly project(path: ":modules-utils:domain-event", configuration: 'default')
+    implementation project(path: ":modules-utils:common-utils", configuration: 'default')
+
+    implementation 'jakarta.validation:jakarta.validation-api'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    implementation 'io.swagger.core.v3:swagger-annotations'
+}
+
+test {
+    useJUnitPlatform()
+}

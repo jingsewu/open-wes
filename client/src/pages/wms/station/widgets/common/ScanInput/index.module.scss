@@ -1,0 +1,63 @@
+@use "@/scss/style.scss";
+
+.barcode {
+    flex: 1;
+    height: 64px;
+    font-size: 22px;
+    font-weight: 600;
+}
+
+@mixin input-font {
+    // font-family: Monaco, monospace; // 等宽字体保证密码框中的字体与显示的字体一致
+    font-size: 22px;
+    font-weight: bold;
+}
+
+@mixin input-transparent {
+    color: transparent;
+    background: transparent;
+    caret-color: #000;
+    -webkit-text-security: none;
+
+    &::selection {
+        color: transparent;
+        background: rgba(#1890ff, 0.6);
+    }
+
+    &[disabled] {
+        color: transparent;
+        background-color: transparent;
+    }
+}
+
+.scan-input:global(.ant-input) {
+    height: 50px;
+    @include input-font;
+}
+
+.scan-input {
+    height: 50px;
+
+    :global(.ant-input) {
+        @include input-font;
+    }
+
+    :global(.ant-input-clear-icon) {
+        font-size: 22px;
+    }
+}
+
+.transparent-input {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+    background-color: transparent;
+}
+
+.transparent-input :global(.ant-input),
+.transparent-input:global(.ant-input) {
+    @include input-transparent;
+}

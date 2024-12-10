@@ -1,0 +1,37 @@
+@use "@/scss/style.scss";
+
+.container {
+    cursor: pointer;
+    background-color: #fafafa;
+    border: 2px solid #efefef;
+
+    .container-slot {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        color: #fff;
+        background-color: #fafafa;
+        border: 2px solid #efefef;
+    }
+
+    .optionslot {
+        background-color: #23c660;
+        border-color: #1bb55c;
+    }
+
+    .active {
+        background-color: #1890ff;
+        border-color: #004caa;
+    }
+
+    .active-source {
+        background-color: #1890ff;
+        border-color: #004caa;
+    }
+
+    .active-target {
+        background-color: #1bb55c;
+        border-color: #0e8f48;
+    }
+}

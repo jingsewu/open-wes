@@ -1,0 +1,27 @@
+spring:
+  datasource:
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password:
+    hikari:
+      minimum-idle: 5
+      idle-timeout: 180000
+      maximum-pool-size: 100
+      auto-commit: true
+      pool-name: test_datasource_pool
+      max-lifetime: 1800000
+      connection-timeout: 30000
+      connection-test-query: SELECT 1
+  h2:
+    console:
+      enabled: false
+
+  jpa:
+    hibernate:
+      ddl-auto: update  # You can use 'create' or 'create-drop' as well for test purposes
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+    show-sql: false  # Optional: to see generated SQL statements during tests

@@ -1,0 +1,357 @@
+@use "./default.scss";
+
+.routes-wrapper {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.cxd-Layout-headerBar {
+    display: block !important;
+    background-color: #fff;
+}
+
+.cxd-Layout-aside {
+    background: #1890ff !important;
+}
+
+.cxd-AsideNav-item.is-active > a {
+    background: #3b82f6 !important;
+    color: #fff !important;
+}
+
+.cxd-AsideNav-subList {
+    background-color: #1890ff !important;
+    color: #fff !important;
+}
+
+.cxd-AsideNav-item a:hover {
+    background: #3b82f6 !important;
+    color: #fff !important;
+}
+
+.cxd-Layout-brandBar {
+    background: #1890ff !important;
+}
+
+.login-page-container {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    // background-image: url("~@/icon/bg1.png");
+    // background-repeat: no-repeat;
+    // background-size: cover;
+    // background-color: #1b60a1;
+}
+
+.card {
+    height: 420px;
+    background-color: white;
+}
+
+.forms-inputs {
+    position: relative;
+}
+
+.forms-inputs span {
+    position: absolute;
+    top: -18px;
+    left: 10px;
+    background-color: #fff;
+    padding: 5px 10px;
+    font-size: 15px;
+}
+
+.forms-inputs input {
+    height: 50px;
+    border: 2px solid #eee;
+}
+
+.forms-inputs input:focus {
+    box-shadow: none;
+    outline: none;
+    border: 2px solid #000;
+}
+
+.btn {
+    height: 50px;
+    background-color: "#1d2642";
+}
+
+.success-data {
+    display: flex;
+    flex-direction: column;
+}
+
+.bxs-badge-check {
+    font-size: 90px;
+}
+
+.login-image {
+    // background-color: #1d2642;
+    flex: 1;
+    height: 70%;
+    // padding-right: 86px;
+    background-image: url("~@/icon/wms.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+
+    // margin-left: 238px;
+    // background-position-x: 150px;
+    // position: absolute;
+}
+
+.text-iwms {
+    font-size: 86px;
+    line-height: 96px;
+    padding-top: 4rem;
+    text-align: center;
+    // position: absolute;
+    // left: 0;
+    // top: 4rem;
+    white-space: nowrap;
+    background-image: -webkit-linear-gradient(left, #fcbe4c, #a750eb);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.login-title {
+    font-size: 72px;
+    color: #4f64d2;
+    line-height: 93px;
+}
+
+.slot-text-TOP_LEFT {
+    top: 0;
+    left: 0;
+    text-align: left;
+}
+
+/* stylelint-disable-next-line selector-class-pattern */
+.slot-text-TOP_RIGHT {
+    top: 0;
+    right: 0;
+    text-align: right;
+}
+
+/* stylelint-disable-next-line selector-class-pattern */
+.slot-text-BOTTOM_LEFT {
+    bottom: 0;
+    left: 0;
+    text-align: left;
+}
+
+/* stylelint-disable-next-line selector-class-pattern */
+.slot-text-BOTTOM_RIGHT {
+    right: 0;
+    bottom: 0;
+    text-align: right;
+}
+
+/* stylelint-disable-next-line selector-class-pattern */
+.slot-text-CENTER {
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    font-size: 14px;
+    text-align: center;
+    transform: translate(-50%, -50%);
+}
+
+.text-ellipsis {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.text-ellipsis-line2 {
+    display: -webkit-box;
+    // white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+.text-ellipsis-line3 {
+    display: -webkit-box;
+    // white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
+
+.operation-area {
+    height: 100%;
+    padding: 24px;
+    border-radius: 8px;
+
+    &.highlight {
+        border: 2px solid #004caa;
+        box-shadow: 0 0 0 4px rgb(24 144 255 / 20%);
+    }
+}
+
+.seeding-flash {
+    animation: seal-dispatch 0.6s ease-in infinite;
+}
+
+.seeding-dispatch-flash {
+    animation: seal-dispatch 1s ease-in infinite;
+}
+
+.seeding-waiting-hang-flash {
+    animation: seal-dispatch 0.6s ease-in infinite;
+}
+
+@keyframes seal-dispatch {
+    0% {
+        opacity: 0.75;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0.75;
+    }
+}
+
+.cxd-Layout-content {
+    background-color: #f4f4f5;
+}
+
+.cxd-Layout-body {
+    height: 100%;
+}
+
+// modal
+.ant-modal {
+    &.full-screen {
+        top: 0;
+        padding: 0;
+        margin: 0;
+
+        .ant-modal-body {
+            height: calc(100vh - 108px); // 108px为header和footer部分总长
+            overflow-y: auto;
+
+            .footer-right {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                padding: 10px 16px;
+                text-align: right;
+                background-color: #fff;
+                border-top: 1px solid rgb(0 0 0 / 6%);
+                border-radius: 0 0 2px 2px;
+            }
+        }
+
+        .ant-modal-content {
+            top: 0;
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+        }
+    }
+
+    &.footer-center {
+        .ant-modal-footer {
+            & > div:first-child {
+                justify-content: center !important;
+            }
+        }
+    }
+    .cxd-PopOver {
+        pointer-events: auto;
+    }
+}
+
+.ka-wrapper {
+    height: 100%;
+}
+.ka-content {
+    height: 100%;
+}
+
+.count-input {
+    input {
+        text-align: center;
+        height: 60px;
+        width: 100%;
+    }
+}
+
+.ant-message {
+    z-index: 1600;
+}
+
+.cxd-DropDown-menuItem,
+.cxd-DropDown-menu > .cxd-DropDown-button {
+    line-height: normal;
+}
+
+.cxd-Selections-item {
+    height: auto !important;
+}
+
+.order-input {
+    .ant-select-arrow {
+        color: #1890ff;
+        font-size: 18px;
+    }
+}
+
+.ant-tabs-top > .ant-tabs-nav {
+    margin: 0 !important;
+}
+
+#callContainerTable .ant-empty-normal {
+    // display: none;
+    margin: 0;
+
+    .ant-empty-image {
+        display: none;
+    }
+}
+.descriptions-call {
+    .ant-descriptions-bordered .ant-descriptions-item-label {
+        border-color: #8c8c8c;
+    }
+    .ant-descriptions-row {
+        border-color: #8c8c8c;
+    }
+}
+
+.badge-button {
+    .ant-badge {
+        width: 95%;
+    }
+}
+
+.cxd-Tabs-links > .cxd-Tabs-link {
+    padding: 1rem;
+}
+
+.scan-input {
+    .ant-input {
+        background-color: #f4f4f5;
+    }
+}
+
+.description_box {
+    td.description_value {
+        cursor: pointer;
+    }
+}
+
+.tallyTask {
+    .ant-form-item-label > label {
+        font-weight: 700;
+    }
+}

@@ -1,0 +1,11 @@
+dependencies {
+    implementation project(path: ":modules-utils:common-utils", configuration: 'default')
+    implementation project(path: ":modules-wes:wes-api", configuration: 'default')
+    implementation project(path: ":modules-station:station-api", configuration: 'default')
+
+    implementation 'io.swagger.core.v3:swagger-annotations'
+}
+
+test {
+    useJUnitPlatform()
+}

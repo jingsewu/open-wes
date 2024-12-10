@@ -1,0 +1,18 @@
+.scan-input {
+  width: 100%;
+
+  :global(input) {
+    height: 64px;
+    font-size: 22px;
+    font-weight: bold;
+  }
+
+  :global(.ant-input-affix-wrapper) {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  :global(.ant-input-clear-icon) {
+    font-size: 22px;
+  }
+}

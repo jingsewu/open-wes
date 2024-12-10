@@ -1,0 +1,58 @@
+@use "@/scss/style.scss";
+
+.container-code-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 224px;
+    margin-bottom: 10px;
+    font-size: 20px;
+    color: #666;
+    text-align: left;
+
+    .container-code {
+        flex: 1;
+        max-width: 240px;
+        color: #ccc;
+        overflow-wrap: break-word;
+
+        &.codecolor {
+            color: #666;
+        }
+    }
+}
+
+.scan-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    margin-left: 8px;
+    color: #004caa;
+    cursor: pointer;
+    background-color: #f6f7fb;
+    border-radius: 4px;
+
+    &.active {
+        color: #fff;
+        background-color: #004caa;
+    }
+
+    .scan-svg {
+        font-size: 24px;
+    }
+}
+
+.conveyor-area {
+    display: flex;
+    flex-direction: row;
+    gap: 48px;
+    align-items: flex-end;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    background-repeat: no-repeat;
+    background-position: center bottom;
+    background-size: contain;
+}

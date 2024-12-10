@@ -1,0 +1,28 @@
+dependencies {
+    implementation project(path: ":modules-utils:common-utils", configuration: 'default')
+    implementation 'org.redisson:redisson-spring-boot-starter'
+
+    compileOnly 'org.springframework.boot:spring-boot-starter-websocket'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+bootJar {
+    enabled = false
+}
+
+jar {
+    enabled = true
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allJava
+    archiveClassifier.set('sources')
+}
+
+task javadocJar(type: Jar) {
+    from javadoc
+    archiveClassifier.set('javadoc')
+}

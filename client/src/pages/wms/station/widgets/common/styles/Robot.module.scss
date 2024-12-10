@@ -1,0 +1,47 @@
+@use "@/scss/style.scss";
+
+.robot {
+    display: flex;
+
+    .slot {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        color: #b3b3b3;
+        background-color: #f2f2f2;
+
+        &.active-cell {
+            color: #fff;
+            background-color: #1890ff;
+        }
+
+        &.active-cell-target {
+            color: #fff;
+            background-color: #1bb55c;
+        }
+    }
+
+    .left {
+        display: flex;
+        align-items: flex-end;
+        width: 50%;
+        height: 100%;
+        padding-right: 10px;
+        border-right: 12px solid #f2f2f2;
+        border-bottom: 56px solid #f2f2f2;
+
+        .fork {
+            margin-bottom: 8px;
+        }
+    }
+
+    .right {
+        display: flex;
+        flex-direction: column-reverse;
+        justify-content: space-between;
+        width: 50%;
+        height: 100%;
+        padding-left: 10px;
+    }
+}

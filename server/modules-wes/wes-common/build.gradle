@@ -1,0 +1,9 @@
+dependencies {
+    implementation project(path: ":modules-wes:wes-api", configuration: 'default')
+    implementation project(path: ":modules-utils:common-utils", configuration: 'default')
+    implementation project(path: ":modules-api-platform:api-platform-api", configuration: 'default')
+    implementation project(path: ":modules-utils:mq", configuration: 'default')
+
+
+    implementation 'org.apache.dubbo:dubbo-spring-boot-starter'
+}

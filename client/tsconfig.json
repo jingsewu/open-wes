@@ -1,0 +1,24 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es5",
+        "lib": ["es6", "dom"],
+        "sourceMap": true,
+        "jsx": "react",
+        "noImplicitReturns": true,
+        "noImplicitThis": true,
+        "noImplicitAny": true,
+        "strictNullChecks": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "baseUrl": "./",
+        "paths": {
+            // 根据别名配置相关路径
+            "@/*": ["./src/*"]
+        },
+        "resolveJsonModule": true,
+        "esModuleInterop": true,
+        "suppressImplicitAnyIndexErrors": true
+    },
+    "include": ["./src/**/*", "typings", "./**/*.ts"]
+}

@@ -1,0 +1,40 @@
+rootProject.name = 'open-wes'
+include 'modules-wes:wes-common'
+include 'modules-wes:wes-api'
+include 'modules-wes:wes-basic'
+include 'modules-wes:wes-config'
+include 'modules-wes:wes-inbound'
+include 'modules-wes:wes-outbound'
+include 'modules-wes:wes-printer'
+include 'modules-wes:wes-stock'
+include 'modules-wes:wes-task'
+include 'modules-wes:wes-ems-proxy'
+include 'modules-wes:wes-algo'
+include 'modules-wes:wes-stocktake'
+
+include 'modules-station:station'
+include 'modules-station:station-api'
+
+include 'modules-user:user'
+include 'modules-user:user-api'
+
+include 'modules-gateway:gateway-core'
+
+include 'modules-api-platform:api-platform'
+include 'modules-api-platform:api-platform-api'
+
+include 'modules-search:search-core'
+
+include 'modules-utils:common-utils'
+include 'modules-utils:domain-event'
+include 'modules-utils:distribute-lock'
+include 'modules-utils:mq'
+include 'modules-utils:distribute-file'
+include 'modules-utils:exception-handler'
+include 'modules-utils:common-import'
+include 'modules-utils:tenant-config'
+
+include 'server:station-server'
+include 'server:gateway-server'
+include 'server:wes-server'
+

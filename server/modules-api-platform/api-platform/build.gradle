@@ -1,0 +1,22 @@
+dependencies {
+    implementation project(path: ":modules-utils:common-utils", configuration: 'default')
+    implementation project(path: ":modules-utils:distribute-lock", configuration: 'default')
+    implementation project(path: ":modules-wes:wes-api", configuration: 'default')
+    implementation project(path: ":modules-utils:distribute-file", configuration: 'default')
+    implementation project(path: ":modules-api-platform:api-platform-api", configuration: 'default')
+
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    implementation 'org.apache.dubbo:dubbo-spring-boot-starter'
+
+    implementation 'org.apache.httpcomponents.client5:httpclient5'
+    implementation "org.freemarker:freemarker"
+    implementation 'org.apache.commons:commons-lang3'
+    implementation 'commons-io:commons-io'
+
+    implementation 'org.graalvm.js:js'
+    implementation 'org.graalvm.js:js-scriptengine'
+
+    implementation 'io.swagger.core.v3:swagger-annotations'
+}

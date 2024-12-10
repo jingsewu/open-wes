@@ -1,0 +1,65 @@
+{
+  "id": 1,
+  "stationCode": "1",
+  "workStationStatus": "OFFLINE",
+  "warehouseCode": "warehouse",
+  "warehouseAreaCode": "warehouseAreaCode",
+  "warehouseLogicCode": "warehouseLogicCode",
+  "operationType": "PICKING",
+  "workLocations": [
+    {
+      "stationCode": "1",
+      "workLocationType": "ROBOT",
+      "workLocationCode": "2",
+      "enable": true,
+      "workLocationSlots": [
+        {
+          "workLocationCode": "2",
+          "groupCode": "robot1",
+          "slotCode": "1-1",
+          "level": 1,
+          "bay": 1,
+          "enable": true
+        },
+        {
+          "workLocationCode": "2",
+          "groupCode": "robot1",
+          "slotCode": "1-2",
+          "level": 2,
+          "bay": 1,
+          "enable": true
+        },
+        {
+          "workLocationCode": "2",
+          "groupCode": "robot1",
+          "slotCode": "1-3",
+          "level": 3,
+          "bay": 1,
+          "enable": true
+        }
+      ]
+    }
+  ],
+  "putWalls": [
+    {
+      "stationCode": "1",
+      "putWallCode": "1-1",
+      "putWallName": "SKdB5MwGGT4ii",
+      "putWallSlots": [
+        {
+          "putWallCode": "1-1",
+          "stationCode": "1",
+          "putWallSlotCode": "1-1-1",
+          "level": 1,
+          "bay": 1,
+          "enable": true,
+          "putWallSlotStatus": "IDLE",
+          "transferContainerCode": ""
+        }
+      ]
+    }
+  ],
+  "workStationConfig": {
+    "stationCode": "1"
+  }
+}

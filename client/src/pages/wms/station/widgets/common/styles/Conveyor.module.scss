@@ -1,0 +1,9 @@
+@use "@/scss/style.scss";
+
+.conveyor {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    // background-image: url('/public/assets/station/conveyor.png');
+    background-size: contain;
+}

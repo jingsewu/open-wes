@@ -1,0 +1,24 @@
+@use "@/scss/style.scss";
+
+.sku-info {
+    > div {
+        margin-bottom: 20px;
+        overflow: hidden;
+        font-size: 18px;
+        font-weight: bold;
+        color: #333;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: flex;
+        > span {
+            display: flex;
+            width: 160px;
+            justify-content: flex-end;
+        }
+    }
+
+    .actual-qty {
+        display: flex;
+        align-items: center;
+    }
+}
