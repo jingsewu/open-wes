@@ -68,7 +68,7 @@ public class ContainerArrivedEvent implements Serializable {
 
         @NotEmpty
         @Schema(title = "组号")
-        private String groupCode = "";
+        private String groupCode;
 
         @Schema(title = "料箱扩展属性")
         private Map<String, Object> containerAttributes;

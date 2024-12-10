@@ -41,7 +41,7 @@ public class ArrivedContainerCache {
     // a set of locations that the container can be put into.
     // it is a logical definition.
     // like robotCode is the groupCode of robot, cache shelf code is the groupCode of cache shelf.
-    private String groupCode;
+    private String groupCode = "";
     private String robotCode;
     private String robotType;
     private Integer level;
