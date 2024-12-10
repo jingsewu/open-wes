@@ -1,6 +1,7 @@
 import schema2component from "@/utils/schema2component"
 import { container_spec } from "@/pages/wms/constants/select_search_api_contant"
 import { create_update_columns } from "@/utils/commonContants"
+import {api_empty_container_inbound_add} from "@/pages/wms/data_center/constants/api_constant";
 
 let warehouseCode = localStorage.getItem("warehouseCode")
 
@@ -53,7 +54,7 @@ const add = {
         body: {
             id: "inputForm",
             type: "form",
-            api: "/wms/emptyContainerInbound?warehouseCode=" + warehouseCode,
+            api: api_empty_container_inbound_add + warehouseCode,
             preventEnterSubmit: true,
             body: form
         }
@@ -120,7 +121,7 @@ const detailColumns = [
     },
     {
         name: "locationCode",
-        label: "table.inboundGroundCode"
+        label: "table.locationCode"
     },
     {
         name: "inboundStatus",
