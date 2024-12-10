@@ -2,20 +2,20 @@ package org.openwes.wes.basic.container.application;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.dubbo.config.annotation.DubboService;
 import org.openwes.wes.api.basic.IContainerApi;
+import org.openwes.wes.api.basic.dto.*;
+import org.openwes.wes.basic.container.domain.aggregate.ContainerLocationAggregate;
 import org.openwes.wes.basic.container.domain.entity.Container;
 import org.openwes.wes.basic.container.domain.entity.ContainerSpec;
 import org.openwes.wes.basic.container.domain.repository.ContainerRepository;
 import org.openwes.wes.basic.container.domain.repository.ContainerSpecRepository;
 import org.openwes.wes.basic.container.domain.transfer.ContainerSpecTransfer;
 import org.openwes.wes.basic.container.domain.transfer.ContainerTransfer;
-import org.openwes.wes.basic.container.domain.aggregate.ContainerLocationAggregate;
 import org.openwes.wes.basic.warehouse.domain.entity.Location;
 import org.openwes.wes.basic.warehouse.domain.repository.LocationRepository;
-import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.dubbo.config.annotation.DubboService;
-import org.openwes.wes.api.basic.dto.*;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -80,7 +80,7 @@ public class ContainerApiImpl implements IContainerApi {
 
         List<Container> containers = Lists.newArrayList();
         int endIndex = createContainerDTO.getStartIndex() + createContainerDTO.getCreateNumber();
-        for (int i = createContainerDTO.getStartIndex(); i <= endIndex; i++) {
+        for (int i = createContainerDTO.getStartIndex(); i <= endIndex - 1; i++) {
             String containerCode = createContainerDTO.getContainerCodePrefix() + String.format(format, i);
             containers.add(new Container(createContainerDTO.getWarehouseCode(), containerCode,
                     createContainerDTO.getContainerSpecCode(),
