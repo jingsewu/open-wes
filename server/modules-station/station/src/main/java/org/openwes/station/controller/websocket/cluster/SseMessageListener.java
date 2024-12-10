@@ -27,12 +27,12 @@ public class SseMessageListener {
         StationWebSocketController stationWebSocketController = StationWebSocketController.getInstance(String.valueOf(workStationId));
 
         if (stationWebSocketController != null) {
-            log.info("station: {} send message to websocket: {}.", workStationId,
+            log.info("work station: {} send message to websocket: {}.", workStationId,
                     stationWebSocketController.getSession() == null ? "NULL" : stationWebSocketController.getSession().getId());
 
             stationWebSocketController.sendMessage("changed");
         } else {
-            log.debug("StationWebSocketUtils STATION_WEBSOCKET does not exist! station: {}, message:{}", workStationId, "changed");
+            log.debug("work station: {} does not exist! do not send message: {}", workStationId, "changed");
         }
     }
 }

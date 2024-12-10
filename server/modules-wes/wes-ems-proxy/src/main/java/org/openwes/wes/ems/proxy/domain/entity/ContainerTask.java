@@ -73,11 +73,11 @@ public class ContainerTask implements Serializable {
             return;
         }
 
-        if (ContainerTaskStatusEnum.COMPLETED == taskStatus) {
+        if (ContainerTaskStatusEnum.COMPLETED == this.taskStatus) {
             this.relations.stream()
                     .filter(relation -> ContainerTaskAndBusinessTaskRelationStatusEnum.processingStates.contains(relation.getContainerTaskAndBusinessTaskRelationStatus()))
                     .forEach(ContainerTaskAndBusinessTaskRelation::complete);
-        } else if (ContainerTaskStatusEnum.CANCELED == taskStatus) {
+        } else if (ContainerTaskStatusEnum.CANCELED == this.taskStatus) {
             this.relations.stream()
                     .filter(relation -> ContainerTaskAndBusinessTaskRelationStatusEnum.processingStates.contains(relation.getContainerTaskAndBusinessTaskRelationStatus()))
                     .forEach(ContainerTaskAndBusinessTaskRelation::cancel);
