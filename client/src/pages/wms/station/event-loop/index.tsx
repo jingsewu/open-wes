@@ -337,16 +337,8 @@ export default class WorkStationEventLoop {
         async () => {
             let data
             let that = this
-            const currentUrl = window.location.href
-            const domain = new URL(currentUrl).hostname
-
-            const hostName =
-                process.env.NODE_ENV === "development"
-                    ? "connect.test.com"
-                    : domain
-
             this.websocket = new WebSocket(
-                `/station/websocket?stationCode=${that.stationId}&Authorization=` +
+                `/gw/station/websocket?stationCode=${that.stationId}&Authorization=` +
                     encodeURIComponent(
                         localStorage.getItem("ws_token") as string
                     )

@@ -86,7 +86,7 @@ webpackConfig = {
     devtool: "inline-source-map",
     devServer: {
         hot: true,
-        host: "test.baidu.com",
+        host: "localhost",
         port: 4001,
         historyApiFallback: true,
         open: true,
@@ -100,10 +100,6 @@ webpackConfig = {
                 pathRewrite: {
                     "^/gw": ""
                 }
-            },
-            "/station/websocket": {
-                target: "ws://xx.xx.xx.xx:8090", // Updated WebSocket target URL
-                ws: true // Enable WebSocket proxying
             }
         }
     },
