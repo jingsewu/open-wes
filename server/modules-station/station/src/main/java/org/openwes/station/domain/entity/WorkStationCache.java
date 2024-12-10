@@ -113,7 +113,7 @@ public class WorkStationCache {
         List<ArrivedContainerCache> doneContainers = this.arrivedContainers.stream().filter(v -> groupCodes.contains(v.getGroupCode())).toList();
         this.arrivedContainers.removeIf(v -> groupCodes.contains(v.getGroupCode()));
 
-        log.info("work station: {} remove proceed container:  {}", this.id, doneContainers);
+        log.info("work station: {} remove proceed container size:  {}", this.id, doneContainers.size());
 
         return doneContainers;
     }
@@ -172,10 +172,6 @@ public class WorkStationCache {
     public void addOperateTasks(List<OperationTaskVO> containerOperateTasks) {
 
         log.info("work station: {} add operate tasks: {}", this.id, containerOperateTasks);
-
-        if (CollectionUtils.isEmpty(containerOperateTasks)) {
-            return;
-        }
 
         if (this.operateTasks == null) {
             this.operateTasks = Lists.newArrayList(containerOperateTasks);

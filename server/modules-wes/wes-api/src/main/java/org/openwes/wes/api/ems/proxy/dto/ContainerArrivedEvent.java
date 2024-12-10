@@ -1,12 +1,12 @@
 package org.openwes.wes.api.ems.proxy.dto;
 
-import org.openwes.wes.api.ems.proxy.constants.WorkLocationTypeEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.openwes.wes.api.ems.proxy.constants.WorkLocationTypeEnum;
 
 import java.io.Serializable;
 import java.util.List;
@@ -68,7 +68,7 @@ public class ContainerArrivedEvent implements Serializable {
 
         @NotEmpty
         @Schema(title = "组号")
-        private String groupCode;
+        private String groupCode = "";
 
         @Schema(title = "料箱扩展属性")
         private Map<String, Object> containerAttributes;
