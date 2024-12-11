@@ -95,11 +95,6 @@ public class ContainerStockRepositoryImpl implements ContainerStockRepository {
     }
 
     @Override
-    public List<ContainerStock> findAllBySkuId(Long skuId) {
-        return containerStockPOTransfer.toDOs(containerStockPORepository.findAllBySkuId(skuId));
-    }
-
-    @Override
     public void clearContainerStockByIds(Set<Long> stockIds) {
         containerStockPORepository.deleteAllByIdInBatch(stockIds);
     }
@@ -115,4 +110,10 @@ public class ContainerStockRepositoryImpl implements ContainerStockRepository {
         List<ContainerStockPO> containerStockPOS = containerStockPORepository.findAllByWarehouseCodeAndContainerCodeAndContainerFace(warehouseCode, containerCode, containerFace);
         return containerStockPOTransfer.toDOs(containerStockPOS);
     }
+
+    @Override
+    public void deleteAllZeroQtyStock(long expiredTime) {
+        containerStockPORepository.deleteAllByUpdateTimeBeforeAndTotalQty(expiredTime, 0);
+    }
+
 }

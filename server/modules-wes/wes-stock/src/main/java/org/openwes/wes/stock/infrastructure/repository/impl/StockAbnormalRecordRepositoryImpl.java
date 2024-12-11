@@ -37,4 +37,10 @@ public class StockAbnormalRecordRepositoryImpl implements StockAbnormalRecordRep
         return stockAbnormalRecordPOTransfer.toDOs(stockAbnormalRecordPOs);
     }
 
+    @Override
+    public StockAbnormalRecord findByOrderNo(String orderNo) {
+        StockAbnormalRecordPO stockAbnormalRecordPO = stockAbnormalRecordPORepository.findByOrderNo(orderNo);
+        return stockAbnormalRecordPOTransfer.toDO(stockAbnormalRecordPO);
+    }
+
 }

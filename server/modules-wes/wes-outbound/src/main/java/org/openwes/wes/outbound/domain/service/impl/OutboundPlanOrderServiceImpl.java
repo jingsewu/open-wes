@@ -1,7 +1,14 @@
 package org.openwes.wes.outbound.domain.service.impl;
 
 import com.google.common.collect.Lists;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.openwes.common.utils.exception.WmsException;
 import org.openwes.domain.event.DomainEventPublisher;
+import org.openwes.wes.api.config.ISystemConfigApi;
+import org.openwes.wes.api.config.dto.SystemConfigDTO;
 import org.openwes.wes.api.main.data.dto.SkuMainDataDTO;
 import org.openwes.wes.api.outbound.dto.OutboundPlanOrderCancelDTO;
 import org.openwes.wes.api.outbound.dto.OutboundPlanOrderDTO;
@@ -19,14 +26,14 @@ import org.openwes.wes.outbound.domain.repository.OutboundPreAllocatedRecordRepo
 import org.openwes.wes.outbound.domain.repository.OutboundWaveRepository;
 import org.openwes.wes.outbound.domain.repository.PickingOrderRepository;
 import org.openwes.wes.outbound.domain.service.OutboundPlanOrderService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
+
+import static org.openwes.common.utils.exception.code_enum.OutboundErrorDescEnum.OUTBOUND_CUSTOMER_ORDER_NO_REPEATED;
 
 @Slf4j
 @Service
@@ -37,6 +44,7 @@ public class OutboundPlanOrderServiceImpl implements OutboundPlanOrderService {
     private final OutboundWaveRepository outboundWaveRepository;
     private final OutboundPreAllocatedRecordRepository preAllocatedRecordRepository;
     private final PickingOrderRepository pickingOrderRepository;
+    private final ISystemConfigApi systemConfigApi;
 
     @Override
     public void beforeDoCreation(OutboundPlanOrderDTO outboundPlanOrderDTO) {
@@ -72,7 +80,28 @@ public class OutboundPlanOrderServiceImpl implements OutboundPlanOrderService {
     }
 
     @Override
-    public void syncValidate(OutboundPlanOrder outboundPlanOrder) {
+    public void syncValidate(List<OutboundPlanOrder> outboundPlanOrders) {
+        SystemConfigDTO.OutboundConfigDTO outboundConfig = systemConfigApi.getOutboundConfig();
+        if (!outboundConfig.isCheckRepeatedCustomerOrderNo()) {
+            return;
+        }
+
+        Set<String> customerOrderNos = outboundPlanOrders.stream().map(OutboundPlanOrder::getCustomerOrderNo).collect(Collectors.toSet());
+
+        if (customerOrderNos.size() != outboundPlanOrders.size()) {
+            throw WmsException.throwWmsException(OUTBOUND_CUSTOMER_ORDER_NO_REPEATED);
+        }
+
+        outboundPlanOrders.stream().collect(Collectors.groupingBy(OutboundPlanOrder::getWarehouseCode))
+                .forEach((warehouseCode, subOrders) -> {
+
+                    List<String> subCustomerOrderNos = subOrders.stream().map(OutboundPlanOrder::getCustomerOrderNo).toList();
+                    long count = outboundPlanOrderRepository.countByCustomerOrderNos(warehouseCode, subCustomerOrderNos);
+                    if (count > 0) {
+                        throw WmsException.throwWmsException(OUTBOUND_CUSTOMER_ORDER_NO_REPEATED);
+                    }
+
+                });
 
     }
 

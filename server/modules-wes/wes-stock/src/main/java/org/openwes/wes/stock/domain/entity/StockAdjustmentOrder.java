@@ -1,9 +1,11 @@
 package org.openwes.wes.stock.domain.entity;
 
-import org.openwes.common.utils.id.OrderNoGenerator;
-import org.openwes.wes.api.stock.constants.StockAdjustmentOrderStatusEnum;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.openwes.common.utils.id.OrderNoGenerator;
+import org.openwes.domain.event.DomainEventPublisher;
+import org.openwes.wes.api.stock.constants.StockAdjustmentOrderStatusEnum;
+import org.openwes.wes.api.stock.event.StockAdjustmentOrderCreatedEvent;
 
 import java.util.List;
 
@@ -28,6 +30,8 @@ public class StockAdjustmentOrder {
         this.description = description == null ? "" : description;
         this.orderNo = OrderNoGenerator.generationStockAdjustmentOrderNo();
         this.status = StockAdjustmentOrderStatusEnum.NEW;
+
+        DomainEventPublisher.sendAsyncDomainEvent(new StockAdjustmentOrderCreatedEvent().setOrderNo(this.orderNo));
     }
 
     public void adjust() {

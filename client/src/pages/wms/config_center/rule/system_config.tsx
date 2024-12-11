@@ -16,6 +16,24 @@ const schema = {
                     type: "tabs",
                     tabs: [
                         {
+                            title: "form.tab.basicInformation",
+                            name: "basicConfig",
+                            body: [
+                                {
+                                    type: "select",
+                                    label: "周转容器释放方式",
+                                    source: "${TransferContainerReleaseMethod}",
+                                    name: "basicConfig.transferContainerReleaseMethod"
+                                },
+                                {
+                                    type: "input-number",
+                                    label: "周转容器自动释放间隔时长(min)",
+                                    name: "basicConfig.autoReleaseDelayTimeMin",
+                                    hiddenOn: "${this.basicConfig.transferContainerReleaseMethod === 'INTERFACE'}"
+                                }
+                            ]
+                        },
+                        {
                             title: "form.tab.emsConfiguration",
                             name: "emsConfig",
                             body: [
@@ -23,81 +41,61 @@ const schema = {
                                     type: "switch",
                                     label: "是否批量创建容器任务",
                                     name: "emsConfig.allowBatchCreateContainerTasks",
-                                    description: "----"
+                                    description: ""
                                 }
                             ]
                         },
                         {
                             title: "form.tab.inboundConfiguration",
                             name: "inboundConfig",
-
+                            body: [
+                                {
+                                    type: "switch",
+                                    label: "是否检查重复的客户单号",
+                                    name: "inboundConfig.checkRepeatedCustomerOrderNo",
+                                    description: ""
+                                },
+                                {
+                                    type: "switch",
+                                    label: "是否检查重复的LPN号",
+                                    name: "inboundConfig.checkRepeatedLpnCode",
+                                    description: ""
+                                }
+                            ]
                         },
                         {
                             title: "form.tab.outboundConfiguration",
                             name: "outboundConfig",
                             body: [
                                 {
-                                    type: "group",
-                                    body: [
-                                        {
-                                            type: "input-number",
-                                            label: "form.config.pickingOrderFetchSizeWhenEveryTimeDispatching",
-                                            name: "outboundConfig.pickingOrderFetchSizeWhenEveryTimeDispatching",
-                                            description: "form.config.pickingOrderFetchSizeWhenEveryTimeDispatching.description"
-                                        },
-                                        {
-                                            type: "input-number",
-                                            label: "form.config.undoOperationTaskFetchSizeWhenEveryTimeDispatching",
-                                            name: "outboundConfig.undoOperationTaskFetchSizeWhenEveryTimeDispatching",
-                                            description: "form.config.undoOperationTaskFetchSizeWhenEveryTimeDispatching.description"
-                                        }
-                                    ]
+                                    type: "switch",
+                                    label: "是否检查重复的客户单号",
+                                    name: "outboundConfig.checkRepeatedCustomerOrderNo",
+                                    description: ""
+                                }
+                            ]
+                        },
+                        {
+                            title: "form.tab.stockConfiguration",
+                            name: "stockConfig",
+                            body: [
+                                {
+                                    type: "switch",
+                                    label: "是否库存异常记录自动创建调整单",
+                                    name: "stockConfig.stockAbnormalAutoCreateAdjustmentOrder",
+                                    description: ""
                                 },
                                 {
-                                    type: "group",
-                                    body: [
-                                        {
-                                            type: "input-number",
-                                            label: "form.config.operationTaskFetchSizeWhenContainerArrived",
-                                            name: "outboundConfig.operationTaskFetchSizeWhenContainerArrived",
-                                            description: "form.config.operationTaskFetchSizeWhenContainerArrived.description"
-                                        },
-                                        {
-                                            type: "switch",
-                                            label: "form.config.checkArrivedContainerForDispatchedOrder",
-                                            name: "outboundConfig.checkArrivedContainerForDispatchedOrder",
-                                            description: "form.config.checkArrivedContainerForDispatchedOrder.description"
-                                        },
-                                        {
-                                            type: "select",
-                                            label: "form.config.excludeCustomerOrderTypes",
-                                            multiple: true,
-                                            joinValues: false,
-                                            extractValue: true,
-                                            name: "outboundConfig.excludeCustomerOrderTypes",
-                                            source: "${CustomerOrderType}"
-                                        }
-                                    ]
+                                    type: "switch",
+                                    label: "是否库存调整单自动调整",
+                                    name: "stockConfig.adjustmentOrderAutoCompleteAdjustment",
+                                    description: ""
                                 },
                                 {
-                                    type: "group",
-                                    body: [
-                                        {
-                                            type: "switch",
-                                            label: "form.config.autoUnlockTransferContainer",
-                                            name: "outboundConfig.autoUnlockTransferContainer"
-                                        },
-                                        {
-                                            type: "input-number",
-                                            label: "form.config.autoUnlockTransferContainerTimeInMillis",
-                                            name: "outboundConfig.autoUnlockTransferContainerTimeInMillis"
-                                        },
-                                        {
-                                            type: "input-number",
-                                            label: "form.config.autoUnlockTransferContainerSizeEveryTime",
-                                            name: "outboundConfig.autoUnlockTransferContainerSizeEveryTime"
-                                        }
-                                    ]
+                                    type: "input-number",
+                                    label: "0库存保存天数",
+                                    name: "stockConfig.zeroStockSavedDays",
+                                    description: ""
                                 }
                             ]
                         },

@@ -8,7 +8,9 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openwes.common.utils.exception.WmsException;
 import org.openwes.wes.api.config.IBatchAttributeConfigApi;
+import org.openwes.wes.api.config.ISystemConfigApi;
 import org.openwes.wes.api.config.dto.BatchAttributeConfigDTO;
+import org.openwes.wes.api.config.dto.SystemConfigDTO;
 import org.openwes.wes.api.inbound.constants.AcceptOrderStatusEnum;
 import org.openwes.wes.api.inbound.constants.InboundPlanOrderStatusEnum;
 import org.openwes.wes.api.inbound.dto.AcceptRecordDTO;
@@ -47,6 +49,7 @@ public class InboundPlanOrderServiceImpl implements InboundPlanOrderService {
     private final ISkuMainDataApi skyMainDataApi;
     private final ContainerValidator containerValidator;
     private final AcceptOrderRepository acceptOrderRepository;
+    private final ISystemConfigApi systemConfigApi;
 
     @Override
     public ValidateResult<Set<SkuMainDataDTO>> validateCreation(List<InboundPlanOrder> inboundPlanOrders) {
@@ -89,14 +92,21 @@ public class InboundPlanOrderServiceImpl implements InboundPlanOrderService {
     @Override
     public void syncValidate(List<InboundPlanOrder> inboundPlanOrders) {
 
+        SystemConfigDTO.InboundConfigDTO inboundConfig = systemConfigApi.getInboundConfig();
+
         inboundPlanOrders.stream().collect(Collectors.groupingBy(InboundPlanOrder::getWarehouseCode))
                 .forEach((warehouseCode, subInboundPlanOrders) -> {
                     Set<String> customerOrderNos = subInboundPlanOrders.stream().map(InboundPlanOrder::getCustomerOrderNo).collect(Collectors.toSet());
                     Set<String> lpnCodes = subInboundPlanOrders.stream().map(InboundPlanOrder::getLpnCode).collect(Collectors.toSet());
                     Set<String> boxNos = subInboundPlanOrders.stream().flatMap(v -> v.getDetails().stream())
                             .map(InboundPlanOrderDetail::getBoxNo).filter(ObjectUtils::isNotEmpty).collect(Collectors.toSet());
-                    checkRepeatCustomerOrderNo(customerOrderNos, warehouseCode);
-                    checkRepeatLpnCode(lpnCodes, warehouseCode);
+
+                    if (inboundConfig.isCheckRepeatedCustomerOrderNo()) {
+                        checkRepeatCustomerOrderNo(customerOrderNos, warehouseCode);
+                    }
+                    if (inboundConfig.isCheckRepeatedLpnCode()) {
+                        checkRepeatLpnCode(lpnCodes, warehouseCode);
+                    }
                     checkRepeatBoxNo(boxNos, warehouseCode);
                 });
 

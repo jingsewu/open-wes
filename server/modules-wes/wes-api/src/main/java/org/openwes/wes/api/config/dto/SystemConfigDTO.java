@@ -1,8 +1,8 @@
 package org.openwes.wes.api.config.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import org.openwes.wes.api.config.constants.TransferContainerReleaseMethodEnum;
 import lombok.Data;
+import org.openwes.wes.api.config.constants.TransferContainerReleaseMethodEnum;
 
 import java.io.Serializable;
 
@@ -17,6 +17,7 @@ public class SystemConfigDTO implements Serializable {
     private InboundConfigDTO inboundConfig;
     private OutboundConfigDTO outboundConfig;
     private OutboundAlgoConfigDTO outboundAlgoConfig;
+    private StockConfigDTO stockConfig;
 
     @Data
     public static class BasicConfigDTO implements Serializable {
@@ -32,6 +33,16 @@ public class SystemConfigDTO implements Serializable {
 
     @Data
     public static class OutboundConfigDTO implements Serializable {
+        private boolean checkRepeatedCustomerOrderNo;
+    }
+
+    @Data
+    public static class StockConfigDTO implements Serializable {
+
+        private boolean stockAbnormalAutoCreateAdjustmentOrder;
+        private boolean adjustmentOrderAutoCompleteAdjustment;
+
+        private int zeroStockSavedDays = 7;
     }
 
     @Data
@@ -58,6 +69,9 @@ public class SystemConfigDTO implements Serializable {
 
     @Data
     public static class InboundConfigDTO implements Serializable {
+
+        private boolean checkRepeatedCustomerOrderNo;
+        private boolean checkRepeatedLpnCode;
     }
 
     private Long version;

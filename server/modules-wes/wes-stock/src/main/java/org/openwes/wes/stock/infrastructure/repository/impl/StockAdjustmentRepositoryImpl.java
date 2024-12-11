@@ -51,4 +51,10 @@ public class StockAdjustmentRepositoryImpl implements StockAdjustmentRepository 
         stockAdjustmentOrderPORepository.saveAll(stockAdjustmentOrderPOS);
     }
 
+    @Override
+    public StockAdjustmentOrder findByOrderNo(String orderNo) {
+        StockAdjustmentOrderPO stockAdjustmentOrderPO = stockAdjustmentOrderPORepository.findByOrderNo(orderNo);
+        return stockAdjustmentPOTransfer.toDO(stockAdjustmentOrderPO);
+    }
+
 }

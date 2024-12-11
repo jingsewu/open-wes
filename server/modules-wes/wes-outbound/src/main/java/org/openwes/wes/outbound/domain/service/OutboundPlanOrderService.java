@@ -7,6 +7,7 @@ import org.openwes.wes.common.validator.ValidateResult;
 import org.openwes.wes.outbound.domain.context.OutboundPlanOrderCancelContext;
 import org.openwes.wes.outbound.domain.entity.OutboundPlanOrder;
 
+import java.util.List;
 import java.util.Set;
 
 public interface OutboundPlanOrderService {
@@ -17,7 +18,7 @@ public interface OutboundPlanOrderService {
 
     void afterDoCreation(OutboundPlanOrder outboundPlanOrder);
 
-    void syncValidate(OutboundPlanOrder outboundPlanOrder);
+    void syncValidate(List<OutboundPlanOrder> outboundPlanOrders);
 
     OutboundPlanOrderCancelContext prepareCancelContext(OutboundPlanOrderCancelDTO outboundPlanOrderCancelDTO);
 

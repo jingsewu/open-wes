@@ -1,7 +1,13 @@
 package org.openwes.wes.stock.domain.aggregate;
 
 import com.google.common.collect.Lists;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openwes.api.platform.api.constants.CallbackApiTypeEnum;
+import org.openwes.wes.api.config.ISystemConfigApi;
 import org.openwes.wes.api.stock.IStockApi;
 import org.openwes.wes.api.stock.constants.StockLockTypeEnum;
 import org.openwes.wes.api.stock.dto.ContainerStockLockDTO;
@@ -13,11 +19,6 @@ import org.openwes.wes.stock.domain.entity.StockAdjustmentOrder;
 import org.openwes.wes.stock.domain.repository.StockAbnormalRecordRepository;
 import org.openwes.wes.stock.domain.repository.StockAdjustmentRepository;
 import org.openwes.wes.stock.domain.transfer.StockAbnormalRecordTransfer;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,7 +36,6 @@ public class StockAbnormalAggregate {
     private final StockAbnormalRecordTransfer stockAbnormalRecordTransfer;
     private final StockAdjustmentRepository stockAdjustmentRepository;
     private final StockAbnormalRecordRepository stockAbnormalRecordRepository;
-    private final CallbackApiFacade callbackApiFacade;
 
     @Transactional(rollbackFor = Exception.class)
     public StockAdjustmentOrder createAdjustmentOrder(List<StockAbnormalRecord> stockAbnormalRecords) {
@@ -157,7 +157,6 @@ public class StockAbnormalAggregate {
             stockApi.addAndLockContainerStock(containerStockAddLockDTOS);
         }
 
-        callbackApiFacade.callback(CallbackApiTypeEnum.STOCK_ABNORMAL_CALLBACK, "", stockAbnormalRecordTransfer.toDTOs(stockAbnormalRecords));
         return savedStockAbnormalRecords;
     }
 

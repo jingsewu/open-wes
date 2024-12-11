@@ -1,12 +1,11 @@
 package org.openwes.wes.stock.infrastructure.repository.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.openwes.wes.stock.domain.entity.SkuBatchStock;
 import org.openwes.wes.stock.domain.repository.SkuBatchStockRepository;
 import org.openwes.wes.stock.infrastructure.persistence.mapper.SkuBatchStockPORepository;
 import org.openwes.wes.stock.infrastructure.persistence.po.SkuBatchStockPO;
 import org.openwes.wes.stock.infrastructure.persistence.transfer.SkuBatchStockPOTransfer;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
@@ -63,33 +62,13 @@ public class SkuBatchStockRepositoryImpl implements SkuBatchStockRepository {
     }
 
     @Override
-    public List<SkuBatchStock> findAllBySkuIdAndWarehouseAreaIdAndGreaterThan(Long skuId, Long warehouseAreaId, int totalQty) {
-        return skuBatchStockPOTransfer.toDOs(skuBatchStockPORepository.findAllBySkuIdAndWarehouseAreaIdAndTotalQtyGreaterThan(skuId, warehouseAreaId, totalQty));
-    }
-
-    @Override
-    public List<SkuBatchStock> findAllBySkuIdsAndWarehouseAreaIdAndGreaterThan(Collection<Long> skuIds, Long warehouseAreaId, int totalQty) {
-        return skuBatchStockPOTransfer.toDOs(skuBatchStockPORepository.findAllBySkuIdInAndWarehouseAreaIdAndTotalQtyGreaterThan(skuIds, warehouseAreaId, totalQty));
-    }
-
-    @Override
-    public List<SkuBatchStock> findAllBySkuIdInAndWarehouseAreaIdInAndTotalQtyGreaterThan(Collection<Long> skuId, Collection<Long> warehouseAreaIds, int limitTotalQty) {
-        return skuBatchStockPOTransfer.toDOs(skuBatchStockPORepository.findAllBySkuIdInAndWarehouseAreaIdInAndTotalQtyGreaterThan(skuId, warehouseAreaIds, limitTotalQty));
-    }
-
-    @Override
-    public Page<SkuBatchStock> findAllByPage(Collection<Long> warehouseAreaIds, PageRequest pageRequest) {
-        return skuBatchStockPORepository.findAllByWarehouseAreaIdIn(warehouseAreaIds, pageRequest).map(skuBatchStockPOTransfer::toDO);
-    }
-
-    @Override
     public void clearSkuBatchStockByIds(Set<Long> skuBatchStockIds) {
         skuBatchStockPORepository.deleteAllByIdInBatch(skuBatchStockIds);
     }
 
     @Override
-    public List<SkuBatchStock> findAllByWarehouseAreaIdInAndTotalQtyGreaterThan(Collection<Long> warehouseAreaIds, int limitTotalQty) {
-        return skuBatchStockPOTransfer.toDOs(skuBatchStockPORepository.findAllByWarehouseAreaIdInAndTotalQtyGreaterThan(warehouseAreaIds, limitTotalQty));
+    public void deleteAllZeroQtyStock(long expiredTime) {
+        skuBatchStockPORepository.deleteAllByUpdateTimeBeforeAndTotalQty(expiredTime, 0);
     }
 
 }

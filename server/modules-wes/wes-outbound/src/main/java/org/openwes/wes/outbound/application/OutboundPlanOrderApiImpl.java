@@ -1,5 +1,9 @@
 package org.openwes.wes.outbound.application;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.dubbo.config.annotation.DubboService;
+import org.openwes.common.utils.constants.RedisConstants;
 import org.openwes.distribute.lock.DistributeLock;
 import org.openwes.wes.api.main.data.dto.SkuMainDataDTO;
 import org.openwes.wes.api.outbound.IOutboundPlanOrderApi;
@@ -13,9 +17,6 @@ import org.openwes.wes.outbound.domain.entity.OutboundPlanOrder;
 import org.openwes.wes.outbound.domain.repository.OutboundPlanOrderRepository;
 import org.openwes.wes.outbound.domain.service.OutboundPlanOrderService;
 import org.openwes.wes.outbound.domain.transfer.OutboundPlanOrderTransfer;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -54,16 +55,15 @@ public class OutboundPlanOrderApiImpl implements IOutboundPlanOrderApi {
             return outboundPlanOrder;
         }).toList();
 
-        //TODO add distribute lock to validate repeated customer order no
-//        distributionLock.acquireLockIfThrows();
-//
-//        List<OutboundPlanOrder> exitsOrders = outboundPlanOrderRepository.findByCustomerOrderNo(outboundPlanOrder.getWarehouseCode(), outboundPlanOrder.getCustomerOrderNo());
-//        if (CollectionUtils.isNotEmpty(exitsOrders) && exitsOrders.stream()
-//                .anyMatch(o -> !OutboundPlanOrderStatusEnum.isFinalStatues(o.getOutboundPlanOrderStatus()))) {
-//            throw WmsException.throwWmsException(OutboundErrorDescEnum.OUTBOUND_ORDER_IS_EXISTING, outboundPlanOrder.getCustomerOrderNo());
-//        }
+        distributionLock.acquireLockIfThrows(RedisConstants.OUTBOUND_PLAN_ORDER_ADD_LOCK);
 
-        List<OutboundPlanOrder> savedOrders = outboundPlanOrderRepository.saveAllOrderAndDetails(outboundPlanOrders);
+        List<OutboundPlanOrder> savedOrders;
+        try {
+            outboundPlanOrderService.syncValidate(outboundPlanOrders);
+            savedOrders = outboundPlanOrderRepository.saveAllOrderAndDetails(outboundPlanOrders);
+        } finally {
+            distributionLock.releaseLock(RedisConstants.OUTBOUND_PLAN_ORDER_ADD_LOCK);
+        }
 
         savedOrders.forEach(outboundPlanOrderService::afterDoCreation);
     }

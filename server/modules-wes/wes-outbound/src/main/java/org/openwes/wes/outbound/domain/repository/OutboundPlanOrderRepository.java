@@ -29,4 +29,7 @@ public interface OutboundPlanOrderRepository {
     List<OutboundPlanOrder> saveAllOrderAndDetails(List<OutboundPlanOrder> outboundPlanOrders);
 
     List<OutboundPlanOrder> findAllByStatus(OutboundPlanOrderStatusEnum outboundPlanOrderStatusEnum);
+
+    long countByCustomerOrderNos(String warehouseCode, Collection<String> customerOrderNos);
+
 }

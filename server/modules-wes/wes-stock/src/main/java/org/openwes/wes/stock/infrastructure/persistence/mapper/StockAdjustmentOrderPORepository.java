@@ -4,4 +4,5 @@ import org.openwes.wes.stock.infrastructure.persistence.po.StockAdjustmentOrderP
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface StockAdjustmentOrderPORepository extends JpaRepository<StockAdjustmentOrderPO, Long> {
+    StockAdjustmentOrderPO findByOrderNo(String orderNo);
 }

@@ -79,4 +79,14 @@ public class SystemConfigApiImpl implements ISystemConfigApi {
         SystemConfig systemConfig = systemConfigRepository.findSystemConfig();
         return systemConfigTransfer.toDTO(systemConfig);
     }
+
+    @Override
+    public SystemConfigDTO.StockConfigDTO getStockConfig() {
+        SystemConfig systemConfig = systemConfigRepository.findSystemConfig();
+        if (systemConfig == null || systemConfig.getBasicConfig() == null) {
+            return new SystemConfigDTO.StockConfigDTO();
+        }
+
+        return systemConfig.getStockConfigDTO();
+    }
 }

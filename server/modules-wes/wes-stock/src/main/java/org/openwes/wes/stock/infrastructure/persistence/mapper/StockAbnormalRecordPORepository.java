@@ -10,4 +10,6 @@ import java.util.List;
 public interface StockAbnormalRecordPORepository extends JpaRepository<StockAbnormalRecordPO, Long> {
 
     List<StockAbnormalRecordPO> findAllByContainerStockIdInAndStockAbnormalStatusIn(Collection<Long> containerStockIds, Collection<StockAbnormalStatusEnum> statuses);
+
+    StockAbnormalRecordPO findByOrderNo(String orderNo);
 }

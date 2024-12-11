@@ -25,4 +25,6 @@ public interface ContainerStockPORepository extends JpaRepository<ContainerStock
     List<ContainerStockPO> findAllByWarehouseCodeAndContainerCodeAndContainerSlotCode(String warehouseCode, String containerCode, String containerSlotCode);
 
     List<ContainerStockPO> findAllByWarehouseCodeAndContainerCodeAndContainerFace(String warehouseCode, String containerCode, String containerFace);
+
+    void deleteAllByUpdateTimeBeforeAndTotalQty(long expiredTime, int totalQty);
 }

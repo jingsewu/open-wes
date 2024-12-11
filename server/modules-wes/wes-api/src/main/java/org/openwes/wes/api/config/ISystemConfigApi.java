@@ -17,4 +17,6 @@ public interface ISystemConfigApi {
     SystemConfigDTO.BasicConfigDTO getBasicConfig();
 
     SystemConfigDTO getSystemConfig();
+
+    SystemConfigDTO.StockConfigDTO getStockConfig();
 }

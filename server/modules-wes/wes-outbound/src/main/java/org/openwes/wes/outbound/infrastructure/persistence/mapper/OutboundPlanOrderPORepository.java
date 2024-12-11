@@ -20,4 +20,6 @@ public interface OutboundPlanOrderPORepository extends JpaRepository<OutboundPla
     List<OutboundPlanOrderPO> findAllByWaveNoIn(Collection<String> waveNos);
 
     List<OutboundPlanOrderPO> findAllByOutboundPlanOrderStatus(OutboundPlanOrderStatusEnum outboundPlanOrderStatusEnum);
+
+    Long countByWarehouseCodeAndCustomerOrderNoIn(String warehouseCode, Collection<String> customerOrderNos);
 }

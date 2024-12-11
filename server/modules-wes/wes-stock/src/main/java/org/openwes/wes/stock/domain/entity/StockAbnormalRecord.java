@@ -1,14 +1,16 @@
 package org.openwes.wes.stock.domain.entity;
 
-import org.openwes.common.utils.base.UpdateUserDTO;
-import org.openwes.common.utils.id.OrderNoGenerator;
-import org.openwes.wes.api.stock.constants.StockAbnormalReasonEnum;
-import org.openwes.wes.api.stock.constants.StockAbnormalStatusEnum;
-import org.openwes.wes.api.stock.constants.StockAbnormalTypeEnum;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.openwes.common.utils.base.UpdateUserDTO;
+import org.openwes.common.utils.id.OrderNoGenerator;
+import org.openwes.domain.event.DomainEventPublisher;
+import org.openwes.wes.api.stock.constants.StockAbnormalReasonEnum;
+import org.openwes.wes.api.stock.constants.StockAbnormalStatusEnum;
+import org.openwes.wes.api.stock.constants.StockAbnormalTypeEnum;
+import org.openwes.wes.api.stock.event.StockAbnormalRecordCreatedEvent;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -47,6 +49,7 @@ public class StockAbnormalRecord extends UpdateUserDTO {
 
     public void initial() {
         this.orderNo = OrderNoGenerator.generationStockAbnormalOrderNo();
+        DomainEventPublisher.sendAsyncDomainEvent(new StockAbnormalRecordCreatedEvent().setOrderNo(this.orderNo));
     }
 
     public void createAdjustmentOrder() {
@@ -62,7 +65,7 @@ public class StockAbnormalRecord extends UpdateUserDTO {
         log.info("stock abnormal record id: {}, orderNo: {} upstream close", this.id, this.orderNo);
 
         if (this.stockAbnormalStatus != StockAbnormalStatusEnum.CREATE_ADJUSTMENT_ORDER
-            && this.stockAbnormalStatus != StockAbnormalStatusEnum.CREATE_RE_CHECK_ORDER) {
+                && this.stockAbnormalStatus != StockAbnormalStatusEnum.CREATE_RE_CHECK_ORDER) {
             throw new IllegalStateException("order status is not CREATE_ADJUSTMENT_ORDER or CREATE_RE_CHECK_ORDER , can not be closed");
         }
         this.stockAbnormalStatus = StockAbnormalStatusEnum.CLOSED;

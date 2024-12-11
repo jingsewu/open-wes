@@ -1,5 +1,6 @@
 package org.openwes.wes.stock.domain.repository;
 
+import jakarta.validation.constraints.NotEmpty;
 import org.openwes.wes.api.stock.constants.StockAbnormalStatusEnum;
 import org.openwes.wes.stock.domain.entity.StockAbnormalRecord;
 
@@ -12,4 +13,6 @@ public interface StockAbnormalRecordRepository {
     List<StockAbnormalRecord> findByIds(Collection<Long> ids);
 
     List<StockAbnormalRecord> findAllByContainerStockIdsAndStatues(Collection<Long> containerStockIds, List<StockAbnormalStatusEnum> stockAbnormalStatusEnums);
+
+    StockAbnormalRecord findByOrderNo(@NotEmpty String orderNo);
 }

@@ -1,13 +1,19 @@
 package org.openwes.wes.stock.application;
 
+import lombok.RequiredArgsConstructor;
+import org.openwes.api.platform.api.constants.CallbackApiTypeEnum;
+import org.openwes.domain.event.DomainEventPublisher;
+import org.openwes.wes.api.config.ISystemConfigApi;
+import org.openwes.wes.api.config.dto.SystemConfigDTO;
 import org.openwes.wes.api.stock.IStockAbnormalRecordApi;
 import org.openwes.wes.api.stock.constants.StockAbnormalStatusEnum;
 import org.openwes.wes.api.stock.dto.StockAbnormalRecordDTO;
+import org.openwes.wes.api.stock.event.StockAbnormalRecordCreatedEvent;
+import org.openwes.wes.common.facade.CallbackApiFacade;
 import org.openwes.wes.stock.domain.aggregate.StockAbnormalAggregate;
 import org.openwes.wes.stock.domain.entity.StockAbnormalRecord;
 import org.openwes.wes.stock.domain.repository.StockAbnormalRecordRepository;
 import org.openwes.wes.stock.domain.transfer.StockAbnormalRecordTransfer;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -24,11 +30,18 @@ public class StockAbnormalRecordApiImpl implements IStockAbnormalRecordApi {
     private final StockAbnormalRecordRepository stockAbnormalRecordRepository;
     private final StockAbnormalAggregate stockAbnormalAggregate;
     private final StockAbnormalRecordTransfer stockAbnormalRecordTransfer;
+    private final CallbackApiFacade callbackApiFacade;
+    private final ISystemConfigApi systemConfigApi;
 
     @Override
     public List<StockAbnormalRecordDTO> createStockAbnormalRecords(List<StockAbnormalRecordDTO> stockAbnormalRecordDTOS) {
         List<StockAbnormalRecord> stockAbnormalRecords = stockAbnormalRecordTransfer.toDOs(stockAbnormalRecordDTOS);
-        return stockAbnormalRecordTransfer.toDTOs(stockAbnormalAggregate.createStockAbnormalRecords(stockAbnormalRecords));
+        List<StockAbnormalRecordDTO> stockAbnormalRecordTransferDTOs = stockAbnormalRecordTransfer
+                .toDTOs(stockAbnormalAggregate.createStockAbnormalRecords(stockAbnormalRecords));
+
+        callbackApiFacade.callback(CallbackApiTypeEnum.STOCK_ABNORMAL_CALLBACK, "", stockAbnormalRecordTransferDTOs);
+
+        return stockAbnormalRecordTransferDTOs;
     }
 
     @Override

@@ -1,12 +1,12 @@
 package org.openwes.wes.config.infrastructure.persistence.po;
 
-import org.openwes.common.utils.base.UpdateUserPO;
-import org.openwes.wes.api.config.dto.SystemConfigDTO;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.openwes.common.utils.base.UpdateUserPO;
+import org.openwes.wes.api.config.dto.SystemConfigDTO;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import static org.hibernate.type.SqlTypes.JSON;
@@ -42,6 +42,9 @@ public class SystemConfigPO extends UpdateUserPO {
 
     @JdbcTypeCode(JSON)
     private SystemConfigDTO.OutboundAlgoConfigDTO outboundAlgoConfig;
+
+    @JdbcTypeCode(JSON)
+    private SystemConfigDTO.StockConfigDTO stockConfigDTO;
 
     @Column(nullable = false)
     private String singletonKey = "SYSTEM_CONFIG";

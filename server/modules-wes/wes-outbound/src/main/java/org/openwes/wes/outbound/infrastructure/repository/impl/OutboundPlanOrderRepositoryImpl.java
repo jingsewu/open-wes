@@ -1,5 +1,6 @@
 package org.openwes.wes.outbound.infrastructure.repository.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.openwes.wes.api.outbound.constants.OutboundPlanOrderStatusEnum;
 import org.openwes.wes.outbound.domain.entity.OutboundPlanOrder;
 import org.openwes.wes.outbound.domain.entity.OutboundPlanOrderDetail;
@@ -9,7 +10,6 @@ import org.openwes.wes.outbound.infrastructure.persistence.mapper.OutboundPlanOr
 import org.openwes.wes.outbound.infrastructure.persistence.po.OutboundPlanOrderDetailPO;
 import org.openwes.wes.outbound.infrastructure.persistence.po.OutboundPlanOrderPO;
 import org.openwes.wes.outbound.infrastructure.persistence.transfer.OutboundPlanOrderPOTransfer;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -118,5 +118,10 @@ public class OutboundPlanOrderRepositoryImpl implements OutboundPlanOrderReposit
     public List<OutboundPlanOrder> findAllByStatus(OutboundPlanOrderStatusEnum outboundPlanOrderStatusEnum) {
         List<OutboundPlanOrderPO> outboundPlanOrderPOs = outboundPlanOrderPORepository.findAllByOutboundPlanOrderStatus(outboundPlanOrderStatusEnum);
         return outboundPlanOrderPOTransfer.toDOs(outboundPlanOrderPOs);
+    }
+
+    @Override
+    public long countByCustomerOrderNos(String warehouseCode, Collection<String> customerOrderNos) {
+        return outboundPlanOrderPORepository.countByWarehouseCodeAndCustomerOrderNoIn(warehouseCode, customerOrderNos);
     }
 }

@@ -1,8 +1,8 @@
 package org.openwes.common.utils.exception.code_enum;
 
-import org.openwes.common.utils.constants.AppCodeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.openwes.common.utils.constants.AppCodeEnum;
 
 @Getter
 @AllArgsConstructor
@@ -12,6 +12,7 @@ public enum OutboundErrorDescEnum implements IBaseError {
      * 出站基本错误
      */
     OUTBOUND_BASE_ERROR("OUT001001", "outbound base error", AppCodeEnum.WMS.name()),
+    OUTBOUND_CUSTOMER_ORDER_NO_REPEATED("OUT001002", "customer order no can not repeated", AppCodeEnum.WMS.name()),
 
     /**
      * 拣货工作站错误
