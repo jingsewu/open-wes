@@ -1,7 +1,10 @@
 import schema2component from "@/utils/schema2component"
 import { create_update_columns } from "@/utils/commonContants"
-
-let warehouseCode = localStorage.getItem("warehouseCode")
+import { detailDialog } from "./detail"
+import {
+    api_crud_search_by_warehouseCode,
+    api_crud_search_by_warehouseCode_total
+} from "@/pages/constantApi"
 
 const columns = [
     {
@@ -96,100 +99,8 @@ const columns = [
     }
 ]
 
-const detailColumns = [
-    {
-        name: "inboundPlanOrderId",
-        label: "入库通知单ID",
-        hidden: true
-    },
-    {
-        name: "batchAttributes",
-        label: "table.batchAttributes"
-    },
-    {
-        name: "boxNo",
-        label: "table.lpnNumber"
-    },
-    {
-        name: "brand",
-        label: "table.brand"
-    },
-    {
-        name: "color",
-        label: "table.color"
-    },
-    {
-        name: "qtyAbnormal",
-        label: "skuArea.qtyAbnormal"
-    },
-    {
-        name: "qtyAccepted",
-        label: "table.acceptanceQuantity"
-    },
-    {
-        name: "qtyRestocked",
-        label: "table.plannedQuantity"
-    },
-    {
-        name: "qtyUnreceived",
-        label: "table.unreceivedQuantity"
-    },
-    {
-        name: "responsibleParty",
-        label: "table.responsibleParty"
-    },
-    {
-        name: "size",
-        label: "table.size"
-    },
-    {
-        name: "skuCode",
-        label: "table.skuCode"
-    },
-    {
-        name: "skuName",
-        label: "table.skuName"
-    },
-    {
-        name: "ownerCode",
-        label: "table.productOwner"
-    },
-    {
-        name: "style",
-        label: "table.style"
-    }
-]
-
 const searchIdentity = "WInboundPlanOrder"
-const searchDetailIdentity = "WInboundPlanOrderDetail"
 const showColumns = columns
-const showDetailColumns = detailColumns
-
-const detailDialog = {
-    title: "table.inboundPlanDetails",
-    actions: [],
-    closeOnEsc: true,
-    closeOnOutside: true,
-    size: "xl",
-    body: [
-        {
-            type: "crud",
-            syncLocation: false,
-            name: "inboundPlanOrderDetailTable",
-            api: {
-                method: "POST",
-                url: "/search/search?page=${page}&perPage=${perPage}&inboundPlanOrderId=${id}&inboundPlanOrderId-op=eq",
-                dataType: "application/json"
-            },
-            defaultParams: {
-                searchIdentity: searchDetailIdentity,
-                showColumns: showDetailColumns
-            },
-            footerToolbar: ["switch-per-page", "statistics", "pagination"],
-            columns: detailColumns
-        }
-    ]
-}
 
 const schema = {
     type: "page",
@@ -201,13 +112,8 @@ const schema = {
             type: "crud",
             syncLocation: false,
             name: "inboundPlanOrderTable",
-            api: {
-                method: "POST",
-                url:
-                    "/search/search?page=${page}&perPage=${perPage}&createTime-op=bt&warehouseCode-op=eq&warehouseCode=" +
-                    warehouseCode,
-                dataType: "application/json"
-            },
+            silentPolling: true,
+            api: api_crud_search_by_warehouseCode,
             defaultParams: {
                 searchIdentity: searchIdentity,
                 showColumns: showColumns,
@@ -226,13 +132,7 @@ const schema = {
                     type: "export-excel",
                     label: "button.export",
                     method: "POST",
-                    api: {
-                        method: "POST",
-                        url:
-                            "/search/search?page=${1}&perPage=${100000}&createTime-op=bt&warehouseCode-op=eq&warehouseCode=" +
-                            warehouseCode,
-                        dataType: "application/json"
-                    },
+                    api: api_crud_search_by_warehouseCode_total,
                     filename: "inbound_plan_order",
                     defaultParams: {
                         searchIdentity: searchIdentity,

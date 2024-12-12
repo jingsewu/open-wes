@@ -10,6 +10,7 @@ import type { MenuProps } from "antd"
 import { languageList } from "@/pages/components/Language"
 import LayoutAside from "@/components/LayoutAside"
 import LayoutHeader from "@/components/LayoutHeader"
+import { warehouseSelectApi } from "./constantApi"
 
 export interface NavChildren {
     path: string
