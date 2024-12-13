@@ -374,23 +374,6 @@ const schema = {
                                 }
                             },
                             reload: "role"
-                        },
-                        {
-                            label: "button.parameterConfiguration",
-                            type: "button",
-                            actionType: "drawer",
-                            drawer: {
-                                title: "button.modify",
-                                closeOnEsc: true,
-                                closeOnOutside: true,
-                                body: {
-                                    type: "form",
-                                    initApi: api_warehouse_config_get,
-                                    api: api_warehouse_config_add,
-                                    body: form,
-                                    data: { mode: "edit" }
-                                }
-                            }
                         }
                     ],
                     toggled: true
