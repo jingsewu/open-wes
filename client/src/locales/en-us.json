@@ -501,6 +501,7 @@
     "form.tab.emsConfiguration": "EMS Config",
     "form.tab.inboundConfiguration": "Inbound Config",
     "form.tab.outboundConfiguration": "Outbound Config",
+    "form.tab.stockConfiguration": "Stocktake config",
     "form.tab.outboundAlgoConfiguration": "Outbound Dispatch Algo Config",
     "form.changePassword.oldPassword": "Old Password",
     "form.changePassword.newPassword": "New Password",

@@ -20,23 +20,26 @@ public class SystemConfigDTO implements Serializable {
     private StockConfigDTO stockConfig;
 
     @Data
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class BasicConfigDTO implements Serializable {
         private TransferContainerReleaseMethodEnum transferContainerReleaseMethod = AUTOMATED;
         private int autoReleaseDelayTimeMin = 30;
     }
 
-
     @Data
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class EmsConfigDTO implements Serializable {
         private boolean allowBatchCreateContainerTasks;
     }
 
     @Data
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class OutboundConfigDTO implements Serializable {
         private boolean checkRepeatedCustomerOrderNo;
     }
 
     @Data
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class StockConfigDTO implements Serializable {
 
         private boolean stockAbnormalAutoCreateAdjustmentOrder;
@@ -68,6 +71,7 @@ public class SystemConfigDTO implements Serializable {
     }
 
     @Data
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class InboundConfigDTO implements Serializable {
 
         private boolean checkRepeatedCustomerOrderNo;

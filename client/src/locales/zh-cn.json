@@ -495,6 +495,7 @@
     "form.tab.emsConfiguration": "EMS配置",
     "form.tab.inboundConfiguration": "入库配置",
     "form.tab.outboundConfiguration": "出库配置",
+    "form.tab.stockConfiguration": "库存配置",
     "form.tab.outboundAlgoConfiguration": "出库派单算法配置",
     "form.changePassword.oldPassword": "旧密码",
     "form.changePassword.newPassword": "新密码",

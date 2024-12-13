@@ -1,17 +1,24 @@
 package org.openwes.wes.api.config.constants;
 
-public enum TransferContainerReleaseMethodEnum {
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import org.openwes.common.utils.dictionary.IEnum;
+
+@Getter
+@AllArgsConstructor
+public enum TransferContainerReleaseMethodEnum implements IEnum {
 
     /**
      * release by upstream interface
      */
-    INTERFACE,
+    INTERFACE("INTERFACE", "接口释放"),
 
     /**
      * release by automated process with a scheduler
      */
-    AUTOMATED,
+    AUTOMATED("AUTOMATED", "自动释放"),
 
     ;
-
+    private final String value;
+    private final String label;
 }
