@@ -68,9 +68,9 @@ export default class Admin extends React.Component<AdminProps, State> {
     }
 
     onWarehouseChange = (value: any) => {
-        this.props.store.warehouse.setWarehouseCode(value.value)
+        this.props.store.warehouse.setWarehouseCode(value)
         this.setState({
-            selectedWarehouse: value.value
+            selectedWarehouse: value
         })
     }
 
