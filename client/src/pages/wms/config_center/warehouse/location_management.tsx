@@ -8,7 +8,10 @@ import {
     enable_options,
     true_false_options
 } from "@/utils/commonContants"
-import { api_getDictionary } from "@/pages/constantApi"
+import {
+    api_getDictionary,
+    api_crud_search_by_warehouseCode
+} from "@/pages/constantApi"
 
 let warehouseCode = localStorage.getItem("warehouseCode")
 
@@ -187,13 +190,7 @@ const schema = {
             type: "crud",
             syncLocation: false,
             name: "role",
-            api: {
-                method: "POST",
-                url:
-                    "/search/search?page=${page}&perPage=${perPage}&createTime-op=bt&warehouseCode-op=eq&warehouseCode=" +
-                    warehouseCode,
-                dataType: "application/json"
-            },
+            api: api_crud_search_by_warehouseCode,
             defaultParams: {
                 searchIdentity: searchIdentity,
                 showColumns: showColumns

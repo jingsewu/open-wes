@@ -3,9 +3,12 @@ import {
     owner_code,
     warehouse_area_code
 } from "@/pages/wms/constants/select_search_api_contant"
-import { api_getDictionary } from "@/pages/constantApi"
+import {
+    api_getDictionary,
+    api_crud_search_by_warehouseCode,
+    api_crud_search_by_warehouseCode_total
+} from "@/pages/constantApi"
 
-let warehouseCode = localStorage.getItem("warehouseCode")
 const permissions = localStorage.getItem("permissions")?.split(",")
 console.log("permissions", permissions?.includes("15230"))
 
@@ -177,13 +180,7 @@ const schema = {
             type: "crud",
             syncLocation: false,
             name: "paramConfigTable",
-            api: {
-                method: "POST",
-                url:
-                    "/search/search?page=${page}&perPage=${perPage}&createTime-op=bt&warehouseCode-op=eq&warehouseCode=" +
-                    warehouseCode,
-                dataType: "application/json"
-            },
+            api: api_crud_search_by_warehouseCode,
             defaultParams: {
                 searchIdentity: searchIdentity,
                 showColumns: showColumns,
@@ -202,9 +199,7 @@ const schema = {
                 {
                     type: "export-excel",
                     label: "button.export",
-                    api:
-                        "post:/search/search?page=${1}&perPage=${100000}&createTime-op=bt&warehouseCode-op=eq&warehouseCode=" +
-                        warehouseCode,
+                    api: api_crud_search_by_warehouseCode_total,
                     fileName: "container_stock"
                 }
             ],

@@ -1,13 +1,12 @@
 import schema2component from "@/utils/schema2component"
-import { Translation } from "react-i18next"
 import React from "react"
-import { stock_id_table } from "@/pages/wms/constants/select_search_api_contant"
 import { debounce } from "lodash"
 import { DEBOUNCE_TIME } from "@/pages/wms/station/constant"
 import { CustomActionType } from "@/pages/wms/station/instances/stocktake/customActionType"
-import { api_getDictionary } from "@/pages/constantApi"
-
-let warehouseCode = localStorage.getItem("warehouseCode")
+import {
+    api_getDictionary,
+    api_crud_search_by_warehouseCode
+} from "@/pages/constantApi"
 
 const columns = [
     {
@@ -134,13 +133,7 @@ const schema = {
         type: "crud",
         syncLocation: false,
         name: "stocktakeTaskTable",
-        api: {
-            method: "POST",
-            url:
-                "/search/search?page=${page}&perPage=${perPage}&warehouseCode-eq=" +
-                warehouseCode,
-            dataType: "application/json"
-        },
+        api: api_crud_search_by_warehouseCode,
         defaultParams: {
             searchIdentity: "WStocktakeTaskDetail",
             showColumns: detailColumns

@@ -1,7 +1,8 @@
 import schema2component from "@/utils/schema2component"
-import { api_getDictionary } from "@/pages/constantApi"
-
-let warehouseCode = localStorage.getItem("warehouseCode")
+import {
+    api_getDictionary,
+    api_crud_search_by_warehouseCode
+} from "@/pages/constantApi"
 
 const columns = [
     {
@@ -77,13 +78,7 @@ const schema = {
         {
             type: "crud",
             name: "ReceiveOrderDetailTable",
-            api: {
-                method: "POST",
-                url:
-                    "/search/search?page=${page}&perPage=${perPage}&createTime-op=bt&warehouseCode-op=eq&warehouseCode=" +
-                    warehouseCode,
-                dataType: "application/json"
-            },
+            api: api_crud_search_by_warehouseCode,
             defaultParams: {
                 searchIdentity: searchIdentity,
                 showColumns: columns,

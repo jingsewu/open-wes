@@ -8,6 +8,7 @@ import {
     api_user_update
 } from "@/pages/user/constants/api_constant"
 import { create_update_columns, yes_no_options } from "@/utils/commonContants"
+import { api_crud_search, api_crud_search_total } from "@/pages/constantApi"
 
 const form = [
     {
@@ -125,11 +126,7 @@ const schema = {
             type: "crud",
             syncLocation: false,
             name: "UserTable",
-            api: {
-                method: "POST",
-                url: "/search/search?page=${page}&perPage=${perPage}&createTime-op=bt",
-                dataType: "application/json"
-            },
+            api: api_crud_search,
             defaultParams: {
                 searchIdentity: searchIdentity,
                 showColumns: showColumns
@@ -145,10 +142,7 @@ const schema = {
                 {
                     type: "export-excel",
                     label: "button.export",
-                    api: {
-                        method: "POST",
-                        url: "/search/search?page=${1}&perPage=${100000}&createTime-op=bt"
-                    },
+                    api: api_crud_search_total,
                     fileName: "user"
                 }
             ],

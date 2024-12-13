@@ -10,7 +10,11 @@ import {
     create_update_columns,
     true_false_options
 } from "@/utils/commonContants"
-import { api_getDictionary } from "@/pages/constantApi"
+import {
+    api_getDictionary,
+    api_crud_search,
+    api_crud_search_total
+} from "@/pages/constantApi"
 
 const baseform = [
     {
@@ -320,11 +324,7 @@ const schema = {
             type: "crud",
             syncLocation: false,
             name: "ApiTable",
-            api: {
-                method: "POST",
-                url: "/search/search?page=${page}&perPage=${perPage}&createTime-op=bt",
-                dataType: "application/json"
-            },
+            api: api_crud_search,
             defaultParams: {
                 searchIdentity: searchIdentity,
                 showColumns: showColumns,
@@ -344,11 +344,7 @@ const schema = {
                     type: "export-excel",
                     label: "button.export",
                     method: "POST",
-                    api: {
-                        method: "POST",
-                        url: "/search/search?page=${1}&perPage=${100000}&createTime-op=bt",
-                        dataType: "application/json"
-                    },
+                    api: api_crud_search_total,
                     columns: [
                         "code",
                         "name",

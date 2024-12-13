@@ -8,6 +8,7 @@ import {
     api_role_update_role_menu
 } from "@/pages/user/constants/api_constant"
 import { warehouse_code_search_api } from "@/pages/user/constants/select_search_api_constant"
+import { api_crud_search, api_crud_search_total } from "@/pages/constantApi"
 
 const form = [
     {
@@ -118,11 +119,7 @@ const schema = {
             type: "crud",
             syncLocation: false,
             name: "RoleTable",
-            api: {
-                method: "POST",
-                url: "/search/search?page=${page}&perPage=${perPage}&createTime-op=bt",
-                dataType: "application/json"
-            },
+            api: api_crud_search,
             defaultParams: {
                 searchIdentity: searchIdentity,
                 showColumns: showColumns
@@ -138,10 +135,7 @@ const schema = {
                 {
                     type: "export-excel",
                     label: "button.export",
-                    api: {
-                        method: "POST",
-                        url: "/search/search?page=${1}&perPage=${100000}&createTime-op=bt"
-                    },
+                    api: api_crud_search_total,
                     fileName: "container"
                 }
             ],

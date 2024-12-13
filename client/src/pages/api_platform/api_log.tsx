@@ -1,6 +1,6 @@
 import schema2component from "@/utils/schema2component"
 import { create_update_columns } from "@/utils/commonContants"
-import { api_getDictionary } from "@/pages/constantApi"
+import { api_getDictionary, api_crud_search } from "@/pages/constantApi"
 
 const form = [
     {
@@ -102,11 +102,7 @@ const schema = {
             type: "crud",
             syncLocation: false,
             name: "ApiLogTable",
-            api: {
-                method: "POST",
-                url: "/search/search?page=${page}&perPage=${perPage}&createTime-op=bt",
-                dataType: "application/json"
-            },
+            api: api_crud_search,
             defaultParams: {
                 searchIdentity: searchIdentity,
                 showColumns: showColumns,

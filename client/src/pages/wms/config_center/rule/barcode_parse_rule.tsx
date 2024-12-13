@@ -9,7 +9,7 @@ import {
     create_update_columns,
     true_false_options
 } from "@/utils/commonContants"
-import { api_getDictionary } from "@/pages/constantApi"
+import { api_getDictionary, api_crud_search } from "@/pages/constantApi"
 
 const form = [
     {
@@ -180,11 +180,7 @@ const schema = {
             type: "crud",
             syncLocation: false,
             name: "barcodeParseRule",
-            api: {
-                method: "POST",
-                url: "/search/search?page=${page}&perPage=${perPage}&createTime-op=bt",
-                dataType: "application/json"
-            },
+            api: api_crud_search,
             defaultParams: {
                 searchIdentity: searchIdentity,
                 showColumns: showColumns,

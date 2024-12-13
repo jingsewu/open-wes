@@ -2,7 +2,10 @@ import schema2component from "@/utils/schema2component"
 import { create_update_columns } from "@/utils/commonContants"
 import { Translation } from "react-i18next"
 import React from "react"
-import { api_getDictionary } from "@/pages/constantApi"
+import {
+    api_getDictionary,
+    api_crud_search_by_warehouseCode
+} from "@/pages/constantApi"
 
 let warehouseCode = localStorage.getItem("warehouseCode")
 
@@ -171,13 +174,7 @@ const schema = {
             type: "crud",
             syncLocation: false,
             name: "PickingOrderTable",
-            api: {
-                method: "POST",
-                url:
-                    "/search/search?page=${page}&perPage=${perPage}&createTime-op=bt&warehouseCode-op=eq&warehouseCode=" +
-                    warehouseCode,
-                dataType: "application/json"
-            },
+            api: api_crud_search_by_warehouseCode,
             defaultParams: {
                 searchIdentity: searchIdentity,
                 showColumns: showColumns,

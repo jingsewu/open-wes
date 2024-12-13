@@ -13,7 +13,11 @@ import {
 } from "@/pages/wms/constants/select_search_api_contant"
 import React from "react"
 import { toast } from "amis"
-import { api_getDictionary } from "@/pages/constantApi"
+import {
+    api_getDictionary,
+    api_crud_search_by_warehouseCode,
+    api_crud_search_by_warehouseCode_total
+} from "@/pages/constantApi"
 
 let warehouseCode = localStorage.getItem("warehouseCode")
 
@@ -648,13 +652,7 @@ const schema = {
             type: "crud",
             syncLocation: false,
             name: "OutboundOrderTable",
-            api: {
-                method: "POST",
-                url:
-                    "/search/search?page=${page}&perPage=${perPage}&createTime-op=bt&warehouseCode-op=eq&warehouseCode=" +
-                    warehouseCode,
-                dataType: "application/json"
-            },
+            api: api_crud_search_by_warehouseCode,
             defaultParams: {
                 searchIdentity: searchIdentity,
                 showColumns: showColumns,
@@ -681,13 +679,7 @@ const schema = {
                     type: "export-csv",
                     label: "button.exportOrder",
                     method: "POST",
-                    api: {
-                        method: "POST",
-                        url:
-                            "/search/search?page=${1}&perPage=${100000}&warehouseCode-op=eq&warehouseCode=" +
-                            warehouseCode,
-                        dataType: "application/json"
-                    },
+                    api: api_crud_search_by_warehouseCode_total,
                     filename: "outbound_plan_orders"
                 },
                 {

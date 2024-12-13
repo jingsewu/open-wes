@@ -1,5 +1,5 @@
 import schema2component from "@/utils/schema2component"
-
+import { api_crud_search } from "@/pages/constantApi"
 const columns = [
     {
         name: "id",
@@ -45,11 +45,7 @@ const schema = {
             type: "crud",
             syncLocation: false,
             name: "LoginLogTable",
-            api: {
-                method: "POST",
-                url: "/search/search?page=${page}&perPage=${perPage}",
-                dataType: "application/json"
-            },
+            api: api_crud_search,
             defaultParams: {
                 searchIdentity: searchIdentity,
                 showColumns: showColumns

@@ -2,9 +2,10 @@ import schema2component from "@/utils/schema2component"
 import { debounce } from "lodash"
 import { DEBOUNCE_TIME } from "@/pages/wms/station/constant"
 import request from "@/utils/requestInterceptor"
-import { api_getDictionary } from "@/pages/constantApi"
-
-let warehouseCode = localStorage.getItem("warehouseCode")
+import {
+    api_getDictionary,
+    api_crud_search_by_warehouseCode
+} from "@/pages/constantApi"
 
 const columns = [
     {
@@ -114,13 +115,7 @@ const schema = {
             type: "crud",
             syncLocation: false,
             name: "stocktakeTaskTable",
-            api: {
-                method: "POST",
-                url:
-                    "/search/search?page=${page}&perPage=${perPage}&warehouseCode-eq=" +
-                    warehouseCode,
-                dataType: "application/json"
-            },
+            api: api_crud_search_by_warehouseCode,
             defaultParams: {
                 searchIdentity: "WStocktakeTask",
                 showColumns: columns
