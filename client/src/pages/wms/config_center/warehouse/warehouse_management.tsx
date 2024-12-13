@@ -6,8 +6,17 @@ import {
     api_warehouse_get,
     api_warehouse_update
 } from "@/pages/wms/config_center/constants/api_constant"
-import {create_update_columns, true_false_options} from "@/utils/commonContants"
-import {city, country, district, province} from "@/pages/wms/constants/select_search_api_contant"
+import {
+    create_update_columns,
+    true_false_options
+} from "@/utils/commonContants"
+import {
+    city,
+    country,
+    district,
+    province
+} from "@/pages/wms/constants/select_search_api_contant"
+import { api_getDictionary } from "@/pages/constantApi"
 
 const form = [
     {
@@ -24,7 +33,7 @@ const form = [
         name: "warehouseCode",
         maxLength: 64,
         required: true,
-        disabledOn: "data.mode === 'edit'"  // 修改时禁用
+        disabledOn: "data.mode === 'edit'" // 修改时禁用
     },
     {
         label: "table.warehouseName",
@@ -186,7 +195,7 @@ const add = {
             type: "form",
             api: api_warehouse_add,
             body: form,
-            data: {mode: "add"}
+            data: { mode: "add" }
         }
     },
     reload: "role"
@@ -321,7 +330,7 @@ const schema = {
     type: "page",
     title: "warehouseManagement.title",
     toolbar: [],
-    initApi: "post:/mdm/config/dictionary/getAll",
+    initApi: api_getDictionary,
     body: [
         {
             type: "crud",
@@ -383,7 +392,7 @@ const schema = {
                                     initApi: api_warehouse_config_get,
                                     api: api_warehouse_config_add,
                                     body: form,
-                                    data: {mode: "edit"}
+                                    data: { mode: "edit" }
                                 }
                             }
                         }

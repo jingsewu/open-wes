@@ -1,6 +1,9 @@
 import schema2component from "@/utils/schema2component"
-
-let warehouseCode = localStorage.getItem("warehouseCode")
+import {
+    api_crud_search_by_warehouseCode,
+    api_crud_search_by_warehouseCode_total,
+    api_getDictionary
+} from "@/pages/constantApi"
 
 const columns = [
     {
@@ -144,19 +147,13 @@ const schema = {
     type: "page",
     title: "inventorAnomalies.title",
     toolbar: [],
-    initApi: "post:/mdm/config/dictionary/getAll",
+    initApi: api_getDictionary,
     body: [
         {
             type: "crud",
             syncLocation: false,
             name: "paramConfigTable",
-            api: {
-                method: "POST",
-                url:
-                    "/search/search?page=${page}&perPage=${perPage}&createTime-op=bt&warehouseCode-op=eq&warehouseCode=" +
-                    warehouseCode,
-                dataType: "application/json"
-            },
+            api: api_crud_search_by_warehouseCode,
             defaultParams: {
                 searchIdentity: searchIdentity,
                 showColumns: showColumns,
@@ -175,9 +172,7 @@ const schema = {
                 {
                     type: "export-excel",
                     label: "button.export",
-                    api:
-                        "post:/search/search?page=${1}&perPage=${100000}&createTime-op=bt&warehouseCode-op=eq&warehouseCode=" +
-                        warehouseCode,
+                    api: api_crud_search_by_warehouseCode_total,
                     fileName: "stock_abnormal"
                 }
             ],
@@ -250,7 +245,7 @@ const schema = {
                                     }
                                 ]
                             }
-                        },
+                        }
                         // {
                         //     label: "button.takeInventoryAgain",
                         //     type: "button",

@@ -5,6 +5,7 @@ import { stock_id_table } from "@/pages/wms/constants/select_search_api_contant"
 import { debounce } from "lodash"
 import { DEBOUNCE_TIME } from "@/pages/wms/station/constant"
 import { CustomActionType } from "@/pages/wms/station/instances/stocktake/customActionType"
+import { api_getDictionary } from "@/pages/constantApi"
 
 let warehouseCode = localStorage.getItem("warehouseCode")
 
@@ -128,7 +129,7 @@ const detailDialog = {
 
 const schema = {
     type: "page",
-    initApi: "post:/mdm/config/dictionary/getAll",
+    initApi: api_getDictionary,
     body: {
         type: "crud",
         syncLocation: false,
@@ -142,7 +143,7 @@ const schema = {
         },
         defaultParams: {
             searchIdentity: "WStocktakeTaskDetail",
-            showColumns: detailColumns,
+            showColumns: detailColumns
         },
         keepItemSelectionOnPageChange: true,
         autoFillHeight: true,

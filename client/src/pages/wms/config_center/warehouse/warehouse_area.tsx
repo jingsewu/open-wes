@@ -1,7 +1,8 @@
 import schema2component from "@/utils/schema2component"
-import {create_update_columns, enable_options} from "@/utils/commonContants"
-import {warehouse_area_group} from "@/pages/wms/constants/select_search_api_contant"
-import {api_warehouse_area_add} from "@/pages/wms/config_center/constants/api_constant";
+import { create_update_columns, enable_options } from "@/utils/commonContants"
+import { warehouse_area_group } from "@/pages/wms/constants/select_search_api_contant"
+import { api_warehouse_area_add } from "@/pages/wms/config_center/constants/api_constant"
+import { api_getDictionary } from "@/pages/constantApi"
 
 let warehouseCode = localStorage.getItem("warehouseCode")
 
@@ -198,7 +199,7 @@ const schema = {
     type: "page",
     title: "reservoirAreaManagement.title",
     toolbar: [],
-    initApi: "post:/mdm/config/dictionary/getAll",
+    initApi: api_getDictionary,
     body: [
         {
             type: "crud",

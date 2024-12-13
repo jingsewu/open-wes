@@ -1,14 +1,15 @@
 import React from "react"
 import schema2component from "@/utils/schema2component"
-import {volume} from "@/pages/wms/config_center/constants/form_constants"
-import {Translation} from "react-i18next"
-import {create_update_columns} from "@/utils/commonContants"
+import { volume } from "@/pages/wms/config_center/constants/form_constants"
+import { Translation } from "react-i18next"
+import { create_update_columns } from "@/utils/commonContants"
 import {
     api_container_spec_add,
     api_container_spec_delete,
     api_container_spec_get,
     api_container_spec_update
 } from "@/pages/wms/config_center/constants/api_constant"
+import { api_getDictionary } from "@/pages/constantApi"
 
 let warehouseCode = localStorage.getItem("warehouseCode")
 
@@ -67,8 +68,9 @@ const fromBody = [
                 label: "table.face/wall_coding",
                 type: "input-text",
                 value: "",
-                hiddenOn: "this.containerType == 'CONTAINER' || this.containerType == 'TRANSFER_CONTAINER' ",
-                requiredOn: "this.containerType == 'SHELF'",
+                hiddenOn:
+                    "this.containerType == 'CONTAINER' || this.containerType == 'TRANSFER_CONTAINER' ",
+                requiredOn: "this.containerType == 'SHELF'"
             },
             {
                 name: "level",
@@ -178,7 +180,7 @@ const schema = {
     //   title: "容器规格管理",
     title: <Translation>{(t) => t("containerSpec.title")}</Translation>,
     toolbar: [],
-    initApi: "post:/mdm/config/dictionary/getAll",
+    initApi: api_getDictionary,
     body: [
         {
             type: "crud",

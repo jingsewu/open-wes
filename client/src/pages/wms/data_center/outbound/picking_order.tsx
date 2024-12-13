@@ -1,7 +1,8 @@
 import schema2component from "@/utils/schema2component"
 import { create_update_columns } from "@/utils/commonContants"
-import {Translation} from 'react-i18next';
-import React from 'react';
+import { Translation } from "react-i18next"
+import React from "react"
+import { api_getDictionary } from "@/pages/constantApi"
 
 let warehouseCode = localStorage.getItem("warehouseCode")
 
@@ -164,7 +165,7 @@ const schema = {
     type: "page",
     title: "pickingTasks.title",
     toolbar: [],
-    initApi: "post:/mdm/config/dictionary/getAll",
+    initApi: api_getDictionary,
     body: [
         {
             type: "crud",

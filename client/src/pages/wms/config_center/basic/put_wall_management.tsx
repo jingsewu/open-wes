@@ -1,11 +1,15 @@
 import schema2component from "@/utils/schema2component"
-import {put_wall_spec, work_station} from "@/pages/wms/constants/select_search_api_contant"
-import {create_update_columns} from "@/utils/commonContants"
+import {
+    put_wall_spec,
+    work_station
+} from "@/pages/wms/constants/select_search_api_contant"
+import { create_update_columns } from "@/utils/commonContants"
 import {
     api_put_wall_add,
     api_put_wall_delete,
     api_put_wall_get
-} from "@/pages/wms/config_center/constants/api_constant";
+} from "@/pages/wms/config_center/constants/api_constant"
+import { api_getDictionary } from "@/pages/constantApi"
 
 let warehouseCode = localStorage.getItem("warehouseCode")
 
@@ -61,23 +65,26 @@ const putWallSlotColumns = [
         name: "enable",
         value: true,
         type: "switch"
-    }];
+    }
+]
 
 const formApi = {
-    url: api_put_wall_add ,
+    url: api_put_wall_add,
     requestAdaptor: (api: any, context: any) => {
         return {
             ...api,
             data: {
                 ...api.data,
-                "warehouseCode": warehouseCode,
+                warehouseCode: warehouseCode,
                 putWallSlots: api.data.putWallSlots.map((slot: any) => {
                     return {
                         ...slot,
                         workStationId: api.data.workStationId,
                         putWallCode: api.data.putWallCode,
-                        putWallSlotCode: slot.putWallSlotCode ? slot.putWallSlotCode : slot.containerSlotSpecCode,
-                        putWallSlotStatus: 'IDLE'
+                        putWallSlotCode: slot.putWallSlotCode
+                            ? slot.putWallSlotCode
+                            : slot.containerSlotSpecCode,
+                        putWallSlotStatus: "IDLE"
                     }
                 })
             }
@@ -214,7 +221,7 @@ const columns = [
         name: "enable",
         label: "table.enable",
         type: "mapping",
-        source: "${EnableStatus}",
+        source: "${EnableStatus}"
     },
     ...create_update_columns
 ]
@@ -226,7 +233,7 @@ const schema = {
     type: "page",
     title: "seedingWallManagement.title",
     toolbar: [],
-    initApi: "post:/mdm/config/dictionary/getAll",
+    initApi: api_getDictionary,
     body: [
         {
             type: "crud",

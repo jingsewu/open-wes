@@ -1,5 +1,6 @@
 import schema2component from "@/utils/schema2component"
 import { create_update_columns } from "@/utils/commonContants"
+import { api_getDictionary } from "@/pages/constantApi"
 
 const form = [
     {
@@ -95,7 +96,7 @@ const schema = {
     type: "page",
     title: "interfacePlatform.interfaceLogs.title",
     toolbar: [],
-    initApi: "post:/mdm/config/dictionary/getAll",
+    initApi: api_getDictionary,
     body: [
         {
             type: "crud",

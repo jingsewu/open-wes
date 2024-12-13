@@ -10,6 +10,7 @@ import {
     api_sku_update
 } from "@/pages/wms/config_center/constants/api_constant"
 import { create_update_columns, enable_options } from "@/utils/commonContants"
+import { api_getDictionary } from "@/pages/constantApi"
 
 let warehouseCode = localStorage.getItem("warehouseCode")
 
@@ -346,7 +347,7 @@ const schema = {
     type: "page",
     title: "SKUManagement.title",
     toolbar: [],
-    initApi: "post:/mdm/config/dictionary/getAll",
+    initApi: api_getDictionary,
     body: [
         {
             type: "crud",

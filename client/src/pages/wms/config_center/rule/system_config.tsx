@@ -1,10 +1,14 @@
 import schema2component from "@/utils/schema2component"
-import {api_system_config_get, api_system_config_save_or_update} from "@/pages/wms/config_center/constants/api_constant"
+import {
+    api_system_config_get,
+    api_system_config_save_or_update
+} from "@/pages/wms/config_center/constants/api_constant"
+import { api_getDictionary } from "@/pages/constantApi"
 
 const schema = {
     type: "page",
     // title: "systemConfigManagement.title",
-    initApi: "post:/mdm/config/dictionary/getAll",
+    initApi: api_getDictionary,
     body: [
         {
             type: "form",
@@ -29,7 +33,8 @@ const schema = {
                                     type: "input-number",
                                     label: "周转容器自动释放间隔时长(min)",
                                     name: "basicConfig.autoReleaseDelayTimeMin",
-                                    hiddenOn: "${this.basicConfig.transferContainerReleaseMethod === 'INTERFACE'}"
+                                    hiddenOn:
+                                        "${this.basicConfig.transferContainerReleaseMethod === 'INTERFACE'}"
                                 }
                             ]
                         },
@@ -110,7 +115,8 @@ const schema = {
                                             type: "input-number",
                                             label: "modal.cutoffTime",
                                             name: "outboundAlgoConfig.cutoffTime",
-                                            description: "modal.cutoffTime.description"
+                                            description:
+                                                "modal.cutoffTime.description"
                                         },
                                         {
                                             type: "select",
@@ -148,7 +154,8 @@ const schema = {
                                             type: "input-number",
                                             label: "modal.orderDispatchBalanceOffset",
                                             name: "outboundAlgoConfig.orderDispatchBalanceOffset",
-                                            description: "modal.orderDispatchBalanceOffset.description",
+                                            description:
+                                                "modal.orderDispatchBalanceOffset.description"
                                         },
                                         {
                                             type: "input-text",
@@ -171,7 +178,8 @@ const schema = {
                                             type: "input-number",
                                             label: "modal.maxOnTheWayRackNum",
                                             name: "outboundAlgoConfig.maxOnTheWayRackNum",
-                                            description: "modal.maxOnTheWayRackNum.description",
+                                            description:
+                                                "modal.maxOnTheWayRackNum.description"
                                         },
                                         {
                                             type: "select",
@@ -182,7 +190,8 @@ const schema = {
                                         {
                                             type: "select",
                                             label: "modal.warehouseLogicTypePriority",
-                                            description: "modal.warehouseLogicTypePriority.description",
+                                            description:
+                                                "modal.warehouseLogicTypePriority.description",
                                             source: "${WarehouseLogicType}",
                                             multiple: true,
                                             joinValues: false,

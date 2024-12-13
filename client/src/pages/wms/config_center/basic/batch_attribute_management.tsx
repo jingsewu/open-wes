@@ -1,11 +1,16 @@
 import schema2component from "@/utils/schema2component"
-import {create_update_columns, enable_options, true_false_options} from "@/utils/commonContants"
-import {owner_code} from "@/pages/wms/constants/select_search_api_contant"
+import {
+    create_update_columns,
+    enable_options,
+    true_false_options
+} from "@/utils/commonContants"
+import { owner_code } from "@/pages/wms/constants/select_search_api_contant"
 import {
     api_batch_attribute_add,
     api_batch_attribute_get,
     api_batch_attribute_update
 } from "@/pages/wms/config_center/constants/api_constant"
+import { api_getDictionary } from "@/pages/constantApi"
 
 const form = [
     {
@@ -168,7 +173,7 @@ const columns = [
         name: "enable",
         label: "table.enable",
         type: "mapping",
-        source: "${EnableStatus}",
+        source: "${EnableStatus}"
     },
     ...create_update_columns
 ]
@@ -180,7 +185,7 @@ const schema = {
     type: "page",
     title: "batchManagement.title",
     toolbar: [],
-    initApi: "post:/mdm/config/dictionary/getAll",
+    initApi: api_getDictionary,
     body: [
         {
             type: "crud",

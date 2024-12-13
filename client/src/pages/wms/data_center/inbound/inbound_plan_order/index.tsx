@@ -3,7 +3,8 @@ import { create_update_columns } from "@/utils/commonContants"
 import { detailDialog } from "./detail"
 import {
     api_crud_search_by_warehouseCode,
-    api_crud_search_by_warehouseCode_total
+    api_crud_search_by_warehouseCode_total,
+    api_getDictionary
 } from "@/pages/constantApi"
 
 const columns = [
@@ -106,7 +107,7 @@ const schema = {
     type: "page",
     title: "menu.inboundOrder",
     toolbar: [],
-    initApi: "post:/mdm/config/dictionary/getAll",
+    initApi: api_getDictionary,
     body: [
         {
             type: "crud",

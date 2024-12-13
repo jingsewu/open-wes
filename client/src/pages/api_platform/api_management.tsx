@@ -10,6 +10,7 @@ import {
     create_update_columns,
     true_false_options
 } from "@/utils/commonContants"
+import { api_getDictionary } from "@/pages/constantApi"
 
 const baseform = [
     {
@@ -313,7 +314,7 @@ const schema = {
     type: "page",
     title: "interfacePlatform.interfaceManagement.title",
     toolbar: [],
-    initApi: "post:/mdm/config/dictionary/getAll",
+    initApi: api_getDictionary,
     body: [
         {
             type: "crud",

@@ -1,7 +1,15 @@
 import schema2component from "@/utils/schema2component"
-import {container_spec, warehouse_area_id, warehouse_logic_code} from "@/pages/wms/constants/select_search_api_contant"
-import {create_update_columns, true_false_options} from "@/utils/commonContants"
-import {api_container_batch_add} from "@/pages/wms/config_center/constants/api_constant"
+import {
+    container_spec,
+    warehouse_area_id,
+    warehouse_logic_code
+} from "@/pages/wms/constants/select_search_api_contant"
+import {
+    create_update_columns,
+    true_false_options
+} from "@/utils/commonContants"
+import { api_container_batch_add } from "@/pages/wms/config_center/constants/api_constant"
+import { api_getDictionary } from "@/pages/constantApi"
 
 let warehouseCode = localStorage.getItem("warehouseCode")
 
@@ -166,7 +174,7 @@ const schema = {
     type: "page",
     title: "containerManagement.title",
     toolbar: [],
-    initApi: "post:/mdm/config/dictionary/getAll",
+    initApi: api_getDictionary,
     body: [
         {
             type: "crud",

@@ -6,6 +6,7 @@ import {
 } from "@/pages/user/constants/api_constant"
 import { create_update_columns, yes_no_options } from "@/utils/commonContants"
 import { menu_search_api } from "@/pages/user/constants/select_search_api_constant"
+import { api_getDictionary } from "@/pages/constantApi"
 
 const form = [
     {
@@ -182,7 +183,7 @@ const schema = {
     type: "page",
     title: "userCenter.menuManagement.title",
     toolbar: [],
-    initApi: "post:/mdm/config/dictionary/getAll",
+    initApi: api_getDictionary,
     body: [
         {
             type: "crud",

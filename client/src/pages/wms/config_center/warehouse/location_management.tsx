@@ -8,6 +8,7 @@ import {
     enable_options,
     true_false_options
 } from "@/utils/commonContants"
+import { api_getDictionary } from "@/pages/constantApi"
 
 let warehouseCode = localStorage.getItem("warehouseCode")
 
@@ -180,7 +181,7 @@ const schema = {
     type: "page",
     title: "locationManagement.title",
     toolbar: [],
-    initApi: "post:/mdm/config/dictionary/getAll",
+    initApi: api_getDictionary,
     body: [
         {
             type: "crud",

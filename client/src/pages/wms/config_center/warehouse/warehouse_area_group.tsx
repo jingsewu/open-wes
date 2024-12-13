@@ -4,7 +4,8 @@ import {
     enable_options,
     true_false_options
 } from "@/utils/commonContants"
-import {api_warehouse_area_group_add} from "@/pages/wms/config_center/constants/api_constant";
+import { api_warehouse_area_group_add } from "@/pages/wms/config_center/constants/api_constant"
+import { api_getDictionary } from "@/pages/constantApi"
 
 let warehouseCode = localStorage.getItem("warehouseCode")
 
@@ -109,7 +110,7 @@ const schema = {
     type: "page",
     title: "warehouseAreaManagement.title",
     toolbar: [],
-    initApi: "post:/mdm/config/dictionary/getAll",
+    initApi: api_getDictionary,
     body: [
         {
             type: "crud",

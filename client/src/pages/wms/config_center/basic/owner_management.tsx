@@ -11,6 +11,7 @@ import {
     district,
     province
 } from "@/pages/wms/constants/select_search_api_contant"
+import { api_getDictionary } from "@/pages/constantApi"
 
 let warehouseCode = localStorage.getItem("warehouseCode")
 
@@ -223,7 +224,7 @@ const schema = {
     type: "page",
     title: "shipperManagement.title",
     toolbar: [],
-    initApi: "post:/mdm/config/dictionary/getAll",
+    initApi: api_getDictionary,
     body: [
         {
             type: "crud",

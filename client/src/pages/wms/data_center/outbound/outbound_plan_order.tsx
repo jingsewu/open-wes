@@ -1,15 +1,19 @@
 import schema2component from "@/utils/schema2component"
-import {create_update_columns, true_false_options} from "@/utils/commonContants"
-import {api_outbound_plan_order_add} from '@/pages/wms/data_center/constants/api_constant';
-import {Translation} from "react-i18next"
+import {
+    create_update_columns,
+    true_false_options
+} from "@/utils/commonContants"
+import { api_outbound_plan_order_add } from "@/pages/wms/data_center/constants/api_constant"
+import { Translation } from "react-i18next"
 import {
     available_stock_sku_code_table,
     owner_code,
     warehouse_area_id,
     work_station
-} from '@/pages/wms/constants/select_search_api_contant';
-import React from 'react';
-import {toast} from 'amis';
+} from "@/pages/wms/constants/select_search_api_contant"
+import React from "react"
+import { toast } from "amis"
+import { api_getDictionary } from "@/pages/constantApi"
 
 let warehouseCode = localStorage.getItem("warehouseCode")
 
@@ -321,7 +325,7 @@ const dialog = {
                     multiple: true,
                     clearable: true,
                     joinValues: false,
-                    extractValue: true,
+                    extractValue: true
                 },
                 {
                     type: "select",
@@ -335,7 +339,8 @@ const dialog = {
                     },
                     // multiple: true,
                     required: true,
-                    visibleOn: "${customerOrderType == 'REPLENISH_OUTBOUND_ORDER'}",
+                    visibleOn:
+                        "${customerOrderType == 'REPLENISH_OUTBOUND_ORDER'}",
                     joinValues: false,
                     extractValue: true
                 },
@@ -543,11 +548,7 @@ const dialog = {
                                     name: "barCodeList",
                                     label: (
                                         <Translation>
-                                            {(t) =>
-                                                t(
-                                                    "skuArea.barcode"
-                                                )
-                                            }
+                                            {(t) => t("skuArea.barcode")}
                                         </Translation>
                                     )
                                 },
@@ -555,11 +556,7 @@ const dialog = {
                                     name: "totalQty",
                                     label: (
                                         <Translation>
-                                            {(t) =>
-                                                t(
-                                                    "table.totalQuantity"
-                                                )
-                                            }
+                                            {(t) => t("table.totalQuantity")}
                                         </Translation>
                                     )
                                 }
@@ -645,7 +642,7 @@ const schema = {
     type: "page",
     title: "outboundOrder.title",
     toolbar: [],
-    initApi: "post:/mdm/config/dictionary/getAll",
+    initApi: api_getDictionary,
     body: [
         {
             type: "crud",

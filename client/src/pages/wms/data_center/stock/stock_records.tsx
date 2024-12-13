@@ -1,5 +1,6 @@
 import schema2component from "@/utils/schema2component"
-import {create_update_columns} from "@/utils/commonContants"
+import { create_update_columns } from "@/utils/commonContants"
+import { api_getDictionary } from "@/pages/constantApi"
 
 let warehouseCode = localStorage.getItem("warehouseCode")
 
@@ -133,7 +134,8 @@ const searchIdentity = "WContainerStockTransaction"
 const showColumns = columns
 
 const searchObject = {
-    tables: "w_container_stock_transaction wcst " +
+    tables:
+        "w_container_stock_transaction wcst " +
         "left join m_sku_barcode_data msbd on msbd.sku_id = wcst.sku_id " +
         "left join m_sku_main_data msmd on msmd.id = wcst.sku_id",
     orderBy: "wcst.create_time desc"
@@ -143,7 +145,7 @@ const schema = {
     type: "page",
     title: "wms.menu.inventoryRecords",
     toolbar: [],
-    initApi: "post:/mdm/config/dictionary/getAll",
+    initApi: api_getDictionary,
     body: [
         {
             type: "crud",

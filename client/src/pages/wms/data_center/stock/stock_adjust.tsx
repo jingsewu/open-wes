@@ -1,5 +1,6 @@
 import schema2component from "@/utils/schema2component"
-import {create_update_columns} from "@/utils/commonContants";
+import { create_update_columns } from "@/utils/commonContants"
+import { api_getDictionary } from "@/pages/constantApi"
 
 let warehouseCode = localStorage.getItem("warehouseCode")
 
@@ -110,7 +111,7 @@ const detailDialog = {
                 searchIdentity: searchDetailIdentity,
                 showColumns: showDetailColumns,
                 searchObject: {
-                    tables: "w_stock_adjustment_detail d left join (select sku_id, group_concat(distinct bar_code separator ' ') bar_code_list from m_sku_barcode_data group by sku_id) g on d.sku_id = g.sku_id",
+                    tables: "w_stock_adjustment_detail d left join (select sku_id, group_concat(distinct bar_code separator ' ') bar_code_list from m_sku_barcode_data group by sku_id) g on d.sku_id = g.sku_id"
                 }
             },
             footerToolbar: ["switch-per-page", "statistics", "pagination"],
@@ -123,7 +124,7 @@ const schema = {
     type: "page",
     title: "wms.menu.inventoryAdjustment",
     toolbar: [],
-    initApi: "post:/mdm/config/dictionary/getAll",
+    initApi: api_getDictionary,
     body: [
         {
             type: "crud",
@@ -141,7 +142,7 @@ const schema = {
                 showColumns: showColumns,
                 searchObject: {
                     tables: "w_stock_adjustment_order",
-                    orderBy: "create_time desc",
+                    orderBy: "create_time desc"
                 }
             },
             autoFillHeight: true,
@@ -149,9 +150,7 @@ const schema = {
                 columnsNum: 3,
                 showBtnToolbar: true
             },
-            headerToolbar: [
-                "reload"
-            ],
+            headerToolbar: ["reload"],
             footerToolbar: ["switch-per-page", "statistics", "pagination"],
             columns: [
                 ...columns,

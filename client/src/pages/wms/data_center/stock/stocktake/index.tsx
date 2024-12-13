@@ -3,14 +3,12 @@ import {
     warehouse_area_id,
     warehouse_logic_id
 } from "@/pages/wms/constants/select_search_api_contant"
-import {
-    api_crud_search_by_warehouseCode,
-    api_crud_search_by_warehouseCode_total
-} from "@/pages/constantApi"
+import { api_crud_search_by_warehouseCode } from "@/pages/constantApi"
 import { create_update_columns, yes_no_options } from "@/utils/commonContants"
 import { add } from "./add"
 import { detailDialog } from "./detail"
 import { recordDialog } from "./record"
+import { api_getDictionary } from "@/pages/constantApi"
 
 let warehouseCode = localStorage.getItem("warehouseCode")
 
@@ -111,7 +109,7 @@ const schema = {
     type: "page",
     title: "wms.menu.inventoryCheck",
     toolbar: [],
-    initApi: "post:/mdm/config/dictionary/getAll",
+    initApi: api_getDictionary,
     body: [
         {
             type: "crud",

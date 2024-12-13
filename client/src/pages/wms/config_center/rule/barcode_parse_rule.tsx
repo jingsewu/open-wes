@@ -9,6 +9,7 @@ import {
     create_update_columns,
     true_false_options
 } from "@/utils/commonContants"
+import { api_getDictionary } from "@/pages/constantApi"
 
 const form = [
     {
@@ -173,7 +174,7 @@ const schema = {
     type: "page",
     title: "barcodeParsingManagement.title",
     toolbar: [],
-    initApi: "post:/mdm/config/dictionary/getAll",
+    initApi: api_getDictionary,
     body: [
         {
             type: "crud",

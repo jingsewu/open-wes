@@ -12,13 +12,14 @@ import {
     warehouse_logic_id
 } from "@/pages/wms/constants/select_search_api_contant"
 import { CustomActionType } from "@/pages/wms/station/instances/stocktake/customActionType"
+import { api_getDictionary } from "@/pages/constantApi"
 
 let warehouseCode = localStorage.getItem("warehouseCode")
 
 const schema = {
     type: "page",
     title: "modal.receiveInventoryList",
-    initApi: "post:/mdm/config/dictionary/getAll",
+    initApi: api_getDictionary,
     body: {
         type: "wizard",
         actionFinishLabel: "modal.generateInventoryOrder",
@@ -142,8 +143,7 @@ const schema = {
                                         id: "barCode",
                                         type: "input-text",
                                         multiple: true,
-                                        placeholder:
-                                            "skuArea.scanBarcode",
+                                        placeholder: "skuArea.scanBarcode",
                                         trimContents: true,
                                         clearable: true,
                                         className:
@@ -188,8 +188,7 @@ const schema = {
                                         },
                                         className:
                                             "inline-block w-1/6 align-top",
-                                        btnLabel:
-                                            "button.import Excel",
+                                        btnLabel: "button.import Excel",
                                         onEvent: {
                                             success: {
                                                 actions: [

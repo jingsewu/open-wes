@@ -54,3 +54,5 @@ export const api_crud_search_by_warehouseCode_total = {
         warehouseCode,
     dataType: "application/json"
 }
+
+export const api_getDictionary = "post:/mdm/config/dictionary/getAll"
