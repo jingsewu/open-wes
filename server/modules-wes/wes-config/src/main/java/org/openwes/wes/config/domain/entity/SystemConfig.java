@@ -15,7 +15,7 @@ public class SystemConfig extends UpdateUserDTO {
     private SystemConfigDTO.InboundConfigDTO inboundConfig;
     private SystemConfigDTO.OutboundConfigDTO outboundConfig;
     private SystemConfigDTO.OutboundAlgoConfigDTO outboundAlgoConfig;
-    private SystemConfigDTO.StockConfigDTO stockConfigDTO;
+    private SystemConfigDTO.StockConfigDTO stockConfig;
 
     private Long version;
 }

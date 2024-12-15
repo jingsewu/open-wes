@@ -2,17 +2,17 @@ package org.openwes.wes.api.stocktake.dto;
 
 
 import com.google.common.collect.Lists;
-import org.openwes.common.utils.validate.IValidate;
-import org.openwes.wes.api.stocktake.constants.StocktakeCreateMethodEnum;
-import org.openwes.wes.api.stocktake.constants.StocktakeMethodEnum;
-import org.openwes.wes.api.stocktake.constants.StocktakeTypeEnum;
-import org.openwes.wes.api.stocktake.constants.StocktakeUnitTypeEnum;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.apache.commons.lang3.ObjectUtils;
+import org.openwes.common.utils.validate.IValidate;
+import org.openwes.wes.api.stocktake.constants.StocktakeCreateMethodEnum;
+import org.openwes.wes.api.stocktake.constants.StocktakeMethodEnum;
+import org.openwes.wes.api.stocktake.constants.StocktakeTypeEnum;
+import org.openwes.wes.api.stocktake.constants.StocktakeUnitTypeEnum;
 
 import java.io.Serializable;
 import java.util.List;
@@ -75,6 +75,7 @@ public class StocktakeOrderCreateDTO implements Serializable, IValidate {
     private List<Long> stockAbnormalRecordIds;
 
     @Schema(title = "库区ID")
+    @NotNull
     private Long warehouseAreaId;
 
     @Schema(title = "逻辑区ID")

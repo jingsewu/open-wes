@@ -471,6 +471,7 @@
     "table.countOrderNumber": "盘点单号",
     "table.countMethod": "盘点方式",
     "table.countType": "盘点类型",
+    "table.stocktakeUnitType": "盘点单元",
     "table.inventoryTaskNumber": "盘点任务号",
     "table.adjustmentOrderNo": "调整单号",
     "table.adjustQuantity": "调整数量",

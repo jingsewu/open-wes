@@ -58,13 +58,13 @@ public class InboundPlanOrderPO extends AuditUserPO {
     private boolean abnormal;
 
     @Column(nullable = false, columnDefinition = "varchar(128) comment '发货方'")
-    private String sender;
+    private String sender = "";
     @Column(nullable = false, columnDefinition = "varchar(128) comment '承运商'")
-    private String carrier;
+    private String carrier = "";
     @Column(nullable = false, columnDefinition = "varchar(64) comment '承运方式'")
-    private String shippingMethod;
+    private String shippingMethod = "";
     @Column(nullable = false, columnDefinition = "varchar(128) comment '承运单号'")
-    private String trackingNumber;
+    private String trackingNumber = "";
     @Column(nullable = false, columnDefinition = "bigint comment '预计到达时间'")
     private Long estimatedArrivalDate = 0L;
 

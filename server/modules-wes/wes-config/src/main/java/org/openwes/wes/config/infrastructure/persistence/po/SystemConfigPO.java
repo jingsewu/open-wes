@@ -44,7 +44,7 @@ public class SystemConfigPO extends UpdateUserPO {
     private SystemConfigDTO.OutboundAlgoConfigDTO outboundAlgoConfig;
 
     @JdbcTypeCode(JSON)
-    private SystemConfigDTO.StockConfigDTO stockConfigDTO;
+    private SystemConfigDTO.StockConfigDTO stockConfig;
 
     @Column(nullable = false)
     private String singletonKey = "SYSTEM_CONFIG";

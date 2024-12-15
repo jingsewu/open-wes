@@ -17,7 +17,6 @@ import java.util.Set;
  * if Station system crashes then it will be got from redis when the system is restarted.
  */
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class ArrivedContainerCache {

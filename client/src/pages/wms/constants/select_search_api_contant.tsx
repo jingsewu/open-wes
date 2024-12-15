@@ -682,7 +682,7 @@ export const stock_sku_id_table = {
         searchIdentity: "SearchSkuIdTable",
         searchObject: {
             tables: "w_container_stock k, w_container c, m_sku_main_data a",
-            where: "k.sku_id = a.id and k.container_id = c.id",
+            where: "k.sku_id = a.id and k.container_id = c.id and c.warehouse_area_id= ${warehouseAreaId}",
             groupBy: "k.sku_id, c.warehouse_area_id"
         },
         showColumns: stock_sku_id_table_columns

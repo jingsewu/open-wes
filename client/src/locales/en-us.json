@@ -477,6 +477,7 @@
     "table.countOrderNumber": "Inventory Count Order Number",
     "table.countMethod": "Inventory Count Method",
     "table.countType": "Inventory Count Type",
+    "table.stocktakeUnitType": "Inventory Stocktake Unit Type",
     "table.inventoryTaskNumber": "Inventory task number",
     "table.adjustmentOrderNo": "Adjustment order No.",
     "table.adjustQuantity": "Adjust quantity",

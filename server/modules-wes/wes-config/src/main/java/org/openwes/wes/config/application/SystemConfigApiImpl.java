@@ -87,6 +87,6 @@ public class SystemConfigApiImpl implements ISystemConfigApi {
             return new SystemConfigDTO.StockConfigDTO();
         }
 
-        return systemConfig.getStockConfigDTO();
+        return systemConfig.getStockConfig();
     }
 }

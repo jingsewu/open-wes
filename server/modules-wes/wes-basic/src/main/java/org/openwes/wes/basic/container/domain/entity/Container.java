@@ -1,13 +1,13 @@
 package org.openwes.wes.basic.container.domain.entity;
 
-import org.openwes.common.utils.exception.WmsException;
-import org.openwes.wes.api.basic.constants.ContainerStatusEnum;
-import org.openwes.wes.api.basic.dto.ContainerDTO;
-import org.openwes.wes.api.stock.dto.ContainerStockDTO;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.openwes.common.utils.exception.WmsException;
+import org.openwes.wes.api.basic.constants.ContainerStatusEnum;
+import org.openwes.wes.api.basic.dto.ContainerDTO;
+import org.openwes.wes.api.stock.dto.ContainerStockDTO;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -136,5 +136,13 @@ public class Container {
 
     public void moveOutside() {
         this.containerStatus = ContainerStatusEnum.OUT_SIDE;
+    }
+
+    public void moveInside(String warehouseCode, Long warehouseAreaId, String locationCode) {
+        log.info("containerId: {} containerCode: {} move inside at warehouseAreaId: {} and locationCode: {}", this.id, this.containerCode, warehouseAreaId, locationCode);
+        this.containerStatus = ContainerStatusEnum.IN_SIDE;
+        this.warehouseCode = warehouseCode;
+        this.warehouseAreaId = warehouseAreaId;
+        this.locationCode = locationCode;
     }
 }

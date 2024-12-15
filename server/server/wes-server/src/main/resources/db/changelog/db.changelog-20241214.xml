@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="m_system_config_add_column_stock_config" author="Kinser">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="m_system_config"/>
+            </and>
+            <not>
+                <columnExists tableName="m_system_config" columnName="stock_config"/>
+            </not>
+        </preConditions>
+        <comment>m_system_config增加字段stock_config</comment>
+        <sql>
+            ALTER TABLE m_system_config
+                add column `stock_config` json DEFAULT NULL comment '库存配置';
+        </sql>
+        <rollback>
+            ALTER TABLE m_system_config DROP column stock_config;
+        </rollback>
+    </changeSet>
+
+    <changeSet id="m_dictionary_add_enum_TransferContainerReleaseMethod" author="Kinser">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="m_system_config"/>
+            </and>
+        </preConditions>
+        <comment>m_dictionary增加枚举TransferContainerReleaseMethod</comment>
+        <sql>
+            INSERT INTO `openwes`.`m_dictionary`(`id`, `create_time`, `create_user`, `update_time`, `update_user`, `code`, `description`, `editable`, `items`, `name`, `version`) VALUES (655712987784548352, 1734142158846, 'admin', 1734142158846, 'admin', 'TransferContainerReleaseMethod', NULL, b'0', '[{\"order\": 2, \"value\": \"INTERFACE\", \"defaultItem\": false, \"description\": {\"languages\": {\"zh-CN\": null}}, \"showContext\": {\"languages\": {\"zh-CN\": \"接口释放\"}}}, {\"order\": 1, \"value\": \"AUTOMATED\", \"defaultItem\": true, \"description\": {\"languages\": {\"zh-CN\": null}}, \"showContext\": {\"languages\": {\"zh-CN\": \"自动释放\"}}}]', '{\"languages\": {\"zh-CN\": \"周转容器释放方式\"}}', 0);
+        </sql>
+        <rollback>
+            delete from m_dictionary where code='TransferContainerReleaseMethod';
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>
