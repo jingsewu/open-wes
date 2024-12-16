@@ -13,6 +13,7 @@ import org.openwes.station.controller.view.context.ViewHandlerTypeEnum;
 import org.openwes.station.domain.entity.ArrivedContainerCache;
 import org.openwes.station.domain.entity.WorkStationCache;
 import org.openwes.station.domain.transfer.ArriveContainerCacheTransfer;
+import org.openwes.wes.api.basic.dto.WorkStationDTO;
 import org.openwes.wes.api.task.dto.OperationTaskDTO;
 import org.openwes.wes.api.task.dto.OperationTaskVO;
 import org.springframework.stereotype.Service;
@@ -49,6 +50,8 @@ public class ContainerAreaHandler<T extends WorkStationCache> implements IViewHa
         if (CollectionUtils.isEmpty(workLocationViews)) {
             return;
         }
+
+        workLocationViews = workLocationViews.stream().filter(WorkStationDTO.WorkLocation::isEnable).toList();
 
         WorkStationCache workStationCache = viewContext.getWorkStationCache();
         List<ArrivedContainerCache> arrivedContainers = workStationCache.getArrivedContainers();

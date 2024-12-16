@@ -83,6 +83,13 @@ const baseInfoForm = [
                 title: "table.robotWorkstations",
                 body: [
                     {
+                        label: "工作位类型",
+                        name: "workLocations[0].workLocationType",
+                        type: "input-text",
+                        value: "ROBOT",
+                        hidden: true
+                    },
+                    {
                         label: "table.workBitEncoding",
                         name: "workLocations[0].workLocationCode",
                         type: "input-text",
@@ -99,6 +106,13 @@ const baseInfoForm = [
                 title: "table.conveyorLines",
                 body: [
                     {
+                        label: "工作位类型",
+                        name: "workLocations[1].workLocationType",
+                        type: "input-text",
+                        value: "CONVEYOR",
+                        hidden: true
+                    },
+                    {
                         label: "table.workBitEncoding",
                         name: "workLocations[1].workLocationCode",
                         type: "input-text",
@@ -114,6 +128,13 @@ const baseInfoForm = [
             {
                 title: "table.cacheShelves",
                 body: [
+                    {
+                        label: "工作位类型",
+                        name: "workLocations[2].workLocationType",
+                        type: "input-text",
+                        value: "BUFFER_SHELVING",
+                        hidden: true
+                    },
                     {
                         label: "table.workBitEncoding",
                         name: "workLocations[2].workLocationCode}",
@@ -154,7 +175,6 @@ const baseInfoForm = [
                             },
                             {
                                 name: "bay",
-                                type: "input-number",
                                 label: "table.colum"
                             },
                             {
