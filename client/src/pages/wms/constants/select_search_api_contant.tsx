@@ -1,8 +1,15 @@
-let warehouseCode = localStorage.getItem("warehouseCode")
+const baseApi = {
+    method: "post",
+    url: "/search/search/searchSelectResult?perPage=1000&activePage=1"
+}
+
+const baseApi_warehouseCode = {
+    method: "post",
+    url: "/search/search/searchSelectResult?perPage=1000&activePage=1&warehouseCode-op=eq&warehouseCode=${ls:warehouseCode}"
+}
 
 export const country = {
-    method: "post",
-    url: "/search/search/searchSelectResult?perPage=1000&activePage=1",
+    ...baseApi,
     data: {
         searchIdentity: "SearchAddressCountry",
         searchObject: {
@@ -25,8 +32,7 @@ export const country = {
 }
 
 export const province = {
-    method: "post",
-    url: "/search/search/searchSelectResult?perPage=1000&activePage=1",
+    ...baseApi,
     data: {
         searchIdentity: "SearchAddressProvince",
         searchObject: {
@@ -54,8 +60,7 @@ export const province = {
 }
 
 export const city = {
-    method: "post",
-    url: "/search/search/searchSelectResult?perPage=1000&activePage=1",
+    ...baseApi,
     data: {
         searchIdentity: "SearchAddressCity",
         searchObject: {
@@ -88,8 +93,7 @@ export const city = {
 }
 
 export const district = {
-    method: "post",
-    url: "/search/search/searchSelectResult?perPage=1000&activePage=1",
+    ...baseApi,
     data: {
         searchIdentity: "SearchAddressDistrict",
         searchObject: {
@@ -127,10 +131,7 @@ export const district = {
 }
 
 export const owner_code = {
-    method: "post",
-    url:
-        "/search/search/searchSelectResult?perPage=1000&activePage=1&warehouseCode-op=eq&warehouseCode=" +
-        warehouseCode,
+    ...baseApi_warehouseCode,
     data: {
         searchIdentity: "SearchOwnerCode",
         searchObject: {
@@ -157,10 +158,7 @@ export const owner_code = {
 }
 
 export const owner_code_barcode_analysis = {
-    method: "post",
-    url:
-        "/search/search/searchSelectResult?perPage=1000&activePage=1&warehouseCode-op=eq&warehouseCode=" +
-        warehouseCode,
+    ...baseApi_warehouseCode,
     data: {
         searchIdentity: "SearchOwnerCode",
         searchObject: {
@@ -191,9 +189,7 @@ export const owner_code_barcode_analysis = {
 
 export const owner_code_by_sku_code = {
     method: "post",
-    url:
-        "/search/search/searchSelectResult?perPage=1000&activePage=1&selectExclude=skuCode,warehouseCode&skuCode-op=eq&skuCode=${skuCode}&warehouseCode-op=eq&warehouseCode=" +
-        warehouseCode,
+    url: "/search/search/searchSelectResult?perPage=1000&activePage=1&selectExclude=skuCode,warehouseCode&skuCode-op=eq&skuCode=${skuCode}&warehouseCode-op=eq&warehouseCode=${ls:warehouseCode}",
     data: {
         searchIdentity: "SearchOwnerCodeBySkuCode",
         searchObject: {
@@ -227,10 +223,7 @@ export const owner_code_by_sku_code = {
 }
 
 export const warehouse_area_group = {
-    method: "post",
-    url:
-        "/search/search/searchSelectResult?perPage=1000&activePage=1&warehouseCode-op=eq&warehouseCode=" +
-        warehouseCode,
+    ...baseApi_warehouseCode,
     data: {
         searchIdentity: "SearchWarehouseAreaGroupCode",
         searchObject: {
@@ -257,10 +250,7 @@ export const warehouse_area_group = {
 }
 
 export const warehouse_area_code = {
-    method: "post",
-    url:
-        "/search/search/searchSelectResult?perPage=1000&activePage=1&warehouseCode-op=eq&warehouseCode=" +
-        warehouseCode,
+    ...baseApi_warehouseCode,
     data: {
         searchIdentity: "SearchWarehouseAreaCode",
         searchObject: {
@@ -287,10 +277,7 @@ export const warehouse_area_code = {
 }
 
 export const warehouse_area_id = {
-    method: "post",
-    url:
-        "/search/search/searchSelectResult?perPage=1000&activePage=1&warehouseCode-op=eq&warehouseCode=" +
-        warehouseCode,
+    ...baseApi_warehouseCode,
     data: {
         searchIdentity: "SearchWarehouseAreaId",
         searchObject: {
@@ -322,10 +309,7 @@ export const warehouse_area_id = {
 }
 
 export const warehouse_logic_id = {
-    method: "post",
-    url:
-        "/search/search/searchSelectResult?perPage=1000&activePage=1&warehouseCode-op=eq&warehouseCode=" +
-        warehouseCode,
+    ...baseApi_warehouseCode,
     data: {
         searchIdentity: "SearchWarehouseLogicId",
         searchObject: {
@@ -352,10 +336,7 @@ export const warehouse_logic_id = {
 }
 
 export const warehouse_logic_code = {
-    method: "post",
-    url:
-        "/search/search/searchSelectResult?perPage=1000&activePage=1&warehouseCode-op=eq&warehouseCode=" +
-        warehouseCode,
+    ...baseApi_warehouseCode,
     data: {
         searchIdentity: "SearchWarehouseLogicCode",
         searchObject: {
@@ -382,10 +363,7 @@ export const warehouse_logic_code = {
 }
 
 export const container_spec = {
-    method: "post",
-    url:
-        "/search/search/searchSelectResult?perPage=1000&activePage=1&warehouseCode-op=eq&warehouseCode=" +
-        warehouseCode,
+    ...baseApi_warehouseCode,
     data: {
         searchIdentity: "SearchContainerSpecCode",
         searchObject: {
@@ -422,10 +400,7 @@ export const container_spec = {
 }
 
 export const put_wall_spec = {
-    method: "post",
-    url:
-        "/search/search/searchSelectResult?perPage=1000&activePage=1&warehouseCode-op=eq&warehouseCode=" +
-        warehouseCode,
+    ...baseApi_warehouseCode,
     data: {
         searchIdentity: "SearchPutWallSpecCode",
         searchObject: {
@@ -458,10 +433,7 @@ export const put_wall_spec = {
 }
 
 export const work_location = {
-    method: "post",
-    url:
-        "/search/search/searchSelectResult?perPage=1000&activePage=1&warehouseCode-op=eq&warehouseCode=" +
-        warehouseCode,
+    ...baseApi_warehouseCode,
     data: {
         searchIdentity: "SearchEmsLocationConfig",
         searchObject: {
@@ -488,10 +460,7 @@ export const work_location = {
 }
 
 export const work_station = {
-    method: "post",
-    url:
-        "/search/search/searchSelectResult?perPage=1000&activePage=1&warehouseCode-op=eq&warehouseCode=" +
-        warehouseCode,
+    ...baseApi_warehouseCode,
     data: {
         searchIdentity: "SearchWorksStation",
         searchObject: {
@@ -520,9 +489,7 @@ export const work_station = {
 
 export const shelf_code_table = {
     method: "post",
-    url:
-        "/search/search?page=${page}&perPage=10&warehouseCode-op=eq&warehouseCode=" +
-        warehouseCode,
+    url: "/search/search?page=${page}&perPage=10&warehouseCode-op=eq&warehouseCode=${ls:warehouseCode}",
     data: {
         searchIdentity: "SearchContainerCodeTable",
         searchObject: {
@@ -566,9 +533,7 @@ export const shelf_code_table = {
 
 export const container_code_table = {
     method: "post",
-    url:
-        "/search/search?page=${page}&perPage=10&warehouseCode-op=eq&warehouseCode=" +
-        warehouseCode,
+    url: "/search/search?page=${page}&perPage=10&warehouseCode-op=eq&warehouseCode=${ls:warehouseCode}",
     data: {
         searchIdentity: "SearchContainerCodeTable",
         searchObject: {
@@ -675,9 +640,7 @@ export const stock_sku_id_table_columns = [
 
 export const stock_sku_id_table = {
     method: "post",
-    url:
-        "/search/search?page=${page}&perPage=10&warehouseCode-op=eq&warehouseCode=" +
-        warehouseCode,
+    url: "/search/search?page=${page}&perPage=10&warehouseCode-op=eq&warehouseCode=${ls:warehouseCode}",
     data: {
         searchIdentity: "SearchSkuIdTable",
         searchObject: {
@@ -694,9 +657,7 @@ export const stock_sku_id_table = {
 
 export const stock_abnormal_table = {
     method: "post",
-    url:
-        "/search/searchV2?page=1&perPage=500&createTime-op=bt&warehouseCode-op=eq&warehouseCode-eq=" +
-        warehouseCode,
+    url: "/search/searchV2?page=1&perPage=500&createTime-op=bt&warehouseCode-op=eq&warehouseCode-eq=${ls:warehouseCode}",
     data: {
         searchIdentity: "stocktakeByStockAbnormal"
     }
@@ -704,9 +665,7 @@ export const stock_abnormal_table = {
 
 export const stock_sku_code_table = {
     method: "post",
-    url:
-        "/search/search?page=1&perPage=10&warehouseCode-op=eq&warehouseCode=" +
-        warehouseCode,
+    url: "/search/search?page=1&perPage=10&warehouseCode-op=eq&warehouseCode=${ls:warehouseCode}",
     data: {
         searchIdentity: "SearchSkuCodeTable",
         searchObject: {
@@ -766,9 +725,7 @@ export const stock_sku_code_table = {
 
 export const available_stock_sku_code_table = {
     method: "post",
-    url:
-        "/search/search?page=1&perPage=500&selectExclude=barCode&warehouseCode-op=eq&warehouseCode=" +
-        warehouseCode,
+    url: "/search/search?page=1&perPage=500&selectExclude=barCode&warehouseCode-op=eq&warehouseCode=${ls:warehouseCode}",
     data: {
         searchIdentity: "AvailableStockSkuCodeTable",
         searchObject: {
@@ -829,8 +786,7 @@ export const available_stock_sku_code_table = {
 
 export const stock_id_table = {
     method: "post",
-    url:
-        "/search/searchV2?page=1&perPage=500&warehouseCode-eq=" + warehouseCode,
+    url: "/search/searchV2?page=1&perPage=500&warehouseCode-eq=${ls:warehouseCode}",
     data: {
         searchIdentity: "stocktakeByStock"
     }

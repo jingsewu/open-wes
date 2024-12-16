@@ -1,11 +1,9 @@
 import schema2component from "@/utils/schema2component"
-import { create_update_columns } from "@/utils/commonContants"
 import {
     api_getDictionary,
-    api_crud_search_by_warehouseCode_total
+    api_crud_search_by_warehouseCode_total,
+    api_crud_search_by_warehouseCode
 } from "@/pages/constantApi"
-
-let warehouseCode = localStorage.getItem("warehouseCode")
 
 const columns = [
     {
@@ -166,13 +164,7 @@ const schema = {
             type: "crud",
             syncLocation: false,
             name: "putAwayTaskTable",
-            api: {
-                method: "POST",
-                url:
-                    "/search/search?page=${page}&perPage=${perPage}&createTime-op=bt&updateTime-op=bt&warehouseCode-op=eq&warehouseCode=" +
-                    warehouseCode,
-                dataType: "application/json"
-            },
+            api: api_crud_search_by_warehouseCode,
             defaultParams: {
                 searchIdentity: searchIdentity,
                 showColumns: showColumns,

@@ -6,8 +6,6 @@ import {
     api_crud_search_by_warehouseCode_total
 } from "@/pages/constantApi"
 
-let warehouseCode = localStorage.getItem("warehouseCode")
-
 const columns = [
     {
         name: "id",

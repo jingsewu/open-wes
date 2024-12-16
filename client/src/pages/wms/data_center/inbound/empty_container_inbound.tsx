@@ -58,7 +58,7 @@ const add = {
         body: {
             id: "inputForm",
             type: "form",
-            api: api_empty_container_inbound_add + warehouseCode,
+            api: api_empty_container_inbound_add,
             preventEnterSubmit: true,
             body: form
         }

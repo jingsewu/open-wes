@@ -1,20 +1,14 @@
 import schema2component from "@/utils/schema2component"
 
-import { Translation } from "react-i18next"
-import { api_stocktake_order_add } from "@/pages/wms/data_center/constants/api_constant"
 import { stock_sku_code_table } from "@/pages/wms/constants/select_search_api_contant"
-import React from "react"
 import { toast } from "amis"
 import {
     owner_code,
-    stock_id_table,
     warehouse_area_id,
     warehouse_logic_id
 } from "@/pages/wms/constants/select_search_api_contant"
 import { CustomActionType } from "@/pages/wms/station/instances/stocktake/customActionType"
 import { api_getDictionary } from "@/pages/constantApi"
-
-let warehouseCode = localStorage.getItem("warehouseCode")
 
 const schema = {
     type: "page",
@@ -334,7 +328,11 @@ const schema = {
                                 return
                                 // return false
                             }
-                            const params = { ...props.scope, warehouseCode }
+                            const params = {
+                                ...props.scope,
+                                warehouseCode:
+                                    localStorage.getItem("warehouseCode")
+                            }
                             delete params.options
                             delete params.file
                             // return true

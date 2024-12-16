@@ -66,10 +66,7 @@ const RobotHandler = (props: any) => {
     useEffect(() => {
         request({
             method: "post",
-            url:
-                "/search/search/searchSelectResult?perPage=1000&activePage=1&warehouseCode-op=eq&warehouseCode=" +
-                warehouseCode +
-                "&containerType-op=eq&containerType=CONTAINER",
+            url: "/search/search/searchSelectResult?perPage=1000&activePage=1&warehouseCode-op=eq&warehouseCode=${ls:warehouseCode}&containerType-op=eq&containerType=CONTAINER",
             data: {
                 searchIdentity: "SearchContainerSpecCode3",
                 searchObject: {
