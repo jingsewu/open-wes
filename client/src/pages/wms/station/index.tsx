@@ -55,7 +55,7 @@ const WorkStation = (props: WorkStationProps) => {
 
     const InstanceLayout = layout
 
-    const [isConfigSationId, setIsConfigStationId] = useState(true)
+    const [isConfigSationId, setIsConfigStationId] = useState(false)
     const [stationId, setStationId] = useState("")
     const [options, setOptions] = useState<any[]>([])
 
@@ -129,6 +129,7 @@ const WorkStation = (props: WorkStationProps) => {
 
     const handleClick = () => {
         setIsConfigStationId(true)
+        localStorage.setItem("stationId", stationId)
     }
 
     return isConfigSationId ? (
