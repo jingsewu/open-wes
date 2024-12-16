@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.openwes.common.utils.exception.WmsException;
+import org.openwes.wes.api.basic.IContainerApi;
+import org.openwes.wes.api.basic.dto.ContainerDTO;
 import org.openwes.wes.api.stock.IStockApi;
 import org.openwes.wes.api.stock.dto.ContainerStockDTO;
 import org.openwes.wes.api.stocktake.constants.StocktakeTaskDetailStatusEnum;
@@ -17,10 +19,7 @@ import org.openwes.wes.stocktake.domain.entity.StocktakeTaskDetail;
 import org.openwes.wes.stocktake.domain.service.StocktakeOrderService;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.openwes.common.utils.exception.code_enum.StocktakeErrorDescEnum.STOCKTAKE_EXCEEDING_THE_MIN_STOCKTAKE_LOSS_QTY;
@@ -31,6 +30,7 @@ import static org.openwes.common.utils.exception.code_enum.StocktakeErrorDescEnu
 public class StocktakeOrderServiceImpl implements StocktakeOrderService {
 
     private final IStockApi stockApi;
+    private final IContainerApi containerApi;
 
     @Override
     public List<StocktakeOrder> cancelStocktakeOrder(List<StocktakeOrder> stocktakeOrderList) {
@@ -47,6 +47,13 @@ public class StocktakeOrderServiceImpl implements StocktakeOrderService {
         if (stocktakeOrder.getStocktakeUnitType() == StocktakeUnitTypeEnum.SKU) {
             containerStockList = stockApi.getBySkuIds(stocktakeOrder.getAllStocktakeUnitIds());
             containerCodes = containerStockList.stream().map(ContainerStockDTO::getContainerCode).distinct().toList();
+
+            Collection<ContainerDTO> containers = containerApi.queryContainer(containerCodes, stocktakeOrder.getWarehouseCode());
+            containerCodes = containers.stream().filter(v -> Objects.equals(v.getWarehouseAreaId(), stocktakeOrder.getWarehouseAreaId()))
+                    .map(ContainerDTO::getContainerCode).toList();
+
+            List<String> finalContainerCodes = containerCodes;
+            containerStockList = containerStockList.stream().filter(v -> finalContainerCodes.contains(v.getContainerCode())).toList();
 
         } else if (stocktakeOrder.getStocktakeUnitType() == StocktakeUnitTypeEnum.STOCK) {
             containerStockList = stockApi.getContainerStocks(stocktakeOrder.getAllStocktakeUnitIds());

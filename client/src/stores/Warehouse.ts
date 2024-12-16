@@ -13,7 +13,15 @@ const Warehouse = types
         return {
             setWarehouseCode(warehouseCode: string) {
                 self.code = warehouseCode;
-                localStorage.setItem('warehouseCode', warehouseCode);
+                try {
+                    if (warehouseCode) {
+                        localStorage.setItem('warehouseCode', warehouseCode);
+                    } else {
+                        localStorage.setItem('warehouseCode', '');
+                    }
+                } catch (error) {
+                    console.error("Failed to set warehouseCode in localStorage:", error);
+                }
             }
         }
     });

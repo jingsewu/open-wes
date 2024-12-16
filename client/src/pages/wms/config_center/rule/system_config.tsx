@@ -34,7 +34,7 @@ const schema = {
                                     label: "周转容器自动释放间隔时长(min)",
                                     name: "basicConfig.autoReleaseDelayTimeMin",
                                     hiddenOn:
-                                        "${this.basicConfig.transferContainerReleaseMethod === 'INTERFACE'}"
+                                        "${basicConfig.transferContainerReleaseMethod === 'INTERFACE'}"
                                 }
                             ]
                         },

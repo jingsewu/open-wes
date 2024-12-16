@@ -46,15 +46,16 @@ const form = [
         name: "items",
         addable: true,
         editable: true,
+        minLength: 1,
         columns: [
             {
                 name: "value",
                 label: "table.value",
-                type: "input-text"
+                type: "input-text",
             },
             {
                 name: "showContent",
-                label: "table.value",
+                label: "table.label",
                 type: "input-text"
             },
             {
@@ -73,7 +74,24 @@ const form = [
                 label: "table.description",
                 type: "input-text"
             }
-        ]
+        ],
+        removable: true,
+        needConfirm: false,
+        onEvent: {
+            delete: {
+                actions: [
+                    {
+                        actionType: "toast",
+                        args: {
+                            msgType: "info",
+                            position: "top-right",
+                            title: "button.delete",
+                            msg: "success"
+                        }
+                    }
+                ]
+            }
+        }
     }
 ]
 

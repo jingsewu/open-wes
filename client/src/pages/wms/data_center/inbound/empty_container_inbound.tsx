@@ -92,7 +92,6 @@ const columns = [
     },
     {
         name: "inboundStatus",
-        // label: "状态",
         label: "table.status",
         type: "mapping",
         source: "${PutAwayTaskStatus}",
