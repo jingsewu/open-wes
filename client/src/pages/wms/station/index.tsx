@@ -7,12 +7,11 @@ import type { FC } from "react"
 import React, { useContext, useState, useEffect, memo } from "react"
 import type { RouteComponentProps } from "react-router"
 import { Select, Typography, Button } from "antd"
-
+import store from "@/stores"
 import { APIContext, Provider, WorkStationContext } from "./event-loop/provider"
 import Layout from "./layout"
 import WorkStationCard from "./WorkStationCard"
 import request from "@/utils/requestInterceptor"
-let warehouseCode = localStorage.getItem("warehouseCode")
 
 const { Title } = Typography
 
@@ -64,6 +63,11 @@ const WorkStation = (props: WorkStationProps) => {
         getStationId()
     }, [])
 
+    useEffect(() => {
+        if (isConfigSationId) return
+        getStationOptions()
+    }, [store.warehouse.code, isConfigSationId])
+
     const getStationId = async () => {
         const res: any = await request({
             method: "get",
@@ -71,7 +75,6 @@ const WorkStation = (props: WorkStationProps) => {
         })
         if (res?.data?.errorCode === "SAT010001") {
             setIsConfigStationId(false)
-            getStationOptions()
         } else {
             setIsConfigStationId(true)
         }
@@ -82,7 +85,7 @@ const WorkStation = (props: WorkStationProps) => {
             method: "post",
             url:
                 "/search/search?page=1&perPage1000&warehouseCode-op=eq&warehouseCode=" +
-                warehouseCode,
+                store.warehouse.code,
             data: {
                 searchIdentity: "WWorkStation",
                 searchObject: {
@@ -116,7 +119,6 @@ const WorkStation = (props: WorkStationProps) => {
                 ]
             }
         }).then((res: any) => {
-            console.log("getStationOptions", res)
             setOptions(res.data.items)
         })
     }
@@ -126,7 +128,6 @@ const WorkStation = (props: WorkStationProps) => {
     }
 
     const handleClick = () => {
-        localStorage.setItem("stationId", stationId)
         setIsConfigStationId(true)
     }
 
