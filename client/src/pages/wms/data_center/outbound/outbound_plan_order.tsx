@@ -14,7 +14,6 @@ import {
 import React from "react"
 import { toast } from "amis"
 import {
-    api_getDictionary,
     api_crud_search_by_warehouseCode,
     api_crud_search_by_warehouseCode_total
 } from "@/pages/constantApi"
@@ -51,10 +50,10 @@ const columns = [
         name: "customerOrderType",
         label: "table.orderType",
         type: "mapping",
-        source: "${CustomerOrderType}",
+        source: "${ls:dictionary|pick:CustomerOrderType}",
         searchable: {
             type: "select",
-            source: "${CustomerOrderType}"
+            source: "${ls:dictionary|pick:CustomerOrderType}"
         }
     },
     {
@@ -83,10 +82,10 @@ const columns = [
         name: "outboundPlanOrderStatus",
         label: "table.status",
         type: "mapping",
-        source: "${OutboundPlanOrderStatus}",
+        source: "${ls:dictionary|pick:OutboundPlanOrderStatus}",
         searchable: {
             type: "select",
-            source: "${OutboundPlanOrderStatus}"
+            source: "${ls:dictionary|pick:OutboundPlanOrderStatus}"
         }
     },
     {
@@ -301,8 +300,8 @@ const dialog = {
                     label: "table.orderType",
                     name: "customerOrderType",
                     type: "select",
-                    value: "${CustomerOrderType|filter:defaultValue:isTrue|pick:value|join}",
-                    source: "${CustomerOrderType}"
+                    value: "${ls:dictionary|pick:CustomerOrderType|filter:defaultValue:isTrue|pick:value|join}",
+                    source: "${ls:dictionary|pick:CustomerOrderType}"
                 },
                 {
                     type: "select",
@@ -646,7 +645,6 @@ const schema = {
     type: "page",
     title: "outboundOrder.title",
     toolbar: [],
-    initApi: api_getDictionary,
     body: [
         {
             type: "crud",

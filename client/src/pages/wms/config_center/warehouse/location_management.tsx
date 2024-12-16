@@ -8,10 +8,7 @@ import {
     enable_options,
     true_false_options
 } from "@/utils/commonContants"
-import {
-    api_getDictionary,
-    api_crud_search_by_warehouseCode
-} from "@/pages/constantApi"
+import { api_crud_search_by_warehouseCode } from "@/pages/constantApi"
 
 let warehouseCode = localStorage.getItem("warehouseCode")
 
@@ -50,7 +47,7 @@ const form = {
             label: "table.locationType",
             name: "locationType",
             type: "select",
-            source: "${LocationType}"
+            source: "${ls:dictionary|pick:LocationType}"
         },
         {
             label: "table.locationCode",
@@ -154,7 +151,7 @@ const columns = [
     {
         name: "locationType",
         label: "table.locationType",
-        source: "${LocationType}"
+        source: "${ls:dictionary|pick:LocationType}"
     },
     {
         name: "heat",
@@ -184,7 +181,6 @@ const schema = {
     type: "page",
     title: "locationManagement.title",
     toolbar: [],
-    initApi: api_getDictionary,
     body: [
         {
             type: "crud",

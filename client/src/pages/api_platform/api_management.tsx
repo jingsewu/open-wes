@@ -10,11 +10,7 @@ import {
     create_update_columns,
     true_false_options
 } from "@/utils/commonContants"
-import {
-    api_getDictionary,
-    api_crud_search,
-    api_crud_search_total
-} from "@/pages/constantApi"
+import { api_crud_search, api_crud_search_total } from "@/pages/constantApi"
 
 const baseform = [
     {
@@ -37,7 +33,7 @@ const baseform = [
         label: "interfacePlatform.interfaceManagement.table.interfaceType",
         type: "select",
         name: "apiType",
-        source: "${ApiType}",
+        source: "${ls:dictionary|pick:ApiType}",
         required: true
     },
     {
@@ -50,7 +46,7 @@ const baseform = [
         label: "interfacePlatform.interfaceManagement.table.interfaceRequestMethod",
         type: "select",
         name: "method",
-        source: "${HttpMethod}"
+        source: "${ls:dictionary|pick:HttpMethod}"
     },
     {
         label: "interfacePlatform.interfaceManagement.table.interfaceRequestEncoding",
@@ -67,7 +63,7 @@ const baseform = [
         label: "interfacePlatform.interfaceManagement.table.interfaceRequestFormat",
         type: "select",
         name: "format",
-        source: "${MediaType}",
+        source: "${ls:dictionary|pick:MediaType}",
         required: true
     },
     {
@@ -150,7 +146,7 @@ const configForm = [
         label: "interfacePlatform.interfaceManagement.form.converseScriptType",
         type: "select",
         name: "paramConverterType",
-        source: "${ConverterType}",
+        source: "${ls:dictionary|pick:ConverterType}",
         required: true
     },
     {
@@ -171,7 +167,7 @@ const configForm = [
         label: "interfacePlatform.interfaceManagement.form.responseTransformationScriptType",
         type: "select",
         name: "responseConverterType",
-        source: "${ConverterType}",
+        source: "${ls:dictionary|pick:ConverterType}",
         required: true
     },
     {
@@ -226,10 +222,10 @@ const columns = [
         name: "apiType",
         label: "interfacePlatform.interfaceManagement.table.interfaceType",
         type: "mapping",
-        source: "${ApiCallType}",
+        source: "${ls:dictionary|pick:ApiCallType}",
         searchable: {
             type: "select",
-            source: "${ApiCallType}"
+            source: "${ls:dictionary|pick:ApiCallType}"
         }
     },
     {
@@ -318,7 +314,6 @@ const schema = {
     type: "page",
     title: "interfacePlatform.interfaceManagement.title",
     toolbar: [],
-    initApi: api_getDictionary,
     body: [
         {
             type: "crud",

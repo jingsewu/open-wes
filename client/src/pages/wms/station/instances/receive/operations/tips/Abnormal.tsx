@@ -1,34 +1,35 @@
 import { Select, Form, Input, InputNumber } from "antd"
-import type { RefObject } from "react"
-import React, { useImperativeHandle, useState, useEffect } from "react"
+// import type { RefObject } from "react"
+import React, { useImperativeHandle, useState } from "react"
 import { useTranslation, Translation } from "react-i18next"
-import type {
-    CustomActionResponse,
-    ToastFn
-} from "@/pages/wms/station/instances/types"
-import {
-    OperationTaskDTOS,
-    ArrivedContainer,
-    SkuMainDataDTO
-} from "@/pages/wms/station/event-loop/types"
-import request from "@/utils/requestInterceptor"
+// import type {
+//     CustomActionResponse,
+//     ToastFn
+// } from "@/pages/wms/station/instances/types"
+// import {
+//     OperationTaskDTOS,
+//     ArrivedContainer,
+//     SkuMainDataDTO
+// } from "@/pages/wms/station/event-loop/types"
 
-interface AbnormalInfo {
-    /** 组件ref */
-    refs: RefObject<any>
-    value: {
-        /** sku信息 */
-        arrivedContainer: ArrivedContainer
-        operationTaskDTOS: OperationTaskDTOS[]
-        skuMainDataDTOS: SkuMainDataDTO[]
-        shortPickingViews: any[]
-        totalToBeRequiredQty: number
-        /** 自定义动作接口 */
-        onCustomActionDispatch: (value: any) => Promise<CustomActionResponse>
-        /** 提示语接口 */
-        message: ToastFn
-    }
-}
+const dictionary = JSON.parse(localStorage.getItem("dictionary") || "{}")
+
+// interface AbnormalInfo {
+//     /** 组件ref */
+//     refs: RefObject<any>
+//     value: {
+//         /** sku信息 */
+//         arrivedContainer: ArrivedContainer
+//         operationTaskDTOS: OperationTaskDTOS[]
+//         skuMainDataDTOS: SkuMainDataDTO[]
+//         shortPickingViews: any[]
+//         totalToBeRequiredQty: number
+//         /** 自定义动作接口 */
+//         onCustomActionDispatch: (value: any) => Promise<CustomActionResponse>
+//         /** 提示语接口 */
+//         message: ToastFn
+//     }
+// }
 
 export const AbnormalReportReason = [
     {
@@ -48,8 +49,8 @@ const Abnormal = (props: any) => {
     const formData = JSON.parse(data)
 
     const [abnormalReason, setAbnormalReason] = useState<string>("")
-    const [abnormalReportReasonOptions, setAbnormalReportReasonOptions] =
-        useState<any>([])
+    // const [abnormalReportReasonOptions, setAbnormalReportReasonOptions] =
+    //     useState<any>([])
     const [qtyAbnormal, setQtyAbnormal] = useState<number>()
 
     const handleAbnormalReasonChange = (value: string) => {
@@ -60,17 +61,17 @@ const Abnormal = (props: any) => {
         setQtyAbnormal(val)
     }
 
-    const getContainerSpecOptions = async () => {
-        const res: any = await request({
-            method: "post",
-            url: `/mdm/config/dictionary/getAll`
-        })
-        setAbnormalReportReasonOptions(res?.data?.InboundAbnormalReason || [])
-    }
+    // const getContainerSpecOptions = async () => {
+    //     const res: any = await request({
+    //         method: "post",
+    //         url: `/mdm/config/dictionary/getAll`
+    //     })
+    //     setAbnormalReportReasonOptions(res?.data?.InboundAbnormalReason || [])
+    // }
 
-    useEffect(() => {
-        getContainerSpecOptions()
-    }, [])
+    // useEffect(() => {
+    //     getContainerSpecOptions()
+    // }, [])
 
     useImperativeHandle(refs, () => {
         return {
@@ -139,7 +140,7 @@ const Abnormal = (props: any) => {
                         <Select
                             defaultValue={abnormalReason}
                             style={{ width: 200 }}
-                            options={abnormalReportReasonOptions}
+                            options={dictionary.InboundAbnormalReason || []}
                             onChange={handleAbnormalReasonChange}
                             getPopupContainer={(e) => e.parentNode}
                         />

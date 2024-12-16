@@ -2,10 +2,7 @@ import schema2component from "@/utils/schema2component"
 import { create_update_columns, enable_options } from "@/utils/commonContants"
 import { warehouse_area_id } from "@/pages/wms/constants/select_search_api_contant"
 import { api_warehouse_area_logic_add } from "@/pages/wms/config_center/constants/api_constant"
-import {
-    api_getDictionary,
-    api_crud_search_by_warehouseCode
-} from "@/pages/constantApi"
+import { api_crud_search_by_warehouseCode } from "@/pages/constantApi"
 
 let warehouseCode = localStorage.getItem("warehouseCode")
 
@@ -44,7 +41,7 @@ const form = {
             label: "table.warehouseLogicType",
             name: "warehouseLogicType",
             type: "select",
-            source: "${WarehouseLogicType}"
+            source: "${ls:dictionary|pick:WarehouseLogicType}"
         },
         {
             label: "table.remark",
@@ -119,7 +116,7 @@ const columns = [
         name: "warehouseLogicType",
         label: "table.warehouseLogicType",
         type: "mapping",
-        source: "${WarehouseLogicType}"
+        source: "${ls:dictionary|pick:WarehouseLogicType}"
     },
     {
         name: "remark",
@@ -141,7 +138,6 @@ const schema = {
     type: "page",
     title: "logicalAreaManagement.title",
     toolbar: [],
-    initApi: api_getDictionary,
     body: [
         {
             type: "crud",

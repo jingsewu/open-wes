@@ -1,8 +1,7 @@
 import schema2component from "@/utils/schema2component"
 import {
     api_crud_search_by_warehouseCode,
-    api_crud_search_by_warehouseCode_total,
-    api_getDictionary
+    api_crud_search_by_warehouseCode_total
 } from "@/pages/constantApi"
 
 const columns = [
@@ -23,10 +22,10 @@ const columns = [
         name: "stockAbnormalType",
         label: "table.exceptionType",
         type: "mapping",
-        source: "${StockAbnormalType}",
+        source: "${ls:dictionary|pick:StockAbnormalType}",
         searchable: {
             type: "select",
-            source: "${StockAbnormalType}"
+            source: "${ls:dictionary|pick:StockAbnormalType}"
         }
     },
     {
@@ -45,10 +44,10 @@ const columns = [
         name: "stockAbnormalStatus",
         label: "table.status",
         type: "mapping",
-        source: "${StockAbnormalStatus}",
+        source: "${ls:dictionary|pick:StockAbnormalStatus}",
         searchable: {
             type: "select",
-            source: "${StockAbnormalStatus}"
+            source: "${ls:dictionary|pick:StockAbnormalStatus}"
         }
     },
     {
@@ -96,7 +95,7 @@ const columns = [
         name: "abnormalReason",
         label: "table.differenceReason",
         type: "mapping",
-        source: "${StockAbnormalReason}"
+        source: "${ls:dictionary|pick:StockAbnormalReason}"
     },
     {
         dbField: "r.reason_desc",
@@ -147,7 +146,6 @@ const schema = {
     type: "page",
     title: "inventorAnomalies.title",
     toolbar: [],
-    initApi: api_getDictionary,
     body: [
         {
             type: "crud",

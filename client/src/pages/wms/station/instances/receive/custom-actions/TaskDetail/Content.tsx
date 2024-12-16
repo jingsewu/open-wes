@@ -1,8 +1,5 @@
 import schema2component from "@/utils/schema2component"
-import {
-    api_getDictionary,
-    api_crud_search_by_warehouseCode
-} from "@/pages/constantApi"
+import { api_crud_search_by_warehouseCode } from "@/pages/constantApi"
 
 const columns = [
     {
@@ -73,7 +70,6 @@ const schema = {
     type: "page",
     // title: "订单详情",
     toolbar: [],
-    initApi: api_getDictionary,
     body: [
         {
             type: "crud",

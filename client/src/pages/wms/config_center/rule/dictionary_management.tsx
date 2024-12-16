@@ -8,7 +8,6 @@ import {
     api_dictionary_get,
     api_dictionary_update
 } from "@/pages/wms/config_center/constants/api_constant"
-import { api_getDictionary } from "@/pages/constantApi"
 
 const form = [
     {
@@ -51,7 +50,7 @@ const form = [
             {
                 name: "value",
                 label: "table.value",
-                type: "input-text",
+                type: "input-text"
             },
             {
                 name: "showContent",
@@ -153,7 +152,6 @@ const schema = {
     type: "page",
     title: "dictionaryManagement.title",
     toolbar: [],
-    initApi: api_getDictionary,
     body: [
         {
             type: "crud",

@@ -84,7 +84,7 @@ const WorkStation = (props: WorkStationProps) => {
         request({
             method: "post",
             url:
-                "/search/search?page=1&perPage1000&warehouseCode-op=eq&warehouseCode=" +
+                "/search/search?page=1&perPage=1000&warehouseCode-op=eq&warehouseCode=" +
                 store.warehouse.code,
             data: {
                 searchIdentity: "WWorkStation",

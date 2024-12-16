@@ -16,7 +16,7 @@ import {
     district,
     province
 } from "@/pages/wms/constants/select_search_api_contant"
-import { api_getDictionary, api_crud_search } from "@/pages/constantApi"
+import { api_crud_search } from "@/pages/constantApi"
 
 const form = [
     {
@@ -46,42 +46,42 @@ const form = [
         label: "table.warehouseType",
         type: "select",
         name: "warehouseType",
-        source: "${WarehouseType}",
+        source: "${ls:dictionary|pick:WarehouseType}",
         required: true
     },
     {
         label: "table.warehouseProperties",
         type: "select",
         name: "warehouseAttrType",
-        source: "${WarehouseAttrType}",
+        source: "${ls:dictionary|pick:WarehouseAttrType}",
         required: true
     },
     {
         label: "table.warehouseLevel",
         type: "select",
         name: "warehouseLevel",
-        source: "${WarehouseLevel}",
+        source: "${ls:dictionary|pick:WarehouseLevel}",
         required: true
     },
     {
         label: "table.warehouseLables",
         type: "select",
         name: "warehouseLabel",
-        source: "${WarehouseLabel}",
+        source: "${ls:dictionary|pick:WarehouseLabel}",
         maxLength: 64
     },
     {
         label: "table.mainBusiness",
         type: "select",
         name: "businessType",
-        source: "${WarehouseBusinessType}",
+        source: "${ls:dictionary|pick:WarehouseBusinessType}",
         required: true
     },
     {
         label: "table.warehouseStructure",
         type: "select",
         name: "structureType",
-        source: "${WarehouseStructureType}",
+        source: "${ls:dictionary|pick:WarehouseStructureType}",
         required: true
     },
     {
@@ -226,60 +226,60 @@ const columns = [
         name: "warehouseType",
         label: "table.warehouseType",
         type: "mapping",
-        source: "${WarehouseType}",
+        source: "${ls:dictionary|pick:WarehouseType}",
         searchable: {
             type: "select",
-            source: "${WarehouseType}"
+            source: "${ls:dictionary|pick:WarehouseType}"
         }
     },
     {
         name: "warehouseAttrType",
         label: "table.warehouseProperties",
         type: "mapping",
-        source: "${WarehouseAttrType}",
+        source: "${ls:dictionary|pick:WarehouseAttrType}",
         searchable: {
             type: "select",
-            source: "${WarehouseAttrType}"
+            source: "${ls:dictionary|pick:WarehouseAttrType}"
         }
     },
     {
         name: "warehouseLevel",
         label: "table.warehouseLevel",
         type: "mapping",
-        source: "${WarehouseLevel}",
+        source: "${ls:dictionary|pick:WarehouseLevel}",
         searchable: {
             type: "select",
-            source: "${WarehouseLevel}"
+            source: "${ls:dictionary|pick:WarehouseLevel}"
         }
     },
     {
         name: "warehouseLabel",
         label: "table.warehouseLables",
         type: "mapping",
-        source: "${WarehouseLabel}",
+        source: "${ls:dictionary|pick:WarehouseLabel}",
         searchable: {
             type: "select",
-            source: "${WarehouseLabel}"
+            source: "${ls:dictionary|pick:WarehouseLabel}"
         }
     },
     {
         name: "businessType",
         label: "table.mainBusiness",
         type: "mapping",
-        source: "${WarehouseBusinessType}",
+        source: "${ls:dictionary|pick:WarehouseBusinessType}",
         searchable: {
             type: "select",
-            source: "${WarehouseBusinessType}"
+            source: "${ls:dictionary|pick:WarehouseBusinessType}"
         }
     },
     {
         name: "structureType",
         label: "table.warehouseStructure",
         type: "mapping",
-        source: "${WarehouseStructureType}",
+        source: "${ls:dictionary|pick:WarehouseStructureType}",
         searchable: {
             type: "select",
-            source: "${WarehouseStructureType}"
+            source: "${ls:dictionary|pick:WarehouseStructureType}"
         }
     },
     {
@@ -330,7 +330,6 @@ const schema = {
     type: "page",
     title: "warehouseManagement.title",
     toolbar: [],
-    initApi: api_getDictionary,
     body: [
         {
             type: "crud",

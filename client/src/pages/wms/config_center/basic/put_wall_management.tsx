@@ -9,10 +9,7 @@ import {
     api_put_wall_delete,
     api_put_wall_get
 } from "@/pages/wms/config_center/constants/api_constant"
-import {
-    api_getDictionary,
-    api_crud_search_by_warehouseCode
-} from "@/pages/constantApi"
+import { api_crud_search_by_warehouseCode } from "@/pages/constantApi"
 
 let warehouseCode = localStorage.getItem("warehouseCode")
 
@@ -155,7 +152,7 @@ const formBody = [
         label: "table.seedingWallLocation",
         name: "location",
         type: "select",
-        source: "${PutWallLocation}",
+        source: "${ls:dictionary|pick:PutWallLocation}",
         required: true
     },
     {
@@ -224,7 +221,7 @@ const columns = [
         name: "enable",
         label: "table.enable",
         type: "mapping",
-        source: "${EnableStatus}"
+        source: "${ls:dictionary|pick:EnableStatus}"
     },
     ...create_update_columns
 ]
@@ -236,7 +233,6 @@ const schema = {
     type: "page",
     title: "seedingWallManagement.title",
     toolbar: [],
-    initApi: api_getDictionary,
     body: [
         {
             type: "crud",

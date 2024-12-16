@@ -11,10 +11,7 @@ import {
     district,
     province
 } from "@/pages/wms/constants/select_search_api_contant"
-import {
-    api_getDictionary,
-    api_crud_search_by_warehouseCode
-} from "@/pages/constantApi"
+import { api_crud_search_by_warehouseCode } from "@/pages/constantApi"
 
 let warehouseCode = localStorage.getItem("warehouseCode")
 
@@ -43,7 +40,7 @@ const form = [
         label: "table.ownerType",
         type: "select",
         name: "ownerType",
-        source: "${OwnerType}",
+        source: "${ls:dictionary|pick:OwnerType}",
         required: true
     },
     {
@@ -179,10 +176,10 @@ const columns = [
         name: "ownerType",
         label: "table.ownerType",
         type: "mapping",
-        source: "${OwnerType}",
+        source: "${ls:dictionary|pick:OwnerType}",
         searchable: {
             type: "select",
-            source: "${OwnerType}"
+            source: "${ls:dictionary|pick:OwnerType}"
         }
     },
     {
@@ -227,7 +224,6 @@ const schema = {
     type: "page",
     title: "shipperManagement.title",
     toolbar: [],
-    initApi: api_getDictionary,
     body: [
         {
             type: "crud",

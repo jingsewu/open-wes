@@ -9,7 +9,7 @@ import {
     create_update_columns,
     true_false_options
 } from "@/utils/commonContants"
-import { api_getDictionary, api_crud_search } from "@/pages/constantApi"
+import { api_crud_search } from "@/pages/constantApi"
 
 const form = [
     {
@@ -42,14 +42,14 @@ const form = [
         label: "table.buriedPoint",
         type: "select",
         name: "executeTime",
-        source: "${ExecuteTime}",
+        source: "${ls:dictionary|pick:ExecuteTime}",
         required: true
     },
     {
         label: "table.businessModules",
         type: "select",
         name: "businessFlow",
-        source: "${BusinessFlow}",
+        source: "${ls:dictionary|pick:BusinessFlow}",
         required: true
     },
     {
@@ -61,7 +61,7 @@ const form = [
         label: "table.stitchingPosition",
         type: "select",
         name: "unionLocation",
-        source: "${UnionLocation}"
+        source: "${ls:dictionary|pick:UnionLocation}"
     },
     {
         type: "input-text",
@@ -82,7 +82,7 @@ const form = [
         items: {
             type: "select",
             clearable: false,
-            source: "${ParserObject}"
+            source: "${ls:dictionary|pick:ParserObject}"
         }
     },
     {
@@ -152,10 +152,10 @@ const columns = [
         name: "executeTime",
         label: "table.buriedPoint",
         type: "mapping",
-        source: "${ExecuteTime}",
+        source: "${ls:dictionary|pick:ExecuteTime}",
         searchable: {
             type: "select",
-            source: "${ExecuteTime}"
+            source: "${ls:dictionary|pick:ExecuteTime}"
         }
     },
     {
@@ -174,7 +174,6 @@ const schema = {
     type: "page",
     title: "barcodeParsingManagement.title",
     toolbar: [],
-    initApi: api_getDictionary,
     body: [
         {
             type: "crud",

@@ -109,6 +109,7 @@ export default class Admin extends React.Component<AdminProps, State> {
             history.replace(`/login`)
         }
         this.refreshMenu()
+        this.getAllDictionaryData()
     }
 
     componentDidUpdate() {
@@ -160,6 +161,15 @@ export default class Admin extends React.Component<AdminProps, State> {
                 }
             })
         }
+    }
+
+    getAllDictionaryData = () => {
+        request({
+            method: "post",
+            url: `/mdm/config/dictionary/getAll`
+        }).then((res: any) => {
+            localStorage.setItem("dictionary", JSON.stringify(res?.data))
+        })
     }
 
     private initWarehouseSelect(warehouses: Array<string>) {

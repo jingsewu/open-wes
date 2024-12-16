@@ -10,7 +10,7 @@ import {
     api_batch_attribute_get,
     api_batch_attribute_update
 } from "@/pages/wms/config_center/constants/api_constant"
-import { api_getDictionary, api_crud_search } from "@/pages/constantApi"
+import { api_crud_search } from "@/pages/constantApi"
 
 const form = [
     {
@@ -43,7 +43,7 @@ const form = [
         label: "table.SKUCategories",
         type: "select",
         name: "skuFirstCategory",
-        source: "${SkuFirstCategory}"
+        source: "${ls:dictionary|pick:SkuFirstCategory}"
     },
     {
         name: "enable",
@@ -163,17 +163,17 @@ const columns = [
         name: "skuFirstCategory",
         label: "table.SKUCategories",
         type: "mapping",
-        source: "${SkuFirstCategory}",
+        source: "${ls:dictionary|pick:SkuFirstCategory}",
         searchable: {
             type: "select",
-            source: "${SkuFirstCategory}"
+            source: "${ls:dictionary|pick:SkuFirstCategory}"
         }
     },
     {
         name: "enable",
         label: "table.enable",
         type: "mapping",
-        source: "${EnableStatus}"
+        source: "${ls:dictionary|pick:EnableStatus}"
     },
     ...create_update_columns
 ]
@@ -185,7 +185,6 @@ const schema = {
     type: "page",
     title: "batchManagement.title",
     toolbar: [],
-    initApi: api_getDictionary,
     body: [
         {
             type: "crud",

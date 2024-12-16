@@ -2,12 +2,7 @@ import schema2component from "@/utils/schema2component"
 import { container_spec } from "@/pages/wms/constants/select_search_api_contant"
 import { create_update_columns } from "@/utils/commonContants"
 import { api_empty_container_inbound_add } from "@/pages/wms/data_center/constants/api_constant"
-import {
-    api_getDictionary,
-    api_crud_search_by_warehouseCode
-} from "@/pages/constantApi"
-
-let warehouseCode = localStorage.getItem("warehouseCode")
+import { api_crud_search_by_warehouseCode } from "@/pages/constantApi"
 
 const form = [
     {
@@ -79,10 +74,10 @@ const columns = [
     {
         name: "inboundWay",
         label: "table.inboundMethod",
-        source: "${EmptyContainerInboundWay}",
+        source: "${ls:dictionary|pick:EmptyContainerInboundWay}",
         searchable: {
             type: "select",
-            source: "${EmptyContainerInboundWay}"
+            source: "${ls:dictionary|pick:EmptyContainerInboundWay}"
         }
     },
     {
@@ -94,10 +89,10 @@ const columns = [
         name: "inboundStatus",
         label: "table.status",
         type: "mapping",
-        source: "${PutAwayTaskStatus}",
+        source: "${ls:dictionary|pick:PutAwayTaskStatus}",
         searchable: {
             type: "select",
-            source: "${PutAwayTaskStatus}"
+            source: "${ls:dictionary|pick:PutAwayTaskStatus}"
         }
     },
     ...create_update_columns,
@@ -130,7 +125,7 @@ const detailColumns = [
         name: "inboundStatus",
         label: "table.status",
         type: "mapping",
-        source: "${PutAwayTaskStatus}"
+        source: "${ls:dictionary|pick:PutAwayTaskStatus}"
     }
 ]
 
@@ -169,7 +164,6 @@ const schema = {
     type: "page",
     title: "menu.emptyContainerInboundOrder",
     toolbar: [],
-    initApi: api_getDictionary,
     body: [
         {
             type: "crud",

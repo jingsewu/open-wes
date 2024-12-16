@@ -4,7 +4,6 @@ import {
     warehouse_area_code
 } from "@/pages/wms/constants/select_search_api_contant"
 import {
-    api_getDictionary,
     api_crud_search_by_warehouseCode,
     api_crud_search_by_warehouseCode_total
 } from "@/pages/constantApi"
@@ -174,7 +173,6 @@ const schema = {
     type: "page",
     title: "inventoryDetails.title",
     toolbar: [],
-    initApi: api_getDictionary,
     body: [
         {
             type: "crud",

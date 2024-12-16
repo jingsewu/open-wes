@@ -10,10 +10,7 @@ import {
     api_sku_update
 } from "@/pages/wms/config_center/constants/api_constant"
 import { create_update_columns, enable_options } from "@/utils/commonContants"
-import {
-    api_getDictionary,
-    api_crud_search_by_warehouseCode
-} from "@/pages/constantApi"
+import { api_crud_search_by_warehouseCode } from "@/pages/constantApi"
 
 let warehouseCode = localStorage.getItem("warehouseCode")
 
@@ -138,31 +135,31 @@ const form = [
                         type: "select",
                         name: "skuAttribute.skuFirstCategory",
                         label: "table.levelOneClassification",
-                        source: "${SkuFirstCategory}"
+                        source: "${ls:dictionary|pick:SkuFirstCategory}"
                     },
                     {
                         type: "select",
                         name: "skuAttribute.skuSecondCategory",
                         label: "table.levelTwoClassification",
-                        source: "${SkuSecondCategory}"
+                        source: "${ls:dictionary|pick:SkuSecondCategory}"
                     },
                     {
                         type: "select",
                         name: "skuAttribute.skuThirdCategory",
                         label: "table.levelThreeClassification",
-                        source: "${SkuThirdCategory}"
+                        source: "${ls:dictionary|pick:SkuThirdCategory}"
                     },
                     {
                         type: "select",
                         name: "skuAttribute.skuAttributeCategory",
                         label: "table.SKUAttributeCategories",
-                        source: "${SkuAttributeCategory}"
+                        source: "${ls:dictionary|pick:SkuAttributeCategory}"
                     },
                     {
                         type: "select",
                         name: "skuAttribute.skuAttributeSubCategory",
                         label: "table.SKUAttributeSubcategory",
-                        source: "${SkuAttributeSubCategory}"
+                        source: "${ls:dictionary|pick:SkuAttributeSubCategory}"
                     }
                 ]
             },
@@ -202,7 +199,7 @@ const form = [
                     {
                         type: "select",
                         name: "skuConfig.heat",
-                        source: "${SkuHeat}",
+                        source: "${ls:dictionary|pick:SkuHeat}",
                         label: "table.SKUHeat"
                     },
                     {
@@ -314,31 +311,31 @@ const columns = [
         name: "skuFirstCategory",
         label: "table.levelOneClassification",
         type: "mapping",
-        source: "${SkuFirstCategory}"
+        source: "${ls:dictionary|pick:SkuFirstCategory}"
     },
     {
         name: "skuSecondCategory",
         label: "table.levelTwoClassification",
         type: "mapping",
-        source: "${SkuSecondCategory}"
+        source: "${ls:dictionary|pick:SkuSecondCategory}"
     },
     {
         name: "skuThirdCategory",
         label: "table.levelThreeClassification",
         type: "mapping",
-        source: "${SkuThirdCategory}"
+        source: "${ls:dictionary|pick:SkuThirdCategory}"
     },
     {
         name: "skuAttributeCategory",
         label: "table.first-level_attributes",
         type: "mapping",
-        source: "${SkuAttributeCategory}"
+        source: "${ls:dictionary|pick:SkuAttributeCategory}"
     },
     {
         name: "skuAttributeSubCategory",
         label: "table.second-level_attributes",
         type: "mapping",
-        source: "${SkuAttributeSubCategory}"
+        source: "${ls:dictionary|pick:SkuAttributeSubCategory}"
     },
     ...create_update_columns
 ]
@@ -350,7 +347,6 @@ const schema = {
     type: "page",
     title: "SKUManagement.title",
     toolbar: [],
-    initApi: api_getDictionary,
     body: [
         {
             type: "crud",

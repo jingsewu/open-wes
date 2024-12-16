@@ -1,6 +1,5 @@
 import schema2component from "@/utils/schema2component"
 import {
-    api_getDictionary,
     api_crud_search_by_warehouseCode_total,
     api_crud_search_by_warehouseCode
 } from "@/pages/constantApi"
@@ -40,20 +39,20 @@ const columns = [
         name: "taskType",
         label: "table.putAwayMethod",
         type: "mapping",
-        source: "${PutAwayTaskType}",
+        source: "${ls:dictionary|pick:PutAwayTaskType}",
         searchable: {
             type: "select",
-            source: "${PutAwayTaskType}"
+            source: "${ls:dictionary|pick:PutAwayTaskType}"
         }
     },
     {
         name: "taskStatus",
         label: "table.putAwayStatus",
         type: "mapping",
-        source: "${PutAwayTaskStatus}",
+        source: "${ls:dictionary|pick:PutAwayTaskStatus}",
         searchable: {
             type: "select",
-            source: "${PutAwayTaskStatus}"
+            source: "${ls:dictionary|pick:PutAwayTaskStatus}"
         }
     },
     {
@@ -158,7 +157,6 @@ const schema = {
     type: "page",
     title: "wms.menu.putAwayTasks",
     toolbar: [],
-    initApi: api_getDictionary,
     body: [
         {
             type: "crud",

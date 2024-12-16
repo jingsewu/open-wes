@@ -3,8 +3,7 @@ import { create_update_columns } from "@/utils/commonContants"
 import { detailDialog } from "./detail"
 import {
     api_crud_search_by_warehouseCode,
-    api_crud_search_by_warehouseCode_total,
-    api_getDictionary
+    api_crud_search_by_warehouseCode_total
 } from "@/pages/constantApi"
 
 const columns = [
@@ -32,10 +31,10 @@ const columns = [
         name: "inboundPlanOrderStatus",
         label: "table.status",
         type: "mapping",
-        source: "${InboundPlanOrderStatus}",
+        source: "${ls:dictionary|pick:InboundPlanOrderStatus}",
         searchable: {
             type: "select",
-            source: "${InboundPlanOrderStatus}"
+            source: "${ls:dictionary|pick:InboundPlanOrderStatus}"
         }
     },
 
@@ -58,10 +57,10 @@ const columns = [
         name: "storageType",
         label: "table.storageType",
         type: "mapping",
-        source: "${StorageType}",
+        source: "${ls:dictionary|pick:StorageType}",
         searchable: {
             type: "select",
-            source: "${StorageType}"
+            source: "${ls:dictionary|pick:StorageType}"
         }
     },
     {
@@ -107,7 +106,6 @@ const schema = {
     type: "page",
     title: "menu.inboundOrder",
     toolbar: [],
-    initApi: api_getDictionary,
     body: [
         {
             type: "crud",

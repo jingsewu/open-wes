@@ -10,7 +10,6 @@ import {
     api_container_spec_update
 } from "@/pages/wms/config_center/constants/api_constant"
 import {
-    api_getDictionary,
     api_crud_search_by_warehouseCode,
     api_crud_search_by_warehouseCode_total
 } from "@/pages/constantApi"
@@ -42,7 +41,7 @@ const fromBody = [
         label: "table.containerType",
         type: "select",
         name: "containerType",
-        source: "${ContainerType}",
+        source: "${ls:dictionary|pick:ContainerType}",
         required: true
     },
     {
@@ -149,10 +148,10 @@ const columns = [
         name: "containerType",
         label: "table.containerType",
         type: "mapping",
-        source: "${ContainerType}",
+        source: "${ls:dictionary|pick:ContainerType}",
         searchable: {
             type: "select",
-            source: "${ContainerType}"
+            source: "${ls:dictionary|pick:ContainerType}"
         }
     },
     {
@@ -184,7 +183,6 @@ const schema = {
     //   title: "容器规格管理",
     title: <Translation>{(t) => t("containerSpec.title")}</Translation>,
     toolbar: [],
-    initApi: api_getDictionary,
     body: [
         {
             type: "crud",

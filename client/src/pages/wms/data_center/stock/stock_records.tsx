@@ -1,12 +1,8 @@
 import schema2component from "@/utils/schema2component"
-import { create_update_columns } from "@/utils/commonContants"
 import {
-    api_getDictionary,
     api_crud_search_by_warehouseCode,
     api_crud_search_by_warehouseCode_total
 } from "@/pages/constantApi"
-
-let warehouseCode = localStorage.getItem("warehouseCode")
 
 const columns = [
     {
@@ -92,7 +88,7 @@ const columns = [
         name: "operationTaskType",
         label: "table.currentOperationType",
         type: "mapping",
-        source: "${OperationTaskType}"
+        source: "${ls:dictionary|pick:OperationTaskType}"
     },
     {
         dbField: "wcst.version",
@@ -149,7 +145,6 @@ const schema = {
     type: "page",
     title: "wms.menu.inventoryRecords",
     toolbar: [],
-    initApi: api_getDictionary,
     body: [
         {
             type: "crud",

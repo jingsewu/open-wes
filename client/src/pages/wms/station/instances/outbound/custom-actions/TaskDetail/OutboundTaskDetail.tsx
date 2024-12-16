@@ -1,7 +1,4 @@
 import schema2component from "@/utils/schema2component"
-import { api_getDictionary } from "@/pages/constantApi"
-
-let warehouseCode = localStorage.getItem("warehouseCode")
 
 const columns = [
     {
@@ -123,7 +120,6 @@ const schema = {
     type: "page",
     // title: "订单详情",
     toolbar: [],
-    initApi: api_getDictionary,
     body: [
         {
             type: "crud",
@@ -131,9 +127,7 @@ const schema = {
             name: "PickingOrderTable",
             api: {
                 method: "POST",
-                url:
-                    "/search/search?page=${page}&perPage=${perPage}&stationCode-op=jck&createTime-op=bt&taskStatus-op=il&taskStatus=NEW,PROCESSING&warehouseCode-op=eq&warehouseCode=" +
-                    warehouseCode,
+                url: "/search/search?page=${page}&perPage=${perPage}&stationCode-op=jck&createTime-op=bt&taskStatus-op=il&taskStatus=NEW,PROCESSING&warehouseCode-op=eq&warehouseCode=${ls:warehouseCode}",
                 dataType: "application/json"
             },
             defaultParams: {

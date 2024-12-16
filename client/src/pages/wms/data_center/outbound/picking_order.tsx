@@ -1,11 +1,6 @@
 import schema2component from "@/utils/schema2component"
 import { create_update_columns } from "@/utils/commonContants"
-import { Translation } from "react-i18next"
-import React from "react"
-import {
-    api_getDictionary,
-    api_crud_search_by_warehouseCode
-} from "@/pages/constantApi"
+import { api_crud_search_by_warehouseCode } from "@/pages/constantApi"
 
 let warehouseCode = localStorage.getItem("warehouseCode")
 
@@ -36,10 +31,10 @@ const columns = [
         name: "pickingOrderStatus",
         label: "table.status",
         type: "mapping",
-        source: "${PickingOrderStatus}",
+        source: "${ls:dictionary|pick:PickingOrderStatus}",
         searchable: {
             type: "select",
-            source: "${PickingOrderStatus}"
+            source: "${ls:dictionary|pick:PickingOrderStatus}"
         }
     },
     {
@@ -168,7 +163,6 @@ const schema = {
     type: "page",
     title: "pickingTasks.title",
     toolbar: [],
-    initApi: api_getDictionary,
     body: [
         {
             type: "crud",

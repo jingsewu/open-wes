@@ -3,10 +3,7 @@ import React from "react"
 import { debounce } from "lodash"
 import { DEBOUNCE_TIME } from "@/pages/wms/station/constant"
 import { CustomActionType } from "@/pages/wms/station/instances/stocktake/customActionType"
-import {
-    api_getDictionary,
-    api_crud_search_by_warehouseCode
-} from "@/pages/constantApi"
+import { api_crud_search_by_warehouseCode } from "@/pages/constantApi"
 
 const columns = [
     {
@@ -22,7 +19,7 @@ const columns = [
     {
         name: "stocktakeTaskStatus",
         label: "table.status",
-        source: "${StocktakeTaskStatus}",
+        source: "${ls:dictionary|pick:StocktakeTaskStatus}",
         type: "mapping"
     },
     {
@@ -97,7 +94,7 @@ const detailColumns = [
         name: "stocktakeTaskDetailStatus",
         label: "table.status",
         type: "mapping",
-        source: "${StocktakeTaskDetailStatus}"
+        source: "${ls:dictionary|pick:StocktakeTaskDetailStatus}"
     }
 ]
 
@@ -128,7 +125,6 @@ const detailDialog = {
 
 const schema = {
     type: "page",
-    initApi: api_getDictionary,
     body: {
         type: "crud",
         syncLocation: false,

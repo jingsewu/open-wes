@@ -17,6 +17,9 @@ import {
     ArrivedContainer,
     SkuMainDataDTO
 } from "@/pages/wms/station/event-loop/types"
+
+const dictionary = JSON.parse(localStorage.getItem("dictionary") || "{}")
+
 interface AbnormalInfo {
     /** 组件ref */
     refs: RefObject<any>
@@ -79,30 +82,32 @@ const Abnormal = (props: AbnormalInfo) => {
         onCustomActionDispatch
     } = value
 
-    const [abnormalReportReason, setAbnormalReportReason] = useState<string>("")
-    const [abnormalReportReasonOptions, setAbnormalReportReasonOptions] =
-        useState<any>([])
+    const [abnormalReportReason, setAbnormalReportReason] = useState<string>(
+        dictionary.StockAbnormalReason?.[0]?.value || ""
+    )
+    // const [abnormalReportReasonOptions, setAbnormalReportReasonOptions] =
+    //     useState<any>(dictionary.StockAbnormalReason || [])
 
     const [pickNum, setPickNum] = useState<number>(0)
     const [isError, setIsError] = useState<boolean>(false) // count组件输入是否存在错误
     const [dataSource, setDataSource] = useState(operationTaskDTOS || [])
 
-    useEffect(() => {
-        getContainerSpecOptions()
-    }, [])
+    // useEffect(() => {
+    //     getContainerSpecOptions()
+    // }, [])
 
     useMemo(() => {
         setDataSource(operationTaskDTOS ? [...operationTaskDTOS] : [])
     }, [operationTaskDTOS])
 
-    const getContainerSpecOptions = async () => {
-        const res: any = await request({
-            method: "post",
-            url: `/mdm/config/dictionary/getAll`
-        })
-        setAbnormalReportReasonOptions(res?.data?.StockAbnormalReason || [])
-        setAbnormalReportReason(res?.data?.StockAbnormalReason?.[0].value)
-    }
+    // const getContainerSpecOptions = async () => {
+    //     const res: any = await request({
+    //         method: "post",
+    //         url: `/mdm/config/dictionary/getAll`
+    //     })
+    //     setAbnormalReportReasonOptions(res?.data?.StockAbnormalReason || [])
+    //     setAbnormalReportReason(res?.data?.StockAbnormalReason?.[0].value)
+    // }
 
     const handleAbnormalReportReason = (value: string) => {
         setAbnormalReportReason(value)
@@ -164,7 +169,7 @@ const Abnormal = (props: AbnormalInfo) => {
             totalToBeRequiredQty
         }
     })
-    console.log("abnormalReportReason", abnormalReportReason)
+
     return (
         <div className="w-full">
             <Row>
@@ -206,7 +211,9 @@ const Abnormal = (props: AbnormalInfo) => {
                                     <AbnormalReportReasonSelector
                                         value={abnormalReportReason}
                                         onChange={handleAbnormalReportReason}
-                                        options={abnormalReportReasonOptions}
+                                        options={
+                                            dictionary.StockAbnormalReason || []
+                                        }
                                     />
                                 </div>
                             </div>

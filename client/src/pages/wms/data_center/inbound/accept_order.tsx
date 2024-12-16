@@ -1,7 +1,6 @@
 import schema2component from "@/utils/schema2component"
 import { create_update_columns } from "@/utils/commonContants"
 import {
-    api_getDictionary,
     api_crud_search_by_warehouseCode,
     api_crud_search_by_warehouseCode_total
 } from "@/pages/constantApi"
@@ -26,10 +25,10 @@ const columns = [
         name: "acceptOrderStatus",
         label: "table.status",
         type: "mapping",
-        source: "${AcceptOrderStatus}",
+        source: "${ls:dictionary|pick:AcceptOrderStatus}",
         searchable: {
             type: "select",
-            source: "${AcceptOrderStatus}"
+            source: "${ls:dictionary|pick:AcceptOrderStatus}"
         }
     },
     {
@@ -147,7 +146,6 @@ const schema = {
     type: "page",
     title: "menu.acceptOrder",
     toolbar: [],
-    initApi: api_getDictionary,
     body: [
         {
             type: "crud",

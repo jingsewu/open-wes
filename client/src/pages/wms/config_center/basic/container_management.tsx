@@ -10,7 +10,6 @@ import {
 } from "@/utils/commonContants"
 import { api_container_batch_add } from "@/pages/wms/config_center/constants/api_constant"
 import {
-    api_getDictionary,
     api_crud_search_by_warehouseCode,
     api_crud_search_by_warehouseCode_total
 } from "@/pages/constantApi"
@@ -30,7 +29,7 @@ const fromBody = [
         label: "table.containerType",
         type: "select",
         name: "containerType",
-        source: "${ContainerType}",
+        source: "${ls:dictionary|pick:ContainerType}",
         required: true
     },
     {
@@ -133,7 +132,7 @@ const columns = [
         name: "containerStatus",
         label: "table.containerStatus",
         type: "mapping",
-        source: "${ContainerStatus}"
+        source: "${ls:dictionary|pick:ContainerStatus}"
     },
     {
         name: "warehouseAreaId",
@@ -178,7 +177,6 @@ const schema = {
     type: "page",
     title: "containerManagement.title",
     toolbar: [],
-    initApi: api_getDictionary,
     body: [
         {
             type: "crud",

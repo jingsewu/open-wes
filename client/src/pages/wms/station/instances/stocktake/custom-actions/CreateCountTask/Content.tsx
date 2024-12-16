@@ -8,12 +8,10 @@ import {
     warehouse_logic_id
 } from "@/pages/wms/constants/select_search_api_contant"
 import { CustomActionType } from "@/pages/wms/station/instances/stocktake/customActionType"
-import { api_getDictionary } from "@/pages/constantApi"
 
 const schema = {
     type: "page",
     title: "modal.receiveInventoryList",
-    initApi: api_getDictionary,
     body: {
         type: "wizard",
         actionFinishLabel: "modal.generateInventoryOrder",
@@ -82,7 +80,7 @@ const schema = {
                         name: "stocktakeType",
                         label: "table.countType",
                         selectFirst: true,
-                        source: "${StocktakeType}",
+                        source: "${ls:dictionary|pick:StocktakeType}",
                         required: true,
                         className: "stocktakeType"
                     },
@@ -91,7 +89,7 @@ const schema = {
                         name: "stocktakeMethod",
                         selectFirst: true,
                         label: "table.countMethod",
-                        source: "${StocktakeMethod}",
+                        source: "${ls:dictionary|pick:StocktakeMethod}",
                         required: true,
                         className: "stocktakeMethod"
                     },

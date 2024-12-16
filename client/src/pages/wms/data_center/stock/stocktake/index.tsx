@@ -8,9 +8,6 @@ import { create_update_columns, yes_no_options } from "@/utils/commonContants"
 import { add } from "./add"
 import { detailDialog } from "./detail"
 import { recordDialog } from "./record"
-import { api_getDictionary } from "@/pages/constantApi"
-
-let warehouseCode = localStorage.getItem("warehouseCode")
 
 const columns = [
     {
@@ -32,40 +29,40 @@ const columns = [
         name: "stocktakeType",
         label: "table.orderType",
         type: "mapping",
-        source: "${StocktakeType}",
+        source: "${ls:dictionary|pick:StocktakeType}",
         searchable: {
             type: "select",
-            source: "${StocktakeType}"
+            source: "${ls:dictionary|pick:StocktakeType}"
         }
     },
     {
         name: "stocktakeCreateMethod",
         label: "table.howItWasCreated",
         type: "mapping",
-        source: "${StocktakeCreateMethod}",
+        source: "${ls:dictionary|pick:StocktakeCreateMethod}",
         searchable: {
             type: "select",
-            source: "${StocktakeCreateMethod}"
+            source: "${ls:dictionary|pick:StocktakeCreateMethod}"
         }
     },
     {
         name: "stocktakeUnitType",
         label: "table.creationType",
         type: "mapping",
-        source: "${StocktakeUnitType}",
+        source: "${ls:dictionary|pick:StocktakeUnitType}",
         searchable: {
             type: "select",
-            source: "${StocktakeUnitType}"
+            source: "${ls:dictionary|pick:StocktakeUnitType}"
         }
     },
     {
         name: "stocktakeOrderStatus",
         label: "table.status",
         type: "mapping",
-        source: "${StocktakeOrderStatus}",
+        source: "${ls:dictionary|pick:StocktakeOrderStatus}",
         searchable: {
             type: "select",
-            source: "${StocktakeOrderStatus}"
+            source: "${ls:dictionary|pick:StocktakeOrderStatus}"
         },
         classNameExpr:
             "${ stocktakeOrderStatus === 'STARTED' ? 'startStatus' : '' }"
@@ -109,7 +106,6 @@ const schema = {
     type: "page",
     title: "wms.menu.inventoryCheck",
     toolbar: [],
-    initApi: api_getDictionary,
     body: [
         {
             type: "crud",
@@ -135,7 +131,8 @@ const schema = {
                         method: "post",
                         url: "/wms/stocktake/order/execute",
                         data: {
-                            warehouseCode,
+                            warehouseCode:
+                                localStorage.getItem("warehouseCode"),
                             orderNos:
                                 "${ARRAYMAP(selectedItems, item => item.orderNo)}",
                             taskCount: "${COUNT(selectedItems)}"

@@ -1,7 +1,7 @@
 import schema2component from "@/utils/schema2component"
-import {create_update_columns, enable_options} from "@/utils/commonContants"
-import {api_warehouse_area_group_add} from "@/pages/wms/config_center/constants/api_constant"
-import {api_crud_search_by_warehouseCode, api_getDictionary} from "@/pages/constantApi"
+import { create_update_columns, enable_options } from "@/utils/commonContants"
+import { api_warehouse_area_group_add } from "@/pages/wms/config_center/constants/api_constant"
+import { api_crud_search_by_warehouseCode } from "@/pages/constantApi"
 
 let warehouseCode = localStorage.getItem("warehouseCode")
 
@@ -106,7 +106,6 @@ const schema = {
     type: "page",
     title: "warehouseAreaManagement.title",
     toolbar: [],
-    initApi: api_getDictionary,
     body: [
         {
             type: "crud",

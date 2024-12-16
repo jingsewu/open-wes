@@ -10,10 +10,7 @@ import {
     api_work_station_config_get,
     api_work_station_get
 } from "@/pages/wms/config_center/constants/api_constant"
-import {
-    api_getDictionary,
-    api_crud_search_by_warehouseCode
-} from "@/pages/constantApi"
+import { api_crud_search_by_warehouseCode } from "@/pages/constantApi"
 
 let warehouseCode = localStorage.getItem("warehouseCode")
 
@@ -55,7 +52,7 @@ const baseInfoForm = [
         name: "allowWorkStationModes",
         type: "select",
         multiple: true,
-        source: "${WorkStationMode}"
+        source: "${ls:dictionary|pick:WorkStationMode}"
     },
     {
         label: "table.position",
@@ -247,13 +244,13 @@ const configInfoForm = [
                                         type: "select",
                                         label: "table.leftSeedingWall",
                                         name: "leftPutWallDisplayOrder",
-                                        source: "${PutWallDisplayOrder}"
+                                        source: "${ls:dictionary|pick:PutWallDisplayOrder}"
                                     },
                                     {
                                         type: "select",
                                         label: "table.rightSeedingWall",
                                         name: "rightPutWallDisplayOrder",
-                                        source: "${PutWallDisplayOrder}"
+                                        source: "${ls:dictionary|pick:PutWallDisplayOrder}"
                                     }
                                 ]
                             }
@@ -295,7 +292,7 @@ const configInfoForm = [
                                         type: "select",
                                         name: "color",
                                         label: "table.fieldColor",
-                                        source: "${FieldColors}"
+                                        source: "${ls:dictionary|pick:FieldColors}"
                                     },
                                     {
                                         type: "checkbox",
@@ -322,19 +319,19 @@ const configInfoForm = [
                                         type: "select",
                                         name: "color",
                                         label: "table.tplLightColor",
-                                        source: "${PtlColor}"
+                                        source: "${ls:dictionary|pick:PtlColor}"
                                     },
                                     {
                                         type: "select",
                                         name: "mode",
                                         label: "table.tplLightMode",
-                                        source: "${PtlMode}"
+                                        source: "${ls:dictionary|pick:PtlMode}"
                                     },
                                     {
                                         type: "select",
                                         name: "updown",
                                         label: "table.tplLightUpdown",
-                                        source: "${PtlUpdown}"
+                                        source: "${ls:dictionary|pick:PtlUpdown}"
                                     }
                                 ]
                             },
@@ -347,19 +344,19 @@ const configInfoForm = [
                                         type: "select",
                                         name: "color",
                                         label: "table.tplLightColor",
-                                        source: "${PtlColor}"
+                                        source: "${ls:dictionary|pick:PtlColor}"
                                     },
                                     {
                                         type: "select",
                                         name: "mode",
                                         label: "table.tplLightMode",
-                                        source: "${PtlMode}"
+                                        source: "${ls:dictionary|pick:PtlMode}"
                                     },
                                     {
                                         type: "select",
                                         name: "updown",
                                         label: "table.tplLightUpdown",
-                                        source: "${PtlUpdown}"
+                                        source: "${ls:dictionary|pick:PtlUpdown}"
                                     }
                                 ]
                             },
@@ -372,19 +369,19 @@ const configInfoForm = [
                                         type: "select",
                                         name: "color",
                                         label: "table.tplLightColor",
-                                        source: "${PtlColor}"
+                                        source: "${ls:dictionary|pick:PtlColor}"
                                     },
                                     {
                                         type: "select",
                                         name: "mode",
                                         label: "table.tplLightMode",
-                                        source: "${PtlMode}"
+                                        source: "${ls:dictionary|pick:PtlMode}"
                                     },
                                     {
                                         type: "select",
                                         name: "updown",
                                         label: "table.tplLightUpdown",
-                                        source: "${PtlUpdown}"
+                                        source: "${ls:dictionary|pick:PtlUpdown}"
                                     }
                                 ]
                             },
@@ -397,7 +394,7 @@ const configInfoForm = [
                                         type: "select",
                                         name: "color",
                                         label: "table.tplLightColor",
-                                        source: "${PtlColor}"
+                                        source: "${ls:dictionary|pick:PtlColor}"
                                     }
                                 ]
                             },
@@ -410,7 +407,7 @@ const configInfoForm = [
                                         type: "select",
                                         name: "color",
                                         label: "table.tplLightColor",
-                                        source: "${PtlColor}"
+                                        source: "${ls:dictionary|pick:PtlColor}"
                                     }
                                 ]
                             },
@@ -423,7 +420,7 @@ const configInfoForm = [
                                         type: "select",
                                         name: "color",
                                         label: "table.tplLightColor",
-                                        source: "${PtlColor}"
+                                        source: "${ls:dictionary|pick:PtlColor}"
                                     }
                                 ]
                             }
@@ -492,16 +489,16 @@ const columns = [
         name: "workStationMode",
         label: "table.currentOperationType",
         type: "mapping",
-        source: "${WorkStationMode}"
+        source: "${ls:dictionary|pick:WorkStationMode}"
     },
     {
         name: "workStationStatus",
         label: "table.status",
         type: "mapping",
-        source: "${WorkStationStatus}",
+        source: "${ls:dictionary|pick:WorkStationStatus}",
         searchable: {
             type: "select",
-            source: "${WorkStationStatus}"
+            source: "${ls:dictionary|pick:WorkStationStatus}"
         }
     },
     {
@@ -518,7 +515,6 @@ const schema = {
     type: "page",
     title: "workstationManagement.title",
     toolbar: [],
-    initApi: api_getDictionary,
     body: [
         {
             type: "crud",

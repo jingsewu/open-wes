@@ -48,5 +48,3 @@ export const api_crud_search_by_warehouseCode_total = {
     url: "/search/search?page=${1}&perPage=${100000}&createTime-op=bt&warehouseCode-op=eq&warehouseCode=${ls:warehouseCode}",
     dataType: "application/json"
 }
-
-export const api_getDictionary = "post:/mdm/config/dictionary/getAll"

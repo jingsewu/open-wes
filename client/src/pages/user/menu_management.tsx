@@ -6,11 +6,7 @@ import {
 } from "@/pages/user/constants/api_constant"
 import { create_update_columns, yes_no_options } from "@/utils/commonContants"
 import { menu_search_api } from "@/pages/user/constants/select_search_api_constant"
-import {
-    api_getDictionary,
-    api_crud_search,
-    api_crud_search_total
-} from "@/pages/constantApi"
+import { api_crud_search, api_crud_search_total } from "@/pages/constantApi"
 
 const form = [
     {
@@ -21,7 +17,7 @@ const form = [
         label: "userCenter.menuManagement.form.systemCoding",
         type: "select",
         name: "systemCode",
-        source: "${AppCode}",
+        source: "${ls:dictionary|pick:AppCode}",
         required: true
     },
     {
@@ -35,7 +31,7 @@ const form = [
         label: "userCenter.menuManagement.form.menuType",
         type: "select",
         name: "type",
-        source: "${MenuType}",
+        source: "${ls:dictionary|pick:MenuType}",
         required: true
     },
     {
@@ -128,20 +124,20 @@ const columns = [
         name: "systemCode",
         label: "userCenter.menuManagement.table.affiliation",
         type: "mapping",
-        source: "${AppCode}",
+        source: "${ls:dictionary|pick:AppCode}",
         searchable: {
             type: "select",
-            source: "${AppCode}"
+            source: "${ls:dictionary|pick:AppCode}"
         }
     },
     {
         name: "type",
         label: "userCenter.menuManagement.table.type",
         type: "mapping",
-        source: "${MenuType}",
+        source: "${ls:dictionary|pick:MenuType}",
         searchable: {
             type: "select",
-            source: "${MenuType}"
+            source: "${ls:dictionary|pick:MenuType}"
         }
     },
     {
@@ -187,7 +183,6 @@ const schema = {
     type: "page",
     title: "userCenter.menuManagement.title",
     toolbar: [],
-    initApi: api_getDictionary,
     body: [
         {
             type: "crud",

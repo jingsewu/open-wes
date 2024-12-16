@@ -1,9 +1,6 @@
 import schema2component from "@/utils/schema2component"
 import { create_update_columns } from "@/utils/commonContants"
-import {
-    api_getDictionary,
-    api_crud_search_by_warehouseCode
-} from "@/pages/constantApi"
+import { api_crud_search_by_warehouseCode } from "@/pages/constantApi"
 
 const columns = [
     {
@@ -21,10 +18,10 @@ const columns = [
         name: "status",
         label: "table.status",
         type: "mapping",
-        source: "${StockAdjustmentOrderStatus}",
+        source: "${ls:dictionary|pick:StockAdjustmentOrderStatus}",
         searchable: {
             type: "select",
-            source: "${StockAdjustmentOrderStatus}"
+            source: "${ls:dictionary|pick:StockAdjustmentOrderStatus}"
         }
     },
     ...create_update_columns
@@ -125,7 +122,6 @@ const schema = {
     type: "page",
     title: "wms.menu.inventoryAdjustment",
     toolbar: [],
-    initApi: api_getDictionary,
     body: [
         {
             type: "crud",
