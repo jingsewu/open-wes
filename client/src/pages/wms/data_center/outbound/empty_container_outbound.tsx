@@ -5,7 +5,7 @@ import {
     api_empty_container_outbound_add,
     api_empty_container_outbound_execute
 } from "@/pages/wms/data_center/constants/api_constant"
-import {api_crud_search_by_warehouseCode, api_getDictionary} from "@/pages/constantApi"
+import {api_crud_search_by_warehouseCode} from "@/pages/constantApi"
 
 let warehouseCode = localStorage.getItem("warehouseCode")
 
@@ -110,10 +110,10 @@ const columns = [
         name: "emptyContainerOutboundStatus",
         label: "table.status",
         type: "mapping",
-        source: "${EmptyContainerOutboundStatus}",
+        source: "${ls:dictionary|pick:EmptyContainerOutboundStatus}",
         searchable: {
             type: "select",
-            source: "${EmptyContainerOutboundStatus}"
+            source: "${ls:dictionary|pick:EmptyContainerOutboundStatus}"
         }
     },
     ...create_update_columns,
@@ -138,7 +138,7 @@ const detailColumns = [
         name: "detailStatus",
         label: "table.status",
         type: "mapping",
-        source: "${EmptyContainerOutboundDetailStatus}"
+        source: "${ls:dictionary|pick:EmptyContainerOutboundDetailStatus}"
     }
 ]
 
@@ -177,7 +177,6 @@ const schema = {
     type: "page",
     title: "menu.emptyContainerOutboundOrder",
     toolbar: [],
-    initApi: api_getDictionary,
     body: [
         {
             type: "crud",
