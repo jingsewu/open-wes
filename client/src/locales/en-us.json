@@ -193,7 +193,6 @@
     "menu.emptyContainerInboundOrder": "Empty Container Inbound Orders",
     "menu.emptyContainerOutboundOrder": "Empty Container Outbound Orders",
     "menu.acceptOrder": "Accept Orders",
-    "menu.emptyContainerOutboundOrder": "Empty Container Inbound Orders",
     "table.acceptOrderDetails": "Accept Order Details",
     "inventoryCount.selectCreateMethod": "Select the method to create an inventory count order",
 
