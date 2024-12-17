@@ -344,6 +344,12 @@ export default class WorkStationEventLoop {
                     )
             )
 
+            const heartbeatInterval = setInterval(() => {
+                if (this.websocket?.readyState === WebSocket.OPEN) {
+                    this.websocket.send("ping");
+                }
+            }, 10000);
+
             this.websocket.onopen = () => {
                 console.log(`websocket 连接成功，状态${this.websocket}`)
             }
@@ -363,7 +369,14 @@ export default class WorkStationEventLoop {
                 console.log(
                     `websocket 连接错误，状态${this.eventSource?.readyState}`
                 )
+                clearInterval(heartbeatInterval);
             }
+
+            this.websocket.onclose = () => {
+                clearInterval(heartbeatInterval);
+                console.log("WebSocket closed");
+                //todo need to reconnect?
+            };
             return data
         }
 
