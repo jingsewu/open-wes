@@ -139,14 +139,14 @@ public class ContainerApiImpl implements IContainerApi {
 
     @Override
     public void lockContainer(String warehouseCode, Set<String> containerCodes) {
-        final List<Container> containers = containerRepository.findByContainerCodes(containerCodes, warehouseCode);
+        List<Container> containers = containerRepository.findByContainerCodes(containerCodes, warehouseCode);
         containers.forEach(Container::lock);
         containerRepository.saveAll(containers);
     }
 
     @Override
     public void unLockContainer(String warehouseCode, Set<String> containerCodes) {
-        final List<Container> containers = containerRepository.findByContainerCodes(containerCodes, warehouseCode);
+        List<Container> containers = containerRepository.findByContainerCodes(containerCodes, warehouseCode);
         containers.forEach(Container::unlock);
         containerRepository.saveAll(containers);
     }
@@ -168,5 +168,18 @@ public class ContainerApiImpl implements IContainerApi {
                     containerLocationAggregate.updateContainerLocation(values, containers, locations);
 
                 });
+    }
+
+    @Override
+    public List<ContainerDTO> queryInsideEmptyContainers(String containerSpecCode, String warehouseCode, Long warehouseAreaId) {
+        List<Container> containers = containerRepository.findAllInsideEmptyContainers(containerSpecCode, warehouseCode, warehouseAreaId);
+        return containerTransfer.toDTOs(containers);
+    }
+
+    @Override
+    public void moveOutside(String warehouseCode, Set<String> containerCodes) {
+        List<Container> containers = containerRepository.findByContainerCodes(containerCodes, warehouseCode);
+        containers.forEach(Container::moveOutside);
+        containerRepository.saveAll(containers);
     }
 }

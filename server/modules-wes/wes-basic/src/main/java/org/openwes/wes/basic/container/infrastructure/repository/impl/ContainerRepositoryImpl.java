@@ -1,10 +1,12 @@
 package org.openwes.wes.basic.container.infrastructure.repository.impl;
 
+import lombok.RequiredArgsConstructor;
+import org.openwes.wes.api.basic.constants.ContainerStatusEnum;
 import org.openwes.wes.basic.container.domain.entity.Container;
 import org.openwes.wes.basic.container.domain.repository.ContainerRepository;
 import org.openwes.wes.basic.container.infrastructure.persistence.mapper.ContainerPORepository;
+import org.openwes.wes.basic.container.infrastructure.persistence.po.ContainerPO;
 import org.openwes.wes.basic.container.infrastructure.persistence.transfer.ContainerPOTransfer;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,6 +49,12 @@ public class ContainerRepositoryImpl implements ContainerRepository {
     @Override
     public boolean existByContainerSpecCode(String containerSpecCode, String warehouseCode) {
         return containerPORepository.existsByContainerSpecCodeAndWarehouseCode(containerSpecCode, warehouseCode);
+    }
+
+    @Override
+    public List<Container> findAllInsideEmptyContainers(String containerSpecCode, String warehouseCode, Long warehouseAreaId) {
+        List<ContainerPO> containerPOs = containerPORepository.findByContainerSpecCodeAndWarehouseCodeAndWarehouseAreaIdAndEmptyContainerAndContainerStatus(containerSpecCode, warehouseCode, warehouseAreaId, true, ContainerStatusEnum.IN_SIDE);
+        return containerPOTransfer.toDOs(containerPOs);
     }
 
 

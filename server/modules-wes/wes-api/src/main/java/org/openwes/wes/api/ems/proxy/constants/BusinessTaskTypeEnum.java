@@ -11,6 +11,7 @@ import java.util.List;
 public enum BusinessTaskTypeEnum {
 
     EMPTY_CONTAINER_INBOUND,
+    EMPTY_CONTAINER_OUTBOUND,
 
     RECEIVING,
     PUT_AWAY,

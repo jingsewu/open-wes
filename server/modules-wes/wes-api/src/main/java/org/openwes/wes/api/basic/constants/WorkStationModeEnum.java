@@ -11,6 +11,8 @@ public enum WorkStationModeEnum {
 
     STOCKTAKE,
 
+    EMPTY_CONTAINER_OUTBOUND,
+
     ONE_STEP_RELOCATION,
 
     TWO_STEP_RELOCATION;;

@@ -1,10 +1,10 @@
 package org.openwes.station.infrastructure.remote;
 
+import lombok.Setter;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.openwes.wes.api.basic.IContainerApi;
 import org.openwes.wes.api.basic.dto.ContainerDTO;
 import org.openwes.wes.api.basic.dto.ContainerSpecDTO;
-import lombok.Setter;
-import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
@@ -28,4 +28,7 @@ public class ContainerService {
         containerApi.unLockContainer(warehouseCode, containerCodes);
     }
 
+    public void moveOutside(String warehouseCode, Set<String> containerCode) {
+        containerApi.moveOutside(warehouseCode, containerCode);
+    }
 }

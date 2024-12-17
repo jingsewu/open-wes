@@ -191,11 +191,14 @@
 
     "menu.inboundOrder": "Inbound Orders",
     "menu.emptyContainerInboundOrder": "Empty Container Inbound Orders",
+    "menu.emptyContainerOutboundOrder": "Empty Container Outbound Orders",
     "menu.acceptOrder": "Accept Orders",
+    "menu.emptyContainerOutboundOrder": "Empty Container Inbound Orders",
     "table.acceptOrderDetails": "Accept Order Details",
     "inventoryCount.selectCreateMethod": "Select the method to create an inventory count order",
 
     "emptyContainerInboundOrder.detail.modal.title": "Empty container inbound order details",
+    "emptyContainerOutboundOrder.detail.modal.title": "Empty container outbound order details",
     "outboundOrder.detail.modal.title": "Outbound order details",
     "putAwayTask.detail.modal.title": "Put away task details",
     "accept.order.detail.modal.title": "Accept order details",
@@ -255,6 +258,7 @@
     "table.containerSpecificationNumber": "Container specification number",
     "table.acceptanceQuantity": "QTY Acceptance",
     "table.plannedQuantity": "QTY Planned",
+    "table.actualQuantity": "QTY actual",
     "table.unreceivedQuantity": "QTY Unreceived",
     "table.receivedQuantity": "QTY received",
     "table.responsibleParty": "Responsible party",
@@ -496,6 +500,8 @@
     "table.acceptOrderNo": "accept order no",
     "table.acceptMethod": "accept method",
     "table.acceptOrderStatus": "accept order status",
+    "table.planCount": "plan count",
+    "table.emptySlotNum": "empty slot number",
 
     "form.tab.basicInformation": "Basic Information",
     "form.tab.configurationInformation": "Configuration Information",

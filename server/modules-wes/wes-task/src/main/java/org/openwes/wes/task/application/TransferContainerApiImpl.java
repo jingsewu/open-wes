@@ -3,7 +3,7 @@ package org.openwes.wes.task.application;
 import org.openwes.wes.api.basic.IWarehouseAreaApi;
 import org.openwes.wes.api.basic.dto.WarehouseAreaDTO;
 import org.openwes.wes.api.ems.proxy.dto.ContainerArrivedEvent;
-import org.openwes.wes.api.outbound.dto.TransferContainerReleaseDTO;
+import org.openwes.wes.api.task.dto.TransferContainerReleaseDTO;
 import org.openwes.wes.api.task.ITransferContainerApi;
 import org.openwes.wes.api.task.constants.TransferContainerStatusEnum;
 import org.openwes.wes.task.domain.aggregate.TransferContainerStockAggregate;

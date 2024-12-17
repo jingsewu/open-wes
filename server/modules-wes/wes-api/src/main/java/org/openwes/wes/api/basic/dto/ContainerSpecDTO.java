@@ -52,12 +52,12 @@ public class ContainerSpecDTO implements IValidate, Serializable {
     private Long version;
 
     public Integer getContainerSlotNum() {
-        return containerSlotSpecs == null ? 0 : containerSlotSpecs.size();
+        return this.containerSlotSpecs == null ? 0 : this.containerSlotSpecs.size();
     }
 
     @Override
     public boolean validate() {
-        List<String> allSlotSpecCodes = containerSlotSpecs.stream()
+        List<String> allSlotSpecCodes = this.containerSlotSpecs.stream()
                 .flatMap(containerSlotSpec ->
                         containerSlotSpec.getAllContainerSlotSpecCodes(containerSlotSpec.getChildren()).stream()).toList();
         if (allSlotSpecCodes.size() != allSlotSpecCodes.stream().distinct().count()) {
@@ -65,7 +65,7 @@ public class ContainerSpecDTO implements IValidate, Serializable {
         }
 
 
-        List<String> allLevelBay = containerSlotSpecs.stream()
+        List<String> allLevelBay = this.containerSlotSpecs.stream()
                 .flatMap(containerSlotSpec ->
                         containerSlotSpec.getAllLevelBay(containerSlotSpec.getChildren()).stream()).toList();
 
@@ -112,7 +112,7 @@ public class ContainerSpecDTO implements IValidate, Serializable {
 
         public List<String> getAllContainerSlotSpecCodes(List<ContainerSlotSpec> children) {
 
-            List<String> allSlotSpecCodes = Lists.newArrayList(containerSlotSpecCode);
+            List<String> allSlotSpecCodes = Lists.newArrayList(this.containerSlotSpecCode);
             if (CollectionUtils.isEmpty(children)) {
                 return allSlotSpecCodes;
             }

@@ -11,7 +11,7 @@ import org.openwes.wes.api.main.data.dto.SkuMainDataDTO;
 import org.openwes.wes.api.outbound.IOutboundPlanOrderApi;
 import org.openwes.wes.api.outbound.dto.OutboundPlanOrderCancelDTO;
 import org.openwes.wes.api.outbound.dto.OutboundPlanOrderDTO;
-import org.openwes.wes.api.outbound.dto.TransferContainerReleaseDTO;
+import org.openwes.wes.api.task.dto.TransferContainerReleaseDTO;
 import org.openwes.wes.api.task.ITransferContainerApi;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+
+    <changeSet id="m_dictionary_update_enum_ConverterType" author="Kinser">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="m_dictionary"/>
+            </and>
+        </preConditions>
+        <comment>m_dictionary修改枚举ConverterType</comment>
+        <sql>
+            update m_dictionary set items ='[{"order": 0,"value": "NONE","defaultItem": true,"description": {"languages": {"zh-CN": null}},"showContext": {"languages": {"zh-CN": "NONE"}}},{"order": 0,"value": "JS","defaultItem": false,"description": {"languages": {"zh-CN": null}},"showContext": {"languages": {"zh-CN": "javascript"}}},{"order": 0,"value": "TEMPLATE","defaultItem": false,"description": {"languages": {"zh-CN": null}},"showContext": {"languages": {"zh-CN": "template"}}}]'  where code = 'ConverterType';
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

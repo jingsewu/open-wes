@@ -6,7 +6,7 @@ import org.openwes.wes.api.inbound.dto.InboundPlanOrderDTO;
 import org.openwes.wes.api.main.data.dto.SkuMainDataDTO;
 import org.openwes.wes.api.outbound.dto.OutboundPlanOrderCancelDTO;
 import org.openwes.wes.api.outbound.dto.OutboundPlanOrderDTO;
-import org.openwes.wes.api.outbound.dto.TransferContainerReleaseDTO;
+import org.openwes.wes.api.task.dto.TransferContainerReleaseDTO;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package org.openwes.wes.api.outbound.dto;
+package org.openwes.wes.api.task.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;

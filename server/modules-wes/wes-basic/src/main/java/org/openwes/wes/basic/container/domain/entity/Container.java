@@ -51,7 +51,8 @@ public class Container {
 
     private Long version;
 
-    public Container(String warehouseCode, String containerCode, String containerSpecCode, @NotNull List<ContainerDTO.ContainerSlot> containerSlots) {
+    public Container(String warehouseCode, String containerCode, String containerSpecCode,
+                     @NotNull List<ContainerDTO.ContainerSlot> containerSlots) {
         this.warehouseCode = warehouseCode;
         this.containerSlots = containerSlots;
         this.containerCode = containerCode;
@@ -87,7 +88,11 @@ public class Container {
         log.info("container id: {} code: {} lock", this.id, this.containerCode);
 
         if (this.locked) {
-            throw new IllegalStateException("container is already locked");
+            throw new IllegalStateException("container: " + this.containerCode + " is already locked, can not be locked");
+        }
+
+        if (this.containerStatus == ContainerStatusEnum.OUT_SIDE) {
+            throw new IllegalStateException("container: " + this.containerCode + " is already out side, can not be locked");
         }
         this.locked = true;
     }
@@ -135,6 +140,9 @@ public class Container {
     }
 
     public void moveOutside() {
+        this.locked = false;
+        this.warehouseAreaId = null;
+        this.locationCode = "";
         this.containerStatus = ContainerStatusEnum.OUT_SIDE;
     }
 

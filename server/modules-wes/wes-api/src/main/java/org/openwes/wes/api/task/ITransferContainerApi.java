@@ -1,7 +1,7 @@
 package org.openwes.wes.api.task;
 
 import org.openwes.wes.api.ems.proxy.dto.ContainerArrivedEvent;
-import org.openwes.wes.api.outbound.dto.TransferContainerReleaseDTO;
+import org.openwes.wes.api.task.dto.TransferContainerReleaseDTO;
 import jakarta.validation.Valid;
 
 import java.util.List;

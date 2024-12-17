@@ -1,9 +1,9 @@
 package org.openwes.common.utils.id;
 
-import org.openwes.common.utils.utils.RedisUtils;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.FastDateFormat;
+import org.openwes.common.utils.utils.RedisUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
@@ -25,6 +25,7 @@ public class OrderNoGenerator {
     private static final String PUT_AWAY_TASK_NO_PREFIX = "PUT_AWAY_";
 
     private static final String EMPTY_CONTAINER_INBOUND_ORDER_NO_PREFIX = "ECI_";
+    private static final String EMPTY_CONTAINER_OUTBOUND_ORDER_NO_PREFIX = "ECO_";
 
     private static final String OUTBOUND_PLAN_ORDER_NO_PREFIX = "OUT_";
     private static final String OUTBOUND_WAVE_NO_PREFIX = "WAVE_";
@@ -57,15 +58,8 @@ public class OrderNoGenerator {
         return generateOrderNo(INBOUND_PLAN_ORDER_NO_PREFIX);
     }
 
-    public static String generationReceiveOrderNo() {
-        return generateOrderNo(RECEIVE_ORDER_NO_PREFIX);
-    }
-
     public static String generationAcceptOrderNo() {
         return generateOrderNo(ACCEPT_ORDER_NO_PREFIX);
-    }
-    public static String generationMovementOrderNo() {
-        return generateOrderNo(MOVEMENT_ORDER_NO_PREFIX);
     }
 
     public static String generationPutAwayTaskNo() {
@@ -74,6 +68,10 @@ public class OrderNoGenerator {
 
     public static String generationEmptyContainerInboundOrderNo() {
         return generateOrderNo(EMPTY_CONTAINER_INBOUND_ORDER_NO_PREFIX);
+    }
+
+    public static String generationEmptyContainerOutboundOrderNo() {
+        return generateOrderNo(EMPTY_CONTAINER_OUTBOUND_ORDER_NO_PREFIX);
     }
 
     public static String generationOutboundPlanOrderNo() {
@@ -114,7 +112,6 @@ public class OrderNoGenerator {
      * OrderNo = prefix + datacenterId + workId + "YYYY-MM-DD" + INDEX
      *
      * @param prefix
-     *
      * @return
      */
     private static String generateOrderNo(String prefix) {

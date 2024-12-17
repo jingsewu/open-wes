@@ -53,4 +53,5 @@ public class StocktakeWorkStationCache extends WorkStationCache {
     public void removeOperationTask(Long detailId) {
         this.operateTasks.removeIf(v -> v.getOperationTaskDTO().getDetailId().equals(detailId));
     }
+
 }

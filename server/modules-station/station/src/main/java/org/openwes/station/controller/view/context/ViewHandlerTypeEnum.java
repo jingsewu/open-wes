@@ -27,7 +27,7 @@ public enum ViewHandlerTypeEnum {
 
 
     public static List<ViewHandlerTypeEnum> baseViewHandlerTypes() {
-        return Lists.newArrayList(BASE_AREA);
+        return Lists.newArrayList(BASE_AREA, CONTAINER_AREA);
     }
 
     public static List<ViewHandlerTypeEnum> pickingViewHandlerTypes() {

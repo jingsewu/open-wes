@@ -32,4 +32,9 @@ public interface IContainerApi {
     void unLockContainer(@NotEmpty String warehouseCode, @NotEmpty Set<String> containerCodes);
 
     void updateContainerLocation(@Valid List<ContainerLocationReportDTO> reportDTOS);
+
+    List<ContainerDTO> queryInsideEmptyContainers(@NotEmpty String containerSpecCode, @NotEmpty String warehouseCode,
+                                                  @NotNull Long warehouseAreaId);
+
+    void moveOutside(String warehouseCode, Set<String> containerCode);
 }

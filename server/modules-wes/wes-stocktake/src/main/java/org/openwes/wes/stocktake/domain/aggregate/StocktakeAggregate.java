@@ -1,6 +1,11 @@
 package org.openwes.wes.stocktake.domain.aggregate;
 
 import com.google.common.collect.Lists;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.openwes.wes.api.basic.IContainerApi;
 import org.openwes.wes.api.ems.proxy.dto.CreateContainerTaskDTO;
 import org.openwes.wes.api.main.data.dto.SkuMainDataDTO;
 import org.openwes.wes.api.stock.IStockAbnormalRecordApi;
@@ -18,15 +23,13 @@ import org.openwes.wes.stocktake.domain.repository.StocktakeOrderRepository;
 import org.openwes.wes.stocktake.domain.repository.StocktakeRecordRepository;
 import org.openwes.wes.stocktake.domain.repository.StocktakeTaskRepository;
 import org.openwes.wes.stocktake.domain.service.StocktakeTaskService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +42,7 @@ public class StocktakeAggregate {
     private final StocktakeRecordRepository stocktakeRecordRepository;
     private final IStockAbnormalRecordApi stockAbnormalRecordApi;
     private final ContainerTaskApiFacade containerTaskApiFacade;
+    private final IContainerApi containerApi;
 
     @Transactional(rollbackFor = Exception.class)
     public void executeStocktakeOrder(List<StocktakeTask> stocktakeTaskList, StocktakeOrder stocktakeOrder) {
@@ -91,6 +95,10 @@ public class StocktakeAggregate {
     @Transactional(rollbackFor = Exception.class)
     public void receiveStocktakeOrder(List<StocktakeTask> stocktakeTasks, Long workStationId) {
 
+        Set<String> containerCodes = stocktakeTasks.stream().flatMap(v -> v.getDetails().stream())
+                .map(StocktakeTaskDetail::getContainerCode).collect(Collectors.toSet());
+        containerApi.lockContainer(stocktakeTasks.get(0).getWarehouseCode(), containerCodes);
+
         stocktakeTasks.forEach(stocktakeTask -> stocktakeTask.receive(workStationId));
 
         List<CreateContainerTaskDTO> createContainerTaskDTOS = stocktakeTasks.stream()
@@ -111,10 +119,14 @@ public class StocktakeAggregate {
                 .flatMap(v -> v.getDetails().stream().filter(d -> StocktakeTaskDetailStatusEnum.isCloseable(d.getStocktakeTaskDetailStatus())))
                 .toList();
 
+        containerApi.unLockContainer(stocktakeTasks.get(0).getWarehouseCode(),
+                closeableDetails.stream().map(StocktakeTaskDetail::getContainerCode).collect(Collectors.toSet()));
+
         stocktakeTasks.forEach(StocktakeTask::close);
         stocktakeTaskRepository.saveAllTaskAndDetails(stocktakeTasks);
 
-        List<StocktakeRecord> newStocktakeRecords = stocktakeRecords.stream().filter(v -> v.getStocktakeRecordStatus() == StocktakeRecordStatusEnum.NEW).toList();
+        List<StocktakeRecord> newStocktakeRecords = stocktakeRecords.stream().filter(v ->
+                v.getStocktakeRecordStatus() == StocktakeRecordStatusEnum.NEW).toList();
         newStocktakeRecords.forEach(StocktakeRecord::close);
         stocktakeRecordRepository.saveAll(newStocktakeRecords);
 

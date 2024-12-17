@@ -85,6 +85,11 @@ public class WorkStationCache {
         }
     }
 
+    public void clearArrivedContainers() {
+        log.info("work station: {} clear arrived containers", this.id);
+        this.arrivedContainers.clear();
+    }
+
     public void setUndoContainersProcessing(List<ArrivedContainerCache> arrivedContainers) {
 
         log.info("work station: {} set undo containers: {} processing", this.id, arrivedContainers);
