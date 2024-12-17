@@ -2,8 +2,6 @@ import schema2component from "@/utils/schema2component"
 import { create_update_columns } from "@/utils/commonContants"
 import { api_crud_search_by_warehouseCode } from "@/pages/constantApi"
 
-let warehouseCode = localStorage.getItem("warehouseCode")
-
 const columns = [
     {
         name: "id",
@@ -189,9 +187,7 @@ const schema = {
                     method: "POST",
                     api: {
                         method: "POST",
-                        url:
-                            "/search/search?page=${1}&perPage=${100000}&createTime-op=bt&warehouseCode-op=eq&warehouseCode=" +
-                            warehouseCode,
+                        url: "/search/search?page=${1}&perPage=${100000}&createTime-op=bt&warehouseCode-op=eq&warehouseCode=${ls:warehouseCode}",
                         dataType: "application/json",
                         data: {
                             searchIdentity: searchDetailIdentity,
