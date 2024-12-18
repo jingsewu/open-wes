@@ -1,6 +1,7 @@
 package org.openwes.station.controller.websocket.controller;
 
 import com.google.common.collect.Maps;
+import lombok.Getter;
 import org.openwes.station.infrastructure.filters.HttpStationContext;
 import jakarta.websocket.*;
 import jakarta.websocket.server.ServerEndpoint;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+@Getter
 @Slf4j
 @ServerEndpoint(value = "/websocket", configurator = GetHttpSessionConfigurator.class)
 @Controller
@@ -65,36 +67,22 @@ public class StationWebSocketController {
         }
     }
 
-    /**
-     * 连接关闭调用的方法
-     */
     @OnClose
     public void onClose(Session session) {
         log.info("websocket: {} close .", session == null ? "null" : session.getId());
     }
 
-    /**
-     * 收到客户端消息后调用的方法
-     *
-     * @param message 客户端发送过来的消息
-     * @param session 可选的参数
-     */
     @OnMessage
     public void onMessage(String message, Session session) {
-        log.info("websocket: {} receive message: {}.", session.getId(), message);
+        log.debug("websocket: {} receive message: {}.", session.getId(), message);
+        sendMessage("pong");
     }
 
-    /**
-     * 发生错误时调用
-     */
     @OnError
     public void onError(Session session, Throwable error) {
         log.error("websocket err: ", error);
     }
 
-    /**
-     * 实现服务器主动推送
-     */
     public void sendMessage(String message) {
         synchronized (this.session) {
             try {
@@ -117,10 +105,6 @@ public class StationWebSocketController {
 
     public static StationWebSocketController getInstance(String stationCodeInfo) {
         return STATION_WEBSOCKET_MAP.get(stationCodeInfo);
-    }
-
-    public Session getSession() {
-        return this.session;
     }
 
 }

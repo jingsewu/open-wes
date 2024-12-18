@@ -24,19 +24,4 @@
         </rollback>
     </changeSet>
 
-    <changeSet id="m_dictionary_add_enum_TransferContainerReleaseMethod" author="Kinser">
-        <preConditions onFail="MARK_RAN">
-            <and>
-                <tableExists tableName="m_system_config"/>
-            </and>
-        </preConditions>
-        <comment>m_dictionary增加枚举TransferContainerReleaseMethod</comment>
-        <sql>
-            INSERT INTO `openwes`.`m_dictionary`(`id`, `create_time`, `create_user`, `update_time`, `update_user`, `code`, `description`, `editable`, `items`, `name`, `version`) VALUES (655712987784548352, 1734142158846, 'admin', 1734142158846, 'admin', 'TransferContainerReleaseMethod', NULL, b'0', '[{\"order\": 2, \"value\": \"INTERFACE\", \"defaultItem\": false, \"description\": {\"languages\": {\"zh-CN\": null}}, \"showContext\": {\"languages\": {\"zh-CN\": \"接口释放\"}}}, {\"order\": 1, \"value\": \"AUTOMATED\", \"defaultItem\": true, \"description\": {\"languages\": {\"zh-CN\": null}}, \"showContext\": {\"languages\": {\"zh-CN\": \"自动释放\"}}}]', '{\"languages\": {\"zh-CN\": \"周转容器释放方式\"}}', 0);
-        </sql>
-        <rollback>
-            delete from m_dictionary where code='TransferContainerReleaseMethod';
-        </rollback>
-    </changeSet>
-
 </databaseChangeLog>

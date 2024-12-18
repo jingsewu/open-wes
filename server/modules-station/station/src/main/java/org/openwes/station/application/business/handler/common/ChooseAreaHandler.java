@@ -21,7 +21,7 @@ public class ChooseAreaHandler<T extends WorkStationCache> implements IBusinessH
         WorkStationVO.ChooseAreaEnum chooseArea = WorkStationVO.ChooseAreaEnum.valueOf(body);
 
         T workStation = workStationService.getOrThrow(workStationId);
-        workStation.setChooseArea(chooseArea);
+        workStation.chooseArea(chooseArea);
         workStation.setEventCode(getApiCode());
         workStationRepository.save(workStation);
     }

@@ -69,6 +69,11 @@ public class WorkStationCache {
         return workStationConfig == null ? new WorkStationConfigDTO() : workStationConfig;
     }
 
+    public void chooseArea(WorkStationVO.ChooseAreaEnum chooseArea) {
+        log.info("work station: {} choose area: {}", this.id, chooseArea);
+        this.chooseArea = chooseArea;
+    }
+
     /**
      * set arrived containers on the location
      *
