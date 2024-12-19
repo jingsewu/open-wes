@@ -1,12 +1,12 @@
-package org.openwes.wes.task.infrastructure.repository.impl;
+package org.openwes.wes.basic.container.infrastructure.repository.impl;
 
-import org.openwes.wes.api.task.constants.TransferContainerRecordStatusEnum;
-import org.openwes.wes.task.domain.entity.TransferContainerRecord;
-import org.openwes.wes.task.domain.repository.TransferContainerRecordRepository;
-import org.openwes.wes.task.infrastructure.persistence.mapper.TransferContainerRecordPORepository;
-import org.openwes.wes.task.infrastructure.persistence.po.TransferContainerRecordPO;
-import org.openwes.wes.task.infrastructure.persistence.transfer.TransferContainerRecordPOTransfer;
 import lombok.RequiredArgsConstructor;
+import org.openwes.wes.api.task.constants.TransferContainerRecordStatusEnum;
+import org.openwes.wes.basic.container.domain.entity.TransferContainerRecord;
+import org.openwes.wes.basic.container.domain.repository.TransferContainerRecordRepository;
+import org.openwes.wes.basic.container.infrastructure.persistence.mapper.TransferContainerRecordPORepository;
+import org.openwes.wes.basic.container.infrastructure.persistence.po.TransferContainerRecordPO;
+import org.openwes.wes.basic.container.infrastructure.persistence.transfer.TransferContainerRecordPOTransfer;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,6 +55,14 @@ public class TransferContainerRecordRepositoryImpl implements TransferContainerR
     @Override
     public List<TransferContainerRecord> findAllByPickingOrderId(Long pickingOrderId) {
         List<TransferContainerRecordPO> transferContainerRecordPOs = transferContainerPORepository.findAllByPickingOrderId(pickingOrderId);
+        return transferContainerPOTransfer.toDOs(transferContainerRecordPOs);
+    }
+
+    @Override
+    public List<TransferContainerRecord> findAllBoundedRecordsByPickingOrderId(Long pickingOrderId) {
+        List<TransferContainerRecordPO> transferContainerRecordPOs = transferContainerPORepository.findAllByPickingOrderId(pickingOrderId)
+                .stream().filter(v -> v.getTransferContainerStatus() == TransferContainerRecordStatusEnum.BOUNDED)
+                .toList();
         return transferContainerPOTransfer.toDOs(transferContainerRecordPOs);
     }
 

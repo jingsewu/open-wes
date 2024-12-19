@@ -1,7 +1,7 @@
-package org.openwes.wes.task.infrastructure.persistence.mapper;
+package org.openwes.wes.basic.container.infrastructure.persistence.mapper;
 
 import org.openwes.wes.api.task.constants.TransferContainerStatusEnum;
-import org.openwes.wes.task.infrastructure.persistence.po.TransferContainerPO;
+import org.openwes.wes.basic.container.infrastructure.persistence.po.TransferContainerPO;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Collection;

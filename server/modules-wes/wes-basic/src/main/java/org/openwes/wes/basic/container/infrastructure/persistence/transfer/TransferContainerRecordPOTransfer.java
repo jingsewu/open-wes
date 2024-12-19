@@ -1,10 +1,10 @@
-package org.openwes.wes.task.infrastructure.persistence.transfer;
+package org.openwes.wes.basic.container.infrastructure.persistence.transfer;
 
-import org.openwes.wes.task.domain.entity.TransferContainerRecord;
-import org.openwes.wes.task.infrastructure.persistence.po.TransferContainerRecordPO;
 import org.mapstruct.Mapper;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
+import org.openwes.wes.basic.container.domain.entity.TransferContainerRecord;
+import org.openwes.wes.basic.container.infrastructure.persistence.po.TransferContainerRecordPO;
 
 import java.util.List;
 

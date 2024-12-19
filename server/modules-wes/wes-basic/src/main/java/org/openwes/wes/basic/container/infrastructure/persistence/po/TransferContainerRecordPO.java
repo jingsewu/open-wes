@@ -1,4 +1,4 @@
-package org.openwes.wes.task.infrastructure.persistence.po;
+package org.openwes.wes.basic.container.infrastructure.persistence.po;
 
 import org.openwes.common.utils.base.UpdateUserPO;
 import org.openwes.wes.api.task.constants.TransferContainerRecordStatusEnum;

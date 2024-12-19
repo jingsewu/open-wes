@@ -1,8 +1,8 @@
 package org.openwes.common.utils.exception.code_enum;
 
-import org.openwes.common.utils.constants.AppCodeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.openwes.common.utils.constants.AppCodeEnum;
 
 /**
  * InboundErrorDescEnum
@@ -26,7 +26,7 @@ public enum OperationTaskErrorDescEnum implements IBaseError {
 
     PUT_WALL_SLOT_STATUS_NOT_BOUNDED("OT010006", "put wall slot {0} is not bounded,can't be unbounded", AppCodeEnum.WMS.name()),
 
-    CONTAINER_IS_DISPATCHED("OT010007", "container {0} is dispatched,can't be unbounded", AppCodeEnum.WMS.name()),
+    TRANSFER_CONTAINER_IS_DISPATCHED("OT010007", "transfer container is dispatched,can't be unbounded", AppCodeEnum.WMS.name()),
 
     OPERATION_TASK_IS_PROCESSED("OT010008", "operation task {0} is processed, can't to be operation", AppCodeEnum.WMS.name()),
 

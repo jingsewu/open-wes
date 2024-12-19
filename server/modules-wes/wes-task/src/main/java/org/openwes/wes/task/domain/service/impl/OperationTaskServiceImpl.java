@@ -1,20 +1,19 @@
 package org.openwes.wes.task.domain.service.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.openwes.common.utils.exception.WmsException;
 import org.openwes.wes.api.task.dto.HandleTaskDTO;
 import org.openwes.wes.api.task.dto.ReportAbnormalDTO;
 import org.openwes.wes.task.domain.entity.OperationTask;
-import org.openwes.wes.task.domain.entity.TransferContainerRecord;
 import org.openwes.wes.task.domain.repository.OperationTaskRepository;
 import org.openwes.wes.task.domain.service.OperationTaskService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.openwes.common.utils.exception.code_enum.OperationTaskErrorDescEnum.CONTAINER_IS_DISPATCHED;
+import static org.openwes.common.utils.exception.code_enum.OperationTaskErrorDescEnum.TRANSFER_CONTAINER_IS_DISPATCHED;
 
 @Service
 @RequiredArgsConstructor
@@ -48,10 +47,10 @@ public class OperationTaskServiceImpl implements OperationTaskService {
     }
 
     @Override
-    public void checkUnbindable(TransferContainerRecord transferContainerRecord) {
-        long count = operationTaskRepository.countByTransferContainerRecordId(transferContainerRecord.getId());
+    public void checkUnbindable(Long transferContainerRecordId) {
+        long count = operationTaskRepository.countByTransferContainerRecordId(transferContainerRecordId);
         if (count > 0) {
-            throw WmsException.throwWmsException(CONTAINER_IS_DISPATCHED, transferContainerRecord.getTransferContainerCode());
+            throw WmsException.throwWmsException(TRANSFER_CONTAINER_IS_DISPATCHED);
         }
     }
 }

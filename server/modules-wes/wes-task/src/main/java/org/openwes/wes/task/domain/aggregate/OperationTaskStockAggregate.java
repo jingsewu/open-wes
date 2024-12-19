@@ -1,8 +1,13 @@
 package org.openwes.wes.task.domain.aggregate;
 
 import com.google.common.collect.Lists;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openwes.domain.event.DomainEventPublisher;
 import org.openwes.wes.api.basic.IPutWallApi;
+import org.openwes.wes.api.basic.ITransferContainerApi;
 import org.openwes.wes.api.main.data.ISkuMainDataApi;
 import org.openwes.wes.api.main.data.dto.SkuMainDataDTO;
 import org.openwes.wes.api.outbound.event.PickingOrderAbnormalEvent;
@@ -14,17 +19,10 @@ import org.openwes.wes.api.stock.dto.*;
 import org.openwes.wes.api.task.constants.OperationTaskStatusEnum;
 import org.openwes.wes.api.task.dto.HandleTaskDTO;
 import org.openwes.wes.api.task.dto.ReportAbnormalDTO;
+import org.openwes.wes.api.task.dto.SealContainerDTO;
 import org.openwes.wes.task.domain.entity.OperationTask;
-import org.openwes.wes.task.domain.entity.TransferContainer;
-import org.openwes.wes.task.domain.entity.TransferContainerRecord;
 import org.openwes.wes.task.domain.repository.OperationTaskRepository;
-import org.openwes.wes.task.domain.repository.TransferContainerRecordRepository;
-import org.openwes.wes.task.domain.repository.TransferContainerRepository;
 import org.openwes.wes.task.domain.service.OperationTaskService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,9 +42,7 @@ public class OperationTaskStockAggregate {
     private final IPutWallApi putWallApi;
     private final OperationTaskService operationTaskService;
     private final OperationTaskRepository operationTaskRepository;
-    private final TransferContainerRecordRepository transferContainerRecordRepository;
-    private final TransferContainerPutWallAggregate transferContainerPutWallAggregate;
-    private final TransferContainerRepository transferContainerRepository;
+    private final ITransferContainerApi transferContainerApi;
 
     @Transactional(rollbackFor = Exception.class)
     public void complete(List<OperationTask> operationTasks, HandleTaskDTO handleTaskDTO) {
@@ -88,12 +84,10 @@ public class OperationTaskStockAggregate {
             return;
         }
 
-        TransferContainerRecord transferContainerRecord = transferContainerRecordRepository
-                .findCurrentPickOrderTransferContainerRecord(operationTask.getOrderId(), operationTask.getTargetContainerCode());
-        TransferContainer transferContainer = transferContainerRepository
-                .findByContainerCodeAndWarehouseCode(operationTask.getTargetContainerCode(), operationTask.getWarehouseCode());
-        transferContainerPutWallAggregate.sealContainer(false, transferContainerRecord, transferContainer);
-
+        SealContainerDTO sealContainerDTO = new SealContainerDTO().setPickingOrderId(operationTask.getOrderId())
+                .setTransferContainerCode(operationTask.getTargetContainerCode())
+                .setWarehouseCode(operationTask.getWarehouseCode());
+        transferContainerApi.sealContainer(sealContainerDTO);
     }
 
     @Transactional(rollbackFor = Exception.class)

@@ -1,15 +1,15 @@
-package org.openwes.wes.task.infrastructure.persistence.transfer;
+package org.openwes.wes.basic.container.infrastructure.persistence.transfer;
 
-import static org.mapstruct.NullValueCheckStrategy.ALWAYS;
-import static org.mapstruct.NullValueMappingStrategy.RETURN_NULL;
-
-import org.openwes.wes.task.domain.entity.TransferContainer;
-import org.openwes.wes.task.infrastructure.persistence.po.TransferContainerPO;
 import org.mapstruct.Mapper;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
+import org.openwes.wes.basic.container.domain.entity.TransferContainer;
+import org.openwes.wes.basic.container.infrastructure.persistence.po.TransferContainerPO;
 
 import java.util.List;
+
+import static org.mapstruct.NullValueCheckStrategy.ALWAYS;
+import static org.mapstruct.NullValueMappingStrategy.RETURN_NULL;
 
 @Mapper(componentModel = "spring",
         nullValueCheckStrategy = ALWAYS,

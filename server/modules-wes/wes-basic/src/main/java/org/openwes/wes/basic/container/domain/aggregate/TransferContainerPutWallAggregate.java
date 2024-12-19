@@ -1,14 +1,14 @@
-package org.openwes.wes.task.domain.aggregate;
+package org.openwes.wes.basic.container.domain.aggregate;
 
+import lombok.RequiredArgsConstructor;
 import org.openwes.wes.api.basic.IPutWallApi;
 import org.openwes.wes.api.task.constants.TransferContainerStatusEnum;
 import org.openwes.wes.api.task.dto.BindContainerDTO;
 import org.openwes.wes.api.task.dto.UnBindContainerDTO;
-import org.openwes.wes.task.domain.entity.TransferContainer;
-import org.openwes.wes.task.domain.entity.TransferContainerRecord;
-import org.openwes.wes.task.domain.repository.TransferContainerRecordRepository;
-import org.openwes.wes.task.domain.repository.TransferContainerRepository;
-import lombok.RequiredArgsConstructor;
+import org.openwes.wes.basic.container.domain.entity.TransferContainer;
+import org.openwes.wes.basic.container.domain.entity.TransferContainerRecord;
+import org.openwes.wes.basic.container.domain.repository.TransferContainerRecordRepository;
+import org.openwes.wes.basic.container.domain.repository.TransferContainerRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,12 +44,12 @@ public class TransferContainerPutWallAggregate {
     }
 
     @Transactional
-    public void unBindContainer(UnBindContainerDTO unBindContainerDTO, TransferContainer transferContainer, TransferContainerRecord transferContainerRecord) {
+    public void unBindContainer(UnBindContainerDTO unBindContainerDTO, TransferContainer transferContainer, Long transferContainerRecord) {
 
         transferContainer.unOccupy();
         transferContainerRepository.save(transferContainer);
 
-        transferContainerRecordRepository.delete(transferContainerRecord.getId());
+        transferContainerRecordRepository.delete(transferContainerRecord);
 
         if (unBindContainerDTO.isNeedHandlePutWallSlot()) {
             putWallApi.unBindContainer(unBindContainerDTO);

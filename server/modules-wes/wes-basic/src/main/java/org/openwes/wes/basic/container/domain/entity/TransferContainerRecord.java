@@ -1,4 +1,4 @@
-package org.openwes.wes.task.domain.entity;
+package org.openwes.wes.basic.container.domain.entity;
 
 import org.openwes.domain.event.DomainEventPublisher;
 import org.openwes.wes.api.task.constants.TransferContainerRecordStatusEnum;

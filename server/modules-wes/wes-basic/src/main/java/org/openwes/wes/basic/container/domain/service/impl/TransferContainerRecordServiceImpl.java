@@ -1,8 +1,8 @@
-package org.openwes.wes.task.domain.service.impl;
+package org.openwes.wes.basic.container.domain.service.impl;
 
-import org.openwes.wes.task.domain.service.TransferContainerRecordService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.openwes.wes.basic.container.domain.service.TransferContainerRecordService;
 import org.springframework.stereotype.Service;
 
 @Service

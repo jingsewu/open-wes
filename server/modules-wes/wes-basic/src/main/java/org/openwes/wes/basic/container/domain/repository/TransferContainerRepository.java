@@ -1,6 +1,7 @@
-package org.openwes.wes.task.domain.repository;
+package org.openwes.wes.basic.container.domain.repository;
 
-import org.openwes.wes.task.domain.entity.TransferContainer;
+
+import org.openwes.wes.basic.container.domain.entity.TransferContainer;
 
 import java.util.Collection;
 import java.util.List;

@@ -1,4 +1,4 @@
-package org.openwes.wes.task.domain.entity;
+package org.openwes.wes.basic.container.domain.entity;
 
 import com.google.common.collect.Lists;
 import lombok.Data;

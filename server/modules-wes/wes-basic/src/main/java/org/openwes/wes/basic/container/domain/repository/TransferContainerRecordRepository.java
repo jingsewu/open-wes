@@ -1,6 +1,7 @@
-package org.openwes.wes.task.domain.repository;
+package org.openwes.wes.basic.container.domain.repository;
 
-import org.openwes.wes.task.domain.entity.TransferContainerRecord;
+
+import org.openwes.wes.basic.container.domain.entity.TransferContainerRecord;
 
 import java.util.List;
 
@@ -17,4 +18,6 @@ public interface TransferContainerRecordRepository {
     TransferContainerRecord findCurrentPickOrderTransferContainerRecord(Long pickingOrderId, String containerCode);
 
     List<TransferContainerRecord> findAllByPickingOrderId(Long pickingOrderId);
+
+    List<TransferContainerRecord> findAllBoundedRecordsByPickingOrderId(Long pickingOrderId);
 }

@@ -1,29 +1,25 @@
 package org.openwes.wes.task.application;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.dubbo.config.annotation.DubboService;
+import org.openwes.wes.api.basic.ITransferContainerApi;
+import org.openwes.wes.api.basic.ITransferContainerRecordApi;
+import org.openwes.wes.api.basic.dto.TransferContainerRecordDTO;
 import org.openwes.wes.api.main.data.ISkuMainDataApi;
 import org.openwes.wes.api.main.data.dto.SkuMainDataDTO;
 import org.openwes.wes.api.stock.ISkuBatchAttributeApi;
 import org.openwes.wes.api.stock.dto.SkuBatchAttributeDTO;
 import org.openwes.wes.api.task.ITaskApi;
 import org.openwes.wes.api.task.constants.OperationTaskTypeEnum;
-import org.openwes.wes.api.task.constants.TransferContainerRecordStatusEnum;
-import org.openwes.wes.task.domain.aggregate.OperationTaskStockAggregate;
-import org.openwes.wes.task.domain.aggregate.TransferContainerPutWallAggregate;
-import org.openwes.wes.task.domain.entity.OperationTask;
-import org.openwes.wes.task.domain.entity.TransferContainer;
-import org.openwes.wes.task.domain.entity.TransferContainerRecord;
-import org.openwes.wes.task.domain.repository.OperationTaskRepository;
-import org.openwes.wes.task.domain.repository.TransferContainerRecordRepository;
-import org.openwes.wes.task.domain.repository.TransferContainerRepository;
-import org.openwes.wes.task.domain.service.OperationTaskService;
-import org.openwes.wes.task.domain.service.TransferContainerService;
-import org.openwes.wes.task.domain.transfer.OperationTaskTransfer;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.dubbo.config.annotation.DubboService;
 import org.openwes.wes.api.task.dto.*;
+import org.openwes.wes.task.domain.aggregate.OperationTaskStockAggregate;
+import org.openwes.wes.task.domain.entity.OperationTask;
+import org.openwes.wes.task.domain.repository.OperationTaskRepository;
+import org.openwes.wes.task.domain.service.OperationTaskService;
+import org.openwes.wes.task.domain.transfer.OperationTaskTransfer;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -39,16 +35,14 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class OperationTaskApiImpl implements ITaskApi {
 
-    private final TransferContainerRecordRepository transferContainerRecordRepository;
+    private final ITransferContainerRecordApi transferContainerRecordApi;
     private final ISkuBatchAttributeApi skuBatchAttributeApi;
     private final ISkuMainDataApi skuMainDataApi;
     private final OperationTaskService operationTaskService;
     private final OperationTaskRepository operationTaskRepository;
     private final OperationTaskTransfer operationTaskTransfer;
     private final OperationTaskStockAggregate operationTaskStockAggregate;
-    private final TransferContainerPutWallAggregate transferContainerPutWallAggregate;
-    private final TransferContainerRepository transferContainerRepository;
-    private final TransferContainerService transferContainerService;
+    private final ITransferContainerApi transferContainerApi;
 
     @Override
     public List<OperationTaskDTO> createOperationTasks(List<OperationTaskDTO> operationTaskDTOS) {
@@ -97,25 +91,25 @@ public class OperationTaskApiImpl implements ITaskApi {
         return operationTaskTransfer.toDTOs(operationTaskRepository.findAllByLimitPickingOrderIds(pickingOrderIds, limit));
     }
 
+    /**
+     * why this function can not move to basic module causing there maybe some requirements that need to validate the task or orders
+     * not very sure, maybe it can be moved to basic module?
+     *
+     * @param bindContainerDTO
+     */
     @Override
     public void bindContainer(BindContainerDTO bindContainerDTO) {
-        TransferContainer transferContainer = transferContainerRepository
-                .findByContainerCodeAndWarehouseCode(bindContainerDTO.getContainerCode(), bindContainerDTO.getWarehouseCode());
-        transferContainerService.validateBindContainer(transferContainer);
-
-        transferContainerPutWallAggregate.bindContainer(bindContainerDTO, transferContainer, bindContainerDTO.getPickingOrderId());
+        transferContainerApi.bindContainer(bindContainerDTO);
     }
 
     @Override
     public void unbindContainer(UnBindContainerDTO unBindContainerDTO) {
 
-        TransferContainerRecord transferContainerRecord = transferContainerRecordRepository
+        TransferContainerRecordDTO transferContainerRecord = transferContainerRecordApi
                 .findCurrentPickOrderTransferContainerRecord(unBindContainerDTO.getPickingOrderId(), unBindContainerDTO.getContainerCode());
-        operationTaskService.checkUnbindable(transferContainerRecord);
+        operationTaskService.checkUnbindable(transferContainerRecord.getId());
 
-        TransferContainer transferContainer = transferContainerRepository
-                .findByContainerCodeAndWarehouseCode(unBindContainerDTO.getContainerCode(), unBindContainerDTO.getWarehouseCode());
-        transferContainerPutWallAggregate.unBindContainer(unBindContainerDTO, transferContainer, transferContainerRecord);
+        transferContainerApi.unBindContainer(unBindContainerDTO, transferContainerRecord.getId());
     }
 
     @Override
@@ -160,32 +154,12 @@ public class OperationTaskApiImpl implements ITaskApi {
 
     @Override
     public void sealContainer(SealContainerDTO sealContainerDTO) {
-
-        TransferContainerRecord transferContainerRecord = transferContainerRecordRepository
-                .findCurrentPickOrderTransferContainerRecord(sealContainerDTO.getPickingOrderId(), sealContainerDTO.getTransferContainerCode());
-
-        TransferContainer transferContainer = transferContainerRepository
-                .findByContainerCodeAndWarehouseCode(transferContainerRecord.getTransferContainerCode(), sealContainerDTO.getWarehouseCode());
-        transferContainerPutWallAggregate.sealContainer(sealContainerDTO.isNeedHandlePutWallSlot(), transferContainerRecord, transferContainer);
+        transferContainerApi.sealContainer(sealContainerDTO);
     }
 
     @Override
     public void sealContainer(Long pickingOrderId) {
-        List<TransferContainerRecord> transferContainerRecords = transferContainerRecordRepository.findAllByPickingOrderId(pickingOrderId)
-                .stream().filter(v -> v.getTransferContainerStatus() == TransferContainerRecordStatusEnum.BOUNDED)
-                .toList();
-
-        if (ObjectUtils.isEmpty(transferContainerRecords)) {
-            log.info("picking order: {} can't find andy transfer container records", pickingOrderId);
-            return;
-        }
-
-        String warehouseCode = transferContainerRecords.iterator().next().getWarehouseCode();
-        List<String> transferContainerCodes = transferContainerRecords.stream().map(TransferContainerRecord::getTransferContainerCode).toList();
-        List<TransferContainer> transferContainers = transferContainerRepository
-                .findAllByWarehouseCodeAndContainerCodeIn(warehouseCode, transferContainerCodes);
-
-        transferContainerPutWallAggregate.sealContainer(false, transferContainerRecords, transferContainers);
+        transferContainerApi.sealContainer(pickingOrderId);
     }
 
     @Override

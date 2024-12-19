@@ -1,4 +1,4 @@
-package org.openwes.wes.task.application.scheduler;
+package org.openwes.wes.basic.container.application.scheduler;
 
 import com.alibaba.ttl.TtlRunnable;
 import lombok.RequiredArgsConstructor;
@@ -9,8 +9,8 @@ import org.openwes.distribute.lock.DistributeLock;
 import org.openwes.wes.api.config.ISystemConfigApi;
 import org.openwes.wes.api.config.constants.TransferContainerReleaseMethodEnum;
 import org.openwes.wes.api.config.dto.SystemConfigDTO;
-import org.openwes.wes.task.domain.entity.TransferContainer;
-import org.openwes.wes.task.domain.repository.TransferContainerRepository;
+import org.openwes.wes.basic.container.domain.entity.TransferContainer;
+import org.openwes.wes.basic.container.domain.repository.TransferContainerRepository;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
