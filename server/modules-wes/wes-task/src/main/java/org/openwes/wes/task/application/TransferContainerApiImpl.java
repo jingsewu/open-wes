@@ -1,18 +1,17 @@
 package org.openwes.wes.task.application;
 
-import org.openwes.wes.api.basic.IWarehouseAreaApi;
-import org.openwes.wes.api.basic.dto.WarehouseAreaDTO;
-import org.openwes.wes.api.ems.proxy.dto.ContainerArrivedEvent;
-import org.openwes.wes.api.task.dto.TransferContainerReleaseDTO;
-import org.openwes.wes.api.task.ITransferContainerApi;
-import org.openwes.wes.api.task.constants.TransferContainerStatusEnum;
-import org.openwes.wes.task.domain.aggregate.TransferContainerStockAggregate;
-import org.openwes.wes.task.domain.entity.TransferContainer;
-import org.openwes.wes.task.domain.repository.TransferContainerRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.dubbo.config.annotation.DubboService;
+import org.openwes.wes.api.basic.ITransferContainerApi;
+import org.openwes.wes.api.basic.IWarehouseAreaApi;
+import org.openwes.wes.api.basic.dto.WarehouseAreaDTO;
+import org.openwes.wes.api.ems.proxy.dto.ContainerArrivedEvent;
+import org.openwes.wes.api.task.constants.TransferContainerStatusEnum;
+import org.openwes.wes.api.task.dto.TransferContainerReleaseDTO;
+import org.openwes.wes.task.domain.entity.TransferContainer;
+import org.openwes.wes.task.domain.repository.TransferContainerRepository;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -30,7 +29,6 @@ public class TransferContainerApiImpl implements ITransferContainerApi {
 
     private final IWarehouseAreaApi warehouseAreaApi;
     private final TransferContainerRepository transferContainerRepository;
-    private final TransferContainerStockAggregate transferContainerStockAggregate;
 
     @Override
     public void containerArrive(ContainerArrivedEvent containerArrivedEvent) {
@@ -63,7 +61,15 @@ public class TransferContainerApiImpl implements ITransferContainerApi {
             return;
         }
 
-        transferContainerStockAggregate.releaseTransferContainers(lockedTransferContainers);
+        lockedTransferContainers.forEach(TransferContainer::unlock);
+        transferContainerRepository.saveAll(lockedTransferContainers);
+    }
+
+    @Override
+    public void release(Long id) {
+        TransferContainer transferContainer = transferContainerRepository.findById(id);
+        transferContainer.unlock();
+        transferContainerRepository.save(transferContainer);
     }
 
 }

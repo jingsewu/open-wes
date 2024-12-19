@@ -5,8 +5,8 @@ import lombok.Data;
 
 @Data
 @Builder
-public class SwmsErrorResponse {
-    private String errorCode;
-    private String message;
+public class OpenWesErrorResponse {
+    private String status;
+    private String msg;
     private String description;
 }

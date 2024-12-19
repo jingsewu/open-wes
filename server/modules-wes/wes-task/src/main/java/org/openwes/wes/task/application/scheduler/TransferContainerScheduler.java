@@ -1,17 +1,16 @@
 package org.openwes.wes.task.application.scheduler;
 
 import com.alibaba.ttl.TtlRunnable;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.openwes.common.utils.constants.RedisConstants;
 import org.openwes.distribute.lock.DistributeLock;
 import org.openwes.wes.api.config.ISystemConfigApi;
 import org.openwes.wes.api.config.constants.TransferContainerReleaseMethodEnum;
 import org.openwes.wes.api.config.dto.SystemConfigDTO;
-import org.openwes.wes.task.domain.aggregate.TransferContainerStockAggregate;
 import org.openwes.wes.task.domain.entity.TransferContainer;
 import org.openwes.wes.task.domain.repository.TransferContainerRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -26,7 +25,6 @@ public class TransferContainerScheduler {
 
     private final Executor unlockTransferContainerExecutor;
     private final TransferContainerRepository transferContainerRepository;
-    private final TransferContainerStockAggregate transferContainerStockAggregate;
     private final DistributeLock distributeLock;
     private final ISystemConfigApi systemConfigApi;
 
@@ -62,15 +60,17 @@ public class TransferContainerScheduler {
             return;
         }
 
-        List<TransferContainer> transferContainers = transferContainerRepository.findAllLockedContainers(1);
-
-        List<TransferContainer> unlockingTransferContainers = transferContainers.stream()
+        List<TransferContainer> transferContainers = transferContainerRepository.findAllLockedContainers(1)
+                .stream()
                 .filter(v -> v.getLockedTime() + (long) basicConfig.getAutoReleaseDelayTimeMin() * 60 * 1000 < System.currentTimeMillis())
                 .limit(LIMIT_SIZE_PER_TIME)
                 .toList();
 
-        if (CollectionUtils.isNotEmpty(unlockingTransferContainers)) {
-            transferContainerStockAggregate.releaseTransferContainers(unlockingTransferContainers);
+        if (CollectionUtils.isEmpty(transferContainers)) {
+            return;
         }
+
+        transferContainers.forEach(TransferContainer::unlock);
+        transferContainerRepository.saveAll(transferContainers);
     }
 }

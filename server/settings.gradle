@@ -33,11 +33,8 @@ include 'modules-utils:mq'
 include 'modules-utils:distribute-file'
 include 'modules-utils:exception-handler'
 include 'modules-utils:common-import'
-include 'modules-utils:tenant-config'
 
 include 'server:station-server'
 include 'server:gateway-server'
 include 'server:wes-server'
-include 'modules-search:search-api'
-findProject(':modules-search:search-api')?.name = 'search-api'
 

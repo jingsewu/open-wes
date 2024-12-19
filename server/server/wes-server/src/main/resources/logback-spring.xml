@@ -49,6 +49,7 @@
             </layout>
             <charset>utf8</charset>
         </encoder>
+        <cleanHistoryOnStart>true</cleanHistoryOnStart>
     </appender>
 
     <!-- 按照每天生成日志文件 -->
@@ -74,6 +75,7 @@
             </layout>
             <charset>utf8</charset>
         </encoder>
+        <cleanHistoryOnStart>true</cleanHistoryOnStart>
     </appender>
 
     <appender name="DAY_ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -97,20 +99,12 @@
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>ERROR</level>
         </filter>
-
+        <cleanHistoryOnStart>true</cleanHistoryOnStart>
     </appender>
 
     <!-- 将控制指定name包下的所有类的日志的打印，通过level设置打印级别 -->
     <logger name="org.springframework" level="ERROR"/>
     <logger name="org.apache.commons" level="ERROR"/>
-    <logger name="org.apache.kafka" level="WARN"/>
-    <logger name="org.apache.kafka.clients.producer.ProducerConfig" level="WARN"/>
-    <logger name="org.apache.kafka.clients.consumer.ConsumerConfig" level="WARN"/>
-    <logger name="com.alibaba.nacos.client.config.impl" level="WARN"/>
-    <logger name="org.apache.kafka.clients.consumer.internals.AbstractCoordinator" level="WARN"/>
-    <logger name="org.apache.kafka.clients.consumer.internals.ConsumerCoordinator" level="WARN"/>
-    <logger name="org.apache.kafka.clients.FetchSessionHandler" level="WARN"/>
-    <logger name="org.apache.kafka.clients.consumer.internals.Fetcher" level="WARN"/>
     <logger name="springfox.documentation.spring.web.readers.operation.CachingOperationNameGenerator" level="WARN"/>
     <logger name="org.hibernate.engine.QueryParameters" level="WARN"/>
     <logger name="org.springframework.jdbc.core.JdbcTemplate" level="WARN"/>

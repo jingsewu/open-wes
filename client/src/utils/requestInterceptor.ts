@@ -1,7 +1,7 @@
-import axios, { AxiosRequestConfig } from "axios"
-import { makeTranslator, toast } from "amis"
-import { attachmentAdpator } from "amis-core"
-import { ApiObject } from "amis-core/lib/types"
+import axios, {AxiosRequestConfig} from "axios"
+import {makeTranslator, toast} from "amis"
+import {attachmentAdpator} from "amis-core"
+import {ApiObject} from "amis-core/lib/types"
 import store from "@/stores"
 
 /**
@@ -20,9 +20,7 @@ export default function request(config: AxiosRequestConfig) {
     // Split the domain by dots and get the first part (before the first dot)
     config.headers["X-TenantID"] = domain.split(".")[0]
 
-    let warehouseCode = <string>localStorage.getItem("warehouseCode") || ""
-
-    config.headers["X-WarehouseID"] = warehouseCode
+    config.headers["X-WarehouseID"] = <string>localStorage.getItem("warehouseCode") || ""
     config.headers["locale"] = store.locale
 
     let stationId = <string>localStorage.getItem("stationId")
@@ -30,26 +28,6 @@ export default function request(config: AxiosRequestConfig) {
         config.headers["StationCode"] = stationId
     }
 
-    let data = config.data
-
-    // if (
-    //     config.url.startsWith("/gw/wms") &&
-    //     (config.method == "post" || config.method == "POST") &&
-    //     config.data !== undefined &&
-    //     !Array.isArray(JSON.parse(config.data))
-    // ) {
-    //     if (config.headers["Content-Type"] == "application/json") {
-    //         if (typeof config.data === "string") {
-    //             data = {...JSON.parse(config.data)}
-    //         }
-    //         if (data["warehouseCode"] === null || data["warehouseCode"] === undefined || data["warehouseCode"] === "") {
-    //             data["warehouseCode"] = warehouseCode
-    //         }
-    //         config.data = JSON.stringify(data)
-    //     } else {
-    //         config.data = warehouseCode
-    //     }
-    // }
     const __ = makeTranslator("zh-CN")
     return new Promise((resolve, reject) => {
         let onSuccess = async (res: any) => {
@@ -75,6 +53,8 @@ export default function request(config: AxiosRequestConfig) {
                 console.warn("not permission, url: ", config.url)
                 toast["error"]("您无访问权限，请申请！", "消息")
                 reject(res)
+            } else if (res?.data?.status === "SAT010001") {
+                resolve(res)
             } else {
                 let response = await attachmentAdpator(
                     res,
@@ -87,19 +67,9 @@ export default function request(config: AxiosRequestConfig) {
 
         let onFail = (res: any) => {
             console.error("request failed, url: ", config.url)
-            // console.error("onFail", res.response)
-            let response = res.response
 
-            // 如果后端返回了参数验证错误，前端需要重新封装响应数据以符合 Amix 的要求
-            if (response?.data?.errorCode === "CM010005") {
-                let invalidResults = JSON.parse(response.data.description)
-                reject({
-                    ...response,
-                    message: invalidResults[0].defaultMessage
-                })
-            } else if (response?.data?.errorCode === "SAT010001") {
-                resolve(response)
-            } else if (response?.status == 401 || response?.code == 401) {
+            let response = res.response
+            if (response?.status == 401) {
                 // 未登陆
                 console.warn("redirect url: ", response.data.redirectUrl)
                 localStorage.setItem("Authorization", "")
@@ -109,13 +79,13 @@ export default function request(config: AxiosRequestConfig) {
                 let msg =
                     response.data.description ||
                     response.data.error ||
-                    response.data.message ||
+                    response.data.msg ||
                     response.statusText
                 toast["error"](msg, "消息")
-                // reject({
-                //     ...res,
-                //     message: msg
-                // })
+                reject({
+                    ...res,
+                    message: msg
+                })
             } else if (axios.isCancel(res)) {
                 console.info("request canceled, url: ", config.url)
             } else {

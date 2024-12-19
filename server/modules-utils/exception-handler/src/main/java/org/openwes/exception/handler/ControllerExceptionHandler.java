@@ -31,28 +31,28 @@ public class ControllerExceptionHandler {
     @ResponseBody
     @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ResponseEntity<SwmsErrorResponse> httpRequestMethodNotSupportedHandler() {
-        SwmsErrorResponse errorResponse = SwmsErrorResponse.builder().message("Method Not Allow")
-                .errorCode(String.valueOf(HttpStatus.METHOD_NOT_ALLOWED.value()))
+    public ResponseEntity<OpenWesErrorResponse> httpRequestMethodNotSupportedHandler() {
+        OpenWesErrorResponse errorResponse = OpenWesErrorResponse.builder().msg("Method Not Allow")
+                .status(String.valueOf(HttpStatus.METHOD_NOT_ALLOWED.value()))
                 .description(CommonErrorDescEnum.METHOD_NOT_ALLOWED.getDesc())
                 .build();
-        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(errorResponse);
+        return ResponseEntity.status(HttpStatus.OK).body(errorResponse);
     }
 
     @ResponseBody
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(NoHandlerFoundException.class)
-    public ResponseEntity<SwmsErrorResponse> noHandlerFoundHandler() {
-        SwmsErrorResponse errorResponse = SwmsErrorResponse.builder().message("Method Not Found")
-                .errorCode(String.valueOf(HttpStatus.NOT_FOUND.value()))
+    public ResponseEntity<OpenWesErrorResponse> noHandlerFoundHandler() {
+        OpenWesErrorResponse errorResponse = OpenWesErrorResponse.builder().msg("Method Not Found")
+                .status(String.valueOf(HttpStatus.NOT_FOUND.value()))
                 .description(CommonErrorDescEnum.NOT_FOUND.getDesc())
                 .build();
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+        return ResponseEntity.status(HttpStatus.OK).body(errorResponse);
     }
 
     @ResponseBody
     @ExceptionHandler(WmsException.class)
-    public ResponseEntity<SwmsErrorResponse> bizExceptionHandler(WmsException wmsException) {
+    public ResponseEntity<OpenWesErrorResponse> bizExceptionHandler(WmsException wmsException) {
 
         String msg = null;
         IBaseError baseError = wmsException.getBaseError();
@@ -67,48 +67,48 @@ public class ControllerExceptionHandler {
             msg = wmsException.getMessage();
         }
 
-        SwmsErrorResponse errorResponse = SwmsErrorResponse.builder().message("Business Error")
-                .errorCode(wmsException.getCode())
+        OpenWesErrorResponse errorResponse = OpenWesErrorResponse.builder().msg("Business Error")
+                .status(wmsException.getCode())
                 .description(msg)
                 .build();
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        return ResponseEntity.status(HttpStatus.OK).body(errorResponse);
     }
 
     @ResponseBody
     @ExceptionHandler(DuplicateKeyException.class)
-    public ResponseEntity<SwmsErrorResponse> duplicateKeyExceptionHandler() {
-        SwmsErrorResponse errorResponse = SwmsErrorResponse.builder().message("Database Error")
-                .errorCode(CommonErrorDescEnum.DATABASE_UNIQUE_ERROR.getCode())
+    public ResponseEntity<OpenWesErrorResponse> duplicateKeyExceptionHandler() {
+        OpenWesErrorResponse errorResponse = OpenWesErrorResponse.builder().msg("Database Error")
+                .status(CommonErrorDescEnum.DATABASE_UNIQUE_ERROR.getCode())
                 .description(CommonErrorDescEnum.DATABASE_UNIQUE_ERROR.getDesc())
                 .build();
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        return ResponseEntity.status(HttpStatus.OK).body(errorResponse);
     }
 
     @ResponseBody
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<SwmsErrorResponse> exceptionHandler(Exception e) {
+    public ResponseEntity<OpenWesErrorResponse> exceptionHandler(Exception e) {
         String description = CommonErrorDescEnum.SYSTEM_EXEC_ERROR.getDesc();
         if (StringUtils.isEmpty(description)) {
             description = e.getMessage();
         }
 
-        SwmsErrorResponse errorResponse = SwmsErrorResponse.builder().message(description)
-                .errorCode(CommonErrorDescEnum.SYSTEM_EXEC_ERROR.getCode())
+        OpenWesErrorResponse errorResponse = OpenWesErrorResponse.builder().msg(description)
+                .status(CommonErrorDescEnum.SYSTEM_EXEC_ERROR.getCode())
                 .description(e.getMessage())
                 .build();
         log.error("business catch exception error:", e);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        return ResponseEntity.status(HttpStatus.OK).body(errorResponse);
     }
 
     @ResponseBody
     @ExceptionHandler({HttpMessageNotReadableException.class, IllegalStateException.class, MissingServletRequestParameterException.class})
-    public ResponseEntity<SwmsErrorResponse> httpRequestExceptionHandler(Exception exception) {
+    public ResponseEntity<OpenWesErrorResponse> httpRequestExceptionHandler(Exception exception) {
         log.error("http request error: ", exception);
-        SwmsErrorResponse errorResponse = SwmsErrorResponse.builder().message("Bad Request")
-                .errorCode(CommonErrorDescEnum.HTTP_REQUEST_ERROR.getCode())
+        OpenWesErrorResponse errorResponse = OpenWesErrorResponse.builder().msg("Bad Request")
+                .status(CommonErrorDescEnum.HTTP_REQUEST_ERROR.getCode())
                 .description(exception.getMessage())
                 .build();
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        return ResponseEntity.status(HttpStatus.OK).body(errorResponse);
     }
 
     /**
@@ -116,7 +116,7 @@ public class ControllerExceptionHandler {
      */
     @ResponseBody
     @ExceptionHandler({MethodArgumentNotValidException.class})
-    public ResponseEntity<SwmsErrorResponse> methodArgumentNotValidException(MethodArgumentNotValidException exception) {
+    public ResponseEntity<OpenWesErrorResponse> methodArgumentNotValidException(MethodArgumentNotValidException exception) {
         log.warn("interface parameter error: ", exception);
         List<Map<String, Object>> validResultMap = exception.getBindingResult().getFieldErrors().stream()
                 .map(v -> {
@@ -127,10 +127,10 @@ public class ControllerExceptionHandler {
                             return fieldResultMap;
                         }
                 ).toList();
-        SwmsErrorResponse errorResponse = SwmsErrorResponse.builder().message("Param Error")
-                .errorCode(CommonErrorDescEnum.PARAMETER_ERROR.getCode())
+        OpenWesErrorResponse errorResponse = OpenWesErrorResponse.builder().msg("Param Error")
+                .status(CommonErrorDescEnum.PARAMETER_ERROR.getCode())
                 .description(JsonUtils.obj2String(validResultMap))
                 .build();
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        return ResponseEntity.status(HttpStatus.OK).body(errorResponse);
     }
 }

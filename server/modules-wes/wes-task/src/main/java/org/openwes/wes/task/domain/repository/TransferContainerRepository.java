@@ -16,4 +16,6 @@ public interface TransferContainerRepository {
     List<TransferContainer> findAllByWarehouseCodeAndContainerCodeIn(String warehouseCode, Collection<String> containerCodes);
 
     List<TransferContainer> findAllLockedContainers(int limitDays);
+
+    TransferContainer findById(Long id);
 }

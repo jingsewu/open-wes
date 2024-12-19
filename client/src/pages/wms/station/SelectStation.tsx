@@ -23,7 +23,7 @@ const SelectStation = ({ isConfigSationId, setIsConfigStationId }: any) => {
             method: "get",
             url: "/station/api"
         })
-        if (res?.data?.errorCode === "SAT010001") {
+        if (res?.data?.status === "SAT010001") {
             setIsConfigStationId(false)
         } else {
             setIsConfigStationId(true)

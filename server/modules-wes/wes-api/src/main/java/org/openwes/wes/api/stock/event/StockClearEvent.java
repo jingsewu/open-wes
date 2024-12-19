@@ -1,20 +1,14 @@
 package org.openwes.wes.api.stock.event;
 
-import org.openwes.domain.event.DomainEvent;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-
-import java.util.List;
+import lombok.experimental.Accessors;
+import org.openwes.domain.event.DomainEvent;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
+@Accessors(chain = true)
 public class StockClearEvent extends DomainEvent {
-
-    private List<Long> containerStockIds;
+    private String containerCode;
+    private String warehouseCode;
 }

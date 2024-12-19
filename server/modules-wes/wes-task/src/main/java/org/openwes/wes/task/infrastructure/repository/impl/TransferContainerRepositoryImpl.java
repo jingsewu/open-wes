@@ -1,13 +1,13 @@
 package org.openwes.wes.task.infrastructure.repository.impl;
 
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.time.DateUtils;
 import org.openwes.wes.api.task.constants.TransferContainerStatusEnum;
 import org.openwes.wes.task.domain.entity.TransferContainer;
 import org.openwes.wes.task.domain.repository.TransferContainerRepository;
 import org.openwes.wes.task.infrastructure.persistence.mapper.TransferContainerPORepository;
 import org.openwes.wes.task.infrastructure.persistence.po.TransferContainerPO;
 import org.openwes.wes.task.infrastructure.persistence.transfer.TransferContainerPOTransfer;
-import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -40,8 +40,14 @@ public class TransferContainerRepositoryImpl implements TransferContainerReposit
     public List<TransferContainer> findAllLockedContainers(int limitDays) {
         Date date = DateUtils.addDays(new Date(), -limitDays);
         List<TransferContainerPO> transferContainerPOS = transferContainerPORepository
-            .findAllByTransferContainerStatusAndUpdateTimeAfter(TransferContainerStatusEnum.LOCKED, date.getTime());
+                .findAllByTransferContainerStatusAndUpdateTimeAfter(TransferContainerStatusEnum.LOCKED, date.getTime());
         return transferContainerPOTransfer.toDOs(transferContainerPOS);
+    }
+
+    @Override
+    public TransferContainer findById(Long id) {
+        TransferContainerPO transferContainerPO = transferContainerPORepository.findById(id).orElseThrow();
+        return transferContainerPOTransfer.toDO(transferContainerPO);
     }
 
     @Override

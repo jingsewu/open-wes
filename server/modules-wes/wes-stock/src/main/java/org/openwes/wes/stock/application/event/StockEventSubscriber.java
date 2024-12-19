@@ -1,6 +1,13 @@
 package org.openwes.wes.stock.application.event;
 
+import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.openwes.common.utils.exception.WmsException;
+import org.openwes.common.utils.exception.code_enum.BasicErrorDescEnum;
 import org.openwes.domain.event.DomainEventPublisher;
 import org.openwes.wes.api.basic.event.ContainerStockUpdateEvent;
 import org.openwes.wes.api.stock.dto.StockTransferDTO;
@@ -11,14 +18,11 @@ import org.openwes.wes.api.task.constants.OperationTaskTypeEnum;
 import org.openwes.wes.stock.domain.aggregate.SkuBatchContainerStockAggregate;
 import org.openwes.wes.stock.domain.entity.ContainerStock;
 import org.openwes.wes.stock.domain.repository.ContainerStockRepository;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
+import java.util.Objects;
 
 @Component
 @Validated
@@ -76,12 +80,23 @@ public class StockEventSubscriber {
 
     @Subscribe
     public void onStockClearEvent(@Valid StockClearEvent event) {
-        log.info("stock module receive stock clear event: {}", event.toString());
-        List<ContainerStock> containerStocks = containerStockRepository.findAllByIds(event.getContainerStockIds());
+        log.info("stock module receive stock clear event: {}", event);
+
+        List<ContainerStock> containerStocks = containerStockRepository
+                .findAllByContainerCodesAndWarehouseCode(Lists.newArrayList(event.getContainerCode()), event.getWarehouseCode());
         if (CollectionUtils.isEmpty(containerStocks)) {
-            log.warn("cannot find container stocks, ids: {}", event.getContainerStockIds());
+            log.warn("cannot find any container stocks");
             return;
         }
+
+        List<ContainerStock> filterContainerStocks = containerStocks.stream()
+                .filter(v -> Objects.equals(v.getAvailableQty(), v.getTotalQty()))
+                .toList();
+        if (CollectionUtils.isEmpty(filterContainerStocks)) {
+            log.warn("cannot find any container stocks after filter condition: availableQty == totalQty. may be some qty is locked, but why?");
+            return;
+        }
+
         skuBatchContainerStockAggregate.clearStock(containerStocks);
     }
 

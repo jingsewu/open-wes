@@ -6,7 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import org.openwes.common.utils.exception.code_enum.UserErrorDescEnum;
 import org.openwes.common.utils.utils.JsonUtils;
-import org.openwes.exception.handler.SwmsErrorResponse;
+import org.openwes.exception.handler.OpenWesErrorResponse;
 import org.openwes.user.api.utils.JwtUtils;
 import org.openwes.user.api.utils.TokenResponse;
 import org.openwes.user.application.UserService;
@@ -36,8 +36,8 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
         User user = userService.getByAccount(name);
         if (user == null) {
-            SwmsErrorResponse errorResponse = SwmsErrorResponse.builder().message("User not found")
-                    .errorCode(UserErrorDescEnum.NO_AUTHED_USER_FOUND.getCode())
+            OpenWesErrorResponse errorResponse = OpenWesErrorResponse.builder().msg("User not found")
+                    .status(UserErrorDescEnum.NO_AUTHED_USER_FOUND.getCode())
                     .description(UserErrorDescEnum.NO_AUTHED_USER_FOUND.getDesc())
                     .build();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

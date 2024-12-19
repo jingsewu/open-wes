@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
+import org.openwes.domain.event.DomainEventPublisher;
+import org.openwes.wes.api.stock.event.StockClearEvent;
 import org.openwes.wes.api.task.constants.TransferContainerStatusEnum;
 
 import java.io.Serializable;
@@ -55,11 +57,11 @@ public class TransferContainer implements Serializable {
     public void forceOccupy(Long transferContainerRecordId) {
         log.info("force occupy transfer container id: {}, " +
                 "transfer container code: {}. maybe relay picking?", this.id, this.transferContainerCode);
-        if (this.transferContainerStatus == IDLE || ObjectUtils.isEmpty(currentPeriodRelateRecordIds)) {
+        if (this.transferContainerStatus == IDLE || ObjectUtils.isEmpty(this.currentPeriodRelateRecordIds)) {
             throw new IllegalStateException("currentPeriodRelateRecordIds is empty or status is IDLE, you need not to call forceOccupy");
         }
         this.transferContainerStatus = OCCUPANCY;
-        currentPeriodRelateRecordIds.add(transferContainerRecordId);
+        this.currentPeriodRelateRecordIds.add(transferContainerRecordId);
     }
 
     public void unOccupy() {
@@ -95,6 +97,9 @@ public class TransferContainer implements Serializable {
         this.warehouseAreaId = null;
         this.currentPeriodRelateRecordIds = null;
         this.locationCode = "";
+
+        DomainEventPublisher.sendAsyncDomainEvent(new StockClearEvent()
+                .setContainerCode(this.transferContainerCode).setWarehouseCode(this.warehouseCode));
     }
 
     public void updateLocation(Long warehouseAreaId, String locationCode) {

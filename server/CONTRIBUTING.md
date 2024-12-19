@@ -1,6 +1,6 @@
 # Vision Statement
 
-Our vision for the SWMS project is to revolutionize warehouse management by providing a cutting-edge, open-source
+Our vision for the Open-wes project is to revolutionize warehouse management by providing a cutting-edge, open-source
 solution that empowers businesses of all sizes to optimize their logistics and supply chain operations. We envision a
 future where businesses can effortlessly manage their inventory, improve efficiency, reduce costs, and enhance customer
 satisfaction through innovative, community-driven software.
