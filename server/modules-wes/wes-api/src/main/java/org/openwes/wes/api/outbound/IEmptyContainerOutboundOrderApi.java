@@ -10,4 +10,6 @@ public interface IEmptyContainerOutboundOrderApi {
     void createEmptyContainerOutboundOrder(@Valid EmptyContainerOutboundOrderCreateDTO emptyContainerOutboundOrderCreateDTO);
 
     void execute(List<Long> orderIds);
+
+    void cancel(List<Long> orderIds);
 }

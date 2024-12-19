@@ -6,7 +6,7 @@ import org.openwes.common.utils.dictionary.IEnum;
 
 @Getter
 @AllArgsConstructor
-public enum EmptyContainerOutboundStatusEnum implements IEnum {
+public enum EmptyContainerOutboundOrderStatusEnum implements IEnum {
 
     NEW("NEW", "新单据"),
 

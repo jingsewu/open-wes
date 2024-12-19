@@ -18,7 +18,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
         name = "w_empty_container_outbound_order_detail",
         indexes = {
                 @Index(name = "idx_container_code", columnList = "containerCode"),
-                @Index(name = "idx_detail_status", columnList = "detailStatus"),
+                @Index(name = "idx_empty_container_outbound_order_id", columnList = "emptyContainerOutboundOrderId"),
         }
 )
 @DynamicUpdate

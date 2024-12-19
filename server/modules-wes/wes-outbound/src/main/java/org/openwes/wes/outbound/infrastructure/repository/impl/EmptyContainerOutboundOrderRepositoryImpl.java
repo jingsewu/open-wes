@@ -9,6 +9,7 @@ import org.openwes.wes.outbound.infrastructure.persistence.po.EmptyContainerOutb
 import org.openwes.wes.outbound.infrastructure.persistence.po.EmptyContainerOutboundOrderPO;
 import org.openwes.wes.outbound.infrastructure.persistence.transfer.EmptyContainerOutboundOrderPOTransfer;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -47,6 +48,21 @@ public class EmptyContainerOutboundOrderRepositoryImpl implements EmptyContainer
 
     @Override
     public void saveAll(List<EmptyContainerOutboundOrder> emptyContainerOutboundOrders) {
+        orderPORepository.saveAll(emptyContainerOutboundOrderPOTransfer.toPOs(emptyContainerOutboundOrders));
+    }
+
+    @Override
+    public List<EmptyContainerOutboundOrder> findOrderByDetailIds(List<Long> emptyContainerOutboundOrderDetailIds) {
+        List<EmptyContainerOutboundOrderDetailPO> detailPOs = detailPORepository.findAllById(emptyContainerOutboundOrderDetailIds);
+        return findAllByIds(detailPOs.stream().map(EmptyContainerOutboundOrderDetailPO::getEmptyContainerOutboundOrderId)
+                .collect(Collectors.toList()));
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void saveAllOrderAndDetails(List<EmptyContainerOutboundOrder> emptyContainerOutboundOrders) {
+        detailPORepository.saveAll(emptyContainerOutboundOrderPOTransfer.toDetailPOs(emptyContainerOutboundOrders
+                .stream().flatMap(v -> v.getDetails().stream()).toList()));
         orderPORepository.saveAll(emptyContainerOutboundOrderPOTransfer.toPOs(emptyContainerOutboundOrders));
     }
 }

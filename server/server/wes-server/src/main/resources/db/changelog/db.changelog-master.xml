@@ -8,4 +8,5 @@
     <!-- Reference other changelog files -->
     <include file="/db/changelog/db.changelog-1.0.xml"/>
     <include file="/db/changelog/db.changelog-20241214.xml"/>
+    <include file="/db/changelog/db.changelog-20241218.xml"/>
 </databaseChangeLog>

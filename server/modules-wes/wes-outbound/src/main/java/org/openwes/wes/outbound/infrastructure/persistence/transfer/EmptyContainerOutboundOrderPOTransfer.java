@@ -24,7 +24,7 @@ public interface EmptyContainerOutboundOrderPOTransfer {
 
     List<EmptyContainerOutboundOrderDetailPO> toDetailPOs(List<EmptyContainerOutboundOrderDetail> details);
 
-    EmptyContainerOutboundOrder toDO(EmptyContainerOutboundOrderPO emptyContainerOutboundOrderPO, List<EmptyContainerOutboundOrderDetailPO> detailPOs);
+    EmptyContainerOutboundOrder toDO(EmptyContainerOutboundOrderPO emptyContainerOutboundOrderPO, List<EmptyContainerOutboundOrderDetailPO> details);
 
     List<EmptyContainerOutboundOrderPO> toPOs(List<EmptyContainerOutboundOrder> emptyContainerOutboundOrders);
 }

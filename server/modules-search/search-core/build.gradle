@@ -2,6 +2,7 @@ dependencies {
 
     implementation project(path: ":modules-utils:common-utils", configuration: 'default')
     implementation project(path: ":modules-station:station-api", configuration: 'default')
+    implementation project(path: ":modules-search:search-api", configuration: 'default')
 
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
 

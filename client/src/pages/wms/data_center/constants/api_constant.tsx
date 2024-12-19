@@ -13,3 +13,5 @@ export const api_stocktake_task_execute = "post:/wms/stocktake/task/execute"
 
 export const api_empty_container_outbound_add = "post:/wms/outbound/empty/container/create"
 export const api_empty_container_outbound_execute = "post:/wms/outbound/empty/container/execute"
+export const api_empty_container_outbound_cancel = "post:/wms/outbound/empty/container/cancel"
+

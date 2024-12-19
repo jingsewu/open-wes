@@ -62,7 +62,8 @@ public class ContainerTask implements Serializable {
 
         log.info("container task id: {} task code: {} update task status to: {}", this.id, this.taskCode, taskStatus);
 
-        if (ContainerTaskTypeEnum.INBOUND == this.containerTaskType
+        if ((ContainerTaskTypeEnum.INBOUND == this.containerTaskType
+                || BusinessTaskTypeEnum.EMPTY_CONTAINER_OUTBOUND == this.businessTaskType)
                 && ContainerTaskStatusEnum.WCS_SUCCEEDED == taskStatus) {
             this.taskStatus = ContainerTaskStatusEnum.COMPLETED;
         } else {

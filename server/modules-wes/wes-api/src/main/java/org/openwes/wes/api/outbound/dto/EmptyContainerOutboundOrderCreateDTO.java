@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import org.openwes.wes.api.basic.constants.ContainerStatusEnum;
 
 @Data
 public class EmptyContainerOutboundOrderCreateDTO {
@@ -27,4 +28,8 @@ public class EmptyContainerOutboundOrderCreateDTO {
     @NotNull
     private Long workStationId;
 
+    private ContainerStatusEnum containerStatus = ContainerStatusEnum.IN_SIDE;
+    private boolean emptyContainer = true;
+    private boolean locked = false;
+    private int perPage = 1000;
 }

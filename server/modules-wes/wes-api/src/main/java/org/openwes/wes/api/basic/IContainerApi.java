@@ -33,8 +33,5 @@ public interface IContainerApi {
 
     void updateContainerLocation(@Valid List<ContainerLocationReportDTO> reportDTOS);
 
-    List<ContainerDTO> queryInsideEmptyContainers(@NotEmpty String containerSpecCode, @NotEmpty String warehouseCode,
-                                                  @NotNull Long warehouseAreaId);
-
     void moveOutside(String warehouseCode, Set<String> containerCode);
 }

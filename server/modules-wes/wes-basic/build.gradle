@@ -1,4 +1,5 @@
 dependencies {
+    implementation project(path: ":modules-search:search-api", configuration: 'default')
     implementation project(path: ":modules-wes:wes-api", configuration: 'default')
     implementation project(path: ":modules-wes:wes-common", configuration: 'default')
     implementation project(path: ":modules-utils:common-utils", configuration: 'default')

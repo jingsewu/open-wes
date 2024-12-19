@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="w_empty_container_outbound_order_create" author="Kinser">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="w_empty_container_outbound_order"/>
+            </not>
+        </preConditions>
+        <comment>w_empty_container_outbound_order创建</comment>
+        <sql>
+            CREATE TABLE `w_empty_container_outbound_order` (
+                                                                `id` bigint(20) NOT NULL,
+                                                                `create_time` bigint(20) NOT NULL DEFAULT '0' COMMENT 'Creation time',
+                                                                `create_user` varchar(60) NOT NULL DEFAULT '' COMMENT 'Create user',
+                                                                `update_time` bigint(20) NOT NULL DEFAULT '0' COMMENT 'Update time',
+                                                                `update_user` varchar(60) NOT NULL DEFAULT '' COMMENT 'Update user',
+                                                                `actual_count` int(11) NOT NULL COMMENT '实际数量',
+                                                                `container_spec_code` varchar(64) NOT NULL COMMENT '容器规格',
+                                                                `empty_container_outbound_status` varchar(20) NOT NULL COMMENT '状态',
+                                                                `order_no` varchar(64) NOT NULL COMMENT '订单编号',
+                                                                `plan_count` int(11) NOT NULL COMMENT '计划数量',
+                                                                `warehouse_area_id` bigint(20) NOT NULL COMMENT '库区ID',
+                                                                `warehouse_code` varchar(64) NOT NULL COMMENT '仓库',
+                                                                `work_station_id` bigint(20) NOT NULL COMMENT '工作站ID',
+                                                                PRIMARY KEY (`id`),
+                                                                UNIQUE KEY `uk_order_no` (`order_no`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+        </sql>
+        <rollback>
+            DROP table w_empty_container_outbound_order;
+        </rollback>
+    </changeSet>
+
+    <changeSet id="w_empty_container_outbound_order_detail_create" author="Kinser">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="w_empty_container_outbound_order_detail"/>
+            </not>
+        </preConditions>
+        <comment>w_empty_container_outbound_order_detail</comment>
+        <sql>
+            CREATE TABLE `w_empty_container_outbound_order_detail` (
+                                                                       `id` bigint(20) NOT NULL,
+                                                                       `create_time` bigint(20) NOT NULL DEFAULT '0' COMMENT 'Creation time',
+                                                                       `create_user` varchar(60) NOT NULL DEFAULT '' COMMENT 'Create user',
+                                                                       `update_time` bigint(20) NOT NULL DEFAULT '0' COMMENT 'Update time',
+                                                                       `update_user` varchar(60) NOT NULL DEFAULT '' COMMENT 'Update user',
+                                                                       `container_code` varchar(64) NOT NULL COMMENT '容器编码',
+                                                                       `container_id` bigint(20) NOT NULL COMMENT '容器ID',
+                                                                       `detail_status` varchar(20) NOT NULL COMMENT '状态',
+                                                                       `empty_container_outbound_order_id` bigint(20) NOT NULL COMMENT '容器出库单ID',
+                                                                       PRIMARY KEY (`id`),
+                                                                       KEY `idx_container_code` (`container_code`),
+                                                                       KEY `idx_empty_container_outbound_order_id` (`empty_container_outbound_order_id`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+        </sql>
+        <rollback>
+            DROP table w_empty_container_outbound_order_detail;
+        </rollback>
+    </changeSet>
+
+    <changeSet id="m_dictionary_add_enum_EmptyContainerOutboundDetailStatus" author="Kinser">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="m_dictionary"/>
+            </and>
+        </preConditions>
+        <comment>m_dictionary增加枚举EmptyContainerOutboundDetailStatus</comment>
+        <sql>
+            INSERT INTO `openwes`.`m_dictionary`(`id`, `create_time`, `create_user`, `update_time`, `update_user`, `code`, `description`, `editable`, `items`, `name`, `version`) VALUES (657282450262724618, 1734516347860, 'system', 1734516347860, 'system', 'EmptyContainerOutboundDetailStatus', NULL, b'1', '[{\"order\": 0, \"value\": \"UNDO\", \"defaultItem\": true, \"description\": {\"languages\": {\"zh-CN\": null, \"en-US\": \"Undo\"}}, \"showContext\": {\"languages\": {\"zh-CN\": \"未执行\", \"en-US\": \"Not Executed\"}}}, {\"order\": 0, \"value\": \"DONE\", \"defaultItem\": false, \"description\": {\"languages\": {\"zh-CN\": null, \"en-US\": \"Done\"}}, \"showContext\": {\"languages\": {\"zh-CN\": \"完成\", \"en-US\": \"Completed\"}}}, {\"order\": 0, \"value\": \"CANCELED\", \"defaultItem\": false, \"description\": {\"languages\": {\"zh-CN\": null, \"en-US\": \"Canceled\"}}, \"showContext\": {\"languages\": {\"zh-CN\": \"已取消\", \"en-US\": \"Canceled\"}}}]', '{\"languages\": {\"zh-CN\": \"空箱出库订单详情状态\", \"en-US\": \"Empty Container Outbound Detail Status\"}}', 0);
+        </sql>
+        <rollback>
+            delete from m_dictionary where code='EmptyContainerOutboundDetailStatus';
+        </rollback>
+    </changeSet>
+
+    <changeSet id="m_dictionary_add_enum_EmptyContainerOutboundOrderStatus" author="Kinser">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="m_dictionary"/>
+            </and>
+        </preConditions>
+        <comment>m_dictionary增加枚举EmptyContainerOutboundOrderStatus</comment>
+        <sql>
+            INSERT INTO `openwes`.`m_dictionary`(`id`, `create_time`, `create_user`, `update_time`, `update_user`, `code`, `description`, `editable`, `items`, `name`, `version`) VALUES (657282450204004352, 1734516347846, 'system', 1734516347846, 'system', 'EmptyContainerOutboundOrderStatus', NULL, b'1', '[{\"order\": 0, \"value\": \"NEW\", \"defaultItem\": true, \"description\": {\"languages\": {\"zh-CN\": null, \"en-US\": \"New\"}}, \"showContext\": {\"languages\": {\"zh-CN\": \"新单据\", \"en-US\": \"New Document\"}}}, {\"order\": 0, \"value\": \"PENDING\", \"defaultItem\": false, \"description\": {\"languages\": {\"zh-CN\": null, \"en-US\": \"Pending\"}}, \"showContext\": {\"languages\": {\"zh-CN\": \"出库中\", \"en-US\": \"In Progress\"}}}, {\"order\": 0, \"value\": \"FINISHED\", \"defaultItem\": false, \"description\": {\"languages\": {\"zh-CN\": null, \"en-US\": \"Finished\"}}, \"showContext\": {\"languages\": {\"zh-CN\": \"已完成\", \"en-US\": \"Completed\"}}}, {\"order\": 0, \"value\": \"ABNORMAL\", \"defaultItem\": false, \"description\": {\"languages\": {\"zh-CN\": null, \"en-US\": \"Abnormal\"}}, \"showContext\": {\"languages\": {\"zh-CN\": \"异常状态\", \"en-US\": \"Abnormal Status\"}}}, {\"order\": 0, \"value\": \"CANCELED\", \"defaultItem\": false, \"description\": {\"languages\": {\"zh-CN\": null, \"en-US\": \"Canceled\"}}, \"showContext\": {\"languages\": {\"zh-CN\": \"已取消\", \"en-US\": \"Canceled\"}}}]', '{\"languages\": {\"zh-CN\": \"空箱出库订单状态\", \"en-US\": \"Empty Container Outbound Order Status\"}}', 0);
+        </sql>
+        <rollback>
+            delete from m_dictionary where code='EmptyContainerOutboundOrderStatus';
+        </rollback>
+    </changeSet>
+
+    <changeSet id="u_menu_add_657148836174761984" author="Kinser">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="m_dictionary"/>
+            </and>
+        </preConditions>
+        <comment>u_menu增加菜单空箱出库</comment>
+        <sql>
+            INSERT INTO `openwes`.`u_menu`(`id`, `create_time`, `create_user`, `update_time`, `update_user`, `description`, `enable`, `icon`, `iframe_show`, `order_num`, `parent_id`, `path`, `permissions`, `system_code`, `title`, `type`) VALUES (657148836174761984, 1734484491779, 'admin', 1734484491779, 'admin', NULL, 1, NULL, 0, 10, 1002020000, '/wms/data-center/outbound/empty-container-outbound', '/wms/data-center/outbound/empty-container-outbound', 'wms', '空箱出库', 2);
+        </sql>
+        <rollback>
+            delete from u_menu where id = 657148836174761984;
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

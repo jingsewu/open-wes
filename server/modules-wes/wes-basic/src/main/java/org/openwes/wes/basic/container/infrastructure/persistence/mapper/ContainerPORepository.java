@@ -1,6 +1,5 @@
 package org.openwes.wes.basic.container.infrastructure.persistence.mapper;
 
-import org.openwes.wes.api.basic.constants.ContainerStatusEnum;
 import org.openwes.wes.basic.container.infrastructure.persistence.po.ContainerPO;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -15,5 +14,4 @@ public interface ContainerPORepository extends JpaRepository<ContainerPO, Long> 
 
     boolean existsByContainerSpecCodeAndWarehouseCode(String containerSpecCode, String warehouseCode);
 
-    List<ContainerPO> findByContainerSpecCodeAndWarehouseCodeAndWarehouseAreaIdAndEmptyContainerAndContainerStatus(String containerSpecCode, String warehouseCode, Long warehouseAreaId, boolean emptyContainer, ContainerStatusEnum inSide);
 }

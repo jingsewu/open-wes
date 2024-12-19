@@ -24,6 +24,7 @@ include 'modules-api-platform:api-platform'
 include 'modules-api-platform:api-platform-api'
 
 include 'modules-search:search-core'
+include 'modules-search:search-api'
 
 include 'modules-utils:common-utils'
 include 'modules-utils:domain-event'
@@ -37,4 +38,6 @@ include 'modules-utils:tenant-config'
 include 'server:station-server'
 include 'server:gateway-server'
 include 'server:wes-server'
+include 'modules-search:search-api'
+findProject(':modules-search:search-api')?.name = 'search-api'
 

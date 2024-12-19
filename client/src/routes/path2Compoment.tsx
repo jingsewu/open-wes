@@ -341,14 +341,12 @@ const menuRouter = [
         )
     },
     {
-        path: "/wms/data-center/empty-container-outbound",
-        name: (
-            <Translation>
-                {(t) => t("wms.menu.emptyContainerOutbound")}
-            </Translation>
+        path: "/wms/data-center/outbound/empty-container-outbound",
+        name: <Translation>{(t) => t("wms.menu.emptyContainerOutbound")}</Translation>,
+        component: lazy(
+            () => import("@/pages/wms/data_center/outbound/empty_container_outbound")
         )
     },
-
     {
         path: "/wms/data-center/outbound/picking-order",
         name: <Translation>{(t) => t("pickingTasks.title")}</Translation>,

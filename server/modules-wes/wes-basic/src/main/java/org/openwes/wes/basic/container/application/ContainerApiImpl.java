@@ -2,10 +2,13 @@ package org.openwes.wes.basic.container.application;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.openwes.search.api.ISearchApi;
+import com.openwes.search.api.vo.ContainerSearchVO;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.openwes.wes.api.basic.IContainerApi;
+import org.openwes.wes.api.basic.constants.ContainerStatusEnum;
 import org.openwes.wes.api.basic.dto.*;
 import org.openwes.wes.basic.container.domain.aggregate.ContainerLocationAggregate;
 import org.openwes.wes.basic.container.domain.entity.Container;
@@ -168,12 +171,6 @@ public class ContainerApiImpl implements IContainerApi {
                     containerLocationAggregate.updateContainerLocation(values, containers, locations);
 
                 });
-    }
-
-    @Override
-    public List<ContainerDTO> queryInsideEmptyContainers(String containerSpecCode, String warehouseCode, Long warehouseAreaId) {
-        List<Container> containers = containerRepository.findAllInsideEmptyContainers(containerSpecCode, warehouseCode, warehouseAreaId);
-        return containerTransfer.toDTOs(containers);
     }
 
     @Override

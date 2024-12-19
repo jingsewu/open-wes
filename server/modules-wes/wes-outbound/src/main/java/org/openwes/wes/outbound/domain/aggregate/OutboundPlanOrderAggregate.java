@@ -47,14 +47,14 @@ public class OutboundPlanOrderAggregate {
     @Transactional(rollbackFor = Exception.class)
     public void shortComplete(List<OutboundPlanOrder> outboundPlanOrders) {
         List<OutboundPlanOrder> shortOutboundPlanOrders = outboundPlanOrders.stream().filter(OutboundPlanOrder::shortComplete).toList();
-        outboundPlanOrderRepository.saveAllOrderAndDetails(shortOutboundPlanOrders);
+        outboundPlanOrderRepository.saveOrderAndDetails(shortOutboundPlanOrders);
     }
 
     @Transactional(rollbackFor = Exception.class)
     public void cancel(OutboundPlanOrderCancelContext outboundPlanOrderCancelContext) {
 
         outboundPlanOrderCancelContext.getOutboundPlanOrders().forEach(OutboundPlanOrder::cancel);
-        outboundPlanOrderRepository.saveAllOrderAndDetails(outboundPlanOrderCancelContext.getOutboundPlanOrders());
+        outboundPlanOrderRepository.saveOrderAndDetails(outboundPlanOrderCancelContext.getOutboundPlanOrders());
 
         outboundPlanOrderPreAllocatedAggregate.cancel(outboundPlanOrderCancelContext.getOutboundPreAllocatedRecords());
 

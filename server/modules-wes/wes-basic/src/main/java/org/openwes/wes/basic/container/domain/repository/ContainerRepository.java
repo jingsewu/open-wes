@@ -19,5 +19,4 @@ public interface ContainerRepository {
 
     boolean existByContainerSpecCode(String containerSpecCode, String warehouseCode);
 
-    List<Container> findAllInsideEmptyContainers(String containerSpecCode, String warehouseCode, Long warehouseAreaId);
 }

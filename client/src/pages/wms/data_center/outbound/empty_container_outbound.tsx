@@ -2,7 +2,7 @@ import schema2component from "@/utils/schema2component"
 import {container_spec, warehouse_area_id} from "@/pages/wms/constants/select_search_api_contant"
 import {create_update_columns} from "@/utils/commonContants"
 import {
-    api_empty_container_outbound_add,
+    api_empty_container_outbound_add, api_empty_container_outbound_cancel,
     api_empty_container_outbound_execute
 } from "@/pages/wms/data_center/constants/api_constant"
 import {api_crud_search_by_warehouseCode} from "@/pages/constantApi"
@@ -91,7 +91,7 @@ const columns = [
     },
     {
         name: "containerSpecCode",
-        label: "table.containerSpecCode",
+        label: "table.containerSpecificationNumber",
         searchable: true
     },
     {
@@ -110,10 +110,10 @@ const columns = [
         name: "emptyContainerOutboundStatus",
         label: "table.status",
         type: "mapping",
-        source: "${ls:dictionary|pick:EmptyContainerOutboundStatus}",
+        source: "${ls:dictionary|pick:EmptyContainerOutboundOrderStatus}",
         searchable: {
             type: "select",
-            source: "${ls:dictionary|pick:EmptyContainerOutboundStatus}"
+            source: "${ls:dictionary|pick:EmptyContainerOutboundOrderStatus}"
         }
     },
     ...create_update_columns,
@@ -131,8 +131,7 @@ const detailColumns = [
         hidden: true
     },
     {
-        name: "containerCode",
-        label: "table.containerCode"
+        name: "containerCode",        label: "table.containerCode"
     },
     {
         name: "detailStatus",
@@ -187,7 +186,7 @@ const schema = {
                 searchIdentity: searchIdentity,
                 showColumns: showColumns,
                 searchObject: {
-                    orderBy: "emptyContainer_outbound_status, update_time desc"
+                    orderBy: "empty_container_outbound_status, update_time desc"
                 }
             },
             autoFillHeight: true,
@@ -209,6 +208,18 @@ const schema = {
                         }
                     },
                     confirmText: "确定要执行空箱出库单?"
+                },
+                {
+                    label: "取消空箱出库单",
+                    actionType: "ajax",
+                    api: {
+                        method: "post",
+                        url: api_empty_container_outbound_cancel,
+                        data: {
+                            orderIds: "${ARRAYMAP(selectedItems, item => item.id)}"
+                        }
+                    },
+                    confirmText: "确定要取消空箱出库单?"
                 }
             ],
             columns: [

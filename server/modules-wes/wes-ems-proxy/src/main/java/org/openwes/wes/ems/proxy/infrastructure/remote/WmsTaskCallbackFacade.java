@@ -1,14 +1,15 @@
 package org.openwes.wes.ems.proxy.infrastructure.remote;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.openwes.domain.event.DomainEventPublisher;
-import org.openwes.wes.ems.proxy.domain.entity.ContainerTask;
 import org.openwes.wes.api.ems.proxy.constants.BusinessTaskTypeEnum;
 import org.openwes.wes.api.ems.proxy.dto.ContainerArrivedEvent;
 import org.openwes.wes.api.inbound.event.EmptyContainerInboundOrderCompletionEvent;
 import org.openwes.wes.api.inbound.event.PutAwayTaskCompletionEvent;
+import org.openwes.wes.api.outbound.event.EmptyContainerOutboundOrderCompletionEvent;
 import org.openwes.wes.api.task.event.TransferContainerArrivedEvent;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.openwes.wes.ems.proxy.domain.entity.ContainerTask;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,6 +29,13 @@ public class WmsTaskCallbackFacade {
 
                 DomainEventPublisher.sendAsyncDomainEvent(new EmptyContainerInboundOrderCompletionEvent()
                         .setEmptyContainerInboundOrderDetailIds(customerTaskIds));
+                break;
+            case EMPTY_CONTAINER_OUTBOUND:
+                List<Long> emptyContainerOutboundDetailIds = containerTasks.stream().filter(v -> Objects.nonNull(v.getCustomerTaskIds()))
+                        .flatMap(v -> v.getCustomerTaskIds().stream()).toList();
+
+                DomainEventPublisher.sendAsyncDomainEvent(new EmptyContainerOutboundOrderCompletionEvent()
+                        .setEmptyContainerOutboundOrderDetailIds(emptyContainerOutboundDetailIds));
                 break;
 
             case PUT_AWAY:

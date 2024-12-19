@@ -6,7 +6,7 @@ import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 import org.openwes.common.utils.base.UpdateUserPO;
-import org.openwes.wes.api.outbound.constants.EmptyContainerOutboundStatusEnum;
+import org.openwes.wes.api.outbound.constants.EmptyContainerOutboundOrderStatusEnum;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @EqualsAndHashCode(callSuper = true)
@@ -38,7 +38,7 @@ public class EmptyContainerOutboundOrderPO extends UpdateUserPO {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, columnDefinition = "varchar(20) comment '状态'")
-    private EmptyContainerOutboundStatusEnum emptyContainerOutboundStatus;
+    private EmptyContainerOutboundOrderStatusEnum emptyContainerOutboundStatus;
 
     @Column(nullable = false, columnDefinition = "varchar(64) comment '容器规格'")
     private String containerSpecCode;
