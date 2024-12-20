@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="m_dictionary_add_enum_ContainerOperationType" author="Kinser">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="m_dictionary"/>
+            </and>
+        </preConditions>
+        <comment>m_dictionary增加枚举ContainerOperationType</comment>
+        <sql>
+            INSERT INTO `openwes`.`m_dictionary`(`id`, `create_time`, `create_user`, `update_time`, `update_user`, `code`, `description`, `editable`, `items`, `name`, `version`) VALUES (657977027328086020, 1734681947937, 'system', 1734681947937, 'system', 'ContainerOperationType', NULL, b'1', '[{\"order\": 0, \"value\": \"MOVE_OUT\", \"defaultItem\": true, \"description\": {\"languages\": {\"zh-CN\": null, \"en-US\": \"Move Out\"}}, \"showContext\": {\"languages\": {\"zh-CN\": \"取出\", \"en-US\": \"Move Out\"}}}, {\"order\": 0, \"value\": \"ABNORMAL\", \"defaultItem\": false, \"description\": {\"languages\": {\"zh-CN\": null, \"en-US\": \"Abnormal\"}}, \"showContext\": {\"languages\": {\"zh-CN\": \"流向异常口\", \"en-US\": \"Abnormal Outlet\"}}}, {\"order\": 0, \"value\": \"LEAVE\", \"defaultItem\": false, \"description\": {\"languages\": {\"zh-CN\": null, \"en-US\": \"Leave\"}}, \"showContext\": {\"languages\": {\"zh-CN\": \"离开\", \"en-US\": \"Leave\"}}}]', '{\"languages\": {\"zh-CN\": \"容器操作类型\", \"en-US\": \"Container Operation Type\"}}', 0);
+        </sql>
+        <rollback>
+            delete from m_dictionary where code='ContainerOperationType';
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

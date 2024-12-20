@@ -27,6 +27,6 @@ i18n.use(LanguageDetector) //嗅探当前浏览器语言 zh-CN
     })
 
 registerFilter("t", (input: string) =>
-    typeof input === "string" ? i18n.t(input) : ""
+    i18n.t(input)
 )
 export default i18n

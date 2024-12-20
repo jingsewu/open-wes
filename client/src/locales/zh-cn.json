@@ -68,6 +68,7 @@
     "button.batchRetry": "批量重试",
     "button.extraProducts": "盈品",
     "button.batchChangeWarehouseLogic": "批量修改逻辑区",
+    "button.release": "释放",
 
     "modal.confirmExit": "确定退出吗？",
     "modal.clickSlotToBeUnlocked": "请点选需要解绑的播种位周转箱!",
@@ -111,6 +112,7 @@
     "modal.algoName": "算法名称",
     "modal.warehouseLogicTypePriority": "逻辑区类型优先级",
     "modal.warehouseLogicTypePriority.description": "靠前的逻辑区类型的容器会被优先命中",
+    "modal.release": "确认释放",
 
     "toast.selectContainerSlot": "请选择容器槽口",
     "toast.incorrectQty": "数量错误",
@@ -495,6 +497,8 @@
     "table.acceptOrderStatus": "收货单号",
     "table.planCount": "计划数量",
     "table.emptySlotNum": "空格口数量",
+    "table.virtualContainer": "虚拟容器",
+    "table.lockedTime": "锁定时间",
 
     "form.tab.basicInformation": "基础信息",
     "form.tab.configurationInformation": "配置信息",
@@ -642,5 +646,7 @@
     "wms.menu.shelfManagement": "货架管理",
     "wms.menu.receiveManagement": "收货管理",
 
-    "user.menu.clientAuthorization": "客户端授权"
+    "user.menu.clientAuthorization": "客户端授权",
+
+    "transferContainerManagement.title": "周转容器管理"
 }

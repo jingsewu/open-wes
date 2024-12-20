@@ -13,6 +13,7 @@ import org.openwes.wes.api.ems.proxy.constants.ContainerOperationTypeEnum;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,12 +31,12 @@ public class EmptyContainerOutboundRefreshHandlerExtension implements OperationT
             return;
         }
 
-        containerService.moveOutside(workStationCache.getWarehouseCode(),
-                arrivedContainers.stream().map(ArrivedContainerCache::getContainerCode).collect(Collectors.toSet()));
+        Set<String> containerCodes = arrivedContainers.stream().map(ArrivedContainerCache::getContainerCode).collect(Collectors.toSet());
+
+        containerService.moveOutside(workStationCache.getWarehouseCode(), containerCodes);
         equipmentService.containerLeave(arrivedContainers, ContainerOperationTypeEnum.MOVE_OUT);
 
-        workStationCache.clearArrivedContainers();
-
+        workStationCache.clearArrivedContainers(containerCodes);
         workStationCacheRepository.save(workStationCache);
     }
 

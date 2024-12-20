@@ -1,15 +1,14 @@
 package org.openwes.station.domain.entity;
 
-import org.openwes.station.api.constants.ProcessStatusEnum;
-import org.openwes.station.infrastructure.remote.StocktakeService;
-import org.openwes.wes.api.task.constants.OperationTaskStatusEnum;
-import org.openwes.wes.api.task.dto.OperationTaskVO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
+import org.openwes.station.api.constants.ProcessStatusEnum;
+import org.openwes.station.infrastructure.remote.StocktakeService;
+import org.openwes.wes.api.task.constants.OperationTaskStatusEnum;
+import org.openwes.wes.api.task.dto.OperationTaskVO;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -20,11 +19,11 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class StocktakeWorkStationCache extends WorkStationCache {
 
-    public Collection<ArrivedContainerCache> queryTasksAndReturnRemovedContainers(StocktakeService stocktakeService) {
+    public List<ArrivedContainerCache> queryTasksAndReturnRemovedContainers(StocktakeService stocktakeService) {
 
         List<ArrivedContainerCache> undoContainers = this.getUndoContainers();
         if (CollectionUtils.isNotEmpty(this.operateTasks) || CollectionUtils.isEmpty(this.getUndoContainers())) {
-            return Collections.emptySet();
+            return Collections.emptyList();
         }
 
         List<OperationTaskVO> containerOperateTasks = undoContainers.stream()

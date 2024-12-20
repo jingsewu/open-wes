@@ -1,13 +1,13 @@
 package org.openwes.wes.api.basic.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import org.openwes.wes.api.basic.constants.PageFieldEnum;
-import org.openwes.wes.api.basic.constants.PutWallDisplayOrderEnum;
-import org.openwes.wes.api.task.constants.OperationTaskTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.openwes.wes.api.basic.constants.PageFieldEnum;
+import org.openwes.wes.api.basic.constants.PutWallDisplayOrderEnum;
+import org.openwes.wes.api.task.constants.OperationTaskTypeEnum;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -39,9 +39,6 @@ public class WorkStationConfigDTO implements Serializable {
 
     @Data
     public static class InboundStationConfigDTO implements Serializable {
-        public void initialize() {
-
-        }
     }
 
     @Data
@@ -78,15 +75,11 @@ public class WorkStationConfigDTO implements Serializable {
 
     @Data
     public static class StocktakeStationConfigDTO implements Serializable {
-        public void initialize() {
+        private boolean emptyToteRecycle;
 
-        }
     }
 
     @Data
     public static class RelocationStationConfigDTO implements Serializable {
-        public void initialize() {
-
-        }
     }
 }

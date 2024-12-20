@@ -80,11 +80,11 @@ public class OutboundWorkStationCache extends WorkStationCache {
         }
     }
 
-    public Collection<ArrivedContainerCache> queryTasksAndReturnRemovedContainers(TaskService taskService) {
+    public List<ArrivedContainerCache> queryTasksAndReturnRemovedContainers(TaskService taskService) {
 
         List<ArrivedContainerCache> undoContainers = this.getUndoContainers();
         if (CollectionUtils.isNotEmpty(this.operateTasks) || CollectionUtils.isEmpty(this.getUndoContainers())) {
-            return Collections.emptySet();
+            return Collections.emptyList();
         }
 
         List<OperationTaskVO> containerOperateTasks = undoContainers.stream()

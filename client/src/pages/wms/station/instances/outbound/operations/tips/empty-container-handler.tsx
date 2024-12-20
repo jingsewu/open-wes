@@ -1,43 +1,24 @@
-/**
- * 空箱处理
- */
-import { TipType } from "@/pages/wms/station/instances/outbound/operations/tips/type"
-// import IntlMessages from "@/util/IntlMessages"
-import { Result } from "antd"
-import React, { useMemo } from "react"
-// import { useSelector } from "react-redux"
+import {Result} from "antd"
+import React from "react"
 import styles from "./empty-container.module.scss"
 
-const EMPTY_CONTAINER_ENUM_KEY = "EmptyContainerProcessType"
+const dictionary = JSON.parse(localStorage.getItem("dictionary") || "{}")
 
 export default function EmptyContainerHandler(props: any) {
-    const { value } = props
+    const {value} = props
     const {
-        emptyContainerProcessTypeEnums,
         onCustomActionDispatch,
         containerCode
     } = value
-    // const { enums } = useSelector(({ enums }: any) => enums)
-    const enums = { [EMPTY_CONTAINER_ENUM_KEY]: [] }
-    const formatEnums = useMemo(() => {
-        const res: any = {}
-        if (enums[EMPTY_CONTAINER_ENUM_KEY]) {
-            enums[EMPTY_CONTAINER_ENUM_KEY].forEach((item: any) => {
-                res[item.enumValue] = {
-                    label: item.label,
-                    value: item.enumValue
-                }
-            })
-        }
-        return res
-    }, [enums])
+
+    const containerOperationTypeEnums = dictionary.ContainerOperationType
 
     const handleConfirm = (type: string) => {
         onCustomActionDispatch({
-            eventCode: TipType.EMPTY_CONTAINER_HANDLE_TIP,
+            eventCode: "EMPTY_CONTAINER_HANDLE",
             data: {
                 containerCode,
-                emptyContainerProcessType: type
+                containerOperationType: type
             }
         })
     }
@@ -45,17 +26,17 @@ export default function EmptyContainerHandler(props: any) {
     const getButtons = () => {
         return (
             <div className={styles["container"]}>
-                {emptyContainerProcessTypeEnums.map((item: any) => {
+                {containerOperationTypeEnums.map((item: any) => {
                     return (
                         <div
                             className={styles["btn"]}
                             key={item}
                             onClick={handleConfirm.bind(
                                 null,
-                                formatEnums[item]?.value
+                                item?.value
                             )}
                         >
-                            {formatEnums[item]?.label}
+                            {item?.label}
                         </div>
                     )
                 })}

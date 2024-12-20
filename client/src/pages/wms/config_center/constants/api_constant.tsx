@@ -54,10 +54,13 @@ export const api_container_delete = "post:/wms/basic/container/delete/${id}"
 // work station module
 export const api_work_station_add = "post:/wms/basic/work/station/createOrUpdateWorkStation"
 export const api_work_station_get = "post:/wms/basic/work/station/get/${id}"
-export const api_work_station_config_get = "post:/wms/basic/work/station/getStationConfig/${workStationId}"
+export const api_work_station_config_get = "/wms/basic/work/station/getStationConfig/${id}"
 export const api_work_station_config_add = "post:/wms/basic/work/station/createOrUpdateStationConfig"
 
 // put wall module
 export const api_put_wall_add = "/wms/basic/putWall/createOrUpdate"
 export const api_put_wall_get = "post:/wms/basic/putWall/get/${id}"
 export const api_put_wall_delete = "post:/wms/basic/putWall/delete/${id}"
+
+// transfer container module
+export const api_transfer_container_release = "post:/wms/basic/transfer/container/release/${id}"

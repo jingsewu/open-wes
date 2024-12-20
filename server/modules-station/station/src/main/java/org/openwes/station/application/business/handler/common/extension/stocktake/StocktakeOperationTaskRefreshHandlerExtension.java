@@ -35,6 +35,7 @@ public class StocktakeOperationTaskRefreshHandlerExtension implements OperationT
         }
 
         Collection<ArrivedContainerCache> doneContainers = workStationCache.queryTasksAndReturnRemovedContainers(stocktakeService);
+        workStationRepository.save(workStationCache);
 
         if (CollectionUtils.isNotEmpty(doneContainers)) {
             containerService.unLockContainer(workStationCache.getWarehouseCode(),
@@ -42,7 +43,6 @@ public class StocktakeOperationTaskRefreshHandlerExtension implements OperationT
             equipmentService.containerLeave(doneContainers, ContainerOperationTypeEnum.LEAVE);
         }
 
-        workStationRepository.save(workStationCache);
     }
 
     @Override

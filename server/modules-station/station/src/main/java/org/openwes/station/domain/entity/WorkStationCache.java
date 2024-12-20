@@ -90,9 +90,9 @@ public class WorkStationCache {
         }
     }
 
-    public void clearArrivedContainers() {
-        log.info("work station: {} clear arrived containers", this.id);
-        this.arrivedContainers.clear();
+    public void clearArrivedContainers(Collection<String> containerCodes) {
+        log.info("work station: {} clear arrived containers: {}", this.id, containerCodes);
+        this.arrivedContainers.removeIf(v -> containerCodes.contains(v.getContainerCode()));
     }
 
     public void setUndoContainersProcessing(List<ArrivedContainerCache> arrivedContainers) {
@@ -111,7 +111,7 @@ public class WorkStationCache {
         arrivedContainers.forEach(v -> v.setProcessStatus(ProcessStatusEnum.PROCESSING));
     }
 
-    public Collection<ArrivedContainerCache> removeProceedContainers() {
+    public List<ArrivedContainerCache> removeProceedContainers() {
         Set<String> groupCodes = Sets.newHashSet();
         this.arrivedContainers.stream().collect(Collectors.groupingBy(ArrivedContainerCache::getGroupCode))
                 .forEach((groupCode, containers) -> {

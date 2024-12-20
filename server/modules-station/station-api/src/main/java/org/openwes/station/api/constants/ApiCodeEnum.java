@@ -20,6 +20,7 @@ public enum ApiCodeEnum {
     CHOOSE_AREA,
     CHOOSE_PUT_WALL,
     CLOSE_TIP,
+    EMPTY_CONTAINER_HANDLE,
 
     SCAN_BARCODE_RESET,
 

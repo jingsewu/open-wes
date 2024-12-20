@@ -1,5 +1,5 @@
 import schema2component from "@/utils/schema2component"
-import {container_spec, warehouse_area_id} from "@/pages/wms/constants/select_search_api_contant"
+import {container_spec, warehouse_area_id, work_station} from "@/pages/wms/constants/select_search_api_contant"
 import {create_update_columns} from "@/utils/commonContants"
 import {
     api_empty_container_outbound_add, api_empty_container_outbound_cancel,
@@ -104,7 +104,8 @@ const columns = [
     },
     {
         name: "workStationId",
-        label: "table.workstationName"
+        label: "table.workstationName",
+        source: work_station
     },
     {
         name: "emptyContainerOutboundStatus",

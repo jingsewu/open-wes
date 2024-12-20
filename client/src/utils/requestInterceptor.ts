@@ -51,7 +51,7 @@ export default function request(config: AxiosRequestConfig) {
             } else if (res.status == 402) {
                 // 无权限
                 console.warn("not permission, url: ", config.url)
-                toast["error"]("您无访问权限，请申请！", "消息")
+                toast.error("您无访问权限，请申请！", "消息")
                 reject(res)
             } else if (res?.data?.status === "SAT010001") {
                 resolve(res)
@@ -81,7 +81,7 @@ export default function request(config: AxiosRequestConfig) {
                     response.data.error ||
                     response.data.msg ||
                     response.statusText
-                toast["error"](msg, "消息")
+                toast.error(msg, "消息")
                 reject({
                     ...res,
                     message: msg
@@ -89,7 +89,7 @@ export default function request(config: AxiosRequestConfig) {
             } else if (axios.isCancel(res)) {
                 console.info("request canceled, url: ", config.url)
             } else {
-                toast["error"](response?.data?.description, "消息")
+                toast.error(response?.data?.description, "消息")
                 reject(res)
             }
         }

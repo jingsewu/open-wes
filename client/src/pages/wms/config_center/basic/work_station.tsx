@@ -592,7 +592,7 @@ const schema = {
                                     type: "form",
                                     api: api_work_station_config_add,
                                     initApi: {
-                                        method: "get",
+                                        method: "post",
                                         url: api_work_station_config_get,
                                         adaptor: function (payload: any) {
                                             // 新增配置时，删除后端返回的空 workStationId，避免将上下文中获取的 workStationId 覆盖掉

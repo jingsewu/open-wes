@@ -31,4 +31,5 @@ public class ContainerService {
     public void moveOutside(String warehouseCode, Set<String> containerCode) {
         containerApi.moveOutside(warehouseCode, containerCode);
     }
+
 }

@@ -149,6 +149,15 @@ const menuRouter = [
         )
     },
     {
+        path: "/wms/config-center/basic/transfer-container-management",
+        name: (
+            <Translation>{(t) => t("transferContainerManagement.title")}</Translation>
+        ),
+        component: lazy(
+            () => import("@/pages/wms/config_center/basic/transfer_container_management")
+        )
+    },
+    {
         path: "/wms/config-center/basic/put-wall-management",
         name: (
             <Translation>{(t) => t("seedingWallManagement.title")}</Translation>

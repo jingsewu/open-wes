@@ -34,4 +34,5 @@ public interface IContainerApi {
     void updateContainerLocation(@Valid List<ContainerLocationReportDTO> reportDTOS);
 
     void moveOutside(String warehouseCode, Set<String> containerCode);
+
 }
