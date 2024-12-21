@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.openwes.wes.api.basic.IPutWallApi;
 import org.openwes.wes.api.task.constants.TransferContainerStatusEnum;
 import org.openwes.wes.api.task.dto.BindContainerDTO;
+import org.openwes.wes.api.task.dto.SealContainerDTO;
 import org.openwes.wes.api.task.dto.UnBindContainerDTO;
 import org.openwes.wes.basic.container.domain.entity.TransferContainer;
 import org.openwes.wes.basic.container.domain.entity.TransferContainerRecord;
@@ -57,12 +58,16 @@ public class TransferContainerPutWallAggregate {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void sealContainer(boolean isNeedHandlePutWallSlot, TransferContainerRecord transferContainerRecord,
+    public void sealContainer(SealContainerDTO sealContainerDTO, TransferContainerRecord transferContainerRecord,
                               TransferContainer transferContainer) {
 
         //1. put wall slot seal container
-        if (isNeedHandlePutWallSlot) {
-            putWallApi.sealContainer(transferContainerRecord.getPutWallSlotCode(), transferContainerRecord.getWorkStationId());
+        if (sealContainerDTO.isNeedHandlePutWallSlot()) {
+            if (sealContainerDTO.isPickingOrderCompleted()) {
+                putWallApi.sealContainer(transferContainerRecord.getPutWallSlotCode(), transferContainerRecord.getWorkStationId());
+            } else {
+                putWallApi.splitContainer(transferContainerRecord.getPutWallSlotCode(), transferContainerRecord.getWorkStationId());
+            }
         }
 
         //2. save transfer container record

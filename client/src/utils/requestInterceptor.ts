@@ -67,7 +67,6 @@ export default function request(config: AxiosRequestConfig) {
 
         let onFail = (res: any) => {
             console.error("request failed, url: ", config.url)
-
             let response = res.response
             if (response?.status == 401) {
                 // 未登陆
@@ -82,10 +81,10 @@ export default function request(config: AxiosRequestConfig) {
                     response.data.msg ||
                     response.statusText
                 toast.error(msg, "消息")
-                reject({
-                    ...res,
-                    message: msg
-                })
+                // reject({
+                //     ...res,
+                //     message: msg
+                // })
             } else if (axios.isCancel(res)) {
                 console.info("request canceled, url: ", config.url)
             } else {

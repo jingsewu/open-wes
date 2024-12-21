@@ -1,5 +1,8 @@
 package org.openwes.station.infrastructure.remote;
 
+import org.openwes.wes.api.outbound.IPickingOrderApi;
+import org.openwes.wes.api.outbound.constants.PickingOrderStatusEnum;
+import org.openwes.wes.api.outbound.dto.PickingOrderDTO;
 import org.openwes.wes.api.task.ITaskApi;
 import org.openwes.wes.api.task.constants.OperationTaskTypeEnum;
 import lombok.Setter;
@@ -15,6 +18,8 @@ public class TaskService {
 
     @DubboReference
     private ITaskApi taskApi;
+    @DubboReference
+    private IPickingOrderApi pickingOrderApi;
 
     public List<OperationTaskVO> queryTasks(Long workStationId, String containerCode, String face, OperationTaskTypeEnum operationType) {
         return taskApi.getAndUpdateTasksWorkStation(workStationId, containerCode, face, operationType);
@@ -29,6 +34,8 @@ public class TaskService {
     }
 
     public void sealContainer(SealContainerDTO sealContainerDTO) {
+        PickingOrderDTO pickingOrderDTO = pickingOrderApi.getById(sealContainerDTO.getPickingOrderId());
+        sealContainerDTO.setPickingOrderCompleted(pickingOrderDTO.getPickingOrderStatus() == PickingOrderStatusEnum.PICKED);
         taskApi.sealContainer(sealContainerDTO);
     }
 

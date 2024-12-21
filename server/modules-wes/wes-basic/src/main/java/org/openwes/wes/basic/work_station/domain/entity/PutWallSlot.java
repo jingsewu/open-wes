@@ -3,7 +3,6 @@ package org.openwes.wes.basic.work_station.domain.entity;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.openwes.wes.api.basic.constants.PutWallSlotStatusEnum;
-import org.openwes.wes.api.task.dto.SplitContainerDTO;
 
 @Slf4j
 @Data
@@ -107,21 +106,14 @@ public class PutWallSlot {
         this.putWallSlotStatus = PutWallSlotStatusEnum.WAITING_SEAL;
     }
 
-    public void splitContainer(SplitContainerDTO splitContainerDTO) {
-        log.info("work station: {} putWall: {} slot: {} split container, after split slot status {}",
-                this.workStationId, this.putWallCode, this.putWallSlotCode, splitContainerDTO.getPutWallSlotStatusAfterSplit());
+    public void splitContainer() {
+        log.info("work station: {} putWall: {} slot: {} split container", this.workStationId, this.putWallCode, this.putWallSlotCode);
 
-        if (PutWallSlotStatusEnum.BOUND != this.putWallSlotStatus) {
-            throw new IllegalStateException("put wall slot status is not BOUND,  can't split container");
+        if (PutWallSlotStatusEnum.WAITING_SEAL != this.putWallSlotStatus) {
+            throw new IllegalStateException("put wall slot status is not WAITING_SEAL,  can't split container");
         }
 
-        this.putWallSlotStatus = splitContainerDTO.getPutWallSlotStatusAfterSplit();
-
-        // when full split and picking order is completed
-        if (PutWallSlotStatusEnum.IDLE == this.putWallSlotStatus) {
-            this.pickingOrderId = null;
-        }
-
+        this.putWallSlotStatus = PutWallSlotStatusEnum.WAITING_BINDING;
         this.transferContainerCode = null;
         this.transferContainerRecordId = null;
     }

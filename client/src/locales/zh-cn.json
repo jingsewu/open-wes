@@ -499,6 +499,7 @@
     "table.emptySlotNum": "空格口数量",
     "table.virtualContainer": "虚拟容器",
     "table.lockedTime": "锁定时间",
+    "table.actualCountQuantity": "实际出库数量",
 
     "form.tab.basicInformation": "基础信息",
     "form.tab.configurationInformation": "配置信息",

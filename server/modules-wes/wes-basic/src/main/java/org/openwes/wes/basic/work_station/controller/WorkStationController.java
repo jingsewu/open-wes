@@ -1,5 +1,8 @@
 package org.openwes.wes.basic.work_station.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.openwes.wes.api.basic.IWorkStationApi;
 import org.openwes.wes.api.basic.dto.WorkStationConfigDTO;
 import org.openwes.wes.api.basic.dto.WorkStationDTO;
@@ -7,9 +10,6 @@ import org.openwes.wes.basic.work_station.domain.entity.WorkStationConfig;
 import org.openwes.wes.basic.work_station.domain.repository.WorkStationConfigRepository;
 import org.openwes.wes.basic.work_station.domain.repository.WorkStationRepository;
 import org.openwes.wes.basic.work_station.domain.transfer.WorkStationConfigTransfer;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,7 +35,7 @@ public class WorkStationController {
         return workStationRepository.findById(id);
     }
 
-    @PostMapping("getStationConfig/{workStationId}")
+    @PostMapping("config/get/{workStationId}")
     public Object getStationConfig(@PathVariable Long workStationId) {
         WorkStationConfig workStationConfig = workStationConfigRepository.findByWorkStationId(workStationId);
         if (workStationConfig == null) {

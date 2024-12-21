@@ -1,5 +1,5 @@
-import { Divider } from "antd"
-import type { InputRef } from "antd"
+import {Divider} from "antd"
+import type {InputRef} from "antd"
 import classNames from "classnames/bind"
 import React, {
     useEffect,
@@ -8,11 +8,11 @@ import React, {
     useState,
     useRef
 } from "react"
-import { Translation, useTranslation } from "react-i18next"
+import {Translation, useTranslation} from "react-i18next"
 
 import Count from "@/pages/wms/station/widgets/common/Count"
 import PutWall from "@/pages/wms/station/widgets/PutWall"
-import { BreathingLampClassName } from "@/pages/wms/station/widgets/PutWall/types"
+import {BreathingLampClassName} from "@/pages/wms/station/widgets/PutWall/types"
 import {
     ChooseArea,
     PutWallSlotStatus,
@@ -29,14 +29,14 @@ export const putWallStatusTextMap = {
 }
 
 const SplitContent = (props: any) => {
-    const { t } = useTranslation()
+    const {t} = useTranslation()
 
-    const { operationsMap, refs, onCustomActionDispatch } = props
+    const {operationsMap, refs, onCustomActionDispatch} = props
     const putWallArea = operationsMap.get(ChooseArea.putWallArea)
     const skuArea = operationsMap.get(ChooseArea.skuArea)
     const pickingViews = skuArea?.pickingViews || []
 
-    const { putWallDisplayStyle, putWallViews, putWallTagConfigDTO } =
+    const {putWallDisplayStyle, putWallViews, putWallTagConfigDTO} =
         putWallArea
     const currentSkuInfo = pickingViews[0]
     const [actualPickingNum, setActualPickingNum] = useState<number>(0)
@@ -67,12 +67,9 @@ const SplitContent = (props: any) => {
         countRef?.current?.focus()
     }, [putWallArea])
     // 选中槽位的待拣数量
-    const toBePickedQty = useMemo(() => {
-        return selectedSLot.putWallSlotDesc?.find(
-            (item) => item.fieldName === "tobeOperatedQty"
-        )?.fieldValue
-    }, [selectedSLot])
-
+    const toBePickedQty = currentSkuInfo.operationTaskDTOS.reduce(
+        (acc: any, cur: any) => acc + cur.toBeOperatedQty, 0
+    )
     const newPutWallSlotDesc = (slot: any) => {
         const newList = slot.putWallSlotDesc?.map((val: any) => {
             if (val.propertyName === "pickingStatus") {
@@ -141,7 +138,7 @@ const SplitContent = (props: any) => {
                     ...slotStatus
                 }
             })
-            return { ...item, putWallSlots: slotView }
+            return {...item, putWallSlots: slotView}
         })
     }, [putWallViews, selectedSLot, location])
 
@@ -190,11 +187,11 @@ const SplitContent = (props: any) => {
                     putWallTagConfigDTO={putWallTagConfigDTO}
                 />
             </div>
-            <Divider />
+            <Divider/>
             <div className="d-flex">
                 <div
                     className="d-flex flex-col items-center justify-center w-60 h-48 mr-6"
-                    style={{ background: "#fafafa" }}
+                    style={{background: "#fafafa"}}
                 >
                     <div className="text-3xl font-semibold">
                         {selectedSLot.putWallSlotCode}

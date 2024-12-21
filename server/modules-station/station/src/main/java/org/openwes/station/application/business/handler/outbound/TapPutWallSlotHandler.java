@@ -1,5 +1,9 @@
 package org.openwes.station.application.business.handler.outbound;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openwes.common.utils.exception.WmsException;
 import org.openwes.common.utils.exception.code_enum.OperationTaskErrorDescEnum;
 import org.openwes.station.api.constants.ApiCodeEnum;
@@ -21,10 +25,6 @@ import org.openwes.wes.api.task.dto.HandleTaskDTO;
 import org.openwes.wes.api.task.dto.OperationTaskDTO;
 import org.openwes.wes.api.task.dto.OperationTaskVO;
 import org.openwes.wes.api.task.dto.SealContainerDTO;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -55,7 +55,7 @@ public class TapPutWallSlotHandler implements IBusinessHandler<TapPutWallSlotEve
         PutWallSlotDTO putWallSlot = remoteWorkStationService.queryPutWallSlot(workStationId, tapPutWallSlotEvent.getPutWallSlotCode());
 
         if (PutWallSlotStatusEnum.WAITING_SEAL == putWallSlot.getPutWallSlotStatus()) {
-            doSealContainer(workStationCache, putWallSlot, operateTasks);
+            doSealContainer(workStationCache, putWallSlot);
             return;
         }
 
@@ -68,7 +68,7 @@ public class TapPutWallSlotHandler implements IBusinessHandler<TapPutWallSlotEve
     }
 
 
-    private void doSealContainer(OutboundWorkStationCache workStationCache, PutWallSlotDTO putWallSlot, List<OperationTaskDTO> operateTasks) {
+    private void doSealContainer(OutboundWorkStationCache workStationCache, PutWallSlotDTO putWallSlot) {
         taskService.sealContainer(new SealContainerDTO()
                 .setPutWallSlotCode(putWallSlot.getPutWallSlotCode())
                 .setTransferContainerCode(putWallSlot.getTransferContainerCode())

@@ -50,6 +50,13 @@ const form = [
         required: true
     },
     {
+        label: "table.workstationCoding",
+        type: "select",
+        name: "workStationId",
+        source: work_station,
+        required: true
+    },
+    {
         id: "warehouseCode",
         label: "table.warehouseCode",
         type: "input-text",
@@ -132,7 +139,7 @@ const detailColumns = [
         hidden: true
     },
     {
-        name: "containerCode",        label: "table.containerCode"
+        name: "containerCode", label: "table.containerCode"
     },
     {
         name: "detailStatus",

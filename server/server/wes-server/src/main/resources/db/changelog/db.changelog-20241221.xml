@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="u_menu_add_658304729687920640" author="Kinser">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="u_menu"/>
+            </and>
+        </preConditions>
+        <comment>u_menu增加菜单周转容器管理</comment>
+        <sql>
+            INSERT INTO `u_menu` VALUES (658304729687920640,1734760078268,'admin',1734760078268,'admin',NULL,1,NULL,0,9,1005010000,'/wms/config-center/basic/transfer-container-management','/wms/config-center/basic/transfer-container-management','wms','周转容器管理',2);
+        </sql>
+        <rollback>
+            delete from u_menu where id= 658304729687920640;
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

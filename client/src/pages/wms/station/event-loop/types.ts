@@ -235,7 +235,6 @@ export interface StocktakeOrder {
 }
 
 export interface WorkStationEvent<T> {
-    // workStationEvent?: SworkStationInfoInterface<T>
     /** 操作台类型 */
     operationType: OperationType
     /** 工作站编码 */

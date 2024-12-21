@@ -121,7 +121,7 @@ public class TransferContainerApiImpl implements ITransferContainerApi {
         TransferContainer transferContainer = transferContainerRepository
                 .findByContainerCodeAndWarehouseCode(transferContainerRecord.getTransferContainerCode(), sealContainerDTO.getWarehouseCode());
 
-        transferContainerPutWallAggregate.sealContainer(sealContainerDTO.isNeedHandlePutWallSlot(), transferContainerRecord, transferContainer);
+        transferContainerPutWallAggregate.sealContainer(sealContainerDTO, transferContainerRecord, transferContainer);
     }
 
     @Override

@@ -41,10 +41,13 @@ const filterMap = {
 const cx = classNames.bind(style)
 
 const Layout = (props: ReplenishLayoutProps) => {
+
+    //TODO by Evelyn 这里可能是undefined,导致后面确定收货提交的时候 workStationEvent.workStationId就会报错
+    if(props === undefined){
+        return ;
+    }
+
     const { workStationEvent } = props
-
-    const stationStatus = workStationEvent?.stationProcessingStatus
-
     const [orderNo, setOrderNo] = useState("")
 
     const [orderInfo, setOrderInfo] = useState<any>()
@@ -54,7 +57,6 @@ const Layout = (props: ReplenishLayoutProps) => {
         // console.log("orderNo",orderNo)
         request({
             method: "post",
-            // url: `/wms/inbound/plan/query/${orderNo}/${workStationEvent.warehouseCode}`
             url: `/wms/inbound/plan/query/${orderNo}/`+warehouseCode
         })
             .then((res: any) => {
@@ -114,38 +116,15 @@ const Layout = (props: ReplenishLayoutProps) => {
             {orderInfo ? (
                 <Row className="h-full" justify="space-between" gutter={16}>
                     <Col span={24}>
-                        {/* <ComponentWrapper
-                            type={StationOperationType.orderArea}
-                            Component={
-                                OPERATION_MAP[StationOperationType.orderArea]
-                            }
-                            valueFilter={defaultFilter}
-                        /> */}
                         <OrderHandler value={orderInfo} />
                     </Col>
                     <Col span={12} className="pt-4">
-                        {/* <ComponentWrapper
-                            type={StationOperationType.selectDetailArea}
-                            Component={
-                                OPERATION_MAP[
-                                    StationOperationType.selectDetailArea
-                                ]
-                            }
-                            valueFilter={defaultFilter}
-                        /> */}
                         <PickingHandler
                             value={orderInfo}
                             onSkuChange={onSkuChange}
                         />
                     </Col>
                     <Col span={12} className="pt-4">
-                        {/* <ComponentWrapper
-                            type={StationOperationType.robotArea}
-                            Component={
-                                OPERATION_MAP[StationOperationType.robotArea]
-                            }
-                            valueFilter={defaultFilter}
-                        /> */}
                         <RobotHandler value={orderInfo} onConfirm={onConfirm} />
                     </Col>
                 </Row>
@@ -158,7 +137,6 @@ const Layout = (props: ReplenishLayoutProps) => {
                             className="my-4 w-full"
                             value={orderNo}
                             onChange={(e) => setOrderNo(e.target.value)}
-                            // style={{ width: "100%" }}
                         />
                         <Button type="primary" block onClick={onScanSubmit}>
                             确定

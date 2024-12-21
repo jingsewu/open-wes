@@ -2,7 +2,6 @@ package org.openwes.wes.basic.work_station.application;
 
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.openwes.common.utils.exception.WmsException;
 import org.openwes.common.utils.validate.ValidationSequence;
@@ -28,7 +27,6 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @Primary
@@ -137,6 +135,13 @@ public class PutWallApiImpl implements IPutWallApi {
     }
 
     @Override
+    public void splitContainer(String putWallSlotCode, Long workStationId) {
+        PutWallSlot putWallSlot = putWallSlotRepository.findBySlotCodeAndWorkStationId(putWallSlotCode, workStationId);
+        putWallSlot.splitContainer();
+        putWallSlotRepository.save(putWallSlot);
+    }
+
+    @Override
     public void remindToSealContainer(Long pickingOrderId, Map<Long, String> assignWorkStation) {
         List<PutWallSlot> putWallSlots = putWallSlotRepository.findAllByPickingOrderId(pickingOrderId)
                 .stream()
@@ -174,4 +179,5 @@ public class PutWallApiImpl implements IPutWallApi {
         List<PutWallSlot> putWallSlots = putWallSlotRepository.findAllBySlotCodesAndWorkStationId(putWallSlotCodes, workStationId);
         return putWallSlotTransfer.toDTOs(putWallSlots);
     }
+
 }

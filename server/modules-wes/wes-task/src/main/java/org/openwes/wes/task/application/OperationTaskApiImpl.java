@@ -3,7 +3,6 @@ package org.openwes.wes.task.application;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.openwes.wes.api.basic.ITransferContainerApi;
 import org.openwes.wes.api.basic.ITransferContainerRecordApi;

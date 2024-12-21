@@ -37,4 +37,6 @@ public interface IPutWallApi {
     PutWallSlotDTO getPutWallSlot(String putWallSlotCode, Long workStationId);
 
     List<PutWallSlotDTO> getPutWallSlots(Collection<String> putWallSlotCodes, Long workStationId);
+
+    void splitContainer(String putWallSlotCode, Long workStationId);
 }
