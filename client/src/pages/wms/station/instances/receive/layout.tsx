@@ -44,7 +44,7 @@ const Layout = (props: ReplenishLayoutProps) => {
 
     //TODO by Evelyn 这里可能是undefined,导致后面确定收货提交的时候 workStationEvent.workStationId就会报错
     if(props === undefined){
-        return ;
+        return <div>加载中</div>;
     }
 
     const { workStationEvent } = props
