@@ -1,8 +1,8 @@
 import schema2component from "@/utils/schema2component"
-import { create_update_columns, enable_options } from "@/utils/commonContants"
-import { warehouse_area_group } from "@/pages/wms/constants/select_search_api_contant"
-import { api_warehouse_area_add } from "@/pages/wms/config_center/constants/api_constant"
-import { api_crud_search_by_warehouseCode } from "@/pages/constantApi"
+import {create_update_columns, enable_options} from "@/utils/commonContants"
+import {warehouse_area_group} from "@/pages/wms/constants/select_search_api_contant"
+import {api_warehouse_area_add} from "@/pages/wms/config_center/constants/api_constant"
+import {api_crud_search_by_warehouseCode} from "@/pages/constantApi"
 
 let warehouseCode = localStorage.getItem("warehouseCode")
 
@@ -193,8 +193,6 @@ const columns = [
 ]
 
 const searchIdentity = "WWarehouseArea"
-const showColumns = columns
-
 const schema = {
     type: "page",
     title: "reservoirAreaManagement.title",
@@ -207,7 +205,7 @@ const schema = {
             api: api_crud_search_by_warehouseCode,
             defaultParams: {
                 searchIdentity: searchIdentity,
-                showColumns: showColumns,
+                showColumns: columns,
                 searchObject: {
                     orderBy: "update_time desc"
                 }

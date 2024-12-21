@@ -33,6 +33,9 @@ public class PutWallPO extends UpdateUserPO {
     @Column(nullable = false, columnDefinition = "bigint(11) comment '工作站ID'")
     private Long workStationId;
 
+    @Column(nullable = false, columnDefinition = "varchar(64) comment '仓库编码'")
+    private String warehouseCode;
+
     @Column(nullable = false, columnDefinition = "varchar(64) comment '播种墙编码'")
     private String putWallCode;
 

@@ -130,6 +130,11 @@ const columns = [
         hidden: true
     },
     {
+        name: "warehouseCode",
+        label: "table.warehouseCode",
+        hidden: true
+    },
+    {
         name: "version",
         label: "Version",
         hidden: true

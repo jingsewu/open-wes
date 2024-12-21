@@ -24,6 +24,7 @@ import java.util.List;
 public class PutWall {
 
     private Long id;
+    private String warehouseCode;
     private Long workStationId;
     private String putWallCode;
     private String putWallName;

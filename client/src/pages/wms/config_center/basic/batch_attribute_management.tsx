@@ -140,6 +140,11 @@ const columns = [
         hidden: true
     },
     {
+        name: "warehouseCode",
+        label: "table.warehouseCode",
+        hidden: true
+    },
+    {
         name: "code",
         label: "table.ruleEncoding",
         searchable: true

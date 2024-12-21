@@ -99,6 +99,10 @@ const formBody = [
     },
     {
         type: "hidden",
+        name: "warehouseCode"
+    },
+    {
+        type: "hidden",
         name: "version"
     },
     {
@@ -195,6 +199,11 @@ const columns = [
     {
         name: "version",
         label: "Version",
+        hidden: true
+    },
+    {
+        name: "warehouseCode",
+        label: "table.warehouseCode",
         hidden: true
     },
     {

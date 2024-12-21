@@ -174,7 +174,7 @@ const configForm = [
         label: "interfacePlatform.interfaceManagement.form.responseTransformationScripts",
         type: "textarea",
         name: "jsResponseConverter",
-        visibleOn: "${responseConverterType == 'javascript'}"
+        visibleOn: "${responseConverterType == 'JS'}"
     },
     {
         label: "interfacePlatform.interfaceManagement.form.responseTransformationScripts",

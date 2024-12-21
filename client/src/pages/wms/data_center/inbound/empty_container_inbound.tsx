@@ -67,6 +67,11 @@ const columns = [
         hidden: true
     },
     {
+        name: "warehouseCode",
+        label: "table.warehouseCode",
+        hidden: true
+    },
+    {
         name: "orderNo",
         label: "table.orderNo",
         searchable: true
@@ -95,12 +100,8 @@ const columns = [
             source: "${ls:dictionary|pick:PutAwayTaskStatus}"
         }
     },
-    ...create_update_columns,
-    {
-        name: "warehouseCode",
-        label: "table.warehouseCode",
-        hidden: true
-    }
+    ...create_update_columns
+
 ]
 
 const detailColumns = [

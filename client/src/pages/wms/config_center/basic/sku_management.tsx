@@ -267,6 +267,11 @@ const columns = [
         hidden: true
     },
     {
+        name: "warehouseCode",
+        label: "warehouseCode",
+        hidden: true
+    },
+    {
         name: "version",
         label: "Version",
         hidden: true

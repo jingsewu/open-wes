@@ -21,6 +21,9 @@ public class PutWallDTO implements IValidate, Serializable {
 
     private Long id;
 
+    @NotEmpty
+    private String warehouseCode;
+
     @NotNull
     private Long workStationId;
     @NotEmpty

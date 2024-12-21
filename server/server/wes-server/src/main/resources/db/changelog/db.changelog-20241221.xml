@@ -20,4 +20,22 @@
         </rollback>
     </changeSet>
 
+    <changeSet id="w_put_wall_add_column_warehouse_code" author="Kinser">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="w_put_wall"/>
+            </and>
+            <not>
+                <columnExists tableName="w_put_wall" columnName="warehouse_code"/>
+            </not>
+        </preConditions>
+        <comment>w_put_wall增加字段warehouse_code</comment>
+        <sql>
+            alter table w_put_wall add column warehouse_code varchar(64) not null comment '仓库编码';
+        </sql>
+        <rollback>
+            alter table w_put_wall drop column warehouse_code;
+        </rollback>
+    </changeSet>
+
 </databaseChangeLog>
