@@ -20,18 +20,6 @@ public class CreateInboundPlanOrderDetailDTO implements Serializable {
     private String ownerCode;
 
     @Size(max = 64)
-    @Schema(title = "容器编码")
-    private String containerCode;
-
-    @Size(max = 64)
-    @Schema(title = "容器规格")
-    private String containerSpecCode;
-
-    @Size(max = 64)
-    @Schema(title = "格口号")
-    private String containerSlotCode;
-
-    @Size(max = 64)
     @Schema(title = "箱号")
     private String boxNo;
 
@@ -39,10 +27,6 @@ public class CreateInboundPlanOrderDetailDTO implements Serializable {
     @Min(1)
     @Schema(title = "入库数量", requiredMode = Schema.RequiredMode.REQUIRED)
     private Integer qtyRestocked;
-
-    @Size(max = 128)
-    @Schema(title = "责任方")
-    private String responsibleParty;
 
     @NotEmpty
     @Size(max = 64)

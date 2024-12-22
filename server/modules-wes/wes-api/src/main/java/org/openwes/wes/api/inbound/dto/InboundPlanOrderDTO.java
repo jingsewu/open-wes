@@ -101,7 +101,4 @@ public class InboundPlanOrderDTO extends UpdateUserDTO implements Serializable {
     @Schema(description = "入库计划单明细列表", requiredMode = Schema.RequiredMode.REQUIRED)
     private List<InboundPlanOrderDetailDTO> details;
 
-    public static void main(String[] args) {
-        System.out.println(JsonUtils.obj2String(ObjectUtils.getRandomObject(InboundPlanOrderDTO.class)));
-    }
 }

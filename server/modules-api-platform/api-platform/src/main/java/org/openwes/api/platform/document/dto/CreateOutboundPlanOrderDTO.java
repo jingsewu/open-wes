@@ -1,6 +1,5 @@
 package org.openwes.api.platform.document.dto;
 
-import org.openwes.wes.api.outbound.dto.OutboundPlanOrderDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
@@ -53,5 +52,5 @@ public class CreateOutboundPlanOrderDTO implements Serializable {
 
     @NotEmpty
     @Schema(description = "出库计划单明细列表", requiredMode = Schema.RequiredMode.REQUIRED)
-    private List<OutboundPlanOrderDTO.OutboundPlanOrderDetailDTO> details;
+    private List<CreateOutboundPlanOrderDetailDTO> details;
 }
