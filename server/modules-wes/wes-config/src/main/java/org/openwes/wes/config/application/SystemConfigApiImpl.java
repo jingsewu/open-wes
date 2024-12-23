@@ -1,11 +1,11 @@
 package org.openwes.wes.config.application;
 
+import lombok.RequiredArgsConstructor;
 import org.openwes.wes.api.config.ISystemConfigApi;
 import org.openwes.wes.api.config.dto.SystemConfigDTO;
 import org.openwes.wes.config.domain.entity.SystemConfig;
 import org.openwes.wes.config.domain.repository.SystemConfigRepository;
 import org.openwes.wes.config.domain.transfer.SystemConfigTransfer;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -83,7 +83,7 @@ public class SystemConfigApiImpl implements ISystemConfigApi {
     @Override
     public SystemConfigDTO.StockConfigDTO getStockConfig() {
         SystemConfig systemConfig = systemConfigRepository.findSystemConfig();
-        if (systemConfig == null || systemConfig.getBasicConfig() == null) {
+        if (systemConfig == null || systemConfig.getStockConfig() == null) {
             return new SystemConfigDTO.StockConfigDTO();
         }
 
