@@ -19,7 +19,7 @@ const columns = [
     {
         name: "stocktakeTaskStatus",
         label: "table.status",
-        source: "${ls:dictionary|pick:StocktakeTaskStatus}",
+        source: "${dictionary.StocktakeTaskStatus}",
         type: "mapping"
     },
     {
@@ -94,7 +94,7 @@ const detailColumns = [
         name: "stocktakeTaskDetailStatus",
         label: "table.status",
         type: "mapping",
-        source: "${ls:dictionary|pick:StocktakeTaskDetailStatus}"
+        source: "${dictionary.StocktakeTaskDetailStatus}"
     }
 ]
 
@@ -125,6 +125,9 @@ const detailDialog = {
 
 const schema = {
     type: "page",
+    data: {
+        dictionary: "${ls:dictionary}"
+    },
     body: {
         type: "crud",
         syncLocation: false,

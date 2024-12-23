@@ -46,42 +46,42 @@ const form = [
         label: "table.warehouseType",
         type: "select",
         name: "warehouseType",
-        source: "${ls:dictionary|pick:WarehouseType}",
+        source: "${dictionary.WarehouseType}",
         required: true
     },
     {
         label: "table.warehouseProperties",
         type: "select",
         name: "warehouseAttrType",
-        source: "${ls:dictionary|pick:WarehouseAttrType}",
+        source: "${dictionary.WarehouseAttrType}",
         required: true
     },
     {
         label: "table.warehouseLevel",
         type: "select",
         name: "warehouseLevel",
-        source: "${ls:dictionary|pick:WarehouseLevel}",
+        source: "${dictionary.WarehouseLevel}",
         required: true
     },
     {
         label: "table.warehouseLables",
         type: "select",
         name: "warehouseLabel",
-        source: "${ls:dictionary|pick:WarehouseLabel}",
+        source: "${dictionary.WarehouseLabel}",
         maxLength: 64
     },
     {
         label: "table.mainBusiness",
         type: "select",
         name: "businessType",
-        source: "${ls:dictionary|pick:WarehouseBusinessType}",
+        source: "${dictionary.WarehouseBusinessType}",
         required: true
     },
     {
         label: "table.warehouseStructure",
         type: "select",
         name: "structureType",
-        source: "${ls:dictionary|pick:WarehouseStructureType}",
+        source: "${dictionary.WarehouseStructureType}",
         required: true
     },
     {
@@ -226,60 +226,60 @@ const columns = [
         name: "warehouseType",
         label: "table.warehouseType",
         type: "mapping",
-        source: "${ls:dictionary|pick:WarehouseType}",
+        source: "${dictionary.WarehouseType}",
         searchable: {
             type: "select",
-            source: "${ls:dictionary|pick:WarehouseType}"
+            source: "${dictionary.WarehouseType}"
         }
     },
     {
         name: "warehouseAttrType",
         label: "table.warehouseProperties",
         type: "mapping",
-        source: "${ls:dictionary|pick:WarehouseAttrType}",
+        source: "${dictionary.WarehouseAttrType}",
         searchable: {
             type: "select",
-            source: "${ls:dictionary|pick:WarehouseAttrType}"
+            source: "${dictionary.WarehouseAttrType}"
         }
     },
     {
         name: "warehouseLevel",
         label: "table.warehouseLevel",
         type: "mapping",
-        source: "${ls:dictionary|pick:WarehouseLevel}",
+        source: "${dictionary.WarehouseLevel}",
         searchable: {
             type: "select",
-            source: "${ls:dictionary|pick:WarehouseLevel}"
+            source: "${dictionary.WarehouseLevel}"
         }
     },
     {
         name: "warehouseLabel",
         label: "table.warehouseLables",
         type: "mapping",
-        source: "${ls:dictionary|pick:WarehouseLabel}",
+        source: "${dictionary.WarehouseLabel}",
         searchable: {
             type: "select",
-            source: "${ls:dictionary|pick:WarehouseLabel}"
+            source: "${dictionary.WarehouseLabel}"
         }
     },
     {
         name: "businessType",
         label: "table.mainBusiness",
         type: "mapping",
-        source: "${ls:dictionary|pick:WarehouseBusinessType}",
+        source: "${dictionary.WarehouseBusinessType}",
         searchable: {
             type: "select",
-            source: "${ls:dictionary|pick:WarehouseBusinessType}"
+            source: "${dictionary.WarehouseBusinessType}"
         }
     },
     {
         name: "structureType",
         label: "table.warehouseStructure",
         type: "mapping",
-        source: "${ls:dictionary|pick:WarehouseStructureType}",
+        source: "${dictionary.WarehouseStructureType}",
         searchable: {
             type: "select",
-            source: "${ls:dictionary|pick:WarehouseStructureType}"
+            source: "${dictionary.WarehouseStructureType}"
         }
     },
     {
@@ -330,6 +330,9 @@ const schema = {
     type: "page",
     title: "warehouseManagement.title",
     toolbar: [],
+    data: {
+        dictionary: "${ls:dictionary}"
+    },
     body: [
         {
             type: "crud",

@@ -88,7 +88,7 @@ const columns = [
         name: "operationTaskType",
         label: "table.currentOperationType",
         type: "mapping",
-        source: "${ls:dictionary|pick:OperationTaskType}"
+        source: "${dictionary.OperationTaskType}"
     },
     {
         dbField: "wcst.version",
@@ -145,6 +145,9 @@ const schema = {
     type: "page",
     title: "wms.menu.inventoryRecords",
     toolbar: [],
+    data: {
+        dictionary: "${ls:dictionary}"
+    },
     body: [
         {
             type: "crud",

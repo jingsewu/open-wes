@@ -90,8 +90,8 @@ const dialog = {
                     label: "table.orderType",
                     name: "customerOrderType",
                     type: "select",
-                    value: "${ls:dictionary|pick:CustomerOrderType|filter:defaultValue:isTrue|pick:value|join}",
-                    source: "${ls:dictionary|pick:CustomerOrderType}"
+                    value: "${dictionary.CustomerOrderType|filter:defaultValue:isTrue|pick:value|join}",
+                    source: "${dictionary.CustomerOrderType}"
                 },
                 {
                     type: "select",

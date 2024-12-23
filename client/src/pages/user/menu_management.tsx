@@ -17,7 +17,7 @@ const form = [
         label: "userCenter.menuManagement.form.systemCoding",
         type: "select",
         name: "systemCode",
-        source: "${ls:dictionary|pick:AppCode}",
+        source: "${dictionary.AppCode}",
         required: true
     },
     {
@@ -31,7 +31,7 @@ const form = [
         label: "userCenter.menuManagement.form.menuType",
         type: "select",
         name: "type",
-        source: "${ls:dictionary|pick:MenuType}",
+        source: "${dictionary.MenuType}",
         required: true
     },
     {
@@ -124,20 +124,20 @@ const columns = [
         name: "systemCode",
         label: "userCenter.menuManagement.table.affiliation",
         type: "mapping",
-        source: "${ls:dictionary|pick:AppCode}",
+        source: "${dictionary.AppCode}",
         searchable: {
             type: "select",
-            source: "${ls:dictionary|pick:AppCode}"
+            source: "${dictionary.AppCode}"
         }
     },
     {
         name: "type",
         label: "userCenter.menuManagement.table.type",
         type: "mapping",
-        source: "${ls:dictionary|pick:MenuType}",
+        source: "${dictionary.MenuType}",
         searchable: {
             type: "select",
-            source: "${ls:dictionary|pick:MenuType}"
+            source: "${dictionary.MenuType}"
         }
     },
     {
@@ -183,6 +183,9 @@ const schema = {
     type: "page",
     title: "userCenter.menuManagement.title",
     toolbar: [],
+    data: {
+        dictionary: "${ls:dictionary}"
+    },
     body: [
         {
             type: "crud",

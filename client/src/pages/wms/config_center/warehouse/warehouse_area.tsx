@@ -1,8 +1,8 @@
 import schema2component from "@/utils/schema2component"
-import {create_update_columns, enable_options} from "@/utils/commonContants"
-import {warehouse_area_group} from "@/pages/wms/constants/select_search_api_contant"
-import {api_warehouse_area_add} from "@/pages/wms/config_center/constants/api_constant"
-import {api_crud_search_by_warehouseCode} from "@/pages/constantApi"
+import { create_update_columns, enable_options } from "@/utils/commonContants"
+import { warehouse_area_group } from "@/pages/wms/constants/select_search_api_contant"
+import { api_warehouse_area_add } from "@/pages/wms/config_center/constants/api_constant"
+import { api_crud_search_by_warehouseCode } from "@/pages/constantApi"
 
 let warehouseCode = localStorage.getItem("warehouseCode")
 
@@ -41,21 +41,21 @@ const form = {
             label: "table.reservoirAreaType",
             name: "warehouseAreaType",
             type: "select",
-            source: "${ls:dictionary|pick:WarehouseAreaType}",
+            source: "${dictionary.WarehouseAreaType}",
             required: true
         },
         {
             label: "table.reservoirAreaPurpose",
             name: "warehouseAreaUse",
             type: "select",
-            source: "${ls:dictionary|pick:WarehouseAreaUse}",
+            source: "${dictionary.WarehouseAreaUse}",
             required: true
         },
         {
             label: "table.reservoirAreaWorkType",
             name: "warehouseAreaWorkType",
             type: "select",
-            source: "${ls:dictionary|pick:WarehouseAreaWorkType}",
+            source: "${dictionary.WarehouseAreaWorkType}",
             required: true
         },
         {
@@ -145,22 +145,22 @@ const columns = [
         name: "warehouseAreaType",
         label: "table.reservoirAreaType",
         type: "mapping",
-        source: "${ls:dictionary|pick:WarehouseAreaType}"
+        source: "${dictionary.WarehouseAreaType}"
     },
     {
         name: "warehouseAreaUse",
         label: "table.reservoirAreaPurpose",
         type: "mapping",
-        source: "${ls:dictionary|pick:WarehouseAreaUse}"
+        source: "${dictionary.WarehouseAreaUse}"
     },
     {
         name: "warehouseAreaWorkType",
         label: "table.reservoirAreaWorkType",
         type: "mapping",
-        source: "${ls:dictionary|pick:WarehouseAreaWorkType}",
+        source: "${dictionary.WarehouseAreaWorkType}",
         searchable: {
             type: "select",
-            source: "${ls:dictionary|pick:WarehouseAreaWorkType}"
+            source: "${dictionary.WarehouseAreaWorkType}"
         }
     },
     {
@@ -197,6 +197,9 @@ const schema = {
     type: "page",
     title: "reservoirAreaManagement.title",
     toolbar: [],
+    data: {
+        dictionary: "${ls:dictionary}"
+    },
     body: [
         {
             type: "crud",

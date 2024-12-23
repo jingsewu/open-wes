@@ -43,7 +43,7 @@ const form = [
         label: "table.SKUCategories",
         type: "select",
         name: "skuFirstCategory",
-        source: "${ls:dictionary|pick:SkuFirstCategory}"
+        source: "${dictionary.SkuFirstCategory}"
     },
     {
         name: "enable",
@@ -168,17 +168,17 @@ const columns = [
         name: "skuFirstCategory",
         label: "table.SKUCategories",
         type: "mapping",
-        source: "${ls:dictionary|pick:SkuFirstCategory}",
+        source: "${dictionary.SkuFirstCategory}",
         searchable: {
             type: "select",
-            source: "${ls:dictionary|pick:SkuFirstCategory}"
+            source: "${dictionary.SkuFirstCategory}"
         }
     },
     {
         name: "enable",
         label: "table.enable",
         type: "mapping",
-        source: "${ls:dictionary|pick:EnableStatus}"
+        source: "${dictionary.EnableStatus}"
     },
     ...create_update_columns
 ]
@@ -190,6 +190,9 @@ const schema = {
     type: "page",
     title: "batchManagement.title",
     toolbar: [],
+    data: {
+        dictionary: "${ls:dictionary}"
+    },
     body: [
         {
             type: "crud",

@@ -22,10 +22,10 @@ const columns = [
         name: "stockAbnormalType",
         label: "table.exceptionType",
         type: "mapping",
-        source: "${ls:dictionary|pick:StockAbnormalType}",
+        source: "${dictionary.StockAbnormalType}",
         searchable: {
             type: "select",
-            source: "${ls:dictionary|pick:StockAbnormalType}"
+            source: "${dictionary.StockAbnormalType}"
         }
     },
     {
@@ -44,10 +44,10 @@ const columns = [
         name: "stockAbnormalStatus",
         label: "table.status",
         type: "mapping",
-        source: "${ls:dictionary|pick:StockAbnormalStatus}",
+        source: "${dictionary.StockAbnormalStatus}",
         searchable: {
             type: "select",
-            source: "${ls:dictionary|pick:StockAbnormalStatus}"
+            source: "${dictionary.StockAbnormalStatus}"
         }
     },
     {
@@ -95,7 +95,7 @@ const columns = [
         name: "abnormalReason",
         label: "table.differenceReason",
         type: "mapping",
-        source: "${ls:dictionary|pick:StockAbnormalReason}"
+        source: "${dictionary.StockAbnormalReason}"
     },
     {
         dbField: "r.reason_desc",
@@ -146,6 +146,9 @@ const schema = {
     type: "page",
     title: "inventorAnomalies.title",
     toolbar: [],
+    data: {
+        dictionary: "${ls:dictionary}"
+    },
     body: [
         {
             type: "crud",

@@ -79,10 +79,10 @@ const columns = [
     {
         name: "inboundWay",
         label: "table.inboundMethod",
-        source: "${ls:dictionary|pick:EmptyContainerInboundWay}",
+        source: "${dictionary.EmptyContainerInboundWay}",
         searchable: {
             type: "select",
-            source: "${ls:dictionary|pick:EmptyContainerInboundWay}"
+            source: "${dictionary.EmptyContainerInboundWay}"
         }
     },
     {
@@ -94,14 +94,13 @@ const columns = [
         name: "inboundStatus",
         label: "table.status",
         type: "mapping",
-        source: "${ls:dictionary|pick:PutAwayTaskStatus}",
+        source: "${dictionary.PutAwayTaskStatus}",
         searchable: {
             type: "select",
-            source: "${ls:dictionary|pick:PutAwayTaskStatus}"
+            source: "${dictionary.PutAwayTaskStatus}"
         }
     },
     ...create_update_columns
-
 ]
 
 const detailColumns = [
@@ -126,7 +125,7 @@ const detailColumns = [
         name: "inboundStatus",
         label: "table.status",
         type: "mapping",
-        source: "${ls:dictionary|pick:PutAwayTaskStatus}"
+        source: "${dictionary.PutAwayTaskStatus}"
     }
 ]
 
@@ -165,6 +164,9 @@ const schema = {
     type: "page",
     title: "menu.emptyContainerInboundOrder",
     toolbar: [],
+    data: {
+        dictionary: "${ls:dictionary}"
+    },
     body: [
         {
             type: "crud",

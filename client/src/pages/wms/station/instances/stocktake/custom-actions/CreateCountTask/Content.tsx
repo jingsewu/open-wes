@@ -12,6 +12,9 @@ import { CustomActionType } from "@/pages/wms/station/instances/stocktake/custom
 const schema = {
     type: "page",
     title: "modal.receiveInventoryList",
+    data: {
+        dictionary: "${ls:dictionary}"
+    },
     body: {
         type: "wizard",
         actionFinishLabel: "modal.generateInventoryOrder",
@@ -80,7 +83,7 @@ const schema = {
                         name: "stocktakeType",
                         label: "table.countType",
                         selectFirst: true,
-                        source: "${ls:dictionary|pick:StocktakeType}",
+                        source: "${dictionary.StocktakeType}",
                         required: true,
                         className: "stocktakeType"
                     },
@@ -89,7 +92,7 @@ const schema = {
                         name: "stocktakeMethod",
                         selectFirst: true,
                         label: "table.countMethod",
-                        source: "${ls:dictionary|pick:StocktakeMethod}",
+                        source: "${dictionary.StocktakeMethod}",
                         required: true,
                         className: "stocktakeMethod"
                     },

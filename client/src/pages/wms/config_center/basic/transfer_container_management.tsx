@@ -1,8 +1,17 @@
 import schema2component from "@/utils/schema2component"
-import {container_spec, warehouse_area_id} from "@/pages/wms/constants/select_search_api_contant"
-import {create_update_columns, true_false_options} from "@/utils/commonContants"
-import {api_transfer_container_release} from "@/pages/wms/config_center/constants/api_constant"
-import {api_crud_search_by_warehouseCode, api_crud_search_by_warehouseCode_total} from "@/pages/constantApi"
+import {
+    container_spec,
+    warehouse_area_id
+} from "@/pages/wms/constants/select_search_api_contant"
+import {
+    create_update_columns,
+    true_false_options
+} from "@/utils/commonContants"
+import { api_transfer_container_release } from "@/pages/wms/config_center/constants/api_constant"
+import {
+    api_crud_search_by_warehouseCode,
+    api_crud_search_by_warehouseCode_total
+} from "@/pages/constantApi"
 
 const columns = [
     {
@@ -44,7 +53,7 @@ const columns = [
         name: "transferContainerStatus",
         label: "table.containerStatus",
         type: "mapping",
-        source: "${ls:dictionary|pick:TransferContainerStatus}"
+        source: "${dictionary.TransferContainerStatus}"
     },
     {
         name: "lockedTime",
@@ -80,6 +89,9 @@ const schema = {
     type: "page",
     title: "transferContainerManagement.title",
     toolbar: [],
+    data: {
+        dictionary: "${ls:dictionary}"
+    },
     body: [
         {
             type: "crud",
@@ -115,9 +127,7 @@ const schema = {
                 }
             ],
             footerToolbar: ["switch-per-page", "statistics", "pagination"],
-            columns: [
-                ...columns
-            ]
+            columns: [...columns]
         }
     ]
 }

@@ -29,7 +29,7 @@ const fromBody = [
         label: "table.containerType",
         type: "select",
         name: "containerType",
-        source: "${ls:dictionary|pick:ContainerType}",
+        source: "${dictionary.ContainerType}",
         required: true
     },
     {
@@ -137,7 +137,7 @@ const columns = [
         name: "containerStatus",
         label: "table.containerStatus",
         type: "mapping",
-        source: "${ls:dictionary|pick:ContainerStatus}"
+        source: "${dictionary.ContainerStatus}"
     },
     {
         name: "warehouseAreaId",
@@ -182,6 +182,9 @@ const schema = {
     type: "page",
     title: "containerManagement.title",
     toolbar: [],
+    data: {
+        dictionary: "${ls:dictionary}"
+    },
     body: [
         {
             type: "crud",

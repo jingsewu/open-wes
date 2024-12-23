@@ -69,10 +69,10 @@ const columns = [
         name: "status",
         label: "table.status",
         type: "mapping",
-        source: "${ls:dictionary|pick:ApiLogStatus}",
+        source: "${dictionary.ApiLogStatus}",
         searchable: {
             type: "select",
-            source: "${ls:dictionary|pick:ApiLogStatus}"
+            source: "${dictionary.ApiLogStatus}"
         }
     },
     {
@@ -97,6 +97,9 @@ const schema = {
     type: "page",
     title: "interfacePlatform.interfaceLogs.title",
     toolbar: [],
+    data: {
+        dictionary: "${ls:dictionary}"
+    },
     body: [
         {
             type: "crud",

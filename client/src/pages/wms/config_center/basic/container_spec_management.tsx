@@ -41,7 +41,7 @@ const fromBody = [
         label: "table.containerType",
         type: "select",
         name: "containerType",
-        source: "${ls:dictionary|pick:ContainerType}",
+        source: "${dictionary.ContainerType}",
         required: true
     },
     {
@@ -153,10 +153,10 @@ const columns = [
         name: "containerType",
         label: "table.containerType",
         type: "mapping",
-        source: "${ls:dictionary|pick:ContainerType}",
+        source: "${dictionary.ContainerType}",
         searchable: {
             type: "select",
-            source: "${ls:dictionary|pick:ContainerType}"
+            source: "${dictionary.ContainerType}"
         }
     },
     {
@@ -188,6 +188,9 @@ const schema = {
     //   title: "容器规格管理",
     title: <Translation>{(t) => t("containerSpec.title")}</Translation>,
     toolbar: [],
+    data: {
+        dictionary: "${ls:dictionary}"
+    },
     body: [
         {
             type: "crud",

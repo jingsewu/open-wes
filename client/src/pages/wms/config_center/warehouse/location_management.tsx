@@ -47,7 +47,7 @@ const form = {
             label: "table.locationType",
             name: "locationType",
             type: "select",
-            source: "${ls:dictionary|pick:LocationType}"
+            source: "${dictionary.LocationType}"
         },
         {
             label: "table.locationCode",
@@ -151,7 +151,7 @@ const columns = [
     {
         name: "locationType",
         label: "table.locationType",
-        source: "${ls:dictionary|pick:LocationType}"
+        source: "${dictionary.LocationType}"
     },
     {
         name: "heat",
@@ -181,6 +181,9 @@ const schema = {
     type: "page",
     title: "locationManagement.title",
     toolbar: [],
+    data: {
+        dictionary: "${ls:dictionary}"
+    },
     body: [
         {
             type: "crud",

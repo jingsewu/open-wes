@@ -42,14 +42,14 @@ const form = [
         label: "table.buriedPoint",
         type: "select",
         name: "executeTime",
-        source: "${ls:dictionary|pick:ExecuteTime}",
+        source: "${dictionary.ExecuteTime}",
         required: true
     },
     {
         label: "table.businessModules",
         type: "select",
         name: "businessFlow",
-        source: "${ls:dictionary|pick:BusinessFlow}",
+        source: "${dictionary.BusinessFlow}",
         required: true
     },
     {
@@ -61,7 +61,7 @@ const form = [
         label: "table.stitchingPosition",
         type: "select",
         name: "unionLocation",
-        source: "${ls:dictionary|pick:UnionLocation}"
+        source: "${dictionary.UnionLocation}"
     },
     {
         type: "input-text",
@@ -82,7 +82,7 @@ const form = [
         items: {
             type: "select",
             clearable: false,
-            source: "${ls:dictionary|pick:ParserObject}"
+            source: "${dictionary.ParserObject}"
         }
     },
     {
@@ -157,10 +157,10 @@ const columns = [
         name: "executeTime",
         label: "table.buriedPoint",
         type: "mapping",
-        source: "${ls:dictionary|pick:ExecuteTime}",
+        source: "${dictionary.ExecuteTime}",
         searchable: {
             type: "select",
-            source: "${ls:dictionary|pick:ExecuteTime}"
+            source: "${dictionary.ExecuteTime}"
         }
     },
     {
@@ -179,6 +179,9 @@ const schema = {
     type: "page",
     title: "barcodeParsingManagement.title",
     toolbar: [],
+    data: {
+        dictionary: "${ls:dictionary}"
+    },
     body: [
         {
             type: "crud",

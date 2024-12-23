@@ -7,6 +7,9 @@ import {
 const schema = {
     type: "page",
     // title: "systemConfigManagement.title",
+    data: {
+        dictionary: "${ls:dictionary}"
+    },
     body: [
         {
             type: "form",
@@ -24,7 +27,7 @@ const schema = {
                                 {
                                     type: "select",
                                     label: "周转容器释放方式",
-                                    source: "${ls:dictionary|pick:TransferContainerReleaseMethod}",
+                                    source: "${dictionary.TransferContainerReleaseMethod}",
                                     name: "basicConfig.transferContainerReleaseMethod"
                                 },
                                 {
@@ -140,7 +143,7 @@ const schema = {
                                         {
                                             type: "select",
                                             label: "modal.orderDispatchStrategy",
-                                            source: "${ls:dictionary|pick:OrderDispatchStrategy}",
+                                            source: "${dictionary.OrderDispatchStrategy}",
                                             name: "outboundAlgoConfig.orderDispatchStrategy"
                                         }
                                     ]
@@ -158,13 +161,13 @@ const schema = {
                                         {
                                             type: "input-text",
                                             label: "modal.firstHitRackSide",
-                                            source: "${ls:dictionary|pick:FirstHitRackSide}",
+                                            source: "${dictionary.FirstHitRackSide}",
                                             name: "outboundAlgoConfig.firstHitRackSide"
                                         },
                                         {
                                             type: "select",
                                             label: "modal.algoName",
-                                            source: "${ls:dictionary|pick:OrderDispatchHitAlgoName}",
+                                            source: "${dictionary.OrderDispatchHitAlgoName}",
                                             name: "outboundAlgoConfig.algoName"
                                         }
                                     ]
@@ -182,7 +185,7 @@ const schema = {
                                         {
                                             type: "select",
                                             label: "modal.taskBalanceDimension",
-                                            source: "${ls:dictionary|pick:TaskBalanceDimension}",
+                                            source: "${dictionary.TaskBalanceDimension}",
                                             name: "outboundAlgoConfig.taskBalanceDimension"
                                         },
                                         {
@@ -190,7 +193,7 @@ const schema = {
                                             label: "modal.warehouseLogicTypePriority",
                                             description:
                                                 "modal.warehouseLogicTypePriority.description",
-                                            source: "${ls:dictionary|pick:WarehouseLogicType}",
+                                            source: "${dictionary.WarehouseLogicType}",
                                             multiple: true,
                                             joinValues: false,
                                             extractValue: true,

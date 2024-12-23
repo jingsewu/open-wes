@@ -19,7 +19,6 @@ const columns = [
         name: "containerCode",
         label: "容器号",
         searchable: true
-
     },
     {
         name: "containerSpecCode",
@@ -28,7 +27,7 @@ const columns = [
     },
     {
         name: "locationCode",
-        label: "库位编码",
+        label: "库位编码"
     },
     {
         name: "taskNo",
@@ -39,20 +38,20 @@ const columns = [
         name: "taskType",
         label: "table.putAwayMethod",
         type: "mapping",
-        source: "${ls:dictionary|pick:PutAwayTaskType}",
+        source: "${dictionary.PutAwayTaskType}",
         searchable: {
             type: "select",
-            source: "${ls:dictionary|pick:PutAwayTaskType}"
+            source: "${dictionary.PutAwayTaskType}"
         }
     },
     {
         name: "taskStatus",
         label: "table.putAwayStatus",
         type: "mapping",
-        source: "${ls:dictionary|pick:PutAwayTaskStatus}",
+        source: "${dictionary.PutAwayTaskStatus}",
         searchable: {
             type: "select",
-            source: "${ls:dictionary|pick:PutAwayTaskStatus}"
+            source: "${dictionary.PutAwayTaskStatus}"
         }
     },
     {
@@ -157,6 +156,9 @@ const schema = {
     type: "page",
     title: "wms.menu.putAwayTasks",
     toolbar: [],
+    data: {
+        dictionary: "${ls:dictionary}"
+    },
     body: [
         {
             type: "crud",

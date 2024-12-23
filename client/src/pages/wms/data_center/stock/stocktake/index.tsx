@@ -29,40 +29,40 @@ const columns = [
         name: "stocktakeType",
         label: "table.orderType",
         type: "mapping",
-        source: "${ls:dictionary|pick:StocktakeType}",
+        source: "${dictionary.StocktakeType}",
         searchable: {
             type: "select",
-            source: "${ls:dictionary|pick:StocktakeType}"
+            source: "${dictionary.StocktakeType}"
         }
     },
     {
         name: "stocktakeCreateMethod",
         label: "table.howItWasCreated",
         type: "mapping",
-        source: "${ls:dictionary|pick:StocktakeCreateMethod}",
+        source: "${dictionary.StocktakeCreateMethod}",
         searchable: {
             type: "select",
-            source: "${ls:dictionary|pick:StocktakeCreateMethod}"
+            source: "dictionary.StocktakeCreateMethod}"
         }
     },
     {
         name: "stocktakeUnitType",
         label: "table.creationType",
         type: "mapping",
-        source: "${ls:dictionary|pick:StocktakeUnitType}",
+        source: "dictionary.StocktakeUnitType}",
         searchable: {
             type: "select",
-            source: "${ls:dictionary|pick:StocktakeUnitType}"
+            source: "dictionary.StocktakeUnitType}"
         }
     },
     {
         name: "stocktakeOrderStatus",
         label: "table.status",
         type: "mapping",
-        source: "${ls:dictionary|pick:StocktakeOrderStatus}",
+        source: "dictionary.StocktakeOrderStatus}",
         searchable: {
             type: "select",
-            source: "${ls:dictionary|pick:StocktakeOrderStatus}"
+            source: "dictionary.StocktakeOrderStatus}"
         },
         classNameExpr:
             "${ stocktakeOrderStatus === 'STARTED' ? 'startStatus' : '' }"
@@ -106,6 +106,9 @@ const schema = {
     type: "page",
     title: "wms.menu.inventoryCheck",
     toolbar: [],
+    data: {
+        dictionary: "${ls:dictionary}"
+    },
     body: [
         {
             type: "crud",

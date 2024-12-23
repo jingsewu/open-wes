@@ -135,31 +135,31 @@ const form = [
                         type: "select",
                         name: "skuAttribute.skuFirstCategory",
                         label: "table.levelOneClassification",
-                        source: "${ls:dictionary|pick:SkuFirstCategory}"
+                        source: "${dictionary.SkuFirstCategory}"
                     },
                     {
                         type: "select",
                         name: "skuAttribute.skuSecondCategory",
                         label: "table.levelTwoClassification",
-                        source: "${ls:dictionary|pick:SkuSecondCategory}"
+                        source: "${dictionary.SkuSecondCategory}"
                     },
                     {
                         type: "select",
                         name: "skuAttribute.skuThirdCategory",
                         label: "table.levelThreeClassification",
-                        source: "${ls:dictionary|pick:SkuThirdCategory}"
+                        source: "${dictionary.SkuThirdCategory}"
                     },
                     {
                         type: "select",
                         name: "skuAttribute.skuAttributeCategory",
                         label: "table.SKUAttributeCategories",
-                        source: "${ls:dictionary|pick:SkuAttributeCategory}"
+                        source: "${dictionary.SkuAttributeCategory}"
                     },
                     {
                         type: "select",
                         name: "skuAttribute.skuAttributeSubCategory",
                         label: "table.SKUAttributeSubcategory",
-                        source: "${ls:dictionary|pick:SkuAttributeSubCategory}"
+                        source: "${dictionary.SkuAttributeSubCategory}"
                     }
                 ]
             },
@@ -199,7 +199,7 @@ const form = [
                     {
                         type: "select",
                         name: "skuConfig.heat",
-                        source: "${ls:dictionary|pick:SkuHeat}",
+                        source: "${dictionary.SkuHeat}",
                         label: "table.SKUHeat"
                     },
                     {
@@ -316,31 +316,31 @@ const columns = [
         name: "skuFirstCategory",
         label: "table.levelOneClassification",
         type: "mapping",
-        source: "${ls:dictionary|pick:SkuFirstCategory}"
+        source: "${dictionary.SkuFirstCategory}"
     },
     {
         name: "skuSecondCategory",
         label: "table.levelTwoClassification",
         type: "mapping",
-        source: "${ls:dictionary|pick:SkuSecondCategory}"
+        source: "${dictionary.SkuSecondCategory}"
     },
     {
         name: "skuThirdCategory",
         label: "table.levelThreeClassification",
         type: "mapping",
-        source: "${ls:dictionary|pick:SkuThirdCategory}"
+        source: "${dictionary.SkuThirdCategory}"
     },
     {
         name: "skuAttributeCategory",
         label: "table.first-level_attributes",
         type: "mapping",
-        source: "${ls:dictionary|pick:SkuAttributeCategory}"
+        source: "${dictionary.SkuAttributeCategory}"
     },
     {
         name: "skuAttributeSubCategory",
         label: "table.second-level_attributes",
         type: "mapping",
-        source: "${ls:dictionary|pick:SkuAttributeSubCategory}"
+        source: "${dictionary.SkuAttributeSubCategory}"
     },
     ...create_update_columns
 ]
@@ -352,6 +352,9 @@ const schema = {
     type: "page",
     title: "SKUManagement.title",
     toolbar: [],
+    data: {
+        dictionary: "${ls:dictionary}"
+    },
     body: [
         {
             type: "crud",

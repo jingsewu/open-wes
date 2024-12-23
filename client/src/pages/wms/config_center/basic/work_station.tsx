@@ -52,7 +52,7 @@ const baseInfoForm = [
         name: "allowWorkStationModes",
         type: "select",
         multiple: true,
-        source: "${ls:dictionary|pick:WorkStationMode}"
+        source: "${dictionary.WorkStationMode}"
     },
     {
         label: "table.position",
@@ -264,13 +264,13 @@ const configInfoForm = [
                                         type: "select",
                                         label: "table.leftSeedingWall",
                                         name: "leftPutWallDisplayOrder",
-                                        source: "${ls:dictionary|pick:PutWallDisplayOrder}"
+                                        source: "${dictionary.PutWallDisplayOrder}"
                                     },
                                     {
                                         type: "select",
                                         label: "table.rightSeedingWall",
                                         name: "rightPutWallDisplayOrder",
-                                        source: "${ls:dictionary|pick:PutWallDisplayOrder}"
+                                        source: "${dictionary.PutWallDisplayOrder}"
                                     }
                                 ]
                             }
@@ -312,7 +312,7 @@ const configInfoForm = [
                                         type: "select",
                                         name: "color",
                                         label: "table.fieldColor",
-                                        source: "${ls:dictionary|pick:FieldColors}"
+                                        source: "${dictionary.FieldColors}"
                                     },
                                     {
                                         type: "checkbox",
@@ -339,19 +339,19 @@ const configInfoForm = [
                                         type: "select",
                                         name: "color",
                                         label: "table.tplLightColor",
-                                        source: "${ls:dictionary|pick:PtlColor}"
+                                        source: "${dictionary.PtlColor}"
                                     },
                                     {
                                         type: "select",
                                         name: "mode",
                                         label: "table.tplLightMode",
-                                        source: "${ls:dictionary|pick:PtlMode}"
+                                        source: "${dictionary.PtlMode}"
                                     },
                                     {
                                         type: "select",
                                         name: "updown",
                                         label: "table.tplLightUpdown",
-                                        source: "${ls:dictionary|pick:PtlUpdown}"
+                                        source: "${dictionary.PtlUpdown}"
                                     }
                                 ]
                             },
@@ -364,19 +364,19 @@ const configInfoForm = [
                                         type: "select",
                                         name: "color",
                                         label: "table.tplLightColor",
-                                        source: "${ls:dictionary|pick:PtlColor}"
+                                        source: "${dictionary.PtlColor}"
                                     },
                                     {
                                         type: "select",
                                         name: "mode",
                                         label: "table.tplLightMode",
-                                        source: "${ls:dictionary|pick:PtlMode}"
+                                        source: "${dictionary.PtlMode}"
                                     },
                                     {
                                         type: "select",
                                         name: "updown",
                                         label: "table.tplLightUpdown",
-                                        source: "${ls:dictionary|pick:PtlUpdown}"
+                                        source: "${dictionary.PtlUpdown}"
                                     }
                                 ]
                             },
@@ -389,19 +389,19 @@ const configInfoForm = [
                                         type: "select",
                                         name: "color",
                                         label: "table.tplLightColor",
-                                        source: "${ls:dictionary|pick:PtlColor}"
+                                        source: "${dictionary.PtlColor}"
                                     },
                                     {
                                         type: "select",
                                         name: "mode",
                                         label: "table.tplLightMode",
-                                        source: "${ls:dictionary|pick:PtlMode}"
+                                        source: "${dictionary.PtlMode}"
                                     },
                                     {
                                         type: "select",
                                         name: "updown",
                                         label: "table.tplLightUpdown",
-                                        source: "${ls:dictionary|pick:PtlUpdown}"
+                                        source: "${dictionary.PtlUpdown}"
                                     }
                                 ]
                             },
@@ -414,7 +414,7 @@ const configInfoForm = [
                                         type: "select",
                                         name: "color",
                                         label: "table.tplLightColor",
-                                        source: "${ls:dictionary|pick:PtlColor}"
+                                        source: "${dictionary.PtlColor}"
                                     }
                                 ]
                             },
@@ -427,7 +427,7 @@ const configInfoForm = [
                                         type: "select",
                                         name: "color",
                                         label: "table.tplLightColor",
-                                        source: "${ls:dictionary|pick:PtlColor}"
+                                        source: "${dictionary.PtlColor}"
                                     }
                                 ]
                             },
@@ -440,7 +440,7 @@ const configInfoForm = [
                                         type: "select",
                                         name: "color",
                                         label: "table.tplLightColor",
-                                        source: "${ls:dictionary|pick:PtlColor}"
+                                        source: "${dictionary.PtlColor}"
                                     }
                                 ]
                             }
@@ -509,16 +509,16 @@ const columns = [
         name: "workStationMode",
         label: "table.currentOperationType",
         type: "mapping",
-        source: "${ls:dictionary|pick:WorkStationMode}"
+        source: "${dictionary.WorkStationMode}"
     },
     {
         name: "workStationStatus",
         label: "table.status",
         type: "mapping",
-        source: "${ls:dictionary|pick:WorkStationStatus}",
+        source: "${dictionary.WorkStationStatus}",
         searchable: {
             type: "select",
-            source: "${ls:dictionary|pick:WorkStationStatus}"
+            source: "${dictionary.WorkStationStatus}"
         }
     },
     {
@@ -535,6 +535,9 @@ const schema = {
     type: "page",
     title: "workstationManagement.title",
     toolbar: [],
+    data: {
+        dictionary: "${ls:dictionary}"
+    },
     body: [
         {
             type: "crud",

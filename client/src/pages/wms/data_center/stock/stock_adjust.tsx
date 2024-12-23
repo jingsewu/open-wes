@@ -18,10 +18,10 @@ const columns = [
         name: "status",
         label: "table.status",
         type: "mapping",
-        source: "${ls:dictionary|pick:StockAdjustmentOrderStatus}",
+        source: "${dictionary.StockAdjustmentOrderStatus}",
         searchable: {
             type: "select",
-            source: "${ls:dictionary|pick:StockAdjustmentOrderStatus}"
+            source: "${dictionary.StockAdjustmentOrderStatus}"
         }
     },
     ...create_update_columns
@@ -96,6 +96,9 @@ const detailDialog = {
     closeOnEsc: true,
     closeOnOutside: true,
     size: "xl",
+    data: {
+        dictionary: "${ls:dictionary}"
+    },
     body: [
         {
             type: "crud",
@@ -122,6 +125,9 @@ const schema = {
     type: "page",
     title: "wms.menu.inventoryAdjustment",
     toolbar: [],
+    data: {
+        dictionary: "${ls:dictionary}"
+    },
     body: [
         {
             type: "crud",

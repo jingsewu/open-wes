@@ -25,10 +25,10 @@ const columns = [
         name: "acceptOrderStatus",
         label: "table.status",
         type: "mapping",
-        source: "${ls:dictionary|pick:AcceptOrderStatus}",
+        source: "${dictionary.AcceptOrderStatus}",
         searchable: {
             type: "select",
-            source: "${ls:dictionary|pick:AcceptOrderStatus}"
+            source: "${dictionary.AcceptOrderStatus}"
         }
     },
     {
@@ -146,6 +146,9 @@ const schema = {
     type: "page",
     title: "menu.acceptOrder",
     toolbar: [],
+    data: {
+        dictionary: "${ls:dictionary}"
+    },
     body: [
         {
             type: "crud",

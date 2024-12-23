@@ -41,7 +41,7 @@ const form = {
             label: "table.warehouseLogicType",
             name: "warehouseLogicType",
             type: "select",
-            source: "${ls:dictionary|pick:WarehouseLogicType}"
+            source: "${dictionary.WarehouseLogicType}"
         },
         {
             label: "table.remark",
@@ -116,7 +116,7 @@ const columns = [
         name: "warehouseLogicType",
         label: "table.warehouseLogicType",
         type: "mapping",
-        source: "${ls:dictionary|pick:WarehouseLogicType}"
+        source: "${dictionary.WarehouseLogicType}"
     },
     {
         name: "remark",
@@ -138,6 +138,9 @@ const schema = {
     type: "page",
     title: "logicalAreaManagement.title",
     toolbar: [],
+    data: {
+        dictionary: "${ls:dictionary}"
+    },
     body: [
         {
             type: "crud",

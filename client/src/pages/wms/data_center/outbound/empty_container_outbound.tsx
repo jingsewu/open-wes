@@ -1,11 +1,16 @@
 import schema2component from "@/utils/schema2component"
-import {container_spec, warehouse_area_id, work_station} from "@/pages/wms/constants/select_search_api_contant"
-import {create_update_columns} from "@/utils/commonContants"
 import {
-    api_empty_container_outbound_add, api_empty_container_outbound_cancel,
+    container_spec,
+    warehouse_area_id,
+    work_station
+} from "@/pages/wms/constants/select_search_api_contant"
+import { create_update_columns } from "@/utils/commonContants"
+import {
+    api_empty_container_outbound_add,
+    api_empty_container_outbound_cancel,
     api_empty_container_outbound_execute
 } from "@/pages/wms/data_center/constants/api_constant"
-import {api_crud_search_by_warehouseCode} from "@/pages/constantApi"
+import { api_crud_search_by_warehouseCode } from "@/pages/constantApi"
 
 let warehouseCode = localStorage.getItem("warehouseCode")
 
@@ -17,9 +22,7 @@ const form = [
         selectFirst: true,
         source: {
             ...warehouse_area_id,
-            url:
-                warehouse_area_id.url +
-                "&warehouseAreaWorkType=ROBOT"
+            url: warehouse_area_id.url + "&warehouseAreaWorkType=ROBOT"
         },
         required: true,
         className: "warehouseArea"
@@ -118,10 +121,10 @@ const columns = [
         name: "emptyContainerOutboundStatus",
         label: "table.status",
         type: "mapping",
-        source: "${ls:dictionary|pick:EmptyContainerOutboundOrderStatus}",
+        source: "${dictionary.EmptyContainerOutboundOrderStatus}",
         searchable: {
             type: "select",
-            source: "${ls:dictionary|pick:EmptyContainerOutboundOrderStatus}"
+            source: "${dictionary.EmptyContainerOutboundOrderStatus}"
         }
     },
     ...create_update_columns,
@@ -139,13 +142,14 @@ const detailColumns = [
         hidden: true
     },
     {
-        name: "containerCode", label: "table.containerCode"
+        name: "containerCode",
+        label: "table.containerCode"
     },
     {
         name: "detailStatus",
         label: "table.status",
         type: "mapping",
-        source: "${ls:dictionary|pick:EmptyContainerOutboundDetailStatus}"
+        source: "${dictionary.EmptyContainerOutboundDetailStatus}"
     }
 ]
 
@@ -184,6 +188,9 @@ const schema = {
     type: "page",
     title: "menu.emptyContainerOutboundOrder",
     toolbar: [],
+    data: {
+        dictionary: "${ls:dictionary}"
+    },
     body: [
         {
             type: "crud",
@@ -212,7 +219,8 @@ const schema = {
                         method: "post",
                         url: api_empty_container_outbound_execute,
                         data: {
-                            orderIds: "${ARRAYMAP(selectedItems, item => item.id)}"
+                            orderIds:
+                                "${ARRAYMAP(selectedItems, item => item.id)}"
                         }
                     },
                     confirmText: "确定要执行空箱出库单?"
@@ -224,7 +232,8 @@ const schema = {
                         method: "post",
                         url: api_empty_container_outbound_cancel,
                         data: {
-                            orderIds: "${ARRAYMAP(selectedItems, item => item.id)}"
+                            orderIds:
+                                "${ARRAYMAP(selectedItems, item => item.id)}"
                         }
                     },
                     confirmText: "确定要取消空箱出库单?"

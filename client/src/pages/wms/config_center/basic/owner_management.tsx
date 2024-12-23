@@ -40,7 +40,7 @@ const form = [
         label: "table.ownerType",
         type: "select",
         name: "ownerType",
-        source: "${ls:dictionary|pick:OwnerType}",
+        source: "${dictionary.OwnerType}",
         required: true
     },
     {
@@ -176,10 +176,10 @@ const columns = [
         name: "ownerType",
         label: "table.ownerType",
         type: "mapping",
-        source: "${ls:dictionary|pick:OwnerType}",
+        source: "${dictionary.OwnerType}",
         searchable: {
             type: "select",
-            source: "${ls:dictionary|pick:OwnerType}"
+            source: "${dictionary.OwnerType}"
         }
     },
     {
@@ -224,6 +224,9 @@ const schema = {
     type: "page",
     title: "shipperManagement.title",
     toolbar: [],
+    data: {
+        dictionary: "${ls:dictionary}"
+    },
     body: [
         {
             type: "crud",

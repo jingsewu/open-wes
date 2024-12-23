@@ -31,10 +31,10 @@ const columns = [
         name: "inboundPlanOrderStatus",
         label: "table.status",
         type: "mapping",
-        source: "${ls:dictionary|pick:InboundPlanOrderStatus}",
+        source: "${dictionary.InboundPlanOrderStatus}",
         searchable: {
             type: "select",
-            source: "${ls:dictionary|pick:InboundPlanOrderStatus}"
+            source: "${dictionary.InboundPlanOrderStatus}"
         }
     },
 
@@ -57,10 +57,10 @@ const columns = [
         name: "storageType",
         label: "table.storageType",
         type: "mapping",
-        source: "${ls:dictionary|pick:StorageType}",
+        source: "${dictionary.StorageType}",
         searchable: {
             type: "select",
-            source: "${ls:dictionary|pick:StorageType}"
+            source: "${dictionary.StorageType}"
         }
     },
     {
@@ -106,6 +106,9 @@ const schema = {
     type: "page",
     title: "menu.inboundOrder",
     toolbar: [],
+    data: {
+        dictionary: "${ls:dictionary}"
+    },
     body: [
         {
             type: "crud",

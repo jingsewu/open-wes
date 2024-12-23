@@ -33,7 +33,7 @@ const baseform = [
         label: "interfacePlatform.interfaceManagement.table.interfaceType",
         type: "select",
         name: "apiType",
-        source: "${ls:dictionary|pick:ApiType}",
+        source: "${dictionary.ApiType}",
         required: true
     },
     {
@@ -46,7 +46,7 @@ const baseform = [
         label: "interfacePlatform.interfaceManagement.table.interfaceRequestMethod",
         type: "select",
         name: "method",
-        source: "${ls:dictionary|pick:HttpMethod}"
+        source: "${dictionary.HttpMethod}"
     },
     {
         label: "interfacePlatform.interfaceManagement.table.interfaceRequestEncoding",
@@ -63,7 +63,7 @@ const baseform = [
         label: "interfacePlatform.interfaceManagement.table.interfaceRequestFormat",
         type: "select",
         name: "format",
-        source: "${ls:dictionary|pick:MediaType}",
+        source: "${dictionary.MediaType}",
         required: true
     },
     {
@@ -146,7 +146,7 @@ const configForm = [
         label: "interfacePlatform.interfaceManagement.form.converseScriptType",
         type: "select",
         name: "paramConverterType",
-        source: "${ls:dictionary|pick:ConverterType}",
+        source: "${dictionary.ConverterType}",
         required: true
     },
     {
@@ -167,7 +167,7 @@ const configForm = [
         label: "interfacePlatform.interfaceManagement.form.responseTransformationScriptType",
         type: "select",
         name: "responseConverterType",
-        source: "${ls:dictionary|pick:ConverterType}",
+        source: "${dictionary.ConverterType}",
         required: true
     },
     {
@@ -222,10 +222,10 @@ const columns = [
         name: "apiType",
         label: "interfacePlatform.interfaceManagement.table.interfaceType",
         type: "mapping",
-        source: "${ls:dictionary|pick:ApiCallType}",
+        source: "${dictionary.ApiCallType}",
         searchable: {
             type: "select",
-            source: "${ls:dictionary|pick:ApiCallType}"
+            source: "${dictionary.ApiCallType}"
         }
     },
     {
@@ -314,6 +314,9 @@ const schema = {
     type: "page",
     title: "interfacePlatform.interfaceManagement.title",
     toolbar: [],
+    data: {
+        dictionary: "${ls:dictionary}"
+    },
     body: [
         {
             type: "crud",

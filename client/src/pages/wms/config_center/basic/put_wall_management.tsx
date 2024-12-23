@@ -156,7 +156,7 @@ const formBody = [
         label: "table.seedingWallLocation",
         name: "location",
         type: "select",
-        source: "${ls:dictionary|pick:PutWallLocation}",
+        source: "${dictionary.PutWallLocation}",
         required: true
     },
     {
@@ -230,7 +230,7 @@ const columns = [
         name: "enable",
         label: "table.enable",
         type: "mapping",
-        source: "${ls:dictionary|pick:EnableStatus}"
+        source: "${dictionary.EnableStatus}"
     },
     ...create_update_columns
 ]
@@ -242,6 +242,9 @@ const schema = {
     type: "page",
     title: "seedingWallManagement.title",
     toolbar: [],
+    data: {
+        dictionary: "${ls:dictionary}"
+    },
     body: [
         {
             type: "crud",

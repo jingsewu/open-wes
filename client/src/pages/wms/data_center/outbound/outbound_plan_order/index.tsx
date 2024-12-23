@@ -30,10 +30,10 @@ const columns = [
         name: "customerOrderType",
         label: "table.orderType",
         type: "mapping",
-        source: "${ls:dictionary|pick:CustomerOrderType}",
+        source: "${dictionary.CustomerOrderType}",
         searchable: {
             type: "select",
-            source: "${ls:dictionary|pick:CustomerOrderType}"
+            source: "${dictionary.CustomerOrderType}"
         }
     },
     {
@@ -62,10 +62,10 @@ const columns = [
         name: "outboundPlanOrderStatus",
         label: "table.status",
         type: "mapping",
-        source: "${ls:dictionary|pick:OutboundPlanOrderStatus}",
+        source: "${dictionary.OutboundPlanOrderStatus}",
         searchable: {
             type: "select",
-            source: "${ls:dictionary|pick:OutboundPlanOrderStatus}"
+            source: "${dictionary.OutboundPlanOrderStatus}"
         }
     },
     {
@@ -152,6 +152,9 @@ const schema = {
     type: "page",
     title: "outboundOrder.title",
     toolbar: [],
+    data: {
+        dictionary: "${ls:dictionary}"
+    },
     body: [
         {
             type: "crud",

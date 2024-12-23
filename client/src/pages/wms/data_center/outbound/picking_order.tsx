@@ -29,10 +29,10 @@ const columns = [
         name: "pickingOrderStatus",
         label: "table.status",
         type: "mapping",
-        source: "${ls:dictionary|pick:PickingOrderStatus}",
+        source: "${dictionary.PickingOrderStatus}",
         searchable: {
             type: "select",
-            source: "${ls:dictionary|pick:PickingOrderStatus}"
+            source: "${dictionary.PickingOrderStatus}"
         }
     },
     {
@@ -133,6 +133,9 @@ const detailDialog = {
     closeOnEsc: true,
     closeOnOutside: true,
     size: "xl",
+    data: {
+        dictionary: "${ls:dictionary}"
+    },
     body: [
         {
             type: "crud",
@@ -161,6 +164,9 @@ const schema = {
     type: "page",
     title: "pickingTasks.title",
     toolbar: [],
+    data: {
+        dictionary: "${ls:dictionary}"
+    },
     body: [
         {
             type: "crud",
