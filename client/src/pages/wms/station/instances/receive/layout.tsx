@@ -41,10 +41,9 @@ const filterMap = {
 const cx = classNames.bind(style)
 
 const Layout = (props: ReplenishLayoutProps) => {
-
     //TODO by Evelyn 这里可能是undefined,导致后面确定收货提交的时候 workStationEvent.workStationId就会报错
-    if(props === undefined){
-        return <div>加载中</div>;
+    if (props === undefined) {
+        return <div>加载中</div>
     }
 
     const { workStationEvent } = props
@@ -57,7 +56,7 @@ const Layout = (props: ReplenishLayoutProps) => {
         // console.log("orderNo",orderNo)
         request({
             method: "post",
-            url: `/wms/inbound/plan/query/${orderNo}/`+warehouseCode
+            url: `/wms/inbound/plan/query/${orderNo}/` + warehouseCode
         })
             .then((res: any) => {
                 console.log("res", res)
