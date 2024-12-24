@@ -1,10 +1,11 @@
 import type { WorkStationEvent } from "@/pages/wms/station/event-loop/types"
 import type { replenishProps } from "../type"
 import type { OperationProps } from "@/pages/wms/station/instances/types"
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useRef } from "react"
 import { Row, Col, Input, Divider, Button, InputNumber, Radio } from "antd"
 import { MinusOutlined, PlusOutlined } from "@ant-design/icons"
 import type { RadioChangeEvent } from "antd"
+import type { InputRef } from "antd"
 import request from "@/utils/requestInterceptor"
 import ShelfModel from "@/pages/wms/station/widgets/common/Shelf/ShelfModel"
 
@@ -54,9 +55,11 @@ export const valueFilter = (
 }
 
 const RobotHandler = (props: any) => {
-    const { value, onConfirm } = props
-
-    const [inputValue, setInputValue] = useState<number>()
+    const { value, onConfirm, focusValue, changeFocusValue, onScanSubmit } =
+        props
+    const containerRef = useRef<InputRef>(null)
+    const countRef = useRef<any>(null)
+    const [inputValue, setInputValue] = useState<number | string>()
     const [specOptions, setSpecOptions] = useState<any[]>([])
     const [containerSpec, setContainerSpec] = useState<any>({})
     const [containerSlotSpec, setContainerSlotSpec] = useState<string>("")
@@ -66,7 +69,10 @@ const RobotHandler = (props: any) => {
     useEffect(() => {
         request({
             method: "post",
-            url: "/search/search/searchSelectResult?perPage=1000&activePage=1&warehouseCode-op=eq&warehouseCode="+warehouseCode+"&containerType-op=eq&containerType=CONTAINER",
+            url:
+                "/search/search/searchSelectResult?perPage=1000&activePage=1&warehouseCode-op=eq&warehouseCode=" +
+                warehouseCode +
+                "&containerType-op=eq&containerType=CONTAINER",
             data: {
                 searchIdentity: "SearchContainerSpecCode3",
                 searchObject: {
@@ -110,6 +116,20 @@ const RobotHandler = (props: any) => {
             setContainerSlotSpec(JSON.parse(slotSpec || "[]"))
         })
     }, [])
+
+    useEffect(() => {
+        setInputValue("")
+    }, [value])
+
+    useEffect(() => {
+        if (focusValue === "container") {
+            setContainerCode("")
+            setInputValue("")
+            containerRef.current?.focus()
+        } else if (focusValue === "count") {
+            countRef.current?.focus()
+        }
+    }, [focusValue])
 
     const onChange = (value: number) => {
         setInputValue(value)
@@ -156,6 +176,11 @@ const RobotHandler = (props: any) => {
                 containerSpecCode: data.containerSpecCode,
                 containerId: data.id
             })
+            const slotSpec = specOptions.find(
+                (item) => item.value === data.containerSpecCode
+            )?.containerSlotSpecs
+            setContainerSlotSpec(JSON.parse(slotSpec))
+            changeFocusValue("count")
         })
     }
 
@@ -170,6 +195,15 @@ const RobotHandler = (props: any) => {
             url: `/wms/inbound/accept/completeByContainer?containerCode=${containerCode}`
         }).then((res: any) => {
             console.log("onContainerFull", res)
+            if (res.status === 200) {
+                setContainerCode("")
+                setContainerSpec({})
+                setContainerSlotSpec("")
+                setActiveSlot([])
+                setInputValue("")
+                changeFocusValue("sku")
+                onScanSubmit()
+            }
         })
     }
 
@@ -180,6 +214,7 @@ const RobotHandler = (props: any) => {
                 <Input
                     bordered={false}
                     value={containerCode}
+                    ref={containerRef}
                     onChange={onContainerChange}
                     onPressEnter={onPressEnter}
                 />
@@ -204,6 +239,7 @@ const RobotHandler = (props: any) => {
                             <InputNumber
                                 min={0}
                                 // max={10}
+                                ref={countRef}
                                 controls={false}
                                 bordered={false}
                                 value={inputValue}

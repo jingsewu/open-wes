@@ -48,9 +48,9 @@ const Layout = (props: ReplenishLayoutProps) => {
 
     const { workStationEvent } = props
     const [orderNo, setOrderNo] = useState("")
-
     const [orderInfo, setOrderInfo] = useState<any>()
     const [currentSkuInfo, setCurrentSkuInfo] = useState<any>({})
+    const [focusValue, setFocusValue] = useState("")
 
     const onScanSubmit = () => {
         // console.log("orderNo",orderNo)
@@ -61,6 +61,7 @@ const Layout = (props: ReplenishLayoutProps) => {
             .then((res: any) => {
                 console.log("res", res)
                 setOrderInfo(res.data.data)
+                setFocusValue("sku")
             })
             .catch((error) => {
                 console.log("error", error)
@@ -70,6 +71,7 @@ const Layout = (props: ReplenishLayoutProps) => {
 
     const onSkuChange = (detail: any) => {
         setCurrentSkuInfo(detail)
+        changeFocusValue("container")
     }
 
     const onConfirm = ({
@@ -103,11 +105,17 @@ const Layout = (props: ReplenishLayoutProps) => {
                 console.log("confirm", res)
                 if (res.status === 200) {
                     onScanSubmit()
+                    setCurrentSkuInfo({})
+                    changeFocusValue("sku")
                 }
             })
             .catch((error) => {
                 console.log("error", error)
             })
+    }
+
+    const changeFocusValue = (value: string) => {
+        setFocusValue(value)
     }
 
     return (
@@ -119,12 +127,20 @@ const Layout = (props: ReplenishLayoutProps) => {
                     </Col>
                     <Col span={12} className="pt-4">
                         <PickingHandler
-                            value={orderInfo}
+                            details={orderInfo.details}
+                            currentSkuInfo={currentSkuInfo}
+                            focusValue={focusValue}
                             onSkuChange={onSkuChange}
                         />
                     </Col>
                     <Col span={12} className="pt-4">
-                        <RobotHandler value={orderInfo} onConfirm={onConfirm} />
+                        <RobotHandler
+                            value={orderInfo}
+                            focusValue={focusValue}
+                            onConfirm={onConfirm}
+                            changeFocusValue={changeFocusValue}
+                            onScanSubmit={onScanSubmit}
+                        />
                     </Col>
                 </Row>
             ) : (

@@ -1,8 +1,9 @@
-import React, { useState } from "react"
+import React, { useEffect, useState, useRef } from "react"
 
 import { WorkStationEvent } from "@/pages/wms/station/event-loop/types"
 
 import { Input, Divider, message } from "antd"
+import type { InputRef } from "antd"
 import SkuInfo from "@/pages/wms/station/widgets/common/SkuInfo"
 
 export interface SKUHandlerConfirmProps {
@@ -29,12 +30,17 @@ export const valueFilter = (data: WorkStationEvent<any>) => {
 }
 
 const PickAreaHandler = (props: any) => {
-    const { value = {}, onSkuChange } = props
-    const { details } = value
+    const { details, currentSkuInfo, focusValue, onSkuChange } = props
+    const inputRef = useRef<InputRef>(null)
 
     const [skuCode, setSkuCode] = useState<string>("")
-    const [currentSkuInfo, setCurrentSkuInfo] = useState<any>({})
-    // const { qtyAbnormal, qtyAccepted, qtyRestocked, skuCode, skuName } = value
+
+    useEffect(() => {
+        if (focusValue !== "sku") return
+        setSkuCode("")
+        inputRef.current?.focus()
+    }, [focusValue, details])
+
     const onChange = (e: any) => {
         setSkuCode(e.target.value)
     }
@@ -46,7 +52,6 @@ const PickAreaHandler = (props: any) => {
             message.warning("sku不属于当前订单，请重新扫码")
             return
         }
-        setCurrentSkuInfo(detail)
         onSkuChange(detail)
     }
     return (
@@ -55,6 +60,7 @@ const PickAreaHandler = (props: any) => {
                 <div className="white-space-nowrap">请扫描商品条码:</div>
                 <Input
                     bordered={false}
+                    ref={inputRef}
                     value={skuCode}
                     onChange={onChange}
                     onPressEnter={onPressEnter}
