@@ -142,8 +142,7 @@ export default class AMisRenderer extends React.Component<RendererProps, any> {
             confirm,
             copy,
             apiHost,
-            getModalContainer,
-            replaceText: lang[store.locale]
+            getModalContainer
         }
     }
 
@@ -158,7 +157,7 @@ export default class AMisRenderer extends React.Component<RendererProps, any> {
                 locale: store && store.locale,
                 ...rest
             },
-            this.env
+            { ...this.env, replaceText: lang[store.locale] }
         )
     }
 }
