@@ -2,14 +2,16 @@ package org.openwes.wes.ems.proxy.domain.service.impl;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
+import org.openwes.wes.api.ems.proxy.dto.CreateContainerTaskDTO;
 import org.openwes.wes.ems.proxy.domain.entity.ContainerTask;
 import org.openwes.wes.ems.proxy.domain.repository.ContainerTaskAndBusinessTaskRelation;
 import org.openwes.wes.ems.proxy.domain.service.ContainerTaskService;
-import org.openwes.wes.api.ems.proxy.dto.CreateContainerTaskDTO;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -83,5 +85,39 @@ public class ContainerTaskServiceImpl implements ContainerTaskService {
     @Override
     public void doAfterFinishContainerTasks(List<ContainerTask> containerTasks) {
 
+    }
+
+    @Override
+    public List<ContainerTask> flatContainerTasks(List<ContainerTask> containerTasks) {
+
+        List<ContainerTask> newContainerTasks = Lists.newArrayList(containerTasks);
+
+        newContainerTasks.forEach(this::setParentId);
+        newContainerTasks.addAll(newContainerTasks.stream()
+                .flatMap(containerTask -> flat(containerTask, Lists.newArrayList()).stream()).toList());
+        return newContainerTasks;
+    }
+
+    private List<ContainerTask> flat(ContainerTask parentContainerTask, List<ContainerTask> containerTasks) {
+
+        if (CollectionUtils.isEmpty(parentContainerTask.getNextContainerTasks())) {
+            return Collections.emptyList();
+        }
+
+        containerTasks.addAll(parentContainerTask.getNextContainerTasks());
+        return parentContainerTask.getNextContainerTasks().stream()
+                .flatMap(containerTask -> flat(containerTask, containerTasks).stream()).toList();
+    }
+
+    private void setParentId(ContainerTask parentContainerTask) {
+        List<ContainerTask> nextContainerTasks = parentContainerTask.getNextContainerTasks();
+        if (CollectionUtils.isEmpty(nextContainerTasks)) {
+            return;
+        }
+
+        nextContainerTasks.forEach(containerTask -> {
+            containerTask.setParentContainerTaskId(parentContainerTask.getId());
+            setParentId(containerTask);
+        });
     }
 }

@@ -29,5 +29,4 @@ public interface IStockAbnormalRecordApi {
 
     List<StockAbnormalRecordDTO> getAllByContainerStockIdsAndStatues(Set<Long> longs, ArrayList<StockAbnormalStatusEnum> stockAbnormalStatusEnums);
 
-    void recheckClose(List<StockAbnormalRecordDTO> invalidStockAbnormalRecordList);
 }

@@ -81,7 +81,7 @@ public class OutboundPlanOrderPO extends AuditUserPO {
 
     @Column(columnDefinition = "json comment '扩展字段'")
     @JdbcTypeCode(SqlTypes.JSON)
-    private Map<String, String> reservedFields;
+    private Map<String, String> extendFields;
 
     @Column(columnDefinition = "json comment '出库封箱目的地'")
     @JdbcTypeCode(SqlTypes.JSON)

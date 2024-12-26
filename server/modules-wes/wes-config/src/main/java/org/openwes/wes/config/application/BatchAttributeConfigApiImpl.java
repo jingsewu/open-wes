@@ -1,5 +1,6 @@
 package org.openwes.wes.config.application;
 
+import lombok.RequiredArgsConstructor;
 import org.openwes.common.utils.exception.WmsException;
 import org.openwes.distribute.lock.DistributeLock;
 import org.openwes.wes.api.config.IBatchAttributeConfigApi;
@@ -7,7 +8,6 @@ import org.openwes.wes.api.config.dto.BatchAttributeConfigDTO;
 import org.openwes.wes.config.domain.entity.BatchAttributeConfig;
 import org.openwes.wes.config.domain.repository.BatchAttributeConfigRepository;
 import org.openwes.wes.config.domain.transfer.BatchAttributeConfigTransfer;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -15,7 +15,7 @@ import java.util.Collection;
 import java.util.List;
 
 import static org.openwes.common.utils.constants.RedisConstants.BATCH_ATTRIBUTE_CONFIG_ADD_LOCK;
-import static org.openwes.common.utils.exception.code_enum.BasicErrorDescEnum.BARCODE_PARSE_RULE_REPEAT;
+import static org.openwes.common.utils.exception.code_enum.BasicErrorDescEnum.BATCH_ATTRIBUTE_CONFIG_REPEAT;
 
 @Service
 @Validated
@@ -34,7 +34,7 @@ public class BatchAttributeConfigApiImpl implements IBatchAttributeConfigApi {
                     .findAll().stream().filter(BatchAttributeConfig::isEnable).toList();
             if (batchAttributeConfigs.stream().anyMatch(batchAttributeConfig ->
                     batchAttributeConfig.match(batchAttributeConfigDTO.getOwnerCode(), batchAttributeConfigDTO.getSkuFirstCategory()))) {
-                throw new WmsException(BARCODE_PARSE_RULE_REPEAT);
+                throw new WmsException(BATCH_ATTRIBUTE_CONFIG_REPEAT);
             }
             batchAttributeConfigRepository.save(batchAttributeConfigTransfer.toDO(batchAttributeConfigDTO));
         } finally {

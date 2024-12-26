@@ -61,7 +61,7 @@ public class ContainerSealedDetailDTO implements Serializable {
     private String orderNo;
 
     @Schema(description = "扩展字段")
-    private Map<String, String> reservedFields;
+    private Map<String, String> extendFields;
 
     @Schema(title = "商品编码", requiredMode = Schema.RequiredMode.REQUIRED)
     private String skuCode;

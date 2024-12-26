@@ -1,8 +1,8 @@
 package org.openwes.common.utils.exception.code_enum;
 
-import org.openwes.common.utils.constants.AppCodeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.openwes.common.utils.constants.AppCodeEnum;
 
 @Getter
 @AllArgsConstructor
@@ -21,10 +21,7 @@ public enum BasicErrorDescEnum implements IBaseError {
     CONTAINER_CONTAINS_STOCK("BA001008", "container contains stocks", AppCodeEnum.WMS.name()),
     CONTAINER_DID_NOT_MEET_THE_CONDITIONS("BA001009", "container did not meet the conditions", AppCodeEnum.WMS.name()),
     CONTAINER_SPEC_CODE_NOT_EXISTS("BA001010", "container specification code does not exist", AppCodeEnum.WMS.name()),
-    THERE_IS_NO_CONTAINER_THAT_MEETS_THE_CONDITIONS("BA001011", "there is no container that meets the conditions", AppCodeEnum.WMS.name()),
-    THERE_IS_NO_CONTAINER_THAT_MEETS_THE_CONDITIONS_NOT_ENOUGH_STOCK("BA001012", "there is no container that meets the conditions sku {0} stock not exists", AppCodeEnum.WMS.name()),
-    CONTAINER_HAS_UNAVAILABLE_STOCK("BA001013", "the container {} has unavailable stocks", AppCodeEnum.WMS.name()),
-    CONTAINER_SPECIFIC_CANNOT_DELETE("BA001014", "container specific cannot delete", AppCodeEnum.WMS.name()),
+    CONTAINER_SPECIFIC_CANNOT_DELETE("BA001011", "container specific cannot delete", AppCodeEnum.WMS.name()),
 
     // location error
     LOCATION_CONTAINS_STOCK("BAS010001", "location contains stocks", AppCodeEnum.WMS.name()),
@@ -60,9 +57,9 @@ public enum BasicErrorDescEnum implements IBaseError {
     BARCODE_PARSER_RESULT_CONFIG_NOT_MATCH("MD005001", "barcode parse result field size & config field size not match", AppCodeEnum.WMS.name()),
     BARCODE_PARSE_RULE_REPEAT("MD005002", "barcode parse rule repeated", AppCodeEnum.WMS.name()),
 
-
-    BATCH_ATTRIBUTE_NOT_EXISTS("MD006001", "batchAttribute {0} not exist", AppCodeEnum.WMS.name()),
-    BATCH_ATTRIBUTE_IS_REQUIRED("MD006002", "batch attribute {0} can not emtpy", AppCodeEnum.WMS.name());
+    BATCH_ATTRIBUTE_CONFIG_REPEAT("MD006001", "batch attribute config repeated", AppCodeEnum.WMS.name()),
+    BATCH_ATTRIBUTE_NOT_EXISTS("MD006002", "batchAttribute {0} not exist", AppCodeEnum.WMS.name()),
+    BATCH_ATTRIBUTE_IS_REQUIRED("MD006003", "batch attribute {0} can not emtpy", AppCodeEnum.WMS.name());
 
     private final String code;
     private final String desc;

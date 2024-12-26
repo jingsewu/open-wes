@@ -65,11 +65,6 @@ public class Container {
 
         this.containerSlots.forEach(ContainerDTO.ContainerSlot::setContainerSlotCode);
 
-        checkContainerSlotCodeUnique();
-    }
-
-    private void checkContainerSlotCodeUnique() {
-        //todo implement it
     }
 
     public void changeContainerSpec(String containerSpecCode, List<ContainerDTO.ContainerSlot> containerSlots) {

@@ -19,4 +19,6 @@ public interface ContainerTaskService {
     void doBeforeFinishContainerTasks(List<ContainerTask> containerTasks);
 
     void doAfterFinishContainerTasks(List<ContainerTask> containerTasks);
+
+    List<ContainerTask> flatContainerTasks(List<ContainerTask> containerTasks);
 }

@@ -2,13 +2,9 @@ package org.openwes.wes.stock.application;
 
 import lombok.RequiredArgsConstructor;
 import org.openwes.api.platform.api.constants.CallbackApiTypeEnum;
-import org.openwes.domain.event.DomainEventPublisher;
-import org.openwes.wes.api.config.ISystemConfigApi;
-import org.openwes.wes.api.config.dto.SystemConfigDTO;
 import org.openwes.wes.api.stock.IStockAbnormalRecordApi;
 import org.openwes.wes.api.stock.constants.StockAbnormalStatusEnum;
 import org.openwes.wes.api.stock.dto.StockAbnormalRecordDTO;
-import org.openwes.wes.api.stock.event.StockAbnormalRecordCreatedEvent;
 import org.openwes.wes.common.facade.CallbackApiFacade;
 import org.openwes.wes.stock.domain.aggregate.StockAbnormalAggregate;
 import org.openwes.wes.stock.domain.entity.StockAbnormalRecord;
@@ -31,7 +27,6 @@ public class StockAbnormalRecordApiImpl implements IStockAbnormalRecordApi {
     private final StockAbnormalAggregate stockAbnormalAggregate;
     private final StockAbnormalRecordTransfer stockAbnormalRecordTransfer;
     private final CallbackApiFacade callbackApiFacade;
-    private final ISystemConfigApi systemConfigApi;
 
     @Override
     public List<StockAbnormalRecordDTO> createStockAbnormalRecords(List<StockAbnormalRecordDTO> stockAbnormalRecordDTOS) {
@@ -88,15 +83,8 @@ public class StockAbnormalRecordApiImpl implements IStockAbnormalRecordApi {
 
     @Override
     public List<StockAbnormalRecordDTO> getAllByContainerStockIdsAndStatues(Set<Long> containerStockIds, ArrayList<StockAbnormalStatusEnum> stockAbnormalStatusEnums) {
-
-        stockAbnormalRecordRepository.findAllByContainerStockIdsAndStatues(containerStockIds, stockAbnormalStatusEnums);
-
-        return List.of();
-    }
-
-    @Override
-    public void recheckClose(List<StockAbnormalRecordDTO> invalidStockAbnormalRecordList) {
-        //TODO implement it
+        List<StockAbnormalRecord> stockAbnormalRecords = stockAbnormalRecordRepository.findAllByContainerStockIdsAndStatues(containerStockIds, stockAbnormalStatusEnums);
+        return stockAbnormalRecordTransfer.toDTOs(stockAbnormalRecords);
     }
 
 }

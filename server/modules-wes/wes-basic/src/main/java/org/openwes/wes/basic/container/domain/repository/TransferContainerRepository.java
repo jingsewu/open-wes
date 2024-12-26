@@ -19,4 +19,6 @@ public interface TransferContainerRepository {
     List<TransferContainer> findAllLockedContainers(int limitDays);
 
     TransferContainer findById(Long id);
+
+    boolean existByContainerSpecCode(String containerSpecCode, String warehouseCode);
 }

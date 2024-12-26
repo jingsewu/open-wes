@@ -110,8 +110,8 @@ public class OperationTaskSubscriber {
                     detail.setExpiredTime(outboundPlanOrderDTO.getExpiredTime());
                     detail.setPriority(outboundPlanOrderDTO.getPriority());
                     detail.setOrderNo(outboundPlanOrderDTO.getOrderNo());
-                    detail.setReservedFields(outboundPlanOrderDTO.getReservedFields());
-//                        detail.setDestinations(outboundPlanOrderDTO.getDestinations());
+                    detail.setExtendFields(outboundPlanOrderDTO.getExtendFields());
+                        detail.setDestinations(outboundPlanOrderDTO.getDestinations());
                     detail.setSkuCode(skuMainDataDTO.getSkuCode());
                     detail.setSkuName(skuMainDataDTO.getSkuName());
                     detail.setBatchAttributes(pickingOrderDetailDTO.getBatchAttributes());

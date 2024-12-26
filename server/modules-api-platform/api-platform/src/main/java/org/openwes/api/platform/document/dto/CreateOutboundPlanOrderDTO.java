@@ -48,7 +48,7 @@ public class CreateOutboundPlanOrderDTO implements Serializable {
     private boolean shortOutbound = false;
 
     @Schema(description = "扩展字段")
-    private Map<String, String> reservedFields;
+    private Map<String, String> extendFields;
 
     @NotEmpty
     @Schema(description = "出库计划单明细列表", requiredMode = Schema.RequiredMode.REQUIRED)

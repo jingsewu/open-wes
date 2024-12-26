@@ -59,6 +59,11 @@ public class PutWallRepositoryImpl implements PutWallRepository {
         return transferToPutWall(putWallPOs);
     }
 
+    @Override
+    public boolean existByContainerSpecCode(String containerSpecCode, String warehouseCode) {
+        return putWallPORepository.existByContainerSpecCodeAndWarehouseCode(containerSpecCode, warehouseCode);
+    }
+
     private List<PutWall> transferToPutWall(List<PutWallPO> putWallPOS) {
         List<Long> putWallIds = putWallPOS.stream().map(PutWallPO::getId).toList();
         Map<Long, List<PutWallSlotPO>> putWallSlotPOGroupMap = putWallSlotPORepository.findAllByPutWallIdIn(putWallIds).stream()

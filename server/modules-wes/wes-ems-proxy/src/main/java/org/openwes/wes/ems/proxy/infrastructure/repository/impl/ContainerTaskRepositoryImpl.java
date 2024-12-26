@@ -1,6 +1,5 @@
 package org.openwes.wes.ems.proxy.infrastructure.repository.impl;
 
-import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.openwes.wes.ems.proxy.domain.entity.ContainerTask;
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -34,45 +32,15 @@ public class ContainerTaskRepositoryImpl implements ContainerTaskRepository {
     @Transactional(rollbackFor = Exception.class)
     public void saveAll(List<ContainerTask> containerTasks) {
 
-        List<ContainerTask> newContainerTasks = Lists.newArrayList(containerTasks);
-
-        //TODO these logic should be outside of this method
-        newContainerTasks.forEach(this::setParentId);
-        newContainerTasks.addAll(newContainerTasks.stream()
-                .flatMap(containerTask -> flat(containerTask, Lists.newArrayList()).stream()).toList());
-
-        List<ContainerTaskPO> containerTaskPOS = containerTaskPOTransfer.toPOs(newContainerTasks);
+        List<ContainerTaskPO> containerTaskPOS = containerTaskPOTransfer.toPOs(containerTasks);
         containerTaskPORepository.saveAll(containerTaskPOS);
 
-        List<ContainerTaskAndBusinessTaskRelation> relations = newContainerTasks.stream()
+        List<ContainerTaskAndBusinessTaskRelation> relations = containerTasks.stream()
                 .filter(task -> CollectionUtils.isNotEmpty(task.getRelations()))
                 .flatMap(task -> task.getRelations().stream()).toList();
 
         List<ContainerTaskAndBusinessTaskRelationPO> relationPOS = containerTaskAndBusinessTaskRelationPOTransfer.toPOs(relations);
         containerTaskAndBusinessTaskRelationPORepository.saveAll(relationPOS);
-    }
-
-    private List<ContainerTask> flat(ContainerTask parentContainerTask, List<ContainerTask> containerTasks) {
-
-        if (CollectionUtils.isEmpty(parentContainerTask.getNextContainerTasks())) {
-            return Collections.emptyList();
-        }
-
-        containerTasks.addAll(parentContainerTask.getNextContainerTasks());
-        return parentContainerTask.getNextContainerTasks().stream()
-                .flatMap(containerTask -> flat(containerTask, containerTasks).stream()).toList();
-    }
-
-    private void setParentId(ContainerTask parentContainerTask) {
-        List<ContainerTask> nextContainerTasks = parentContainerTask.getNextContainerTasks();
-        if (CollectionUtils.isEmpty(nextContainerTasks)) {
-            return;
-        }
-
-        nextContainerTasks.forEach(containerTask -> {
-            containerTask.setParentContainerTaskId(parentContainerTask.getId());
-            setParentId(containerTask);
-        });
     }
 
     @Override

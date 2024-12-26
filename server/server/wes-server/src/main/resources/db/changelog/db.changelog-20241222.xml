@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="w_outbound_plan_order_change_column_reserved_fields" author="Kinser">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="w_outbound_plan_order"/>
+                <columnExists tableName="w_outbound_plan_order" columnName="reserved_fields"/>
+            </and>
+        </preConditions>
+        <comment>w_outbound_plan_order修改列名reserved_fields</comment>
+        <sql>
+            ALTER TABLE w_outbound_plan_order CHANGE COLUMN reserved_fields extend_fields json DEFAULT NULL COMMENT '扩展字段';
+        </sql>
+    </changeSet>
+
+    <changeSet id="w_outbound_plan_order_detail_change_column_reserved_fields" author="Kinser">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="w_outbound_plan_order_detail"/>
+                <columnExists tableName="w_outbound_plan_order_detail" columnName="reserved_fields"/>
+            </and>
+        </preConditions>
+        <comment>w_outbound_plan_order_detail修改字段reserved_fields</comment>
+        <sql>
+            ALTER TABLE w_outbound_plan_order_detail CHANGE COLUMN reserved_fields extend_fields json DEFAULT NULL COMMENT '扩展字段';
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

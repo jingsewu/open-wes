@@ -70,7 +70,7 @@ public class OutboundPlanOrderDetailPO extends UpdateUserPO {
 
     @Column(columnDefinition = "json comment '扩展字段'")
     @JdbcTypeCode(SqlTypes.JSON)
-    private Map<String, String> reservedFields;
+    private Map<String, String> extendFields;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, columnDefinition = "varchar(20) comment '状态'")

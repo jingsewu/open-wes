@@ -51,6 +51,11 @@ public class TransferContainerRepositoryImpl implements TransferContainerReposit
     }
 
     @Override
+    public boolean existByContainerSpecCode(String containerSpecCode, String warehouseCode) {
+        return transferContainerPORepository.existByContainerSpecCodeAndWarehouseCode(containerSpecCode, warehouseCode);
+    }
+
+    @Override
     public void saveAll(List<TransferContainer> transferContainers) {
         transferContainerPORepository.saveAll(transferContainerPOTransfer.toPOs(transferContainers));
     }

@@ -51,7 +51,7 @@ public class OutboundPlanOrder {
     private boolean abnormal;
     private String abnormalReason;
 
-    private Map<String, String> reservedFields;
+    private Map<String, String> extendFields;
 
     private List<OutboundPlanOrderDetail> details;
 

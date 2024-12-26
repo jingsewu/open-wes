@@ -1,6 +1,5 @@
 package org.openwes.wes.ems.proxy.application;
 
-import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -23,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -44,7 +44,9 @@ public class ContainerTaskApiImpl implements IContainerTaskApi {
     public void createContainerTasks(List<CreateContainerTaskDTO> createContainerTasks) {
 
         List<ContainerTask> containerTasks = containerTaskService.groupContainerTasks(createContainerTasks);
-        containerTaskRepository.saveAll(containerTasks);
+        List<ContainerTask> flatContainerTasks = containerTaskService.flatContainerTasks(containerTasks);
+
+        containerTaskRepository.saveAll(flatContainerTasks);
 
         ContainerTaskTypeEnum containerTaskType = createContainerTasks.iterator().next().getContainerTaskType();
 

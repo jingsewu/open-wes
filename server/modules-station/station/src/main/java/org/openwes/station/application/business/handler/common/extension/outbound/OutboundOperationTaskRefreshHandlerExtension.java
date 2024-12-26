@@ -2,6 +2,7 @@ package org.openwes.station.application.business.handler.common.extension.outbou
 
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.openwes.station.api.vo.WorkStationVO;
 import org.openwes.station.application.business.handler.common.OperationTaskRefreshHandler;
@@ -22,6 +23,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class OutboundOperationTaskRefreshHandlerExtension
         implements OperationTaskRefreshHandler.Extension<OutboundWorkStationCache> {
 
@@ -48,6 +50,13 @@ public class OutboundOperationTaskRefreshHandlerExtension
         if (workStationConfig == null || !workStationConfig.getPickingStationConfig().isEmptyToteRecycle()) {
             equipmentService.containerLeave(doneContainers, ContainerOperationTypeEnum.LEAVE);
             return;
+        }
+
+        // for the async update container empty flag, sleep 300ms
+        try {
+            Thread.sleep(300);
+        } catch (InterruptedException e) {
+            log.error("work station: {} after picking thread sleep error:", workStationCache.getId(), e);
         }
 
         ContainerDTO containerDTO = containerService.queryContainer(doneContainers.get(0).getContainerCode(),

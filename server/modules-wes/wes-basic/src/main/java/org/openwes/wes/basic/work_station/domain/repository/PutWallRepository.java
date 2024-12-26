@@ -17,4 +17,6 @@ public interface PutWallRepository {
     List<PutWall> findAllByWorkStationIds(Collection<Long> workStationIds);
 
     List<PutWall> findAllByWorkStationId(Long workStationId);
+
+    boolean existByContainerSpecCode(String containerSpecCode, String warehouseCode);
 }

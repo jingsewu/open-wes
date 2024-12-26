@@ -1,13 +1,11 @@
 package org.openwes.wes.basic.main.data.infrastructure.repository.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.openwes.common.utils.constants.RedisConstants;
-import org.openwes.common.utils.exception.WmsException;
-import org.openwes.common.utils.exception.code_enum.BasicErrorDescEnum;
 import org.openwes.wes.basic.main.data.domain.entity.WarehouseMainData;
 import org.openwes.wes.basic.main.data.domain.repository.WarehouseMainDataRepository;
 import org.openwes.wes.basic.main.data.infrastructure.persistence.mapper.WarehouseMainDataPORepository;
 import org.openwes.wes.basic.main.data.infrastructure.persistence.transfer.WarehouseMainDataPOTransfer;
-import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -29,9 +27,7 @@ public class WarehouseMainDataRepositoryImpl implements WarehouseMainDataReposit
 
     @Override
     public WarehouseMainData findById(Long id) {
-        return warehouseMainDataPORepository.findById(id)
-                .map(warehouseMainDataPOTransfer::toDO)
-                .orElseThrow(WmsException.throwWmsExceptionSup(BasicErrorDescEnum.WAREHOUSE_NOT_EXIST));
+        return warehouseMainDataPOTransfer.toDO(warehouseMainDataPORepository.findById(id).orElseThrow());
     }
 
     @Override

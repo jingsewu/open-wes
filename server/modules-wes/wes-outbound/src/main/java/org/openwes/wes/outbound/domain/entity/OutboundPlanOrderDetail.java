@@ -25,7 +25,7 @@ public class OutboundPlanOrderDetail {
     private Integer qtyActual = 0;
     private Set<Long> warehouseAreaIds;
 
-    private Map<String, String> reservedFields;
+    private Map<String, String> extendFields;
 
     private OutboundPlanOrderDetailStatusEnum outboundPlanOrderDetailStatus;
 

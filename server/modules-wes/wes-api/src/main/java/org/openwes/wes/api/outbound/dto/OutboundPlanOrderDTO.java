@@ -1,8 +1,5 @@
 package org.openwes.wes.api.outbound.dto;
 
-import org.openwes.common.utils.utils.JsonUtils;
-import org.openwes.common.utils.utils.ObjectUtils;
-import org.openwes.wes.api.outbound.constants.OutboundPlanOrderStatusEnum;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
@@ -11,10 +8,12 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import org.openwes.wes.api.outbound.constants.OutboundPlanOrderStatusEnum;
 
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Data
 @Schema(description = "出库计划单")
@@ -82,8 +81,11 @@ public class OutboundPlanOrderDTO implements Serializable {
     @Schema(title = "异常原因")
     private String abnormalReason;
 
+    @Schema(description = "周转箱目的地")
+    private Set<String> destinations;
+
     @Schema(description = "扩展字段")
-    private Map<String, String> reservedFields;
+    private Map<String, String> extendFields;
 
     @Valid
     @NotEmpty
@@ -124,12 +126,10 @@ public class OutboundPlanOrderDTO implements Serializable {
 
         @Schema(title = "实际出库数量")
         private Integer qtyActual;
-//
-//        @Schema(title = "库区列表")
-//        private Collection<Long> warehouseAreaIds;
+
+        @Schema(description = "扩展字段")
+        private Map<String, String> extendFields;
+
     }
 
-    public static void main(String[] args) {
-        System.out.println(JsonUtils.obj2String(ObjectUtils.getRandomObject(OutboundPlanOrderDTO.class)));
-    }
 }
