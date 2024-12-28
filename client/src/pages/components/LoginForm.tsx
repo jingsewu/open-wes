@@ -1,17 +1,16 @@
 import * as React from "react"
-import { Button, Checkbox, Form, Input, Typography } from "antd"
-import { toast } from "amis"
-import { RouteComponentProps } from "react-router-dom"
-import Message, { MessageType } from "@/pages/wms/station/widgets/message"
+import {Button, Checkbox, Form, Input, Typography} from "antd"
+import {RouteComponentProps} from "react-router-dom"
+import Message, {MessageType} from "@/pages/wms/station/widgets/message"
 
-import { IMainStore } from "@/stores"
-import { inject, observer } from "mobx-react"
-import { withRouter } from "react-router"
+import {IMainStore} from "@/stores"
+import {inject, observer} from "mobx-react"
+import {withRouter} from "react-router"
 import request from "@/utils/requestInterceptor"
 import "@/scss/style.scss"
-import { withTranslation, Translation } from "react-i18next"
+import {withTranslation} from "react-i18next"
 
-const { Title, Text } = Typography
+const {Title, Text} = Typography
 
 interface LoginProps extends RouteComponentProps<any> {
     store: IMainStore
@@ -23,48 +22,36 @@ interface LoginProps extends RouteComponentProps<any> {
 @observer
 class LoginForm extends React.Component<any> {
     state = {
-        username: "",
-        password: ""
+        username: "admin",
+        password: "123456"
     }
 
-    handleFormSaved = () => {
-        const history = this.props.history
-        const store = this.props.store
-        const { t } = this.props
-        // 这里可以进行登陆密码验证
+    handleFormSaved = (values: { username: string; password: string }) => {
+        const history = this.props.history;
+        const store = this.props.store;
+        const {t} = this.props;
+
         request({
             method: "post",
             url: "/user/api/auth/signin",
-            data: this.state,
+            data: values, // Use form values directly
             headers: {
-                "content-type": "application/json"
-            }
+                "content-type": "application/json",
+            },
         }).then((res: any) => {
-            if (res.data != null && res.status === 200) {
-                store.user.login(this.state.username, res.data.token)
+            if (res.data != null && res.status === 200 && res.data.token != undefined) {
+                store.user.login(values.username, res.data.token);
                 Message({
                     type: MessageType.SUCCESS,
-                    content: t("toast.loginSuccess")
-                })
-                // 跳转到dashboard页面
-                history.replace(`/dashboard`)
+                    content: t("toast.loginSuccess"),
+                });
+                // Navigate to the dashboard
+                history.replace(`/dashboard`);
             } else {
-                // toast["error"]("登录失败", "消息")
+                // toast["error"]("Login failed", "Message");
             }
-        })
-    }
-
-    handleChangeForPassword = (e: any) => {
-        this.setState({
-            password: e.target.value
-        })
-    }
-
-    handlePassWordEnter = (e: any) => {
-        if (e.keyCode === 13) {
-            this.handleFormSaved()
-        }
-    }
+        });
+    };
 
     componentDidMount() {
         const store = this.props.store
@@ -72,19 +59,10 @@ class LoginForm extends React.Component<any> {
         console.log("store.user.isAuthenticated", store.user.isAuthenticated)
     }
 
-    handleChangeForUsername = (e: any) => {
-        this.setState({
-            username: e.target.value
-        })
-    }
-
     render() {
-        const { t } = this.props
+        const {t} = this.props
         return (
             <div className="text-center mb-2.5 bg-white p-10 shadow-lg">
-                {/* <h2 className="text-lg font-semibold text-gray-900 leading-none mb-4">
-                    Sign in
-                </h2> */}
                 <Title level={3} className="text-gray-900 leading-none pb-6">
                     {t("login.submitText")}
                 </Title>
@@ -92,13 +70,14 @@ class LoginForm extends React.Component<any> {
                 <Form
                     name="basic"
                     layout="vertical"
-                    // wrapperCol={{ span: 24 }}
-                    // initialValues={{ remember: true }}
                     onFinish={this.handleFormSaved}
-                    // onFinishFailed={onFinishFailed}
                     autoComplete="off"
-                    // size="large"
                     requiredMark={false}
+                    initialValues={{
+                        username: this.state.username,
+                        password: this.state.password,
+                        remember: true, // Default for the "Remember me" checkbox
+                    }}
                 >
                     <Form.Item
                         label={t("login.username")}
@@ -106,17 +85,11 @@ class LoginForm extends React.Component<any> {
                         rules={[
                             {
                                 required: true,
-                                message: "Please input your username!"
-                            }
+                                message: "Please input your username!",
+                            },
                         ]}
                     >
-                        <Input
-                            // placeholder={t("login.username")}
-                            // style={{ borderRadius: 10 }}
-                            value={this.state.username}
-                            size="large"
-                            onChange={this.handleChangeForUsername}
-                        />
+                        <Input size="large"/>
                     </Form.Item>
 
                     <Form.Item
@@ -125,36 +98,21 @@ class LoginForm extends React.Component<any> {
                         rules={[
                             {
                                 required: true,
-                                message: "Please input your password!"
+                                message: "Please input your password!",
                             },
-                            { type: "string", min: 6 }
+                            {type: "string", min: 6, message: "Password must be at least 6 characters long!"},
                         ]}
                     >
-                        <Input.Password
-                            // placeholder={t("login.password")}
-                            // style={{ borderRadius: 10 }}
-                            value={this.state.password}
-                            size="large"
-                            onChange={this.handleChangeForPassword}
-                        />
+                        <Input.Password size="large"/>
                     </Form.Item>
-                    <Form.Item
-                        name="remember"
-                        valuePropName="checked"
-                        className="text-left"
-                    >
+
+                    <Form.Item name="remember" valuePropName="checked" className="text-left">
                         <Checkbox>Remember me</Checkbox>
                     </Form.Item>
+
                     <Form.Item>
-                        <Button
-                            type="primary"
-                            htmlType="submit"
-                            size="large"
-                            block
-                            // shape="round"
-                        >
+                        <Button type="primary" htmlType="submit" size="large" block>
                             {t("login.submitText")}
-                            {/* <i className="fa-solid fa-arrow-right m-l-xxl"></i> */}
                         </Button>
                     </Form.Item>
                 </Form>

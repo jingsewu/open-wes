@@ -1,23 +1,20 @@
-import { Col, Row } from "antd"
-import React, { useEffect, useContext } from "react"
-import { Translation } from "react-i18next"
-import request from "@/utils/requestInterceptor"
+import {Col, Row} from "antd"
+import React, {useContext, useEffect} from "react"
+import {Translation} from "react-i18next"
 
-import { withRouter } from "react-router-dom"
+import {withRouter} from "react-router-dom"
 import * as images from "@/icon/station"
-import { CustomActionType } from "@/pages/wms/station/instances/outbound/customActionType"
-import { APIContext } from "@/pages/wms/station/event-loop/provider"
+import {CustomActionType} from "@/pages/wms/station/instances/outbound/customActionType"
+import {APIContext} from "@/pages/wms/station/event-loop/provider"
 import StationCard from "@/pages/wms/station/widgets/StationCard"
 
 export const WORK_STATION_PATH_PREFIX = "/wms/workStation"
 
 export enum StationTypes {
-    // RECOMMEND_REPLENISH = `outbound`,
     SELECT_CONTAINER_PUT_AWAY = `replenish`,
     WITHOUT_ORDER_PUT_AWAY = `without_order_replenish`,
     PICKING = `outbound`,
     STOCKTAKE = `stocktake`,
-    ONE_STEP_RELOCATION = `oneStepInventory`,
     RECEIVE = "receive"
 }
 
@@ -32,28 +29,6 @@ const cardOptions = [
         rightIcon: images.spshbg,
         backgroundColor: "#f8f3ff"
     },
-    // {
-    //     title: <Translation>{(t) => t("replenish.title")}</Translation>,
-    //     value: "SELECT_CONTAINER_PUT_AWAY",
-    //     description: (
-    //         <Translation>{(t) => t("replenish.cardDescription")}</Translation>
-    //     ),
-    //     avatar: images.xzrqsj,
-    //     rightIcon: images.xzrqsjbg,
-    //     backgroundColor: "#f8f3ff"
-    // },
-    // {
-    //     title: <Translation>{(t) => t("noOrdersReplenish.title")}</Translation>,
-    //     value: "WITHOUT_ORDER_PUT_AWAY",
-    //     description: (
-    //         <Translation>
-    //             {(t) => t("noOrdersReplenish.cardDescription")}
-    //         </Translation>
-    //     ),
-    //     avatar: images.zxsj,
-    //     rightIcon: images.zxsjbg,
-    //     backgroundColor: "#f2f5ff"
-    // },
     {
         title: <Translation>{(t) => t("picking.title")}</Translation>,
         value: "PICKING",
@@ -72,24 +47,6 @@ const cardOptions = [
         avatar: images.pd,
         rightIcon: images.pdbg
     },
-    // {
-    //     title: <Translation>{(t) => t("library.title")}</Translation>,
-    //     value: "ONE_STEP_RELOCATION",
-    //     description: (
-    //         <Translation>{(t) => t("library.cardDescription")}</Translation>
-    //     ),
-    //     avatar: images.lk,
-    //     rightIcon: images.lkbg
-    // }
-    // {
-    //     title: <Translation>{(t) => t("library.title")}</Translation>,
-    //     value: "ONE_STEP_RELOCATION",
-    //     description: (
-    //         <Translation>{(t) => t("library.cardDescription")}</Translation>
-    //     ),
-    //     avatar: images.lk,
-    //     rightIcon: images.lkbg
-    // }
 ]
 
 const Station = (props: any) => {
@@ -97,11 +54,6 @@ const Station = (props: any) => {
     const { workStationStatus, operationType, workStationMode } =
         workStationEvent || {}
     const { onCustomActionDispatch } = useContext(APIContext)
-
-    // useEffect(() => {
-    //     const path = `${WORK_STATION_PATH_PREFIX}/inventory`
-    //     history.replace(path)
-    // }, [])
 
     useEffect(() => {
         const path =
