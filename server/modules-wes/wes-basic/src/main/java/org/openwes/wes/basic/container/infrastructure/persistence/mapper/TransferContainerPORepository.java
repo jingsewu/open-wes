@@ -15,5 +15,5 @@ public interface TransferContainerPORepository extends JpaRepository<TransferCon
 
     List<TransferContainerPO> findAllByTransferContainerStatusAndUpdateTimeAfter(TransferContainerStatusEnum status, long updateTime);
 
-    boolean existByContainerSpecCodeAndWarehouseCode(String containerSpecCode, String warehouseCode);
+    boolean existsByContainerSpecCodeAndWarehouseCode(String containerSpecCode, String warehouseCode);
 }

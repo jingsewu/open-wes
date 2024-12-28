@@ -61,7 +61,7 @@ public class PutWallRepositoryImpl implements PutWallRepository {
 
     @Override
     public boolean existByContainerSpecCode(String containerSpecCode, String warehouseCode) {
-        return putWallPORepository.existByContainerSpecCodeAndWarehouseCode(containerSpecCode, warehouseCode);
+        return putWallPORepository.existsByContainerSpecCodeAndWarehouseCode(containerSpecCode, warehouseCode);
     }
 
     private List<PutWall> transferToPutWall(List<PutWallPO> putWallPOS) {

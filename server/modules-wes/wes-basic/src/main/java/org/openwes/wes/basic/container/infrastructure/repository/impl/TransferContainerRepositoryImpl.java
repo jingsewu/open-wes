@@ -52,7 +52,7 @@ public class TransferContainerRepositoryImpl implements TransferContainerReposit
 
     @Override
     public boolean existByContainerSpecCode(String containerSpecCode, String warehouseCode) {
-        return transferContainerPORepository.existByContainerSpecCodeAndWarehouseCode(containerSpecCode, warehouseCode);
+        return transferContainerPORepository.existsByContainerSpecCodeAndWarehouseCode(containerSpecCode, warehouseCode);
     }
 
     @Override

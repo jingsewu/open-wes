@@ -12,5 +12,5 @@ public interface PutWallPORepository extends JpaRepository<PutWallPO, Long> {
 
     List<PutWallPO> findAllByWorkStationId(Long workStationId);
 
-    boolean existByContainerSpecCodeAndWarehouseCode(String containerSpecCode, String warehouseCode);
+    boolean existsByContainerSpecCodeAndWarehouseCode(String containerSpecCode, String warehouseCode);
 }
