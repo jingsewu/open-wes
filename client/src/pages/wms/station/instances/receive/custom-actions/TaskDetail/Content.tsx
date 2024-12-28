@@ -14,29 +14,29 @@ const columns = [
     },
     {
         name: "orderNo",
-        dbField: "a.orderNo",
+        dbField: "a.order_no",
         label: "收货单号",
         searchable: true
     },
     {
         name: "identifyNo",
-        dbField: "a.identifyNo",
+        dbField: "a.identify_no",
         label: "容器",
         searchable: true
     },
     {
         name: "targetContainerSpecCode",
-        dbField: "ad.targetContainerSpecCode",
+        dbField: "ad.target_container_spec_code",
         label: "容器规格"
     },
     {
         name: "targetContainerSlotCode",
-        dbField: "ad.targetContainerSlotCode",
+        dbField: "ad.target_container_slot_code",
         label: "容器格口"
     },
     {
         name: "ownerCode",
-        dbField: "ad.ownerCode",
+        dbField: "ad.owner_code",
         label: "货主",
         searchable: true
     },
@@ -55,12 +55,12 @@ const columns = [
     },
     {
         name: "qtyAccepted",
-        dbField: "ad.qtyAccepted",
+        dbField: "ad.qty_accepted",
         label: "收货数量"
     },
     {
         name: "acceptOrderStatus",
-        dbField: "a.acceptOrderStatus",
+        dbField: "a.accept_order_status",
         label: "收货单状态"
     }
 ]
