@@ -9,9 +9,9 @@ const SelectStation = ({ isConfigSationId, setIsConfigStationId }: any) => {
     const [stationId, setStationId] = useState("")
     const [options, setOptions] = useState<any[]>([])
 
-    useEffect(() => {
-        getStationId()
-    }, [])
+    // useEffect(() => {
+    //     getStationId()
+    // }, [])
 
     useEffect(() => {
         if (isConfigSationId) return

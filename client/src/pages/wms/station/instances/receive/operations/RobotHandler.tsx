@@ -1,11 +1,11 @@
-import type { WorkStationEvent } from "@/pages/wms/station/event-loop/types"
-import type { replenishProps } from "../type"
-import type { OperationProps } from "@/pages/wms/station/instances/types"
-import React, { useEffect, useState, useRef } from "react"
-import { Row, Col, Input, Divider, Button, InputNumber, Radio } from "antd"
-import { MinusOutlined, PlusOutlined } from "@ant-design/icons"
-import type { RadioChangeEvent } from "antd"
-import type { InputRef } from "antd"
+import type {WorkStationEvent} from "@/pages/wms/station/event-loop/types"
+import type {replenishProps} from "../type"
+import type {OperationProps} from "@/pages/wms/station/instances/types"
+import React, {useEffect, useState, useRef} from "react"
+import {Row, Col, Input, Divider, Button, InputNumber, Radio, message} from "antd"
+import {MinusOutlined, PlusOutlined} from "@ant-design/icons"
+import type {RadioChangeEvent} from "antd"
+import type {InputRef} from "antd"
 import request from "@/utils/requestInterceptor"
 import ShelfModel from "@/pages/wms/station/widgets/common/Shelf/ShelfModel"
 
@@ -16,10 +16,12 @@ export interface ContainerHandlerConfirmProps {
     operationId: string
     operationConfirmInfo: OperationConfirmInfo
 }
+
 interface OperationConfirmInfo {
     subContainerCode?: string
     containerCode?: string
 }
+
 export interface RobotHandlerProps {
     robotArea: any
     operationType: string
@@ -55,7 +57,7 @@ export const valueFilter = (
 }
 
 const RobotHandler = (props: any) => {
-    const { value, onConfirm, focusValue, changeFocusValue, onScanSubmit } =
+    const {value, onConfirm, focusValue, changeFocusValue, onScanSubmit} =
         props
     const containerRef = useRef<InputRef>(null)
     const countRef = useRef<any>(null)
@@ -171,22 +173,26 @@ const RobotHandler = (props: any) => {
             url: `/wms/basic/container/get?containerCode=${containerCode}&warehouseCode=${warehouseCode}`
         }).then((res: any) => {
             console.log("containerCode", res)
-            const data = res.data
-            setContainerSpec({
-                containerSpecCode: data.containerSpecCode,
-                containerId: data.id
-            })
-            const slotSpec = specOptions.find(
-                (item) => item.value === data.containerSpecCode
-            )?.containerSlotSpecs
-            setContainerSlotSpec(JSON.parse(slotSpec))
-            changeFocusValue("count")
+            if (res.data?.containerCode) {
+                const data = res.data
+                setContainerSpec({
+                    containerSpecCode: data.containerSpecCode,
+                    containerId: data.id
+                })
+                const slotSpec = specOptions.find(
+                    (item) => item.value === data.containerSpecCode
+                )?.containerSlotSpecs
+                setContainerSlotSpec(JSON.parse(slotSpec))
+                changeFocusValue("count")
+            } else {
+                message.error("Container is not exits")
+            }
         })
     }
 
     const handleOK = () => {
         console.log("activeSlotrobot", activeSlot)
-        onConfirm({ ...containerSpec, containerCode, activeSlot, inputValue })
+        onConfirm({...containerSpec, containerCode, activeSlot, inputValue})
     }
 
     const onContainerFull = () => {
@@ -219,7 +225,7 @@ const RobotHandler = (props: any) => {
                     onPressEnter={onPressEnter}
                 />
             </div>
-            <Divider style={{ margin: "12px 0" }} />
+            <Divider style={{margin: "12px 0"}}/>
             <div className="px-10">
                 <Row>
                     <Col span={6}>
@@ -230,11 +236,11 @@ const RobotHandler = (props: any) => {
                     <Col>
                         <div className="border border-solid	">
                             <Button
-                                icon={<MinusOutlined />}
+                                icon={<MinusOutlined/>}
                                 type="text"
                                 onClick={handleMinus}
                                 // size={size}
-                                style={{ borderRight: "1px solid #ccc" }}
+                                style={{borderRight: "1px solid #ccc"}}
                             />
                             <InputNumber
                                 min={0}
@@ -246,11 +252,11 @@ const RobotHandler = (props: any) => {
                                 onChange={onChange}
                             />
                             <Button
-                                icon={<PlusOutlined />}
+                                icon={<PlusOutlined/>}
                                 type="text"
                                 onClick={handlePlus}
                                 // size={size}
-                                style={{ borderLeft: "1px solid #ccc" }}
+                                style={{borderLeft: "1px solid #ccc"}}
                             />
                         </div>
                     </Col>
@@ -277,7 +283,7 @@ const RobotHandler = (props: any) => {
                         </div>
                         <div
                             className="d-flex flex-col"
-                            style={{ height: 160 }}
+                            style={{height: 160}}
                         >
                             <ShelfModel
                                 containerSlotSpecs={containerSlotSpec}
@@ -298,7 +304,7 @@ const RobotHandler = (props: any) => {
                         </div>
                     </Col>
                     <Col span={14}>
-                        <Input value={activeSlot[0]} />
+                        <Input value={activeSlot[0]}/>
                     </Col>
                 </Row>
                 <Row justify="end" className="mt-2">
