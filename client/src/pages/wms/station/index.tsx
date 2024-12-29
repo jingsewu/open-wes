@@ -53,7 +53,7 @@ const WorkStation = (props: WorkStationProps) => {
 
     const InstanceLayout = layout
 
-    const [isConfigSationId, setIsConfigStationId] = useState(
+    const [isConfigStationId, setIsConfigStationId] = useState(
         !!localStorage.getItem("stationId")
     )
 
@@ -73,7 +73,7 @@ const WorkStation = (props: WorkStationProps) => {
         }
     }
 
-    return isConfigSationId ? (
+    return isConfigStationId ? (
         <Provider
             stationCode={code}
             type={type}
@@ -99,7 +99,7 @@ const WorkStation = (props: WorkStationProps) => {
         </Provider>
     ) : (
         <SelectStation
-            isConfigSationId={isConfigSationId}
+            isConfigSationId={isConfigStationId}
             setIsConfigStationId={setIsConfigStationId}
         />
         // <div className="w-full h-full d-flex flex-col justify-center items-center">

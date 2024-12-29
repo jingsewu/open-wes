@@ -43,7 +43,7 @@ export default function request(config: AxiosRequestConfig) {
                     ...res,
                     data: {}
                 })
-            } else if (!res.data.status) {
+            } else if (!res.data.status || res?.data?.status === "SAT010001") {
                 resolve(res)
             } else {
                 toast.error(res.data.description, { title: res.data.msg })
