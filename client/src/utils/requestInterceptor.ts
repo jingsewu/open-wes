@@ -47,7 +47,7 @@ export default function request(config: AxiosRequestConfig) {
                 resolve(res)
             } else {
                 toast.error(res.data.description, { title: res.data.msg })
-                // resolve(res)
+                resolve(res)
             }
         }
 

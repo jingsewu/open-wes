@@ -86,25 +86,25 @@ const form = [
             {
                 name: "required",
                 label: "table.required",
-                type: "select",
+                type: "switch",
                 options: true_false_options
             },
             {
                 name: "keyAttribute",
                 label: "table.keyAttributes",
-                type: "select",
+                type: "switch",
                 options: true_false_options
             },
             {
                 name: "exactMatch",
                 label: "table.preciseMatch",
-                type: "select",
+                type: "switch",
                 options: true_false_options
             },
             {
                 name: "enable",
                 label: "table.enable",
-                type: "select",
+                type: "switch",
                 options: enable_options
             }
         ]
@@ -137,11 +137,6 @@ const columns = [
     {
         name: "version",
         label: "Version",
-        hidden: true
-    },
-    {
-        name: "warehouseCode",
-        label: "table.warehouseCode",
         hidden: true
     },
     {
@@ -178,7 +173,7 @@ const columns = [
         name: "enable",
         label: "table.enable",
         type: "mapping",
-        source: "${dictionary.EnableStatus}"
+        map: enable_options
     },
     ...create_update_columns
 ]

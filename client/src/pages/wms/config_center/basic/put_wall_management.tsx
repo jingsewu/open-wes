@@ -3,7 +3,7 @@ import {
     put_wall_spec,
     work_station
 } from "@/pages/wms/constants/select_search_api_contant"
-import { create_update_columns } from "@/utils/commonContants"
+import {create_update_columns, enable_options} from "@/utils/commonContants"
 import {
     api_put_wall_add,
     api_put_wall_delete,
@@ -230,7 +230,7 @@ const columns = [
         name: "enable",
         label: "table.enable",
         type: "mapping",
-        source: "${dictionary.EnableStatus}"
+        map: enable_options
     },
     ...create_update_columns
 ]
