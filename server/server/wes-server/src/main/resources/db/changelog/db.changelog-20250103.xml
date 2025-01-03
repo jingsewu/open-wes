@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="w_outbound_plan_order_change_column_currier_code" author="Kinser">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="w_outbound_plan_order"/>
+            </and>
+            <and>
+                <columnExists tableName="w_outbound_plan_order" columnName="currier_code"/>
+            </and>
+        </preConditions>
+        <comment>w_outbound_plan_order修改字段currier_code</comment>
+        <sql>
+            ALTER TABLE w_outbound_plan_order CHANGE currier_code carrier_code varchar (64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '承运商';
+        </sql>
+    </changeSet>
+
+    <changeSet id="p_print_rule_change_column_currier_codes" author="Kinser">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="p_print_rule"/>
+            </and>
+            <and>
+                <columnExists tableName="p_print_rule" columnName="currier_codes"/>
+            </and>
+        </preConditions>
+        <comment>p_print_rule修改字段currier_code</comment>
+        <sql>
+            ALTER TABLE p_print_rule CHANGE currier_codes carrier_codes json DEFAULT NULL COMMENT '承运商编码';
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

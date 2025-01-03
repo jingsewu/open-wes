@@ -30,7 +30,7 @@ public class CreateOutboundPlanOrderDTO implements Serializable {
     private String customerOrderType;
 
     @Schema(title = "承运人编码")
-    private String currierCode;
+    private String carrierCode;
 
     @Schema(title = "运单号")
     private String waybillNo;

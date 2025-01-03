@@ -19,7 +19,7 @@ public class PrintRule {
 
     private List<String> salesPlatforms;
 
-    private List<String> currierCodes;
+    private List<String> carrierCodes;
 
     private List<String> inboundOrderTypes;
 

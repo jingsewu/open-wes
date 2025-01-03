@@ -20,7 +20,7 @@ const schema = {
                                     body: [
                                         {
                                             type: 'tpl',
-                                            tpl: '<h3>运营效率</h3><p>85%</p><p>环比上升 5%</p>'
+                                            tpl: '<h3>仓库空间利用率</h3><p>85%</p><p>环比上升 5%</p>'
                                         }
                                     ]
                                 },
@@ -30,7 +30,17 @@ const schema = {
                                     body: [
                                         {
                                             type: 'tpl',
-                                            tpl: '<h3>库存准确率</h3><p>98%</p><p>同比下降 1%</p>'
+                                            tpl: '<h3>库存周转率(日)</h3><p>2%</p><p>环比上升 0.05%</p>'
+                                        }
+                                    ]
+                                },
+                                {
+                                    type: 'card',
+                                    className: 'kpi-card',
+                                    body: [
+                                        {
+                                            type: 'tpl',
+                                            tpl: '<h3>订单准确率</h3><p>95%</p><p>环比上升 5%</p>'
                                         }
                                     ]
                                 },
@@ -41,6 +51,16 @@ const schema = {
                                         {
                                             type: 'tpl',
                                             tpl: '<h3>平均订单处理时长</h3><p>12分钟</p><p>环比下降 2分钟</p>'
+                                        }
+                                    ]
+                                },
+                                {
+                                    type: 'card',
+                                    className: 'kpi-card',
+                                    body: [
+                                        {
+                                            type: 'tpl',
+                                            tpl: '<h3>人员劳动生产率</h3><p>98</p><p>同比下降 1%</p>'
                                         }
                                     ]
                                 }
@@ -66,7 +86,7 @@ const schema = {
                                 yAxis: {type: 'value'},
                                 series: [
                                     {
-                                        data: [120, 200, 150],
+                                        data: [120, 1000, 5000],
                                         type: 'bar',
                                         itemStyle: {color: '#4CAF50'},
                                         label: {show: true, position: 'top'}
@@ -86,10 +106,11 @@ const schema = {
                                         type: 'pie',
                                         radius: '50%',
                                         data: [
-                                            {value: 500, name: '已接收未分配'},
-                                            {value: 300, name: '已分配待入库'},
-                                            {value: 200, name: '入库中'},
-                                            {value: 100, name: '已完成'}
+                                            {value: 50, name: '新单据'},
+                                            {value: 20, name: '收货中'},
+                                            {value: 40, name: '收货完成'},
+                                            {value: 4, name: '取消'},
+                                            {value: 6, name: '关闭'}
                                         ]
                                     }
                                 ]
@@ -110,7 +131,7 @@ const schema = {
                                 yAxis: {type: 'value'},
                                 series: [
                                     {
-                                        data: [150, 180, 220],
+                                        data: [1500, 12000, 60000],
                                         type: 'bar',
                                         itemStyle: {color: '#FF9800'},
                                         label: {show: true, position: 'top'}
@@ -130,10 +151,13 @@ const schema = {
                                         type: 'pie',
                                         radius: '50%',
                                         data: [
-                                            {value: 600, name: '已接收未分配'},
-                                            {value: 400, name: '已分配待拣货'},
-                                            {value: 300, name: '拣货中'},
-                                            {value: 200, name: '已完成'}
+                                            {value: 600, name: '新单据'},
+                                            {value: 10, name: '缺货等待'},
+                                            {value: 300, name: '分配完成(库区)'},
+                                            {value: 200, name: '派单完成'},
+                                            {value: 200, name: '拣货中'},
+                                            {value: 190, name: '已完成'},
+                                            {value: 0, name: '已取消'}
                                         ]
                                     }
                                 ]
@@ -174,9 +198,10 @@ const schema = {
                                         type: 'pie',
                                         radius: '50%',
                                         data: [
-                                            {value: 50, name: '待盘点'},
-                                            {value: 30, name: '盘点中'},
-                                            {value: 20, name: '已完成'}
+                                            {value: 50, name: '新单据'},
+                                            {value: 20, name: '盘点中'},
+                                            {value: 10, name: '完成'},
+                                            {value: 0, name: '取消'}
                                         ]
                                     }
                                 ]
@@ -202,7 +227,7 @@ const schema = {
                                     {
                                         name: '库存总量',
                                         type: 'line',
-                                        data: [1000, 1500, 800]
+                                        data: [10000, 15000, 8000]
                                     },
                                     {
                                         name: '周转率',
@@ -254,8 +279,8 @@ const schema = {
                                 {name: 'completionRate', label: '任务完成率'}
                             ],
                             source: [
-                                {employee: '001', assignedTasks: 10, completedTasks: 8, completionRate: '80%'},
-                                {employee: '002', assignedTasks: 15, completedTasks: 12, completionRate: '75%'}
+                                {employee: '001', assignedTasks: 100, completedTasks: 80, completionRate: '80%'},
+                                {employee: '002', assignedTasks: 150, completedTasks: 120, completionRate: '75%'}
                             ]
                         },
                         {

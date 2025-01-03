@@ -104,7 +104,7 @@ public class OperationTaskSubscriber {
                     detail.setWaveNo(outboundPlanOrderDTO.getWaveNo());
                     detail.setCustomerOrderNo(outboundPlanOrderDTO.getCustomerOrderNo());
                     detail.setCustomerOrderType(outboundPlanOrderDTO.getCustomerOrderType());
-                    detail.setCurrierCode(outboundPlanOrderDTO.getCurrierCode());
+                    detail.setCarrierCode(outboundPlanOrderDTO.getCarrierCode());
                     detail.setWaybillNo(outboundPlanOrderDTO.getWaybillNo());
                     detail.setOrigPlatformCode(outboundPlanOrderDTO.getOrigPlatformCode());
                     detail.setExpiredTime(outboundPlanOrderDTO.getExpiredTime());

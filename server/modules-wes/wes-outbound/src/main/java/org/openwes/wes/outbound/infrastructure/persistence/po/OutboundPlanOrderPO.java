@@ -49,7 +49,7 @@ public class OutboundPlanOrderPO extends AuditUserPO {
     private String customerOrderType = "";
 
     @Column(nullable = false, columnDefinition = "varchar(64) comment '承运商'")
-    private String currierCode = "";
+    private String carrierCode = "";
     @Column(nullable = false, columnDefinition = "varchar(64) comment '运单号'")
     private String waybillNo = "";
     @Column(nullable = false, columnDefinition = "varchar(64) comment '来源平台'")

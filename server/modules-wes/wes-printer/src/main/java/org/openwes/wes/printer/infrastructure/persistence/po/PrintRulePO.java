@@ -48,7 +48,7 @@ public class PrintRulePO extends UpdateUserPO {
 
     @Column(columnDefinition = "json comment '承运商编码'")
     @JdbcTypeCode(SqlTypes.JSON)
-    private List<String> currierCodes;
+    private List<String> carrierCodes;
 
     @Column(columnDefinition = "json comment '入库单类型'")
     @JdbcTypeCode(SqlTypes.JSON)

@@ -31,7 +31,7 @@ public class OutboundPlanOrder {
     private String waveNo;
     private String customerOrderNo;
     private String customerOrderType;
-    private String currierCode;
+    private String carrierCode;
     private String waybillNo;
     private String origPlatformCode;
 
