@@ -1,14 +1,14 @@
 package org.openwes.wes.inbound.domain.entity;
 
 import com.google.common.collect.Lists;
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.openwes.common.utils.exception.WmsException;
 import org.openwes.common.utils.id.OrderNoGenerator;
 import org.openwes.wes.api.inbound.constants.AcceptMethodEnum;
 import org.openwes.wes.api.inbound.constants.AcceptOrderStatusEnum;
 import org.openwes.wes.api.inbound.constants.AcceptTypeEnum;
-import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
@@ -87,10 +87,15 @@ public class AcceptOrder {
             throw WmsException.throwWmsException(ACCEPT_ORDER_HAD_COMPLETED, this.orderNo);
         }
 
-        calculateTotal();
-
         this.details.stream().filter(v -> acceptOrderDetailId == null || v.getId().equals(acceptOrderDetailId))
                 .forEach(AcceptOrderDetail::cancel);
+
+        calculateTotal();
+
+        // cancel all details, then order complete
+        if (this.details.stream().allMatch(v -> v.getQtyAccepted() == 0)) {
+            this.acceptOrderStatus = AcceptOrderStatusEnum.COMPLETE;
+        }
     }
 
     private void calculateTotal() {

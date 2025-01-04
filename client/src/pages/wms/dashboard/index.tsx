@@ -178,7 +178,7 @@ const schema = {
                                 yAxis: {type: 'value'},
                                 series: [
                                     {
-                                        data: [80, 100, 90],
+                                        data: [80, 600, 2500],
                                         type: 'bar',
                                         itemStyle: {color: '#2196F3'},
                                         label: {show: true, position: 'top'}
@@ -291,8 +291,8 @@ const schema = {
                                     {
                                         type: 'treemap',
                                         data: [
-                                            {name: '设备A', value: 1, status: '正常'},
-                                            {name: '设备B', value: 1, status: '待机'},
+                                            {name: '设备A', value: 3, status: '正常'},
+                                            {name: '设备B', value: 2, status: '待机'},
                                             {name: '设备C', value: 1, status: '故障'}
                                         ]
                                     }

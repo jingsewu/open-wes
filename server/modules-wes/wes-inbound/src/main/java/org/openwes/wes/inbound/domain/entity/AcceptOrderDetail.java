@@ -52,4 +52,5 @@ public class AcceptOrderDetail implements ModificationAware {
             this.modified = true;
         }
     }
+
 }
