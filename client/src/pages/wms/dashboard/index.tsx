@@ -42,6 +42,7 @@ const schema = {
                     body: {
                         type: "cards",
                         source: "$items",
+                        itemClassName: "flex-1 mx-2",
                         card: {
                             body: [
                                 {
