@@ -28,14 +28,8 @@ public class LoginLog {
     @Column(nullable = false, columnDefinition = "varchar(128) comment '账号'")
     private String account;
 
-    @Column(nullable = false, columnDefinition = "varchar(64) comment '登录时间'")
-    private String gmtLoginTime;
-
     @Column(nullable = false, columnDefinition = "bigint comment '登录的时间戳'")
-    private Long gmtLoginTimestamp;
-
-    @Column(nullable = false, columnDefinition = "varchar(64) comment '登录ip'")
-    private String loginIp;
+    private Long loginTime;
 
     @Column(nullable = false, columnDefinition = "int comment '登录结果(1成功, 2失败)'")
     private Integer loginResult;

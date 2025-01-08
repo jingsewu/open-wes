@@ -19,7 +19,7 @@ import java.util.List;
 @NoArgsConstructor
 public class WorkStationConfigDTO implements Serializable {
 
-    private Long id;
+    private Long configId;
     private Long workStationId;
 
     private InboundStationConfigDTO inboundStationConfig;

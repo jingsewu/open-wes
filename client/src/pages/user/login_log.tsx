@@ -11,9 +11,9 @@ const columns = [
         searchable: true
     },
     {
-        name: "gmtLoginTime",
+        name: "gmtLoginTimestamp",
         label: "userCenter.loginLogs.table.loginTime",
-        tpl: "${gmtLoginTime/1000|date:YYYY-MM-DD HH\\:mm\\:ss}",
+        tpl: "${gmtLoginTimestamp/1000|date:YYYY-MM-DD HH\\:mm\\:ss}",
         searchable: {
             type: "input-date-range",
             valueFormat: "x"

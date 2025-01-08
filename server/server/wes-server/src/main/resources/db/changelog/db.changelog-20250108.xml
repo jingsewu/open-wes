@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="u_login_log_delete_column_gmt_login_time" author="Kinser">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="u_login_log"/>
+            </and>
+            <and>
+                <columnExists tableName="u_login_log" columnName="gmt_login_time"/>
+            </and>
+        </preConditions>
+        <comment>u_login_log_delete_column_gmt_login_time</comment>
+        <sql>
+            ALTER TABLE u_login_log drop gmt_login_time;
+        </sql>
+    </changeSet>
+
+    <changeSet id="u_login_log_delete_column_login_ip" author="Kinser">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="u_login_log"/>
+            </and>
+            <and>
+                <columnExists tableName="u_login_log" columnName="login_ip"/>
+            </and>
+        </preConditions>
+        <comment>u_login_log_delete_column_login_ip</comment>
+        <sql>
+            ALTER TABLE u_login_log drop login_ip;
+        </sql>
+    </changeSet>
+
+    <changeSet id="u_login_log_change_column_gmt_login_time_stamp" author="Kinser">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="u_login_log"/>
+            </and>
+            <and>
+                <columnExists tableName="u_login_log" columnName="gmt_login_timestamp"/>
+            </and>
+        </preConditions>
+        <comment>u_login_log_change_column_gmt_login_time_stamp</comment>
+        <sql>
+            ALTER TABLE u_login_log CHANGE gmt_login_timestamp loginTime bigint(20) NOT NULL COMMENT '登录的时间戳';
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

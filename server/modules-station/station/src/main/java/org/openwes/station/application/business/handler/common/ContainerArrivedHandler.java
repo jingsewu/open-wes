@@ -1,5 +1,9 @@
 package org.openwes.station.application.business.handler.common;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.openwes.station.api.constants.ApiCodeEnum;
 import org.openwes.station.application.business.handler.IBusinessHandler;
 import org.openwes.station.application.business.handler.common.extension.ExtensionFactory;
@@ -12,10 +16,6 @@ import org.openwes.station.infrastructure.remote.ContainerService;
 import org.openwes.station.infrastructure.remote.EquipmentService;
 import org.openwes.wes.api.basic.dto.ContainerSpecDTO;
 import org.openwes.wes.api.ems.proxy.dto.ContainerArrivedEvent;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -65,6 +65,7 @@ public class ContainerArrivedHandler<T extends WorkStationCache> implements IBus
 
         // ignore repeat report
         if (CollectionUtils.isEmpty(arrivedContainers)) {
+            log.warn("work station: {} container arrived repeated report.", workStationId);
             return;
         }
 

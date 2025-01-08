@@ -1,5 +1,6 @@
 import schema2component from "@/utils/schema2component"
 import { api_crud_search } from "@/pages/constantApi"
+import {api_api_log_get} from "@/pages/api_platform/constants/api_constant";
 
 const form = [
     {
@@ -139,7 +140,7 @@ const schema = {
                                 closeOnOutside: true,
                                 body: {
                                     type: "form",
-                                    initApi: "/wms/api-log-management/${id}",
+                                    initApi: api_api_log_get,
                                     body: form
                                 }
                             }
