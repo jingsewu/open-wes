@@ -6,11 +6,14 @@ import { inject, observer } from "mobx-react"
 import request from "@/utils/requestInterceptor"
 import RouterGuard from "@/routes/RouterGuard"
 import TabsLayout from "./components/TabsLayout"
+import { Affix, Button, Modal } from "antd"
 import type { MenuProps } from "antd"
 import { languageList } from "@/pages/components/Language"
 import LayoutAside from "@/components/LayoutAside"
 import LayoutHeader from "@/components/LayoutHeader"
 import { warehouseSelectApi } from "./constantApi"
+import RobotSvg from "@/icon/fontIcons/robot.svg" // path to your '*.svg' file.
+import Chatbot from "@/components/Chatbot"
 
 export interface NavChildren {
     path: string
@@ -36,6 +39,7 @@ export interface State {
     navigations: Navigations[]
     iframeShow: number
     iframeUrl: string
+    isModalOpen: boolean
 }
 
 export interface AdminProps extends RouteComponentProps<any> {
@@ -54,7 +58,8 @@ export default class Admin extends React.Component<AdminProps, State> {
         hasLoadMenu: false,
         navigations: [],
         iframeShow: 0,
-        iframeUrl: ""
+        iframeUrl: "",
+        isModalOpen: false
     }
 
     onApplicationChange = (value: any) => {
@@ -233,6 +238,20 @@ export default class Admin extends React.Component<AdminProps, State> {
         await window?.frames[0].postMessage(locale, postUrl)
     }
 
+    handleClick = () => {
+        this.setState({
+            ...this.state,
+            isModalOpen: true
+        })
+    }
+
+    handleCancel = () => {
+        this.setState({
+            ...this.state,
+            isModalOpen: false
+        })
+    }
+
     render() {
         const store = this.props.store
         let pathname = this.props.location.pathname
@@ -245,51 +264,78 @@ export default class Admin extends React.Component<AdminProps, State> {
             )
         } else {
             return (
-                <Layout
-                    aside={
-                        <LayoutAside
+                <>
+                    <Layout
+                        aside={
+                            <LayoutAside
+                                navigations={this.state.navigations}
+                                iframeShow={this.state.iframeShow}
+                                iframeMenuClick={this.iframeMenuClick}
+                            />
+                        }
+                        header={
+                            <LayoutHeader
+                                selectedApp={this.state.selectedApp}
+                                applications={this.state.applications}
+                                selectedWarehouse={this.state.selectedWarehouse}
+                                warehouses={this.state.warehouses}
+                                onApplicationChange={this.onApplicationChange}
+                                onWarehouseChange={this.onWarehouseChange}
+                                onLanguageChange={this.onLanguageChange}
+                            />
+                        }
+                        folded={store.asideFolded}
+                        offScreen={store.offScreen}
+                    >
+                        <TabsLayout
+                            selectedApp={this.state.selectedApp}
                             navigations={this.state.navigations}
                             iframeShow={this.state.iframeShow}
-                            iframeMenuClick={this.iframeMenuClick}
+                            onIframeTabChange={this.onIframeTabChange}
+                            {...this.props}
                         />
-                    }
-                    header={
-                        <LayoutHeader
-                            selectedApp={this.state.selectedApp}
-                            applications={this.state.applications}
-                            selectedWarehouse={this.state.selectedWarehouse}
-                            warehouses={this.state.warehouses}
-                            onApplicationChange={this.onApplicationChange}
-                            onWarehouseChange={this.onWarehouseChange}
-                            onLanguageChange={this.onLanguageChange}
-                        />
-                    }
-                    folded={store.asideFolded}
-                    offScreen={store.offScreen}
-                >
-                    <TabsLayout
-                        selectedApp={this.state.selectedApp}
-                        navigations={this.state.navigations}
-                        iframeShow={this.state.iframeShow}
-                        onIframeTabChange={this.onIframeTabChange}
-                        {...this.props}
-                    />
-                    {this.state.iframeShow ? (
-                        <iframe
-                            id="microFrontIframe"
-                            src={this.state.iframeUrl}
-                            height="100%"
-                            onLoad={this.iFrameLoadTest}
-                            allowFullScreen={true}
-                            scrolling="no"
-                        />
-                    ) : (
-                        <Switch>
-                            <RouterGuard />
-                            <Redirect to={`/404`} />
-                        </Switch>
-                    )}
-                </Layout>
+                        {this.state.iframeShow ? (
+                            <iframe
+                                id="microFrontIframe"
+                                src={this.state.iframeUrl}
+                                height="100%"
+                                onLoad={this.iFrameLoadTest}
+                                allowFullScreen={true}
+                                scrolling="no"
+                            />
+                        ) : (
+                            <Switch>
+                                <RouterGuard />
+                                <Redirect to={`/404`} />
+                            </Switch>
+                        )}
+                    </Layout>
+                    <Affix
+                        // offsetBottom={200}
+                        style={{ position: "fixed", right: 0, top: "50%" }}
+                    >
+                        <Button
+                            type="text"
+                            shape="circle"
+                            icon={<RobotSvg style={{ fontSize: 24 }} />}
+                            onClick={this.handleClick}
+                        ></Button>
+                    </Affix>
+                    <Modal
+                        title="Chat AI"
+                        footer={null}
+                        maskClosable={true}
+                        open={this.state.isModalOpen}
+                        onCancel={this.handleCancel}
+                        width={1000}
+                        bodyStyle={{
+                            padding: "0 0 24px 0",
+                            backgroundColor: "#fff"
+                        }}
+                    >
+                        <Chatbot />
+                    </Modal>
+                </>
             )
         }
     }
