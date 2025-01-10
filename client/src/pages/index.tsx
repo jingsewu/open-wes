@@ -14,6 +14,9 @@ import LayoutHeader from "@/components/LayoutHeader"
 import { warehouseSelectApi } from "./constantApi"
 import RobotSvg from "@/icon/fontIcons/robot.svg" // path to your '*.svg' file.
 import Chatbot from "@/components/Chatbot"
+import style from "./index.module.scss"
+import classNames from "classnames/bind"
+const cx = classNames.bind(style)
 
 export interface NavChildren {
     path: string
@@ -310,14 +313,11 @@ export default class Admin extends React.Component<AdminProps, State> {
                             </Switch>
                         )}
                     </Layout>
-                    <Affix
-                        // offsetBottom={200}
-                        style={{ position: "fixed", right: 0, top: "50%" }}
-                    >
+                    <Affix className={cx("fixButton")}>
                         <Button
                             type="text"
                             shape="circle"
-                            icon={<RobotSvg style={{ fontSize: 24 }} />}
+                            icon={<RobotSvg style={{ fontSize: 60 }} />}
                             onClick={this.handleClick}
                         ></Button>
                     </Affix>

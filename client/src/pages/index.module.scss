@@ -1,0 +1,9 @@
+.fixButton {
+    position: fixed;
+    right: 0;
+    bottom: 5%;
+
+    &:hover {
+        right: 28px;
+    }
+}
