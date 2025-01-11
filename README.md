@@ -1,5 +1,7 @@
 # Open Warehouse Execution System (WES)
 
+[English](README.md) | [中文](README_CN.md)
+
 **Open WES** is a customizable, open-source Warehouse Execution System designed to streamline warehouse operations. It
 integrates seamlessly with various automation technologies, providing efficient workflow management, task scheduling,
 and real-time data tracking.
