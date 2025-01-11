@@ -324,7 +324,7 @@ const schema = {
                                 { name: "safeStock", label: "安全库存范围" },
                                 { name: "location", label: "所在仓库位置" }
                             ],
-                            source: [
+                            data: [
                                 {
                                     product: "商品A",
                                     currentStock: 5,
@@ -362,15 +362,15 @@ const schema = {
                                 },
                                 { name: "completionRate", label: "任务完成率" }
                             ],
-                            source: [
+                            data: [
                                 {
-                                    employee: "001",
+                                    employee: "张三",
                                     assignedTasks: 100,
                                     completedTasks: 80,
                                     completionRate: "80%"
                                 },
                                 {
-                                    employee: "002",
+                                    employee: "李四",
                                     assignedTasks: 150,
                                     completedTasks: 120,
                                     completionRate: "75%"

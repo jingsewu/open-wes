@@ -317,9 +317,10 @@ export default class Admin extends React.Component<AdminProps, State> {
                         <Button
                             type="text"
                             shape="circle"
-                            icon={<RobotSvg style={{ fontSize: 60 }} />}
+                            icon={<RobotSvg style={{fontSize: 60}}/>}
                             onClick={this.handleClick}
                         ></Button>
+                        <span className="tooltip">点击与AI聊天</span>
                     </Affix>
                     <Modal
                         title="Chat AI"
