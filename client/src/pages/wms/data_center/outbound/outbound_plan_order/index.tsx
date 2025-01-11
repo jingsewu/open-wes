@@ -96,7 +96,7 @@ const columns = [
         label: "table.sourcePlatform"
     },
     {
-        name: "currierCode",
+        name: "carrierCode",
         label: "table.carriers"
     },
     {

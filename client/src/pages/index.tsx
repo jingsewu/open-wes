@@ -323,7 +323,7 @@ export default class Admin extends React.Component<AdminProps, State> {
                         <span className="tooltip">点击与AI聊天</span>
                     </Affix>
                     <Modal
-                        title="Chat AI"
+                        title="AI 助手"
                         footer={null}
                         maskClosable={true}
                         open={this.state.isModalOpen}
