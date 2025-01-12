@@ -21,7 +21,9 @@ const columns = [
     },
     {
         name: "loginResult",
-        label: "userCenter.loginLogs.table.loginResults"
+        label: "userCenter.loginLogs.table.loginResults",
+        type: "mapping",
+        map: success_no_fail
     },
     {
         name: "loginAddress",
