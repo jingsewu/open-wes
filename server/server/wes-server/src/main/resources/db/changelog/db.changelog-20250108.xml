@@ -46,7 +46,7 @@
         </preConditions>
         <comment>u_login_log_change_column_gmt_login_time_stamp</comment>
         <sql>
-            ALTER TABLE u_login_log CHANGE gmt_login_timestamp loginTime bigint(20) NOT NULL COMMENT '登录的时间戳';
+            ALTER TABLE u_login_log CHANGE gmt_login_timestamp login_time bigint(20) NOT NULL COMMENT '登录的时间戳';
         </sql>
     </changeSet>
 
