@@ -102,10 +102,6 @@ const ChangePasswordForm: React.FC<ChangePasswordFormProps> = ({
                             required: true,
                             message: "Please confirm your password!"
                         },
-                        // {
-                        //     type: "string",
-                        //     min: 6
-                        // },
                         {
                             validator: (rule, value, callback) => {
                                 if (

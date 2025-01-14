@@ -213,7 +213,7 @@ const schema = {
             footerToolbar: ["switch-per-page", "statistics", "pagination"],
             bulkActions: [
                 {
-                    label: "执行空箱出库单",
+                    label: "button.emptyContainerOutbound.execute",
                     actionType: "ajax",
                     api: {
                         method: "post",
@@ -223,10 +223,10 @@ const schema = {
                                 "${ARRAYMAP(selectedItems, item => item.id)}"
                         }
                     },
-                    confirmText: "确定要执行空箱出库单?"
+                    confirmText: "confirm.title.emptyContainerOutbound.execute"
                 },
                 {
-                    label: "取消空箱出库单",
+                    label: "button.emptyContainerOutbound.cancel",
                     actionType: "ajax",
                     api: {
                         method: "post",
@@ -236,7 +236,7 @@ const schema = {
                                 "${ARRAYMAP(selectedItems, item => item.id)}"
                         }
                     },
-                    confirmText: "确定要取消空箱出库单?"
+                    confirmText: "confirm.title.emptyContainerOutbound.cancel"
                 }
             ],
             columns: [

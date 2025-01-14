@@ -1,10 +1,6 @@
 import schema2component from "@/utils/schema2component"
 import { owner_code } from "@/pages/wms/constants/select_search_api_contant"
 import {
-    volume,
-    weight
-} from "@/pages/wms/config_center/constants/form_constants"
-import {
     api_sku_add,
     api_sku_get,
     api_sku_update
@@ -74,11 +70,6 @@ const form = [
                         type: "hidden",
                         value: warehouseCode
                     },
-                    // {
-                    //     "type": "switch",
-                    //     "name": "suit",
-                    //     "label": "是否套装"
-                    // },
 
                     // 体积信息
                     {

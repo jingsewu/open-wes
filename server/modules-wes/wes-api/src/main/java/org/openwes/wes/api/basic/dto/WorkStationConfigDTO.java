@@ -1,5 +1,6 @@
 package org.openwes.wes.api.basic.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,6 +18,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class WorkStationConfigDTO implements Serializable {
 
     private Long configId;
@@ -38,11 +40,13 @@ public class WorkStationConfigDTO implements Serializable {
     }
 
     @Data
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class InboundStationConfigDTO implements Serializable {
     }
 
     @Data
     @NoArgsConstructor
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class PickingStationConfigDTO implements Serializable {
         private boolean emptyToteRecycle;
         private PutWallDisplayOrderEnum leftPutWallDisplayOrder;
@@ -64,6 +68,7 @@ public class WorkStationConfigDTO implements Serializable {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class PageFieldConfig implements Serializable {
         private String fieldName;
         private String fieldDesc;
@@ -74,6 +79,7 @@ public class WorkStationConfigDTO implements Serializable {
     }
 
     @Data
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class StocktakeStationConfigDTO implements Serializable {
         private boolean emptyToteRecycle;
 

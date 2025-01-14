@@ -17,17 +17,17 @@ const columns = [
     },
     {
         name: "containerCode",
-        label: "容器号",
+        label: "table.containerNumber",
         searchable: true
     },
     {
         name: "containerSpecCode",
-        label: "容器规格",
+        label: "table.containerSpecificationNumber",
         searchable: true
     },
     {
         name: "locationCode",
-        label: "库位编码"
+        label: "table.locationCode"
     },
     {
         name: "taskNo",

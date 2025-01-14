@@ -111,7 +111,7 @@ const baseform = [
     },
     {
         label: "interfacePlatform.interfaceManagement.table.tokenName",
-        description: "认证服务器响应的 token 的名称",
+        description: "interfacePlatform.interfaceManagement.table.tokenName.description",
         type: "input-text",
         name: "tokenName",
         visibleOn: "${auth}"
@@ -154,7 +154,7 @@ const configForm = [
         type: "textarea",
         name: "jsParamConverter",
         description:
-            "如果接口的请求是单条数据时，会执行一次脚本，如果是多条数据，则会为每条数据执行一次脚本，本次执行脚本时，可以使用 <strong>this</strong> 或 <strong>obj</strong> 获取当前操作的数据进行转换",
+            "interfacePlatform.interfaceManagement.form.requestTransformationScript.description",
         visibleOn: "${paramConverterType == 'JS'}"
     },
     {

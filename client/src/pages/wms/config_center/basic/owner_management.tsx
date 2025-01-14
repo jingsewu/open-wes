@@ -49,8 +49,6 @@ const form = [
         type: "hidden",
         value: warehouseCode
     },
-
-    // 地址信息
     {
         label: "table.country",
         type: "select",
@@ -96,8 +94,6 @@ const form = [
         type: "input-text",
         name: "addressDTO.address"
     },
-
-    // 联系方式
     {
         label: "table.contact",
         type: "input-text",

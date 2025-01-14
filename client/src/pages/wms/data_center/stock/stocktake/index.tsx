@@ -128,7 +128,7 @@ const schema = {
             footerToolbar: ["switch-per-page", "statistics", "pagination"],
             bulkActions: [
                 {
-                    label: "执行盘点单",
+                    label: "button.stocktake.order.execute",
                     actionType: "ajax",
                     api: {
                         method: "post",
@@ -141,7 +141,7 @@ const schema = {
                             taskCount: "${COUNT(selectedItems)}"
                         }
                     },
-                    confirmText: "确定要执行盘点单?"
+                    confirmText: "confirm.stocktake.order.execute"
                 }
             ],
             columns: [

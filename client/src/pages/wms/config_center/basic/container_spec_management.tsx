@@ -1,18 +1,13 @@
-import React from "react"
 import schema2component from "@/utils/schema2component"
-import { volume } from "@/pages/wms/config_center/constants/form_constants"
-import { Translation } from "react-i18next"
-import { create_update_columns } from "@/utils/commonContants"
+import {volume} from "@/pages/wms/config_center/constants/form_constants"
+import {create_update_columns} from "@/utils/commonContants"
 import {
     api_container_spec_add,
     api_container_spec_delete,
     api_container_spec_get,
     api_container_spec_update
 } from "@/pages/wms/config_center/constants/api_constant"
-import {
-    api_crud_search_by_warehouseCode,
-    api_crud_search_by_warehouseCode_total
-} from "@/pages/constantApi"
+import {api_crud_search_by_warehouseCode, api_crud_search_by_warehouseCode_total} from "@/pages/constantApi"
 
 let warehouseCode = localStorage.getItem("warehouseCode")
 
@@ -89,13 +84,13 @@ const fromBody = [
             },
             {
                 name: "locLevel",
-                label: "格口所在的层",
+                label: "table.locLevel",
                 type: "input-number",
                 required: true
             },
             {
                 name: "locBay",
-                label: "格口所在的列",
+                label: "table.locBay",
                 type: "input-number",
                 required: true
             }
@@ -185,8 +180,7 @@ const columns = [
 const searchIdentity = "WContainerSpec"
 const schema = {
     type: "page",
-    //   title: "容器规格管理",
-    title: <Translation>{(t) => t("containerSpec.title")}</Translation>,
+    title: "containerSpec.title",
     toolbar: [],
     data: {
         dictionary: "${ls:dictionary}"

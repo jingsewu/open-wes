@@ -1,7 +1,6 @@
-import React, { useState } from "react"
-// import i18n from "@/react-i18next-config"
-import { Select } from "amis"
-import { useTranslation } from "react-i18next"
+import React from "react"
+import {Select} from "amis"
+import {useTranslation} from "react-i18next"
 import store from "@/stores"
 
 export const languageList = [
@@ -16,8 +15,8 @@ export const languageList = [
         locale: "en"
     }
 ]
-const Language = ({ onLanguageChange }: any) => {
-    const { t, i18n } = useTranslation()
+const Language = ({onLanguageChange}: any) => {
+    const {t, i18n} = useTranslation()
 
     const changeLanguage = (e: any) => {
         store.toggleLanguage(e)

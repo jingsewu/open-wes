@@ -26,13 +26,13 @@ const schema = {
                             body: [
                                 {
                                     type: "select",
-                                    label: "周转容器释放方式",
+                                    label: "form.system.config.basic.transferContainerReleaseMethod",
                                     source: "${dictionary.TransferContainerReleaseMethod}",
                                     name: "basicConfig.transferContainerReleaseMethod"
                                 },
                                 {
                                     type: "input-number",
-                                    label: "周转容器自动释放间隔时长(min)",
+                                    label: "form.system.config.basic.autoReleaseDelayTimeMin",
                                     name: "basicConfig.autoReleaseDelayTimeMin",
                                     hiddenOn:
                                         "${basicConfig.transferContainerReleaseMethod === 'INTERFACE'}"
@@ -45,7 +45,7 @@ const schema = {
                             body: [
                                 {
                                     type: "switch",
-                                    label: "是否批量创建容器任务",
+                                    label: "form.system.config.ems.allowBatchCreateContainerTasks",
                                     name: "emsConfig.allowBatchCreateContainerTasks",
                                     description: ""
                                 }
@@ -57,13 +57,13 @@ const schema = {
                             body: [
                                 {
                                     type: "switch",
-                                    label: "是否检查重复的客户单号",
+                                    label: "form.system.config.inbound.checkRepeatedCustomerOrderNo",
                                     name: "inboundConfig.checkRepeatedCustomerOrderNo",
                                     description: ""
                                 },
                                 {
                                     type: "switch",
-                                    label: "是否检查重复的LPN号",
+                                    label: "form.system.config.inbound.checkRepeatedLpnCode",
                                     name: "inboundConfig.checkRepeatedLpnCode",
                                     description: ""
                                 }
@@ -87,19 +87,19 @@ const schema = {
                             body: [
                                 {
                                     type: "switch",
-                                    label: "是否库存异常记录自动创建调整单",
+                                    label: "form.system.config.stock.stockAbnormalAutoCreateAdjustmentOrder",
                                     name: "stockConfig.stockAbnormalAutoCreateAdjustmentOrder",
                                     description: ""
                                 },
                                 {
                                     type: "switch",
-                                    label: "是否库存调整单自动调整",
+                                    label: "form.system.config.stock.adjustmentOrderAutoCompleteAdjustment",
                                     name: "stockConfig.adjustmentOrderAutoCompleteAdjustment",
                                     description: ""
                                 },
                                 {
                                     type: "input-number",
-                                    label: "0库存保存天数",
+                                    label: "form.system.config.stock.zeroStockSavedDays",
                                     name: "stockConfig.zeroStockSavedDays",
                                     description: ""
                                 }

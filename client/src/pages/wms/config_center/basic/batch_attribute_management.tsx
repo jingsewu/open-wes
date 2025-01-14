@@ -60,15 +60,15 @@ const form = [
         value: [
             {
                 fieldCode: "inboundDate",
-                fieldName: "入库日期"
+                fieldName: "table.inboundDate"
             },
             {
                 fieldCode: "productDate",
-                fieldName: "生产日期"
+                fieldName: "table.dateOfManufacture"
             },
             {
                 fieldCode: "expiredDate",
-                fieldName: "到期日期"
+                fieldName: "table.ExpirationDate"
             }
         ],
         columns: [

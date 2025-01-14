@@ -1,5 +1,6 @@
 import schema2component from "@/utils/schema2component"
 import { api_crud_search } from "@/pages/constantApi"
+import {success_or_fail} from "@/utils/commonContants";
 const columns = [
     {
         name: "id",
@@ -23,7 +24,7 @@ const columns = [
         name: "loginResult",
         label: "userCenter.loginLogs.table.loginResults",
         type: "mapping",
-        map: success_no_fail
+        map: success_or_fail
     },
     {
         name: "loginAddress",

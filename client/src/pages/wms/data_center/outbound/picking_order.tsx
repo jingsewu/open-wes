@@ -51,72 +51,72 @@ const detailColumns = [
     },
     {
         name: "warehouseAreaCode",
-        label: "库区",
+        label: "workLocationArea.warehouseArea",
         dbField: "wa.warehouse_area_code"
     },
     {
         name: "ownerCode",
-        label: "货主",
+        label: "table.productOwner",
         dbField: "k.owner_code"
     },
     {
         name: "skuCode",
-        label: "sku编码",
+        label: "table.skuCode",
         dbField: "a.sku_code"
     },
     {
         name: "skuName",
-        label: "sku名称",
+        label: "table.skuName",
         dbField: "a.sku_name"
     },
     {
         name: "requiredQty",
-        label: "计划数量",
+        label: "table.planCount",
         dbField: "t.required_qty"
     },
     {
         name: "operatedQty",
-        label: "实际出库数量",
+        label: "table.actualCountQuantity",
         dbField: "t.operated_qty"
     },
     {
         name: "abnormalQty",
-        label: "异常数量",
+        label: "skuArea.qtyAbnormal",
         dbField: "t.abnormal_qty"
     },
     {
         name: "stationCode",
-        label: "出库工作站",
+        label: "table.picking.outboundStation",
         dbField: "ws.station_code"
     },
     {
         name: "targetLocationCode",
-        label: "出库播种墙格口",
+        label: "table.picking.outboundStationSlot",
         dbField: "t.target_location_code"
     },
     {
         name: "sourceContainerCode",
-        label: "容器编码",
+        label: "table.containerCode",
         dbField: "t.source_container_code"
     },
     {
         name: "sourceContainerSlot",
-        label: "容器格口",
+        label: "table.containerSlotCode",
         dbField: "t.source_container_slot"
     },
     {
         name: "batchAttributes",
-        label: "批次属性",
+        label: "table.batchAttributes",
         dbField: "k.batch_attributes"
     },
     {
         name: "updateUser",
-        label: "操作人",
+        label: "table.picking.operator",
         dbField: "t.update_user"
     },
     {
         name: "updateTime",
-        label: "完成时间",
+        label: "table.completionTime",
         dbField: "t.update_time",
         tpl: "${updateTime/1000|date:YYYY-MM-DD HH\\:mm\\:ss}"
     }
@@ -128,7 +128,7 @@ const showColumns = columns
 const showDetailColumns = detailColumns
 
 const detailDialog = {
-    title: "拣货任务详情",
+    title: "picking.detail.title",
     actions: [],
     closeOnEsc: true,
     closeOnOutside: true,

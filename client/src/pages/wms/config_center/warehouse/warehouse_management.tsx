@@ -1,8 +1,6 @@
 import schema2component from "@/utils/schema2component"
 import {
     api_warehouse_add,
-    api_warehouse_config_add,
-    api_warehouse_config_get,
     api_warehouse_get,
     api_warehouse_update
 } from "@/pages/wms/config_center/constants/api_constant"

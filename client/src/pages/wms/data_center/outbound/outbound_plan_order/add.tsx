@@ -315,43 +315,23 @@ const dialog = {
                             columns: [
                                 {
                                     name: "ownerCode",
-                                    label: (
-                                        <Translation>
-                                            {(t) => t("table.productOwner")}
-                                        </Translation>
-                                    )
+                                    label: "table.productOwner"
                                 },
                                 {
                                     name: "skuCode",
-                                    label: (
-                                        <Translation>
-                                            {(t) => t("skuArea.skuCode")}
-                                        </Translation>
-                                    )
+                                    label: "skuArea.skuCode"
                                 },
                                 {
                                     name: "skuName",
-                                    label: (
-                                        <Translation>
-                                            {(t) => t("table.skuName")}
-                                        </Translation>
-                                    )
+                                    label: "table.skuName"
                                 },
                                 {
                                     name: "barCodeList",
-                                    label: (
-                                        <Translation>
-                                            {(t) => t("skuArea.barcode")}
-                                        </Translation>
-                                    )
+                                    label: "skuArea.barcode"
                                 },
                                 {
                                     name: "totalQty",
-                                    label: (
-                                        <Translation>
-                                            {(t) => t("table.totalQuantity")}
-                                        </Translation>
-                                    )
+                                    label: "table.totalQuantity"
                                 }
                             ],
                             onEvent: {

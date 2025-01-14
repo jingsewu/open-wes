@@ -15,7 +15,7 @@ export const yes_no_options = [
     }
 ]
 
-export const success_no_fail = [
+export const success_or_fail = [
     {
         value: 1,
         label: "成功",

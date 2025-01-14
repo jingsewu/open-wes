@@ -1,6 +1,6 @@
-import { useHistory } from "react-router"
+import {useHistory} from "react-router"
 
-import { useWindowFocus } from "@/pages/wms/station/event-loop/hooks/use-window-focus"
+import {useWindowFocus} from "@/pages/wms/station/event-loop/hooks/use-window-focus"
 import type {
     WorkStationAPIContextProps,
     WorkStationContextProps,
@@ -9,10 +9,10 @@ import type {
     WorkStationProviderProps
 } from "@/pages/wms/station/event-loop/types"
 import Message from "@/pages/wms/station/widgets/message"
-import type { FC, ReactNode } from "react"
-import React, { useEffect, useState } from "react"
+import type {FC, ReactNode} from "react"
+import React, {useEffect, useState} from "react"
 import config from "./config"
-import WorkStationEventLoop, { DEFAULT_WORKSTATION_INFO } from "./index"
+import WorkStationEventLoop, {DEFAULT_WORKSTATION_INFO} from "./index"
 
 const workStationEventLoop = new WorkStationEventLoop(config)
 
@@ -54,7 +54,8 @@ const WorkStationOperationsContext = React.createContext<{
     setOperationsMap: (operationsMap: Map<string, any>) => void
 }>({
     operationsMap: new Map(),
-    setOperationsMap: () => {}
+    setOperationsMap: () => {
+    }
 })
 
 function WorkStationValueProvider(props: WorkStationProviderProps) {
@@ -99,7 +100,6 @@ function WorkStationValueProvider(props: WorkStationProviderProps) {
 
     useEffect(() => {
         if (history.location.pathname.includes("workStation")) return
-        // workStationEventLoop.stop()
     }, [history.location.pathname])
 
     return (
@@ -115,7 +115,7 @@ function WorkStationValueProvider(props: WorkStationProviderProps) {
 }
 
 const WorkStationAPIProvider: FC<ReactNode> = (props) => {
-    const { children } = props
+    const {children} = props
 
     return (
         <WorkStationAPIContext.Provider
@@ -123,7 +123,7 @@ const WorkStationAPIProvider: FC<ReactNode> = (props) => {
                 message: Message,
                 onConfirm: workStationEventLoop.actionConfirm,
                 onCustomActionDispatch:
-                    workStationEventLoop.customActionDispatch
+                workStationEventLoop.customActionDispatch
             }}
         >
             {children}
@@ -135,7 +135,7 @@ const WorkStationComponentsProvider: FC<ReactNode> = (props) => {
     const [operationsMap, setOperationsMap] = useState<Map<string, any>>(
         new Map()
     )
-    const { children } = props
+    const {children} = props
 
     return (
         <WorkStationOperationsContext.Provider
@@ -150,7 +150,7 @@ const WorkStationComponentsProvider: FC<ReactNode> = (props) => {
 }
 
 const WorkStationProvider: FC<WorkStationProviderProps> = (props) => {
-    const { children } = props
+    const {children} = props
 
     return (
         <WorkStationAPIProvider>
