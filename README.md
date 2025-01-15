@@ -67,7 +67,7 @@ The Open WES provides a user-friendly interface for managing your warehouse. You
   Robot Control Systems (RCS). This streamlined connectivity allows for synchronized and efficient management of robotic
   systems within the warehouse environment.
 
-For detailed instructions and examples, refer to our example [website](http://www.openwes.me/).
+For detailed instructions and examples, refer to our example [website](https://www.openwes.top/).
 
 ## Contributing
 
