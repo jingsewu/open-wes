@@ -15,8 +15,6 @@ const taskConfig: TabAction = {
         return <Content {...props} />
     },
     modalConfig: {
-        // title: "领用单据",
-        // okText: "领用单据",
         footer: null,
         bodyStyle: {
             overflow: "auto",

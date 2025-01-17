@@ -1,23 +1,21 @@
-import type { FC, RefObject } from "react"
+import type {FC, RefObject} from "react"
 import React from "react"
-import { Translation, useTranslation } from "react-i18next"
+import {useTranslation} from "react-i18next"
 
-import type { WorkStationEvent } from "@/pages/wms/station/event-loop/types"
+import type {WorkStationEvent} from "@/pages/wms/station/event-loop/types"
 import ExceptionLog from "@/pages/wms/station/instances/outbound/operations/tips/Abnormal"
 import CloseContainer from "@/pages/wms/station/instances/outbound/operations/tips/close-container"
 import EmptyContainerHandler from "@/pages/wms/station/instances/outbound/operations/tips/empty-container-handler"
 import MessageRemind from "@/pages/wms/station/instances/outbound/operations/tips/message-remind"
 import ScanErrorRemind from "@/pages/wms/station/instances/outbound/operations/tips/scan-error-remind"
-import type { ModalType } from "@/pages/wms/station/instances/outbound/operations/tips/type"
-import { TipType } from "@/pages/wms/station/instances/outbound/operations/tips/type"
-import type { OperationProps } from "@/pages/wms/station/instances/types"
-import type { TabAction } from "@/pages/wms/station/tab-actions/types"
-import { TabActionModalType } from "@/pages/wms/station/tab-actions/types"
+import type {ModalType} from "@/pages/wms/station/instances/outbound/operations/tips/type"
+import {TipType} from "@/pages/wms/station/instances/outbound/operations/tips/type"
+import type {OperationProps} from "@/pages/wms/station/instances/types"
+import type {TabAction} from "@/pages/wms/station/tab-actions/types"
+import {TabActionModalType} from "@/pages/wms/station/tab-actions/types"
 import ConfigControlledModal from "@/pages/wms/station/widgets/config-controlled-modal"
-import { MessageType } from "@/pages/wms/station/widgets/message"
-// import IntlMessages from "@/util/IntlMessages"
-// import { objectToString } from "@/util/utils"
-import { CustomActionType } from "@/pages/wms/station/instances/outbound/customActionType"
+import {MessageType} from "@/pages/wms/station/widgets/message"
+import {CustomActionType} from "@/pages/wms/station/instances/outbound/customActionType"
 import ChoosePickingTaskTip from "../../../../widgets/ChoosePickingTaskTip"
 
 export interface TipsHandlerProps<T> {
@@ -134,7 +132,7 @@ const TipsHandler = (props: OperationProps<TipsHandlerProps<any>[], any>) => {
             handleSubmit: async () => {},
             modalType: TabActionModalType.NORMAL,
             modalConfig: {
-                title: "空箱处理",
+                title: t("outbound.station.emptyContainer.handler.title"),
                 footer: null,
                 closable: false
             },
@@ -145,7 +143,7 @@ const TipsHandler = (props: OperationProps<TipsHandlerProps<any>[], any>) => {
             handleSubmit: async () => {},
             modalType: TabActionModalType.NORMAL,
             modalConfig: {
-                title: "封箱提醒",
+                title: t("outbound.station.sealContainer.remainder.title"),
                 footer: null
             }
         },

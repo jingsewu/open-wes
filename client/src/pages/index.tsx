@@ -1,21 +1,22 @@
 import * as React from "react"
-import { Redirect, RouteComponentProps, Switch } from "react-router-dom"
-import { Layout, toast } from "amis"
-import { IMainStore } from "@/stores"
-import { inject, observer } from "mobx-react"
+import {Redirect, RouteComponentProps, Switch} from "react-router-dom"
+import {Layout, toast} from "amis"
+import {IMainStore} from "@/stores"
+import {inject, observer} from "mobx-react"
 import request from "@/utils/requestInterceptor"
 import RouterGuard from "@/routes/RouterGuard"
 import TabsLayout from "./components/TabsLayout"
-import { Affix, Button, Modal } from "antd"
-import type { MenuProps } from "antd"
-import { languageList } from "@/pages/components/Language"
+import type {MenuProps} from "antd"
+import {Affix, Button, Modal} from "antd"
+import {languageList} from "@/pages/components/Language"
 import LayoutAside from "@/components/LayoutAside"
 import LayoutHeader from "@/components/LayoutHeader"
-import { warehouseSelectApi } from "./constantApi"
 import RobotSvg from "@/icon/fontIcons/robot.svg" // path to your '*.svg' file.
 import Chatbot from "@/components/Chatbot"
 import style from "./index.module.scss"
 import classNames from "classnames/bind"
+import {Translation} from "react-i18next";
+
 const cx = classNames.bind(style)
 
 export interface NavChildren {
@@ -320,10 +321,12 @@ export default class Admin extends React.Component<AdminProps, State> {
                             icon={<RobotSvg style={{fontSize: 60}}/>}
                             onClick={this.handleClick}
                         ></Button>
-                        <span className="tooltip">点击与AI聊天</span>
+                        <span className="tooltip">
+                            {<Translation>{(t) => t("ai.chat.span")}</Translation>}
+                        </span>
                     </Affix>
                     <Modal
-                        title="AI 助手"
+                        title= {<Translation>{(t) => t("ai.chat.title")}</Translation>}
                         footer={null}
                         maskClosable={true}
                         open={this.state.isModalOpen}

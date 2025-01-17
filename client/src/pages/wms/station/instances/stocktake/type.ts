@@ -1,9 +1,4 @@
-// import type { Rule } from "@/config/JS/Project/project.types"
-
-// import type { ContainerHandlerProps } from "./operations/ConveyorHandler"
-// import type { RobotHandlerProps } from "./operations/RobotHandler"
-// import type { ShelfHandlerProps } from "./operations/ShelfHandler"
-import type { StationProcessingStatus } from "@/pages/wms/station/event-loop/types"
+import type {StationProcessingStatus} from "@/pages/wms/station/event-loop/types"
 
 export enum StationOperationType {
     conveyorArea = "conveyorArea",

@@ -1,6 +1,3 @@
-/**
- * 绑箱提示
- */
 import { TipType } from "@/pages/wms/station/instances/outbound/operations/tips/type"
 import { Button, Result } from "antd"
 import React from "react"

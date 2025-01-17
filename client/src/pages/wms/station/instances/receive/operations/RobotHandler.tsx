@@ -8,6 +8,7 @@ import type {RadioChangeEvent} from "antd"
 import type {InputRef} from "antd"
 import request from "@/utils/requestInterceptor"
 import ShelfModel from "@/pages/wms/station/widgets/common/Shelf/ShelfModel"
+import {useTranslation} from "react-i18next";
 
 let warehouseCode = localStorage.getItem("warehouseCode")
 
@@ -25,12 +26,6 @@ interface OperationConfirmInfo {
 export interface RobotHandlerProps {
     robotArea: any
     operationType: string
-}
-
-export enum MachineType {
-    TANK_FEEDING_ROBOT = "TANK_FEEDING_ROBOT", // ("料箱机器人")
-    LITTLE_LATENT_ROBOT = "LITTLE_LATENT_ROBOT", // ("小潜伏机器人-搬料箱")
-    LARGE_LATENT_ROBOT = "LARGE_LATENT_ROBOT" // ("大潜伏机器人-搬料架")
 }
 
 interface NumericInputProps {
@@ -57,6 +52,8 @@ export const valueFilter = (
 }
 
 const RobotHandler = (props: any) => {
+    const { t } = useTranslation();
+
     const {value, onConfirm, focusValue, changeFocusValue, onScanSubmit} =
         props
     const containerRef = useRef<InputRef>(null)
@@ -216,7 +213,7 @@ const RobotHandler = (props: any) => {
     return (
         <div className="bg-white p-4 h-full">
             <div className="d-flex items-center">
-                <div className="white-space-nowrap">请扫描容器号:</div>
+                <div className="white-space-nowrap">{t("receive.station.containerArea.scan")}:</div>
                 <Input
                     bordered={false}
                     value={containerCode}
@@ -230,7 +227,7 @@ const RobotHandler = (props: any) => {
                 <Row>
                     <Col span={6}>
                         <div className="text-right leading-loose">
-                            输入收货数量：
+                            {t("receive.station.containerArea.receiveQty")}：
                         </div>
                     </Col>
                     <Col>
@@ -264,7 +261,7 @@ const RobotHandler = (props: any) => {
                 <Row className="my-2">
                     <Col span={6}>
                         <div className="text-right leading-loose">
-                            容器规格选择：
+                            {t("receive.station.containerArea.chooseContainerSpec")}：
                         </div>
                     </Col>
                     <Col span={14}>
@@ -300,7 +297,7 @@ const RobotHandler = (props: any) => {
                 <Row>
                     <Col span={6}>
                         <div className="text-right leading-loose">
-                            请输入格口号：
+                            {t("receive.station.containerArea.chooseContainerSlot")}：
                         </div>
                     </Col>
                     <Col span={14}>
@@ -310,10 +307,10 @@ const RobotHandler = (props: any) => {
                 <Row justify="end" className="mt-2">
                     <Col span={8}>
                         <Button type="primary" onClick={onContainerFull}>
-                            满箱
+                            {t("receive.station.button.full")}
                         </Button>
                         <Button className="ml-2" onClick={handleOK}>
-                            确定
+                            {t("receive.station.button.confirm")}
                         </Button>
                     </Col>
                 </Row>

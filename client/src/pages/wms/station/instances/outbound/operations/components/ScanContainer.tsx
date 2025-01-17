@@ -8,6 +8,7 @@ import { DEBOUNCE_TIME } from "@/pages/wms/station/constant"
 import { returnButton } from "@/pages/wms/station/event-loop/utils"
 
 import style from "./index.module.scss"
+import {useTranslation} from "react-i18next";
 
 const cx = classNames.bind(style)
 
@@ -48,7 +49,7 @@ const ScanContainer = ({
     const [showInput, setShowInput] = useState(false)
     const [scanCode, setScanCode] = useState<string>()
 
-    //
+    const { t } = useTranslation();
 
     const inputRef = useRef<InputRef>(null)
 
@@ -95,10 +96,7 @@ const ScanContainer = ({
             <div className={cx("container-code", { codecolor: containerCode })}>
                 {showInput ? (
                     <Input
-                        placeholder="容器编码"
-                        //     {intl.formatMessage({
-                        //     id: "workstaion.outbound.text.containerCode"
-                        // })}
+                        placeholder= {t("table.containerCode")}
                         size="large"
                         value={scanCode}
                         onChange={handleChange}
@@ -107,9 +105,7 @@ const ScanContainer = ({
                         ref={inputRef}
                     />
                 ) : (
-                    containerCode ||
-                    // <IntlMessages id="workstaion.outbound.text.containerCode" />
-                    "容器编码"
+                    containerCode || t("table.containerCode")  // Simplified translation usage
                 )}
             </div>
             {scanPermissions && (

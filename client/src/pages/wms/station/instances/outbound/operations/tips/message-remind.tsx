@@ -1,7 +1,3 @@
-/**
- * 普通message提示
- */
-
 import { useEffect } from "react"
 
 import { MessageType } from "@/pages/wms/station/widgets/message"

@@ -1,17 +1,12 @@
-/**
- * 封箱处理
- */
-// import IntlMessages from "@/util/IntlMessages"
 import { Result } from "antd"
 import React, { useMemo } from "react"
-// import { useSelector } from 'react-redux';
+import {useTranslation} from "react-i18next";
 
 const DESTINATION_ENUM_KEY = "SealReminderDestination"
 
 export default function CloseContainer(props: any) {
     const { value } = props
     const { containerCode, destination } = value
-    // const { enums } = useSelector(({ enums }: any) => enums);
     const enums = { [DESTINATION_ENUM_KEY]: [] }
     const formatEnums = useMemo(() => {
         const res: any = {}
@@ -26,21 +21,20 @@ export default function CloseContainer(props: any) {
         return res
     }, [enums])
 
+    const { t } = useTranslation();
+
     return (
         <Result
             status="info"
-            title="封箱提醒"
-            // {<IntlMessages id="workstaion.common.tip.sealingRemind" />}
+            title={t("outbound.station.sealContainer.remainder.title")}
             extra={
                 <div>
                     <div>
-                        周转容器号
-                        {/* <IntlMessages id="outboundManage.outboundTask.detail.column.turnoverContainerNo" /> */}
+                        {t("outbound.station.sealContainer.remainder.transferContainer.code") }
                         : {containerCode}
                     </div>
                     <div>
-                        目的地
-                        {/* <IntlMessages id="ruleManagement.SealingPromptRule.column.destination" /> */}
+                        {t("outbound.station.sealContainer.remainder.destination") }
                         :{formatEnums[destination]?.label || destination}
                     </div>
                 </div>

@@ -3,9 +3,12 @@ import { TabActionModalType } from "@/pages/wms/station/tab-actions/types"
 import React from "react"
 
 import Content from "./Content"
+import {useTranslation} from "react-i18next";
+
+const { t } = useTranslation();
 
 const TaskDetail: TabAction = {
-    name: "收货明细",
+    name: t("receive.detail.title"),
     key: "TaskDetail",
     position: "left",
     modalType: TabActionModalType.FULL_SCREEN,
@@ -15,7 +18,7 @@ const TaskDetail: TabAction = {
         return <Content {...props} />
     },
     modalConfig: {
-        title: "收货明细",
+        title: t("receive.detail.title"),
         okText: "",
         footer: null
     },

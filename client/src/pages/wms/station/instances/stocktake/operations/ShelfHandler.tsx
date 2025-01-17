@@ -20,12 +20,6 @@ export interface RobotHandlerProps {
     operationType: string
 }
 
-export enum MachineType {
-    TANK_FEEDING_ROBOT = "TANK_FEEDING_ROBOT", // ("料箱机器人")
-    LITTLE_LATENT_ROBOT = "LITTLE_LATENT_ROBOT", // ("小潜伏机器人-搬料箱")
-    LARGE_LATENT_ROBOT = "LARGE_LATENT_ROBOT" // ("大潜伏机器人-搬料架")
-}
-
 /**
  * @Description: 对event中的数据进行filter处理
  * @param data

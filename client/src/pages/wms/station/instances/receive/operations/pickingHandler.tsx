@@ -5,6 +5,7 @@ import { WorkStationEvent } from "@/pages/wms/station/event-loop/types"
 import { Input, Divider, message } from "antd"
 import type { InputRef } from "antd"
 import SkuInfo from "@/pages/wms/station/widgets/common/SkuInfo"
+import {useTranslation} from "react-i18next";
 
 export interface SKUHandlerConfirmProps {
     operationId: string
@@ -34,6 +35,7 @@ const PickAreaHandler = (props: any) => {
     const inputRef = useRef<InputRef>(null)
 
     const [skuCode, setSkuCode] = useState<string>("")
+    const { t } = useTranslation();
 
     useEffect(() => {
         if (focusValue !== "sku") return
@@ -49,7 +51,7 @@ const PickAreaHandler = (props: any) => {
         const detail = details.find((item: any) => item.skuCode === skuCode)
         if (!detail) {
             setSkuCode("")
-            message.warning("sku不属于当前订单，请重新扫码")
+            message.warning(t("receive.station.warning.skuNotInOrder"))
             return
         }
         onSkuChange(detail)
@@ -57,7 +59,7 @@ const PickAreaHandler = (props: any) => {
     return (
         <div className="bg-white p-4 h-full">
             <div className="d-flex items-center bg-white">
-                <div className="white-space-nowrap">请扫描商品条码:</div>
+                <div className="white-space-nowrap">{t("skuArea.scanBarcode")}:</div>
                 <Input
                     bordered={false}
                     ref={inputRef}
@@ -69,8 +71,8 @@ const PickAreaHandler = (props: any) => {
             <Divider style={{ margin: "12px 0" }} />
             <div className="bg-gray-100 py-4 pl-6 d-flex">
                 <div>
-                    <div>收货数</div>
-                    <div>/到货数</div>
+                    <div>{t("receive.station.skuArea.receivedQty")}</div>
+                    <div>/{t("receive.station.skuArea.totalQty")}</div>
                 </div>
                 <div className="border-solid border-gray-200 border-l border-r mx-4"></div>
                 <div className="text-2xl">
@@ -78,7 +80,7 @@ const PickAreaHandler = (props: any) => {
                 </div>
             </div>
             <div className="bg-gray-100 mt-4 p-3">
-                <div>商品详情</div>
+                <div>{t("receive.station.skuArea.skuInfo")}</div>
                 <SkuInfo
                     // {...scannedSkuInfo}
                     imgWidth={160}

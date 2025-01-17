@@ -7,7 +7,6 @@ import RecieveTask from "./custom-actions/RecieveTask"
 import CreateCountTask from "./custom-actions/CreateCountTask"
 import InstanceLayout from "./layout"
 import mockData from "./mock-events"
-//todo 这里是不是不应该依赖replenish的文件
 import DefaultArea from "@/pages/wms/station/instances/receive/operations/defaultPage"
 import ShelfHandler from "./operations/ShelfHandler"
 import StocktakeHandler from "./operations/StocktakeHandler"

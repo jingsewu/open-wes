@@ -4,13 +4,12 @@ import { Typography } from "antd"
 import EmptyImg from "@/icon/default_empty_image.png"
 
 import ScanContainer from "./ScanContainer"
+import {Translation} from "react-i18next";
 
 const { Title } = Typography
 const outboundStatusText = {
-    NO_TASK: "赶快领取任务，开始今天的工作吧！",
-    // <IntlMessages id="workstaion.inventory.prompt.receiveTask!" />,
-    WAIT_ROBOT: "调度中，请等待!",
-    // <IntlMessages id="workstaion.outbound.text.dispatching" />,
+    NO_TASK: <Translation>{(t) => t("station.NO_TASK")}</Translation>,
+    WAIT_ROBOT: <Translation>{(t) => t("station.WAITING_ROBOT")}</Translation>,
     DO_OPERATION: null
 }
 

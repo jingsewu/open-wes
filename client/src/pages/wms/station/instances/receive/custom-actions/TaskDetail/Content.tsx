@@ -27,48 +27,47 @@ const columns = [
     {
         name: "targetContainerSpecCode",
         dbField: "ad.target_container_spec_code",
-        label: "容器规格"
+        label: "workLocationArea.containerSpecification"
     },
     {
         name: "targetContainerSlotCode",
         dbField: "ad.target_container_slot_code",
-        label: "容器格口"
+        label: "table.containerLatticeSlogan"
     },
     {
         name: "ownerCode",
         dbField: "ad.owner_code",
-        label: "货主",
+        label: "skuArea.ownerCode",
         searchable: true
     },
 
     {
         name: "skuCode",
         dbField: "ad.sku_code",
-        label: "商品编码",
+        label: "skuArea.skuCode",
         searchable: true
     },
     {
         name: "skuName",
         dbField: "ad.sku_name",
-        label: "商品名称",
+        label: "skuArea.productName",
         searchable: true
     },
     {
         name: "qtyAccepted",
         dbField: "ad.qty_accepted",
-        label: "收货数量"
+        label: "table.receivedQuantity"
     },
     {
         name: "acceptOrderStatus",
         dbField: "a.accept_order_status",
-        label: "收货单状态"
+        label: "table.receive.order.status"
     }
 ]
 
 const searchIdentity = "WReceiveDTaskDetail"
 const schema = {
     type: "page",
-    // title: "订单详情",
     toolbar: [],
     body: [
         {

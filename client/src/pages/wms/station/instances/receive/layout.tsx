@@ -1,9 +1,9 @@
 /**
  * 当前工作站实例的布局
  */
-import { Col, Row, Input, Button, message } from "antd"
+import {Col, Row, Input, Button, message} from "antd"
 import classNames from "classnames/bind"
-import React, { useState } from "react"
+import React, {useState} from "react"
 import request from "@/utils/requestInterceptor"
 
 import type {
@@ -11,22 +11,23 @@ import type {
     WorkStationInfo
 } from "@/pages/wms/station/event-loop/types"
 
-import type { OperationProps } from "@/pages/wms/station/instances/types"
+import type {OperationProps} from "@/pages/wms/station/instances/types"
 
 import ComponentWrapper from "../../component-wrapper"
-import { OPERATION_MAP } from "./config"
+import {OPERATION_MAP} from "./config"
 import style from "./index.module.scss"
 import {
     valueFilter as defaultFilter,
     taskStatusText
 } from "./operations/defaultPage"
-import { valueFilter as pickFilter } from "./operations/pickingHandler"
-import { valueFilter as robotFilter } from "./operations/RobotHandler"
-import { valueFilter as scanInfoFilter } from "./operations/tips"
-import { StationOperationType } from "./type"
+import {valueFilter as pickFilter} from "./operations/pickingHandler"
+import {valueFilter as robotFilter} from "./operations/RobotHandler"
+import {valueFilter as scanInfoFilter} from "./operations/tips"
+import {StationOperationType} from "./type"
 import PickingHandler from "./operations/pickingHandler"
 import RobotHandler from "./operations/RobotHandler"
 import OrderHandler from "./operations/orderHandler"
+import {useTranslation} from "react-i18next";
 
 let warehouseCode = localStorage.getItem("warehouseCode")
 
@@ -34,6 +35,7 @@ interface ReplenishLayoutProps extends OperationProps<any, any> {
     workStationEvent: WorkStationEvent<any>
     workStationInfo: WorkStationInfo
 }
+
 const filterMap = {
     robotArea: robotFilter
 }
@@ -46,7 +48,7 @@ const Layout = (props: ReplenishLayoutProps) => {
         return <div>加载中</div>
     }
 
-    const { workStationEvent } = props
+    const {workStationEvent} = props
     const [orderNo, setOrderNo] = useState("")
     const [orderInfo, setOrderInfo] = useState<any>()
     const [currentSkuInfo, setCurrentSkuInfo] = useState<any>({})
@@ -75,12 +77,12 @@ const Layout = (props: ReplenishLayoutProps) => {
     }
 
     const onConfirm = ({
-        containerCode,
-        containerSpecCode,
-        containerId,
-        activeSlot,
-        inputValue
-    }: any) => {
+                           containerCode,
+                           containerSpecCode,
+                           containerId,
+                           activeSlot,
+                           inputValue
+                       }: any) => {
         request({
             method: "post",
             url: "/wms/inbound/plan/accept",
@@ -118,12 +120,14 @@ const Layout = (props: ReplenishLayoutProps) => {
         setFocusValue(value)
     }
 
+    const {t} = useTranslation();
+
     return (
         <>
             {orderInfo ? (
                 <Row className="h-full" justify="space-between" gutter={16}>
                     <Col span={24}>
-                        <OrderHandler value={orderInfo} />
+                        <OrderHandler value={orderInfo}/>
                     </Col>
                     <Col span={12} className="pt-4">
                         <PickingHandler
@@ -146,7 +150,7 @@ const Layout = (props: ReplenishLayoutProps) => {
             ) : (
                 <div className="w-full h-full d-flex flex-col justify-center items-center">
                     <div className="w-1/3">
-                        <div className="text-xl">请扫描LPN号</div>
+                        <div className="text-xl">{t("receive.station.button.scanLpn")}</div>
                         <Input
                             size="large"
                             className="my-4 w-full"
@@ -154,7 +158,7 @@ const Layout = (props: ReplenishLayoutProps) => {
                             onChange={(e) => setOrderNo(e.target.value)}
                         />
                         <Button type="primary" block onClick={onScanSubmit}>
-                            确定
+                            {t("receive.station.button.confirm")}
                         </Button>
                     </div>
                 </div>

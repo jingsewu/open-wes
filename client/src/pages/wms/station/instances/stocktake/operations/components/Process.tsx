@@ -44,11 +44,6 @@ const columns = [
         name: "updateTime",
         tpl: "${updateTime/1000|date:YYYY-MM-DD HH\\:mm\\:ss}"
     }
-    // {
-    //     name: "inboundOrderType",
-    //     label: "容器数"
-    // },
-    // ...create_update_columns
 ]
 
 const detailColumns = [

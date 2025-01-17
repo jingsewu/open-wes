@@ -32,15 +32,15 @@ const config: WorkStationConfig<any> = {
     stepsDescribe: [
         {
             type: "containerArea",
-            name: "绑定容器"
+            name: <Translation>{(t) => t("outbound.station.step.bindingContainer")}</Translation>
         },
         {
             type: "skuArea",
-            name: "商品确认"
+            name: <Translation>{(t) => t("outbound.station.step.picking")}</Translation>
         },
         {
             type: "putWallArea",
-            name: "播种"
+            name: <Translation>{(t) => t("outbound.station.step.dispatch")}</Translation>
         }
     ],
     actions: [

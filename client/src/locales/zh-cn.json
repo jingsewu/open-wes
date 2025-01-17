@@ -226,6 +226,7 @@
     "inventorAnomalies.title": "库存异常",
     "batchChangeWarehouseArea.title": "修改逻辑区",
     "picking.detail.title": "拣货任务详情",
+    "receive.detail.title": "收货明细",
 
     "table.index": "序号",
     "table.customerOrderNo": "客户单号",
@@ -513,6 +514,7 @@
     "table.picking.outboundStation": "出库工作站",
     "table.picking.outboundStationSlot": "播种墙格口",
     "table.picking.operator": "操作人",
+    "table.receive.order.status": "收货单状态",
 
     "form.tab.basicInformation": "基础信息",
     "form.system.config.basic.transferContainerReleaseMethod": "周转容器释放方式",
@@ -673,5 +675,35 @@
 
     "user.menu.clientAuthorization": "客户端授权",
 
-    "transferContainerManagement.title": "周转容器管理"
+    "transferContainerManagement.title": "周转容器管理",
+
+    "outbound.station.sealContainer.remainder.title": "封箱提示",
+    "outbound.station.sealContainer.remainder.transferContainer.code": "周转容器号",
+    "outbound.station.sealContainer.remainder.destination": "目的地",
+    "outbound.station.emptyContainer.handler.title": "空箱处理",
+    "outbound.station.step.bindingContainer": "绑定容器",
+    "outbound.station.step.picking": "商品确认",
+    "outbound.station.step.dispatch": "播种",
+
+    "receive.station.orderArea.div.skuKindNumber": "品项总数/已收/待收",
+    "receive.station.orderArea.div.totalQty": "入库总数/已收/待收",
+    "receive.station.warning.skuNotInOrder": "SKU在当前订单找不到",
+    "receive.station.skuArea.scanBarcode": "请扫描商品条码",
+    "receive.station.skuArea.receivedQty": "已收货数量",
+    "receive.station.skuArea.totalQty": "到货数量",
+    "receive.station.skuArea.skuInfo": "商品详情",
+    "receive.station.containerArea.scan": "请扫描容器号",
+    "receive.station.containerArea.receiveQty": "输入收货数量",
+    "receive.station.containerArea.chooseContainerSpec": "容器规格选择",
+    "receive.station.containerArea.chooseContainerSlot": "请输入格口号",
+    "receive.station.button.full": "请输入格口号",
+    "receive.station.button.confirm": "确定",
+    "receive.station.button.scanLpn": "请扫描LPN号",
+
+    "stocktake.station.orderArea.div.stocktakeOrderNo": "盘点单号",
+    "stocktake.station.orderArea.div.stocktakeMethod": "盘点方式",
+    "stocktake.station.orderArea.div.stocktakeType": "盘点类型",
+
+    "ai.chat.span": "点击与AI聊天",
+    "ai.chat.title": "AI 助手"
 }

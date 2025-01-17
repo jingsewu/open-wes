@@ -5,7 +5,6 @@ import {inject, observer} from "mobx-react"
 import {withRouter} from "react-router"
 import "@/scss/style.scss"
 import LoginForm from "./components/LoginForm"
-import logo from "@/icon/icon_logo/SentrixAutomatation-Logo(transparent).png"
 import {withTranslation} from "react-i18next"
 import Language from "./components/Language"
 
