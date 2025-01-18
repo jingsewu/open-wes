@@ -706,6 +706,21 @@
 
     "ai.chat.span": "点击与AI聊天",
     "ai.chat.title": "AI 助手",
+    "ai.chat.welcome": "📦 欢迎来到OWES智能助手 📦",
+    "ai.chat.intro": "您好！欢迎使用OWES智能问答助手，我是专门为您在开放仓库执行系统中的疑问提供解答的AI助手。",
+    "ai.chat.whatICanDo": "🔧 我能帮您做什么 🔧",
+    "ai.chat.topics": [
+        "解释OWES中的各项功能和设置",
+        "指导您如何优化仓库流程和效率",
+        "提供故障排除建议和技术支持",
+        "分享最佳实践案例和行业趋势",
+        "回答关于库存管理、订单处理等具体问题"
+    ],
+    "ai.chat.quickStart": "🔍 快速开始 🔍",
+    "ai.chat.quickStartContent": "只需输入您的问题或选择一个话题，我将立即为您提供详细的信息和解决方案。无论是遇到技术难题还是想要提高操作效率，我都准备好协助您。",
+    "ai.chat.enhanceExperience": "🌟 提升您的OWES体验 🌟",
+    "ai.chat.enhanceContent": "通过我，您可以获得即时的帮助和支持，确保您的仓库运作顺畅无阻。让我们一起致力于改善您的仓库管理体验！",
+    "ai.chat.closing": "请问您现在有什么需要帮助的地方吗？或者您想先了解一下哪些方面？",
 
     "dashboard.keyPoint.title": "关键指标",
     "dashboard.keyPoint.data.warehouse.location.occupy.rate": "仓库空间利用率",

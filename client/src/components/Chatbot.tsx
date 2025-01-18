@@ -6,11 +6,13 @@ import user from "@/icon/ai-user.png";
 import {Button, Input} from "antd";
 import request from "@/utils/requestInterceptor";
 import {toast} from "amis";
+import {useTranslation} from "react-i18next";
 
 const Chatbot = () => {
     const [messages, setMessages] = useState<any[]>([]);
     const [input, setInput] = useState("");
     const [loading, setLoading] = useState(false);
+    const {t} = useTranslation();
 
     const handleSend = async (messageText: string) => {
         if (messageText.trim() === "") return;
@@ -48,47 +50,38 @@ const Chatbot = () => {
         setInput(e.target.value);
     };
 
+    const topics: any[string] = t('ai.chat.topics', {returnObjects: true});
+
     return (
         <>
             <div className="chatbox">
                 {/* Welcome message */}
                 <div className="message-container welcome-message">
                     <img src={assistant} alt="avatar" className="avatar"/>
-                    <div className="message" style={{whiteSpace: "pre-wrap"}}>
-                        <div>📦 <strong>欢迎来到OWES智能助手</strong> 📦</div>
-                        <p>您好！欢迎使用OWES智能问答助手，我是专门为您在开放仓库执行系统中的疑问提供解答的AI助手。</p>
+                    <div className="message" style={{whiteSpace: 'pre-wrap'}}>
+                        <div>{t('ai.chat.welcome')}</div>
+                        <p>{t('ai.chat.intro')}</p>
 
-                        <div>🔧 <strong>我能帮您做什么</strong> 🔧</div>
+                        <div>{t('ai.chat.whatICanDo')}</div>
                         <ul>
-                            <li className="clickable-topic"
-                                onClick={() => handleTopicClick("解释OWES中的各项功能和设置")}>
-                                解释OWES中的各项功能和设置
-                            </li>
-                            <li className="clickable-topic"
-                                onClick={() => handleTopicClick("指导您如何优化仓库流程和效率")}>
-                                指导您如何优化仓库流程和效率
-                            </li>
-                            <li className="clickable-topic"
-                                onClick={() => handleTopicClick("提供故障排除建议和技术支持")}>
-                                提供故障排除建议和技术支持
-                            </li>
-                            <li className="clickable-topic"
-                                onClick={() => handleTopicClick("分享最佳实践案例和行业趋势")}>
-                                分享最佳实践案例和行业趋势
-                            </li>
-                            <li className="clickable-topic"
-                                onClick={() => handleTopicClick("回答关于库存管理、订单处理等具体问题")}>
-                                回答关于库存管理、订单处理等具体问题
-                            </li>
+                            {topics.map((topic: string, index: string) => (
+                                <li
+                                    key={index}
+                                    className="clickable-topic"
+                                    onClick={() => handleTopicClick(topic)}
+                                >
+                                    {topic}
+                                </li>
+                            ))}
                         </ul>
 
-                        <div>🔍 <strong>快速开始</strong> 🔍</div>
-                        <p>只需输入您的问题或选择一个话题，我将立即为您提供详细的信息和解决方案。无论是遇到技术难题还是想要提高操作效率，我都准备好协助您。</p>
+                        <div>{t('ai.chat.quickStart')}</div>
+                        <p>{t('ai.chat.quickStartContent')}</p>
 
-                        <div>🌟 <strong>提升您的OWES体验</strong> 🌟</div>
-                        <p>通过我，您可以获得即时的帮助和支持，确保您的仓库运作顺畅无阻。让我们一起致力于改善您的仓库管理体验！</p>
+                        <div>{t('ai.chat.enhanceExperience')}</div>
+                        <p>{t('ai.chat.enhanceContent')}</p>
 
-                        <p>请问您现在有什么需要帮助的地方吗？或者您想先了解一下哪些方面？</p>
+                        <p>{t('ai.chat.closing')}</p>
                     </div>
                 </div>
 
