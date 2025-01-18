@@ -15,7 +15,7 @@ import RobotSvg from "@/icon/fontIcons/robot.svg" // path to your '*.svg' file.
 import Chatbot from "@/components/Chatbot"
 import style from "./index.module.scss"
 import classNames from "classnames/bind"
-import {Translation} from "react-i18next";
+import {Translation, useTranslation} from "react-i18next";
 
 const cx = classNames.bind(style)
 
@@ -86,7 +86,6 @@ export default class Admin extends React.Component<AdminProps, State> {
     onLanguageChange = (e: any) => {
         let menuList: string[] = Object.keys(this.state.menus)
         const options = menuList.map((menu) => {
-            // return { key: value, label: menus[value].title }
             return {
                 key: menu,
                 label: (this.state.menus as any)[menu].title
@@ -147,10 +146,12 @@ export default class Admin extends React.Component<AdminProps, State> {
                 let selectedApp = applications[0]
                 let navigations = [menus[selectedApp]] || []
                 const options = applications.map((value) => {
-                    // return { key: value, label: menus[value].title }
                     return {
                         key: value,
-                        label: menus[value].title
+                        label:
+                            <Translation>
+                                {(t) => t(menus[value].title)}
+                            </Translation>
                     }
                 })
 
@@ -262,8 +263,8 @@ export default class Admin extends React.Component<AdminProps, State> {
         if (pathname == "login" || pathname == "/") {
             return (
                 <Switch>
-                    <RouterGuard />
-                    <Redirect to={`/404`} />
+                    <RouterGuard/>
+                    <Redirect to={`/404`}/>
                 </Switch>
             )
         } else {
@@ -309,8 +310,8 @@ export default class Admin extends React.Component<AdminProps, State> {
                             />
                         ) : (
                             <Switch>
-                                <RouterGuard />
-                                <Redirect to={`/404`} />
+                                <RouterGuard/>
+                                <Redirect to={`/404`}/>
                             </Switch>
                         )}
                     </Layout>
@@ -326,7 +327,7 @@ export default class Admin extends React.Component<AdminProps, State> {
                         </span>
                     </Affix>
                     <Modal
-                        title= {<Translation>{(t) => t("ai.chat.title")}</Translation>}
+                        title={<Translation>{(t) => t("ai.chat.title")}</Translation>}
                         footer={null}
                         maskClosable={true}
                         open={this.state.isModalOpen}
@@ -337,7 +338,7 @@ export default class Admin extends React.Component<AdminProps, State> {
                             backgroundColor: "#fff"
                         }}
                     >
-                        <Chatbot />
+                        <Chatbot/>
                     </Modal>
                 </>
             )

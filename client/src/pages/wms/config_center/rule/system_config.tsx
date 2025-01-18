@@ -6,7 +6,6 @@ import {
 
 const schema = {
     type: "page",
-    // title: "systemConfigManagement.title",
     data: {
         dictionary: "${ls:dictionary}"
     },

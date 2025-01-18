@@ -2,6 +2,7 @@ import { Link, matchPath } from "react-router-dom"
 import { AsideNav } from "amis"
 import store from "@/stores"
 import React from "react"
+import {useTranslation} from "react-i18next";
 
 const WorkStation = "/wms/workStation" // 工作站路由
 
@@ -17,6 +18,8 @@ const RenderAside = ({ navigations, iframeShow, iframeMenuClick }: any) => {
         })
         return !!ret
     }
+
+    const {t} = useTranslation();
 
     return (
         <AsideNav
@@ -91,8 +94,7 @@ const RenderAside = ({ navigations, iframeShow, iframeMenuClick }: any) => {
                             color: "#fff"
                         }}
                     >
-                        {link.languageValueMappings?.[store.locale] ||
-                            link.title}
+                        {link.languageValueMappings?.[store.locale] || t(link.title)}
                     </span>
                 )
                 return !iframeShow && (isWorkStationCard || !hasChildren) ? (
