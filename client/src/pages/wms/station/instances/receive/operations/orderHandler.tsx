@@ -3,11 +3,9 @@ import {Col, Row, Typography} from "antd"
 import {useTranslation} from "react-i18next";
 
 const { Title } = Typography
-
-const { t } = useTranslation();
-
 const OrderHandler = (props: any) => {
     const { value, onCustomActionDispatch } = props
+    const { t } = useTranslation();
     const { customerOrderNo, storageType, skuKindNum, totalQty } = value
     return (
         <Row gutter={16} className="py-3 bg-white">

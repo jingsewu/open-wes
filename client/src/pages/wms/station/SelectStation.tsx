@@ -2,16 +2,13 @@ import React, { useState, useEffect, memo } from "react"
 import { Select, Typography, Button } from "antd"
 import store from "@/stores"
 import request from "@/utils/requestInterceptor"
+import {useTranslation} from "react-i18next";
 
 const { Title } = Typography
 
 const SelectStation = ({ isConfigSationId, setIsConfigStationId }: any) => {
     const [stationId, setStationId] = useState("")
     const [options, setOptions] = useState<any[]>([])
-
-    // useEffect(() => {
-    //     getStationId()
-    // }, [])
 
     useEffect(() => {
         if (isConfigSationId) return
@@ -82,10 +79,12 @@ const SelectStation = ({ isConfigSationId, setIsConfigStationId }: any) => {
         localStorage.setItem("stationId", stationId)
     }
 
+    const { t } = useTranslation();
+
     return (
         <div className="w-full h-full d-flex flex-col justify-center items-center">
             <Title level={4} className="mb-3">
-                请选择工作站
+                {t("station.home.div.selectStation")}
             </Title>
             <Select
                 // defaultValue="lucy"
@@ -105,7 +104,7 @@ const SelectStation = ({ isConfigSationId, setIsConfigStationId }: any) => {
                 }}
                 onClick={handleClick}
             >
-                确定
+                {t("station.home.button.confirm")}
             </Button>
         </div>
     )

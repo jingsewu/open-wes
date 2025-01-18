@@ -1,8 +1,4 @@
 {
-    "login.system": "稳石智能仓储管理系统",
-    "login.allRightsReservs": "版权所有",
-    "login.company": "稳石机器人（深圳）有限公司",
-    "login.hotline": "咨询热线",
     "login.submitText": "登录",
     "login.username": "用户名",
     "login.password": "密码",
@@ -101,7 +97,7 @@
     "modal.oneLineOneOrder": "一行一单",
     "modal.confirmBatchRetry": "确定批量重试吗？",
     "modal.cutoffTime": "超时时间",
-    "modal.cutoffTime.description": "WMS 调用算法计算派单和命中库存时的超时时间（单位：秒）",
+    "modal.cutoffTime.description": "WES 调用算法计算派单和命中库存时的超时时间（单位：秒）",
     "modal.algoMode": "调用模式",
     "modal.shareRackPoolMaxStationDistance": "共享货架池最大工作站间距",
     "modal.maxHitNum": "命中货架的工作站最大数量",
@@ -677,6 +673,9 @@
 
     "transferContainerManagement.title": "周转容器管理",
 
+    "station.home.div.selectStation": "请选择工作站",
+    "station.home.button.confirm": "确定",
+
     "outbound.station.sealContainer.remainder.title": "封箱提示",
     "outbound.station.sealContainer.remainder.transferContainer.code": "周转容器号",
     "outbound.station.sealContainer.remainder.destination": "目的地",
@@ -685,6 +684,7 @@
     "outbound.station.step.picking": "商品确认",
     "outbound.station.step.dispatch": "播种",
 
+    "receive.station.title": "收货",
     "receive.station.orderArea.div.skuKindNumber": "品项总数/已收/待收",
     "receive.station.orderArea.div.totalQty": "入库总数/已收/待收",
     "receive.station.warning.skuNotInOrder": "SKU在当前订单找不到",
@@ -705,5 +705,47 @@
     "stocktake.station.orderArea.div.stocktakeType": "盘点类型",
 
     "ai.chat.span": "点击与AI聊天",
-    "ai.chat.title": "AI 助手"
+    "ai.chat.title": "AI 助手",
+
+    "dashboard.keyPoint.title": "关键指标",
+    "dashboard.keyPoint.data.warehouse.location.occupy.rate": "仓库空间利用率",
+    "dashboard.keyPoint.data.stock.transfer.daily": "库存周转率(日)",
+    "dashboard.keyPoint.data.order.correct.rate": "订单准确率",
+    "dashboard.keyPoint.data.order.process.time": "平均订单处理时长(分钟)",
+    "dashboard.keyPoint.data.operator.performance": "人员劳动生产率",
+
+    "dashboard.order.inbound.title": "订单处理区域 - 入库",
+    "dashboard.order.inbound.data.count": "入库订单总量统计",
+    "dashboard.order.inbound.data.status": "入库订单状态分布",
+
+    "dashboard.order.outbound.title": "订单处理区域 - 出库",
+    "dashboard.order.outbound.data.count": "出库订单总量统计",
+    "dashboard.order.outbound.data.status": "出库订单状态分布",
+
+    "dashboard.order.stocktake.title": "订单处理区域 - 盘点",
+    "dashboard.order.stocktake.data.count": "盘点订单总量统计",
+    "dashboard.order.stocktake.data.status": "盘点订单状态分布",
+
+    "dashboard.stock.title": "库存总量与周转率",
+    "dashboard.stock.data.total": "总量",
+    "dashboard.stock.data.transfer.rate": "周转率",
+
+    "dashboard.stock.waring.title": "库存预警提示",
+    "dashboard.stock.waring.data.product": "商品名称",
+    "dashboard.stock.waring.data.product.count": "当前库存",
+    "dashboard.stock.waring.data.product.safe.count": "安全库存范围",
+    "dashboard.stock.waring.data.product.warehouse.area": "库区",
+
+    "dashboard.resource.title": "资源分配区域",
+    "dashboard.resource.operator.assigned": "人员任务分配情况",
+    "dashboard.resource.operator.number": "员工编号",
+    "dashboard.resource.operator.assigned.tasks": "分配任务数",
+    "dashboard.resource.operator.complete.tasks": "已完成任务数",
+    "dashboard.resource.operator.tasks.complete.rate": "任务完成率",
+
+    "dashboard.equipment.title": "设备运行状态",
+
+    "dashboard.date.day": "日",
+    "dashboard.date.week": "周",
+    "dashboard.date.month": "月"
 }

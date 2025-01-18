@@ -75,7 +75,7 @@ const schema = {
                             body: [
                                 {
                                     type: "switch",
-                                    label: "是否检查重复的客户单号",
+                                    label: "form.system.config.outbound.checkRepeatedCustomerOrderNo",
                                     name: "outboundConfig.checkRepeatedCustomerOrderNo",
                                     description: ""
                                 }
@@ -107,6 +107,7 @@ const schema = {
                         },
                         {
                             title: "form.tab.outboundAlgoConfiguration",
+
                             name: "outboundAlgoConfig",
                             body: [
                                 {

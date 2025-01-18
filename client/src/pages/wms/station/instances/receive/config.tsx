@@ -1,9 +1,9 @@
 import React from "react"
-import { Translation } from "react-i18next"
+import {Translation} from "react-i18next"
 
-import type { WorkStationConfig } from "@/pages/wms/station/instances/types"
-import { DebugType } from "@/pages/wms/station/instances/types"
-import { TabActionType } from "@/pages/wms/station/tab-actions/constant"
+import type {WorkStationConfig} from "@/pages/wms/station/instances/types"
+import {DebugType} from "@/pages/wms/station/instances/types"
+import {TabActionType} from "@/pages/wms/station/tab-actions/constant"
 
 import Tips from "./operations/tips"
 import TaskDetail from "./custom-actions/TaskDetail"
@@ -13,7 +13,7 @@ import PickingHandler from "./operations/pickingHandler"
 import RobotHandler from "./operations/RobotHandler"
 import OrderHandler from "./operations/orderHandler"
 
-import { StationOperationType } from "./type"
+import {StationOperationType} from "./type"
 
 export const OPERATION_MAP = {
     [StationOperationType.robotArea]: RobotHandler,
@@ -25,20 +25,10 @@ export const OPERATION_MAP = {
 /**
  * 工作站物理设备类型
  */
-export const CurrentModeType: any = {
-    SELECT_CONTAINER_PUT_AWAY: (
-        <Translation>{(t) => t("replenish.title")}</Translation>
-    ),
-    RECOMMEND: "收货",
-    NONE: ""
-}
-/**
- * 工作站物理设备类型
- */
 
 const config: WorkStationConfig<string> = {
     type: "receive",
-    title: "收货",
+    title: <Translation>{(t) => t("receive.station.title")}</Translation>,
     stepsDescribe: [
         {
             type: "collectingDoc",

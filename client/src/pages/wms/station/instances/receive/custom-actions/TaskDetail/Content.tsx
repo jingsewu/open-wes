@@ -15,13 +15,13 @@ const columns = [
     {
         name: "orderNo",
         dbField: "a.order_no",
-        label: "收货单号",
+        label: "table.acceptOrderNo",
         searchable: true
     },
     {
         name: "identifyNo",
         dbField: "a.identify_no",
-        label: "容器",
+        label: "table.containerCode",
         searchable: true
     },
     {

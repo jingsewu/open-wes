@@ -3,12 +3,10 @@ import { TabActionModalType } from "@/pages/wms/station/tab-actions/types"
 import React from "react"
 
 import Content from "./Content"
-import {useTranslation} from "react-i18next";
-
-const { t } = useTranslation();
+import {Translation} from "react-i18next";
 
 const TaskDetail: TabAction = {
-    name: t("receive.detail.title"),
+    name: <Translation>{(t) => t("receive.detail.title")}</Translation>,
     key: "TaskDetail",
     position: "left",
     modalType: TabActionModalType.FULL_SCREEN,
@@ -18,7 +16,7 @@ const TaskDetail: TabAction = {
         return <Content {...props} />
     },
     modalConfig: {
-        title: t("receive.detail.title"),
+        title: <Translation>{(t) => t("receive.detail.title")}</Translation>,
         okText: "",
         footer: null
     },
