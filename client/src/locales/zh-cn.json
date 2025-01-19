@@ -696,7 +696,7 @@
     "receive.station.containerArea.receiveQty": "输入收货数量",
     "receive.station.containerArea.chooseContainerSpec": "容器规格选择",
     "receive.station.containerArea.chooseContainerSlot": "请输入格口号",
-    "receive.station.button.full": "请输入格口号",
+    "receive.station.button.full": "满箱",
     "receive.station.button.confirm": "确定",
     "receive.station.button.scanLpn": "请扫描LPN号",
 

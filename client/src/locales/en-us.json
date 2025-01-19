@@ -696,7 +696,7 @@
     "receive.station.containerArea.receiveQty": "Enter received quantity",
     "receive.station.containerArea.chooseContainerSpec": "Choose container specification",
     "receive.station.containerArea.chooseContainerSlot": "Enter grid code",
-    "receive.station.button.full": "Enter grid code",
+    "receive.station.button.full": "Container Full",
     "receive.station.button.confirm": "Confirm",
     "receive.station.button.scanLpn": "Please scan the LPN code",
 
