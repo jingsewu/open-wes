@@ -1,0 +1,74 @@
+version: '3.4'
+
+services:
+  mysql:
+    image: mysql:8.0.18
+    container_name: mysql
+    restart: always
+    tty: true
+    ports:
+      - "3306:3306"
+    command:
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_general_ci
+      --explicit_defaults_for_timestamp=true
+      --lower_case_table_names=1
+    environment:
+      - MYSQL_ROOT_PASSWORD=123
+      - LANG=C.UTF-8
+    volumes:
+      - /etc/localtime:/etc/localtime
+      - ./mysql/data:/var/lib/mysql
+    networks:
+      - app-network
+
+  redis:
+    image: redis:7.2
+    container_name: redis
+    restart: always
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+      - TZ=Asia/Shanghai
+    ports:
+      - "6379:6379"
+    tty: true
+    volumes:
+      - /etc/localtime:/etc/localtime
+      - ./redis/data:/data
+      - ./redis/logs:/logs
+      - ./redis/conf:/etc/redis
+    networks:
+      - app-network
+
+  nacos:
+    image: nacos/nacos-server:2.0.0
+    container_name: nacos
+    restart: always
+    depends_on:
+      - mysql
+    volumes:
+      - /etc/localtime:/etc/localtime
+      - "./nacos/logs:/home/nacos/logs"
+    environment:
+      - PREFER_HOST_MODE=hostname
+      - MODE=standalone
+      - SPRING_DATASOURCE_PLATFORM=mysql
+      - MYSQL_SERVICE_HOST=mysql
+      - MYSQL_SERVICE_DB_NAME=nacos_config
+      - MYSQL_SERVICE_PORT=3306
+      - MYSQL_SERVICE_USER=root
+      - MYSQL_SERVICE_PASSWORD=123
+      - JVM_XMS=512m
+      - JVM_XMX=512m
+      - JVM_XMN=128m
+    ports:
+      - "8848:8848"
+      - "9848:9848"
+      - "9849:9849"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
