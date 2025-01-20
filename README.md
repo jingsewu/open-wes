@@ -23,20 +23,38 @@ and real-time data tracking.
 - [Node.js](https://nodejs.org/)(18+): For running the client application.
 
 > Mysql, Nacos and Redis should be installed on the same machine.
+> You can use /server/docker/docker-compose to install all the middlewares like mysql, nacos and redis.
 
 ### Steps
 
-1. Clone the repository:
+Clone the repository:
    ```bash
    git clone https://github.com/jinsewu/openwes.git
    ```
-2. Add nacos config through executing the scripts in the /script folder
-3. Configure the hostname `nacos.openwes.com` by editing your hosts file (e.g., `/etc/hosts` on Linux or `C:\Windows\System32\drivers\etc\hosts` on Windows):  
+#### Run server
+
+1. Add nacos config through executing the scripts in the server/script folder
+```bash
+mysql -u root -p openwes < server/script/nacos_config.sql
+```
+2. Configure the hostname `nacos.openwes.com` by editing your hosts file (e.g., `/etc/hosts` on Linux or `C:\Windows\System32\drivers\etc\hosts` on Windows):  
    ```172.0.0.1 nacos.openwes.com```
-4. Create database openwes
-5. Start the servers: WesApplication, GatewayApplication and StationApplication located in the /server directory
-6. Start the client: cd client and run npm install, then run npm start
-7. input user/password: admin/12345
+3. Create database openwes:
+  ```sql
+    create database openwes;
+  ```
+4. Start the servers: WesApplication, GatewayApplication and StationApplication located in the server/server directory
+
+#### Run client
+1. update [webpack.config.example.dev.js](client/build/webpack.config.example.dev.js) to webpack.config.dev.js
+```bash
+mv client/build/webpack.config.example.dev.js client/build/webpack.config.dev.js
+```
+2. Start the client: cd client and run：
+  ```bash
+  npm install
+  npm start
+  ```
 
 ## Usage
 
