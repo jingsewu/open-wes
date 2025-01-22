@@ -1,6 +1,10 @@
 package org.openwes.api.platform.application;
 
 import com.alibaba.ttl.TtlRunnable;
+import io.micrometer.common.util.StringUtils;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.dubbo.config.annotation.DubboService;
 import org.openwes.api.platform.api.ICallbackApi;
 import org.openwes.api.platform.api.constants.CallbackApiTypeEnum;
 import org.openwes.api.platform.api.dto.callback.CallbackMessage;
@@ -10,14 +14,11 @@ import org.openwes.api.platform.application.service.handler.CallbackHandlerFacto
 import org.openwes.api.platform.domain.entity.ApiPO;
 import org.openwes.api.platform.domain.service.ApiService;
 import org.openwes.common.utils.http.Response;
-import io.micrometer.common.util.StringUtils;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 @Service
 @Slf4j
@@ -28,6 +29,7 @@ public class CallbackApiImpl implements ICallbackApi {
     private final HandlerExecutor handlerExecutor;
     private final CallbackHandlerFactory callbackHandlerFactory;
     private final ApiService apiService;
+    private final Executor callbackExecutor;
 
     @Override
     public <T> Response callback(CallbackApiTypeEnum callbackType, String bizType, CallbackMessage<T> sourceData) {
@@ -55,7 +57,8 @@ public class CallbackApiImpl implements ICallbackApi {
 
         ApiPO finalApiPO = apiPO;
         CompletableFuture.runAsync(Objects.requireNonNull(
-                        TtlRunnable.get(() -> handlerExecutor.synchronizeExecuteCallback(handler, finalApiPO, sourceData))))
+                                TtlRunnable.get(() -> handlerExecutor.synchronizeExecuteCallback(handler, finalApiPO, sourceData)))
+                        , callbackExecutor)
                 .exceptionally(e -> {
                     log.error("callback error", e);
                     return null;

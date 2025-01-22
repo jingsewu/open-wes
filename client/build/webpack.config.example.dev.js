@@ -93,7 +93,7 @@ webpackConfig = {
         // compress: false,
         proxy: {
             "/gw": {
-                target: "http://xx.xx.xx.xx:8090",
+                target: "http://localhost:8090",
                 changeOrigin: true,
                 ws: true,
                 logLevel: "debug",
@@ -119,5 +119,3 @@ webpackConfig = {
 }
 
 module.exports = webpackConfig
-// 打印每个模块的执行速度
-// module.exports = smp.wrap(webpackConfig);

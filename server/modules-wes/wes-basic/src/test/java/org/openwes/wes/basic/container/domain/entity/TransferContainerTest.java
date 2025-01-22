@@ -1,8 +1,8 @@
-package org.openwes.wes.task.domain.entity;
+package org.openwes.wes.basic.container.domain.entity;
 
-import org.openwes.wes.api.task.constants.TransferContainerStatusEnum;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openwes.wes.api.task.constants.TransferContainerStatusEnum;
 
 import static org.junit.jupiter.api.Assertions.*;
 

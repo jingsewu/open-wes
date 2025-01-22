@@ -50,6 +50,9 @@ public class SkuMainDataRepositoryImpl implements SkuMainDataRepository {
     @Transactional(rollbackFor = Exception.class)
     public void saveAll(List<SkuMainData> skuMainDataList) {
         skuMainDataList.forEach(this::save);
+
+        //TODO partition the list and  use batch save then flush
+//        skuMainDataPORepository.flush();
     }
 
     @Override
