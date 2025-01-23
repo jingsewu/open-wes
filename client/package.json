@@ -57,7 +57,10 @@
         "react-router": "5.2.1",
         "react-router-dom": "5.2.1",
         "react-use": "^17.4.2",
-        "sass-loader": "^16.0.3"
+        "sass-loader": "^16.0.3",
+        "chart.js": "^4.4.1",
+        "lucide-react": "^0.344.0",
+        "react-chartjs-2": "^5.2.0"
     },
     "devDependencies": {
         "@babel/core": "^7.22.8",
