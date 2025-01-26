@@ -813,5 +813,8 @@
     "空箱出库": "Empty Container Outbound",
     "周转容器管理": "Transfer Container Management",
     "Dashboard": "Dashboard",
-    "库内操作": "In-warehouse Operation"
+    "库内操作": "In-warehouse Operation",
+    "智能分析": "AI Analysis",
+
+    "dataPlatform.ai.analysis.title": "AI Analysis"
 }

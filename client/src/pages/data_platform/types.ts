@@ -15,7 +15,28 @@ export interface ColumnMetadata {
   description: string;
 }
 
-export interface Message {
-  role: 'user' | 'assistant';
-  content: string;
+export interface DashboardWidget {
+  id: string;
+  type: 'chart' | 'table' | 'kpi';
+  title: string;
+  query: string;
+  visualization?: 'line' | 'bar' | 'pie';
+  result?: QueryResult;
+  insights?: string[];
+  size?: {
+    w: number;  // Width in grid columns (1-12)
+    h: number;  // Height in grid rows
+  };
+}
+
+export interface Dashboard {
+  id: string;
+  name: string;
+  widgets: DashboardWidget[];
+  userId?: string;  // To associate dashboard with user
+}
+
+export interface TabProps {
+  isActive: boolean;
+  onClose?: () => void;
 }

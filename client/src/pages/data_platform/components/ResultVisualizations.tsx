@@ -15,15 +15,15 @@ import { Line, Bar, Pie } from 'react-chartjs-2';
 import { QueryResult } from '../types';
 
 ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  BarElement,
-  ArcElement,
-  Title,
-  Tooltip,
-  Legend
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    BarElement,
+    ArcElement,
+    Title,
+    Tooltip,
+    Legend
 );
 
 interface ResultVisualizationsProps {
@@ -36,12 +36,12 @@ export function ResultVisualizations({ result, activeChart }: ResultVisualizatio
 
   // Find numeric columns for y-axis based on dataType
   const numericColumns = result.columns.filter(column =>
-    ['number', 'integer', 'decimal', 'float', 'double'].includes(column.dataType.toLowerCase())
+      ['number', 'integer', 'decimal', 'float', 'double'].includes(column.dataType.toLowerCase())
   );
 
   // Use first non-numeric column as labels (x-axis)
   const labelColumn = result.columns.find(column =>
-    !['number', 'integer', 'decimal', 'float', 'double'].includes(column.dataType.toLowerCase())
+      !['number', 'integer', 'decimal', 'float', 'double'].includes(column.dataType.toLowerCase())
   ) || result.columns[0];
 
   const chartData = {
@@ -79,10 +79,10 @@ export function ResultVisualizations({ result, activeChart }: ResultVisualizatio
   if (!activeChart) return null;
 
   return (
-    <div className="h-[400px] w-full">
-      {activeChart === 'line' && <Line data={chartData} options={options} />}
-      {activeChart === 'bar' && <Bar data={chartData} options={options} />}
-      {activeChart === 'pie' && <Pie data={chartData} options={options} />}
-    </div>
+      <div className="h-[400px] w-full">
+        {activeChart === 'line' && <Line data={chartData} options={options} />}
+        {activeChart === 'bar' && <Bar data={chartData} options={options} />}
+        {activeChart === 'pie' && <Pie data={chartData} options={options} />}
+      </div>
   );
 }
