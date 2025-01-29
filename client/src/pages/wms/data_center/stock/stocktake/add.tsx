@@ -5,8 +5,9 @@ import {
     warehouse_area_id,
     warehouse_logic_id
 } from "@/pages/wms/constants/select_search_api_contant"
-import { api_stocktake_order_add } from "@/pages/wms/data_center/constants/api_constant"
-import { toast } from "amis"
+import {api_stocktake_order_add} from "@/pages/wms/data_center/constants/api_constant"
+import {toast} from "amis"
+
 let warehouseCode = localStorage.getItem("warehouseCode")
 
 const dialog = {
@@ -83,7 +84,7 @@ const dialog = {
                     name: "stocktakeType",
                     label: "table.countType",
                     selectFirst: true,
-                    source: "${StocktakeType}",
+                    source: "${dictionary.StocktakeType}",
                     required: true,
                     className: "stocktakeType"
                 },
@@ -92,7 +93,7 @@ const dialog = {
                     name: "stocktakeMethod",
                     selectFirst: true,
                     label: "table.countMethod",
-                    source: "${StocktakeMethod}",
+                    source: "${dictionary.StocktakeMethod}",
                     required: true,
                     className: "stocktakeMethod"
                 }
