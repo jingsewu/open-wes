@@ -1,6 +1,6 @@
 import schema2component from "@/utils/schema2component"
-import { create_update_columns } from "@/utils/commonContants"
-import { api_crud_search_by_warehouseCode } from "@/pages/constantApi"
+import {create_update_columns} from "@/utils/commonContants"
+import {api_crud_search_by_warehouseCode} from "@/pages/constantApi"
 
 const columns = [
     {
@@ -124,7 +124,6 @@ const detailColumns = [
 
 const searchIdentity = "WPickingOrder"
 const searchDetailIdentity = "WPickingOperationTask"
-const showColumns = columns
 const showDetailColumns = detailColumns
 
 const detailDialog = {
@@ -134,7 +133,8 @@ const detailDialog = {
     closeOnOutside: true,
     size: "xl",
     data: {
-        dictionary: "${ls:dictionary}"
+        dictionary: "${ls:dictionary}",
+        id: "${id}"
     },
     body: [
         {
@@ -175,7 +175,7 @@ const schema = {
             api: api_crud_search_by_warehouseCode,
             defaultParams: {
                 searchIdentity: searchIdentity,
-                showColumns: showColumns,
+                showColumns: columns,
                 searchObject: {
                     orderBy: "update_time desc"
                 }

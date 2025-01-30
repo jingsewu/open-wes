@@ -159,33 +159,33 @@ function App() {
                     ) : (
                         <>
                             {/* Query Input */}
-                            <form onSubmit={handleSubmit} className="mb-8">
-                                <div className="flex flex-col gap-2">
-                                    <label htmlFor="query" className="text-sm font-medium text-gray-700">
-                                        Describe your query in natural language
-                                    </label>
-                                    <div className="flex gap-2">
-                                        <input
-                                            type="text"
-                                            id="query"
-                                            value={query}
-                                            onChange={(e) => setQuery(e.target.value)}
-                                            placeholder="e.g., Show me all users who signed up last month"
-                                            className="flex-1 rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40"
-                                            disabled={loading}
-                                        />
-                                        <button
-                                            type="submit"
-                                            disabled={loading || !query.trim()}
-                                            className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
-                                        >
-                                            <Search className="h-5 w-5"/>
-                                            <span>Query</span>
-                                        </button>
+                                <form onSubmit={handleSubmit} className="mb-8">
+                                    <div className="flex flex-col gap-2">
+                                        <label htmlFor="query" className="text-sm font-medium text-gray-700">
+                                            Describe your query in natural language
+                                        </label>
+                                        <div className="flex gap-2">
+                                            <input
+                                                type="text"
+                                                id="query"
+                                                value={query}
+                                                onChange={(e) => setQuery(e.target.value)}
+                                                placeholder="e.g., Show me all users who signed up last month"
+                                                className="flex-1 rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40"
+                                                disabled={loading}
+                                            />
+                                            <button
+                                                type="submit"
+                                                disabled={loading || !query.trim()}
+                                                className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
+                                            >
+                                                <Search className="h-5 w-5"/>
+                                                <span>Query</span>
+                                            </button>
 
+                                        </div>
                                     </div>
-                                </div>
-                            </form>
+                                </form>
 
                             {/* Loading State */}
                             {loading && (
@@ -350,7 +350,7 @@ function App() {
                                             <div className="p-4">
                                                 <ResultVisualizations
                                                     result={result}
-                                                    activeChart={activeView === 'table' ? null : activeView}
+                                                    activeChart={activeView === 'line' || activeView === 'bar' || activeView === 'pie' ? activeView : null}
                                                 />
                                             </div>
                                         )}
