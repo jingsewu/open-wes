@@ -10,7 +10,7 @@ import {
     create_update_columns,
     true_false_options
 } from "@/utils/commonContants"
-import { api_crud_search, api_crud_search_total } from "@/pages/constantApi"
+import {api_crud_search, api_crud_search_total} from "@/pages/constantApi"
 
 const baseform = [
     {
@@ -151,11 +151,19 @@ const configForm = [
     },
     {
         label: "interfacePlatform.interfaceManagement.form.requestTransformationScript",
-        type: "textarea",
+        type: "editor",
+        size: "lg",
         name: "jsParamConverter",
         description:
             "interfacePlatform.interfaceManagement.form.requestTransformationScript.description",
-        visibleOn: "${paramConverterType == 'JS'}"
+        visibleOn: "${paramConverterType == 'JS'}",
+        language: "java",
+        placeholder: "Enter your java code here...",
+        options: {
+            lineNumbers: true,
+            theme: "default",
+            autofocus: true
+        }
     },
     {
         label: "interfacePlatform.interfaceManagement.form.requestTransformationScript",
@@ -172,9 +180,16 @@ const configForm = [
     },
     {
         label: "interfacePlatform.interfaceManagement.form.responseTransformationScripts",
-        type: "textarea",
+        type: "editor",
         name: "jsResponseConverter",
-        visibleOn: "${responseConverterType == 'JS'}"
+        visibleOn: "${responseConverterType == 'JS'}",
+        language: "java",
+        placeholder: "Enter your java code here...",
+        options: {
+            lineNumbers: true,
+            theme: "default",
+            autofocus: true
+        }
     },
     {
         label: "interfacePlatform.interfaceManagement.form.responseTransformationScripts",
