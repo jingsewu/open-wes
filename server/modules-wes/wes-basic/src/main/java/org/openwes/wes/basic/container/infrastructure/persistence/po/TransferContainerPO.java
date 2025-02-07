@@ -1,13 +1,13 @@
 package org.openwes.wes.basic.container.infrastructure.persistence.po;
 
-import org.openwes.common.utils.base.UpdateUserPO;
-import org.openwes.wes.api.task.constants.TransferContainerStatusEnum;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.openwes.common.utils.base.UpdateUserPO;
+import org.openwes.wes.api.task.constants.TransferContainerStatusEnum;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.List;
@@ -25,41 +25,55 @@ import static org.hibernate.type.SqlTypes.JSON;
                 @Index(name = "idx_update_time", columnList = "updateTime")
         }
 )
+@Comment("Transfer Container Management Table - Stores details of transfer containers, including their status, location, and related records.")
 public class TransferContainerPO extends UpdateUserPO {
 
     @Id
     @GeneratedValue(generator = "databaseIdGenerator")
     @GenericGenerator(name = "databaseIdGenerator", strategy = "org.openwes.common.utils.id.IdGenerator")
+    @Comment("Unique identifier for the transfer container")
     private Long id;
 
-    @Column(nullable = false, columnDefinition = "varchar(64) comment '周转容器编码'")
+    @Column(nullable = false, length = 64)
+    @Comment("Unique code for the transfer container")
     private String transferContainerCode;
 
-    @Column(nullable = false, columnDefinition = "varchar(64) comment '仓库编号'")
+    @Column(nullable = false, length = 64)
+    @Comment("Code of the warehouse where this transfer container is used")
     private String warehouseCode;
 
-    @Column(columnDefinition = "varchar(64) comment '周转容器规格'")
+    @Column(length = 64)
+    @Comment("Specification code of the transfer container")
     private String containerSpecCode = "";
 
-    @Column(nullable = false, columnDefinition = "bigint(11) comment '最后一次工作的库区'")
+    @Column(nullable = false)
+    @Comment("ID of the last warehouse area where the container was used")
     private Long warehouseAreaId = 0L;
 
-    @Column(columnDefinition = "varchar(64) comment '点位编码'")
+    @Column(length = 64)
+    @Comment("Location code where the transfer container is currently located")
     private String locationCode;
 
+    @Comment("Flag indicating if the container is virtual")
     private boolean virtualContainer;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, columnDefinition = "varchar(32) comment '状态'")
+    @Column(nullable = false, length = 32)
+    @Comment("Current status of the transfer container. Possible values are: " +
+            "IDLE (IDLE - 空闲), " +
+            "OCCUPANCY (OCCUPANCY - 占用), " +
+            "LOCKED (LOCKED - 锁定) ")
     private TransferContainerStatusEnum transferContainerStatus;
 
-    @Column(nullable = false, columnDefinition = "bigint default 0 comment '锁定时间'")
+    @Column(nullable = false)
+    @Comment("Timestamp when the container was last locked")
     private Long lockedTime = 0L;
 
-    @Comment("表示一个周期内关联的周转容器记录(TransferContainerRecord)")
     @JdbcTypeCode(JSON)
+    @Comment("List of IDs of related transfer container records for the current period")
     private List<Long> currentPeriodRelateRecordIds;
 
     @Version
+    @Comment("Optimistic locking version number")
     private Long version;
 }

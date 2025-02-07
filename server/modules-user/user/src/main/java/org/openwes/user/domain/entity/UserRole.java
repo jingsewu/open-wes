@@ -1,14 +1,9 @@
 package org.openwes.user.domain.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Index;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -25,6 +20,7 @@ import java.io.Serializable;
         }
 )
 @Accessors(chain = true)
+@Comment("User-Role mapping table - manages many-to-many relationships between users and their assigned roles")
 public class UserRole implements Serializable {
 
     @Serial
@@ -33,12 +29,14 @@ public class UserRole implements Serializable {
     @Id
     @GeneratedValue(generator = "databaseIdGenerator")
     @GenericGenerator(name = "databaseIdGenerator", strategy = "org.openwes.common.utils.id.IdGenerator")
+    @Comment("Unique identifier for user-role assignment")
     private Long id;
 
-    @Column(nullable = false, columnDefinition = "bigInt(11) comment '用户id'")
+    @Column(nullable = false)
+    @Comment("Foreign key reference to u_user.id - links to the user receiving the role assignment")
     private Long userId;
 
-    @Column(nullable = false, columnDefinition = "bigInt(11) comment '角色id'")
+    @Column(nullable = false)
+    @Comment("Foreign key reference to u_role.id - links to the role being assigned to the user")
     private Long roleId;
-
 }

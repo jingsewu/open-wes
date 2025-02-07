@@ -1,17 +1,11 @@
 package org.openwes.user.domain.entity;
 
 import org.openwes.common.utils.base.UpdateUserPO;
-import io.swagger.annotations.ApiModelProperty;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Index;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -28,54 +22,60 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 )
 @DynamicUpdate
 @Accessors(chain = true)
+@Comment("System user management table - stores user authentication and profile information in multi-tenant environment")
 public class User extends UpdateUserPO {
 
     @Id
     @GeneratedValue(generator = "databaseIdGenerator")
     @GenericGenerator(name = "databaseIdGenerator", strategy = "org.openwes.common.utils.id.IdGenerator")
+    @Comment("Unique identifier for user")
     private Long id;
 
-    @Column(nullable = false, columnDefinition = "varchar(128) comment '用户名称'")
+    @Column(nullable = false, length = 128)
+    @Comment("Display name shown in UI and reports")
     private String name;
 
-    @Column(columnDefinition = "varchar(64) comment '手机号'")
+    @Column(length = 64)
+    @Comment("Contact phone number - optional for notifications")
     private String phone;
 
-    @Column(columnDefinition = "varchar(128) comment '邮箱'")
+    @Column(length = 128)
+    @Comment("Email address - optional for notifications and password recovery")
     private String email;
 
-    @ApiModelProperty("登录用户名")
-    @Column(nullable = false, columnDefinition = "varchar(128) comment '登录用户名'")
+    @Column(nullable = false, length = 128)
+    @Comment("Unique login username/account identifier for authentication")
     private String account;
 
-    @ApiModelProperty("密码")
-    @Column(nullable = false, columnDefinition = "varchar(128) comment '密码(加密后)'")
+    @Column(nullable = false, length = 128)
+    @Comment("Encrypted password hash - defaults to 123456 before first login")
     private String password = "123456";
 
-    @ApiModelProperty("帐号状态（1启用, 0停用）")
-    @Column(nullable = false, columnDefinition = "int comment '状态（1启用, 0停用）'")
+    @Column(nullable = false)
+    @Comment("Account status: 1=Active can login, 0=Inactive blocked from login")
     private Integer status;
 
-    @ApiModelProperty("是否被锁(小于等于5表示未被锁, 大于5表示被锁)")
-    @Column(nullable = false, columnDefinition = "int comment '是否被锁(小于等于5表示未被锁, 大于5表示被锁)'")
+    @Column(nullable = false)
+    @Comment("Account lock counter: less or equal 5=active, greater than 5=locked")
     private Integer locked = 0;
 
-    @ApiModelProperty("头像地址")
-    @Column(columnDefinition = "varchar(128) comment '头像地址'")
+    @Column(length = 128)
+    @Comment("URL or path to profile avatar image")
     private String avatar;
 
-    @ApiModelProperty("上一次登录的ip地址")
-    @Column(columnDefinition = "varchar(64) comment '上一次登录的ip地址'")
+    @Column(length = 64)
+    @Comment("Last successful login IP address for security tracking")
     private String lastLoginIp;
 
-    @ApiModelProperty("上一次登录的时间")
-    @Column(columnDefinition = "varchar(64) comment '上一次登录的时间'")
+    @Column(length = 64)
+    @Comment("Last successful login timestamp for security tracking")
     private String lastGmtLoginTime;
 
-    @ApiModelProperty("账号标识,默认为 NORMAL:普通账号")
-    @Column(nullable = false, columnDefinition = "varchar(64) comment '账号标识,默认为 NORMAL:普通账号'")
+    @Column(nullable = false, length = 64)
+    @Comment("Account type identifier: NORMAL=Standard account, others for special types")
     private String type = "NORMAL";
 
-    @Column(nullable = false, columnDefinition = "varchar(64) comment '租户'")
+    @Column(nullable = false, length = 64)
+    @Comment("Tenant identifier for multi-tenant system isolation")
     private String tenantName;
 }

@@ -4,13 +4,11 @@ import {
     api_api_config_get,
     api_api_config_update,
     api_api_delete,
-    api_api_update
+    api_api_update, editorDidMount
 } from "@/pages/api_platform/constants/api_constant"
-import {
-    create_update_columns,
-    true_false_options
-} from "@/utils/commonContants"
+import {create_update_columns, true_false_options} from "@/utils/commonContants"
 import {api_crud_search, api_crud_search_total} from "@/pages/constantApi"
+import request from "@/utils/requestInterceptor";
 
 const baseform = [
     {
@@ -160,10 +158,16 @@ const configForm = [
         language: "java",
         placeholder: "Enter your java code here...",
         options: {
+            automaticLayout: true,
             lineNumbers: true,
-            theme: "default",
-            autofocus: true
-        }
+            autofocus: true,
+            lineHeight: 24,
+            theme: "vs-dark", // Dark theme for the editor
+            fontFamily: "'Courier New', monospace",
+            fontSize: 14,
+            wordWrap: "on",
+        },
+        editorDidMount: editorDidMount
     },
     {
         label: "interfacePlatform.interfaceManagement.form.requestTransformationScript",
@@ -186,10 +190,16 @@ const configForm = [
         language: "java",
         placeholder: "Enter your java code here...",
         options: {
+            automaticLayout: true,
             lineNumbers: true,
-            theme: "default",
-            autofocus: true
-        }
+            autofocus: true,
+            lineHeight: 24,
+            theme: "vs-dark", // Dark theme for the editor
+            fontFamily: "'Courier New', monospace",
+            fontSize: 14,
+            wordWrap: "on",
+        },
+        editorDidMount: editorDidMount
     },
     {
         label: "interfacePlatform.interfaceManagement.form.responseTransformationScripts",

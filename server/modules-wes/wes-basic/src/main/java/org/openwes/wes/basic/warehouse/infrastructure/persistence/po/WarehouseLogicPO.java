@@ -1,19 +1,13 @@
 package org.openwes.wes.basic.warehouse.infrastructure.persistence.po;
 
-import org.openwes.common.utils.base.UpdateUserPO;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Index;
-import jakarta.persistence.Table;
-import jakarta.persistence.Version;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Where;
+import org.openwes.common.utils.base.UpdateUserPO;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
@@ -28,34 +22,48 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 )
 @DynamicUpdate
 @Where(clause = "deleted=false")
+@Comment("Warehouse Logic Management Table - Stores detailed information about warehouse logic zones.")
 public class WarehouseLogicPO extends UpdateUserPO {
-
 
     @Id
     @GeneratedValue(generator = "databaseIdGenerator")
     @GenericGenerator(name = "databaseIdGenerator", strategy = "org.openwes.common.utils.id.IdGenerator")
+    @Comment("Unique identifier for the warehouse logic zone record")
     private Long id;
 
-    @Column(nullable = false, columnDefinition = "varchar(64) comment '仓库编码'")
+    @Column(nullable = false, length = 64)
+    @Comment("Code of the warehouse where this logic zone belongs")
     private String warehouseCode;
 
-    @Column(nullable = false, columnDefinition = "bigint default 0 comment '库区ID'")
+    @Column(nullable = false)
+    @Comment("ID of the warehouse area where this logic zone belongs (Reference to w_warehouse_area table id)")
     private Long warehouseAreaId;
 
-    @Column(nullable = false, columnDefinition = "varchar(64) comment '逻辑区编码'")
+    @Column(nullable = false, length = 64)
+    @Comment("Unique code for the warehouse logic zone")
     private String warehouseLogicCode;
 
-    @Column(nullable = false, columnDefinition = "varchar(128) comment '逻辑区名称'")
+    @Column(nullable = false, length = 128)
+    @Comment("Name of the warehouse logic zone")
     private String warehouseLogicName;
 
-    @Column(columnDefinition = "varchar(500) comment '备注'")
+    @Column(length = 500)
+    @Comment("Additional remarks or notes about the warehouse logic zone")
     private String remark;
 
+    @Column
+    @Comment("Flag indicating if the warehouse logic zone is enabled")
     private boolean enable;
+
+    @Column
+    @Comment("Flag indicating if the warehouse logic zone is deleted")
     private boolean deleted;
-    @Column(nullable = false, columnDefinition = "bigint default 0 comment '备注'")
+
+    @Column(nullable = false)
+    @Comment("Timestamp when the warehouse logic zone was deleted, if applicable")
     private Long deleteTime = 0L;
 
     @Version
+    @Comment("Optimistic locking version number")
     private long version;
 }

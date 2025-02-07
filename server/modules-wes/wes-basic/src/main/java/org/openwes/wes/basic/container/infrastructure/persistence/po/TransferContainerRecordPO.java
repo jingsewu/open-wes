@@ -1,11 +1,12 @@
 package org.openwes.wes.basic.container.infrastructure.persistence.po;
 
-import org.openwes.common.utils.base.UpdateUserPO;
-import org.openwes.wes.api.task.constants.TransferContainerRecordStatusEnum;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
+import org.openwes.common.utils.base.UpdateUserPO;
+import org.openwes.wes.api.task.constants.TransferContainerRecordStatusEnum;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @EqualsAndHashCode(callSuper = true)
@@ -15,47 +16,59 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Table(
         name = "w_transfer_container_record",
         indexes = {
-                // only binding the same transferContainerCode after it sealed.
                 @Index(name = "uk_container_order_order_status", columnList = "transferContainerCode,pickingOrderId,sealTime", unique = true),
-                // for manual area picking order query
                 @Index(name = "idx_order", columnList = "pickingOrderId")
         }
 )
+@Comment("Transfer Container Record Management Table - Tracks records of transfer containers, including their status, destination, and related order information.")
 public class TransferContainerRecordPO extends UpdateUserPO {
 
     @Id
     @GeneratedValue(generator = "databaseIdGenerator")
     @GenericGenerator(name = "databaseIdGenerator", strategy = "org.openwes.common.utils.id.IdGenerator")
+    @Comment("Unique identifier for the transfer container record")
     private Long id;
 
-    @Column(nullable = false, columnDefinition = "varchar(64) comment '周转容器编码'")
+    @Column(nullable = false, length = 64)
+    @Comment("Unique code for the transfer container")
     private String transferContainerCode;
 
-    @Column(columnDefinition = "bigint(11) comment '工作站ID'")
+    @Column(length = 64)
+    @Comment("ID of the workstation associated with this transfer container record")
     private Long workStationId;
 
-    @Column(nullable = false, columnDefinition = "bigint(11) comment '拣选订单ID'")
+    @Column(nullable = false)
+    @Comment("ID of the picking order associated with this transfer container record")
     private Long pickingOrderId;
 
-    @Column(nullable = false, columnDefinition = "varchar(64) comment '播种墙格口'")
+    @Column(nullable = false, length = 64)
+    @Comment("Code of the put wall slot where the transfer container is destined")
     private String putWallSlotCode;
 
-    @Column(nullable = false, columnDefinition = "varchar(64) comment '仓库编码'")
+    @Column(nullable = false, length = 64)
+    @Comment("Code of the warehouse where this transfer container is used")
     private String warehouseCode;
 
-    @Column(nullable = false, columnDefinition = "int(11) comment '第几个周转箱'")
+    @Column(nullable = false)
+    @Comment("Index indicating the sequence of the transfer container in a series")
     private Integer containerIndex = 0;
 
-    @Column(nullable = false, columnDefinition = "varchar(128) comment '周转箱目的地'")
+    @Column(length = 128)
+    @Comment("Destination of the transfer container")
     private String destination = "";
 
-    @Column(nullable = false, columnDefinition = "bigint default 0 comment '封箱时间'")
+    @Column(nullable = false)
+    @Comment("Timestamp when the transfer container was sealed")
     private Long sealTime = 0L;
 
-    @Column(nullable = false, columnDefinition = "varchar(20) comment '周转箱记录状态'")
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    @Comment("Status of the transfer container record. Possible values are: " +
+            "BOUNDED (BOUNDED - 绑定), " +
+            "SEALED (SEALED - 已封箱)")
     private TransferContainerRecordStatusEnum transferContainerStatus;
 
     @Version
+    @Comment("Optimistic locking version number")
     private Long version;
 }

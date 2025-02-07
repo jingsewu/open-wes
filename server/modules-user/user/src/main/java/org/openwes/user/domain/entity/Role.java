@@ -1,14 +1,15 @@
 package org.openwes.user.domain.entity;
 
-import org.openwes.common.utils.base.UpdateUserPO;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+import org.openwes.common.utils.base.UpdateUserPO;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.List;
@@ -25,27 +26,32 @@ import java.util.List;
 )
 @DynamicUpdate
 @Accessors(chain = true)
+@Comment("System role definition table - manages user role assignments and warehouse access permissions")
 public class Role extends UpdateUserPO {
 
     @Id
     @GeneratedValue(generator = "databaseIdGenerator")
     @GenericGenerator(name = "databaseIdGenerator", strategy = "org.openwes.common.utils.id.IdGenerator")
+    @Comment("Unique identifier for role")
     private Long id;
 
-    @Column(nullable = false, columnDefinition = "varchar(128) comment '角色名称'")
+    @Column(nullable = false, length = 128)
+    @Comment("Display name of the role shown in UI and reports")
     private String name;
 
-    @Column(nullable = false, columnDefinition = "varchar(64) comment '角色编码'")
+    @Column(nullable = false, length = 64)
+    @Comment("Unique role identifier code used for programmatic access control - immutable after creation")
     private String code;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(nullable = false, columnDefinition = "json comment '有权限查询的仓库'")
+    @Column(nullable = false)
+    @Comment("List of warehouse codes this role can access - stored as JSON array for flexible permission management")
     private List<String> warehouseCodes;
 
-    @Column(nullable = false, columnDefinition = "int comment '状态（1启用, 0停用）'")
+    @Column(nullable = false)
+    @Comment("Role status: 1=Active and can be assigned to users, 0=Inactive and cannot be assigned")
     private Integer status;
 
-    @Column(columnDefinition = "varchar(255) comment '描述'")
+    @Comment("Optional detailed description of role purpose, responsibilities and access scope")
     private String description;
-
 }

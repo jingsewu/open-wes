@@ -1,18 +1,18 @@
 package org.openwes.wes.basic.work_station.infrastructure.persistence.po;
 
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import org.hibernate.annotations.Comment;
+import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import org.openwes.common.utils.base.UpdateUserPO;
 import org.openwes.wes.api.basic.constants.WorkStationModeEnum;
 import org.openwes.wes.api.basic.constants.WorkStationStatusEnum;
 import org.openwes.wes.api.basic.dto.PositionDTO;
 import org.openwes.wes.api.basic.dto.WorkStationDTO;
-import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.annotations.Where;
-import org.hibernate.type.SqlTypes;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.List;
@@ -28,51 +28,80 @@ import java.util.List;
         }
 )
 @DynamicUpdate
-@Where(clause = "deleted=false")
+@Comment("Workstation Management Table - Stores detailed information about workstations and their statuses.")
 public class WorkStationPO extends UpdateUserPO {
 
     @Id
     @GeneratedValue(generator = "databaseIdGenerator")
     @GenericGenerator(name = "databaseIdGenerator", strategy = "org.openwes.common.utils.id.IdGenerator")
+    @Comment("Unique identifier for the workstation record")
     private Long id;
 
-    @Column(nullable = false, columnDefinition = "varchar(64) comment '工作站编码'")
+    @Column(nullable = false, length = 64)
+    @Comment("Code of the workstation")
     private String stationCode;
 
-    @Column(nullable = false, columnDefinition = "varchar(128) comment '工作站编码'")
+    @Column(nullable = false, length = 128)
+    @Comment("Name of the workstation")
     private String stationName;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, columnDefinition = "varchar(20) comment '状态'")
+    @Column(nullable = false, length = 20)
+    @Comment("Status of the workstation. Possible values are: " +
+            "ONLINE (ONLINE - Online), " +
+            "PAUSED (PAUSED - Paused), " +
+            "OFFLINE (OFFLINE - Offline)")
     private WorkStationStatusEnum workStationStatus = WorkStationStatusEnum.OFFLINE;
 
-    @Column(nullable = false, columnDefinition = "varchar(64) comment '仓库编码'")
+    @Column(nullable = false, length = 64)
+    @Comment("Code of the warehouse where this workstation belongs")
     private String warehouseCode;
-    @Column(nullable = false, columnDefinition = "bigint comment '库区ID'")
+
+    @Column(nullable = false)
+    @Comment("ID of the warehouse area where this workstation belongs (Reference to w_warehouse_area table id)")
     private Long warehouseAreaId;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "varchar(50) comment '操作类型'")
+    @Column(length = 50)
+    @Comment("Operation mode of the workstation. Possible values are: " +
+            "RECEIVE (RECEIVE - Receive), " +
+            "SELECT_CONTAINER_PUT_AWAY (SELECT_CONTAINER_PUT_AWAY - Select container for put away), " +
+            "RECOMMENDED_CONTAINER_PUT_AWAY (RECOMMENDED_CONTAINER_PUT_AWAY - Recommended container for put away), " +
+            "PICKING (PICKING - Picking), " +
+            "STOCKTAKE (STOCKTAKE - Stock take), " +
+            "EMPTY_CONTAINER_OUTBOUND (EMPTY_CONTAINER_OUTBOUND - Empty container outbound), " +
+            "ONE_STEP_RELOCATION (ONE_STEP_RELOCATION - One-step relocation), " +
+            "TWO_STEP_RELOCATION (TWO_STEP_RELOCATION - Two-step relocation)")
     private WorkStationModeEnum workStationMode;
 
-    @Column(columnDefinition = "json comment '工作站允许的操作'")
+    @Column
     @JdbcTypeCode(SqlTypes.JSON)
+    @Comment("List of allowed operation modes for the workstation (JSON format)")
     private List<WorkStationModeEnum> allowWorkStationModes;
 
-    @Column(columnDefinition = "json comment '工作站工作位'")
+    @Column
     @JdbcTypeCode(SqlTypes.JSON)
+    @Comment("Work locations of the workstation (JSON format)")
     private List<WorkStationDTO.WorkLocation<? extends WorkStationDTO.WorkLocationSlot>> workLocations;
 
-    @Column(columnDefinition = "json comment '工作站位置'")
+    @Column
     @JdbcTypeCode(SqlTypes.JSON)
+    @Comment("Position information of the workstation (JSON format)")
     private PositionDTO position;
 
+    @Column
+    @Comment("Flag indicating if the workstation is enabled")
     private boolean enable;
 
+    @Column
+    @Comment("Flag indicating if the workstation is deleted")
     private boolean deleted;
-    @Column(nullable = false, columnDefinition = "bigint default 0 comment '删除时间'")
+
+    @Column(nullable = false)
+    @Comment("Timestamp when the workstation was deleted, if applicable")
     private Long deleteTime = 0L;
 
     @Version
+    @Comment("Optimistic locking version number")
     private Long version;
 }

@@ -1,11 +1,12 @@
 package org.openwes.wes.basic.warehouse.infrastructure.persistence.po;
 
-import org.openwes.common.utils.base.UpdateUserPO;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
+import org.openwes.common.utils.base.UpdateUserPO;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
@@ -19,18 +20,24 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
         }
 )
 @DynamicUpdate
+@Comment("Aisle Management Table - Stores detailed information about aisles within warehouse areas.")
 public class AislePO extends UpdateUserPO {
 
     @Id
     @GeneratedValue(generator = "databaseIdGenerator")
     @GenericGenerator(name = "databaseIdGenerator", strategy = "org.openwes.common.utils.id.IdGenerator")
+    @Comment("Unique identifier for the aisle record")
     private Long id;
 
-    @Column(nullable = false, columnDefinition = "varchar(64) comment '巷道编码'")
+    @Column(nullable = false, length = 64)
+    @Comment("Unique code for the aisle")
     private String aisleCode;
 
-    @Column(nullable = false, columnDefinition = "bigint default 0 comment '库区ID'")
+    @Column(nullable = false)
+    @Comment("ID of the warehouse area where this aisle is located (Reference to w_warehouse_area table id)")
     private Long warehouseAreaId;
 
+    @Column
+    @Comment("Flag indicating if the aisle has a single entrance")
     private boolean singleEntrance;
 }
