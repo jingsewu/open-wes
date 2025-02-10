@@ -3,6 +3,7 @@ package org.openwes.wes.inbound.infrastructure.persistence.po;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -24,47 +25,72 @@ import java.util.Map;
                 @Index(unique = true, name = "uk_order_no", columnList = "taskNo")
         }
 )
-
 @DynamicUpdate
+@Comment("Put-Away Task - Manages the movement of received goods to their final storage locations. " +
+        "Tracks container movements, workstation assignments, and task completion status. " +
+        "Part of the inbound process after goods acceptance.")
 public class PutAwayTaskPO extends AuditUserPO {
 
     @Id
     @GeneratedValue(generator = "databaseIdGenerator")
     @GenericGenerator(name = "databaseIdGenerator", strategy = "org.openwes.common.utils.id.IdGenerator")
+    @Comment("Primary key - Unique identifier for each put-away task")
     private Long id;
 
-    @Column(nullable = false, columnDefinition = "varchar(64) default '' comment '任务编号'")
+    @Column(nullable = false, length = 64)
+    @Comment("Task Number - Unique business identifier for the put-away task. " +
+            "Used for operation tracking and reference. Must be unique across all tasks")
     private String taskNo;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "varchar(50) default '' comment '上架任务类型'")
+    @Column(length = 50)
+    @Comment("Task Type - Categorizes the put-away operation type. " +
+            "Determines handling procedures and system behavior")
     private PutAwayTaskTypeEnum taskType;
 
-    @Column(nullable = false, columnDefinition = "varchar(64) default '' comment '仓库编码'")
+    @Column(nullable = false, length = 64)
+    @Comment("Warehouse Code - Identifies the warehouse where put-away occurs. " +
+            "Controls location assignment and operation boundaries")
     private String warehouseCode;
 
     @Column(nullable = false)
+    @Comment("Warehouse Area ID - Specific zone/area within the warehouse. " +
+            "Used for location planning and optimization")
     private Long warehouseAreaId;
 
-    @Column(nullable = false, columnDefinition = "bigint default 0 comment '工作台ID'")
+    @Column(nullable = false)
+    @Comment("Workstation ID - Identifies the physical workstation assigned to this task. " +
+            "Used for task assignment and operation tracking")
     private Long workStationId;
 
-    @Column(nullable = false, columnDefinition = "varchar(64) default '' comment '容器编码'")
+    @Column(nullable = false, length = 64)
+    @Comment("Container Code - Identifier for the physical container being moved. " +
+            "Used to track the specific unit being put away")
     private String containerCode;
-    @Column(nullable = false, columnDefinition = "varchar(64) default '' comment '容器规格'")
+
+    @Column(nullable = false, length = 64)
+    @Comment("Container Specification Code - Defines the type and characteristics of the container. " +
+            "Used for compatibility checking with storage locations")
     private String containerSpecCode;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, columnDefinition = "varchar(20) default '' comment '上架任务状态'")
+    @Column(nullable = false, length = 20)
+    @Comment("Put away task Status - Current state in lifecycle: " +
+            "NEW (新单据) -> PUTTING_AWAY (上架中) -> PUTTED_AWAY (上架完成) ")
     private PutAwayTaskStatusEnum taskStatus;
 
-    @Column(nullable = false, columnDefinition = "varchar(64) default '' comment '库位编码'")
+    @Column(nullable = false, length = 64)
+    @Comment("Location Code - Target storage location for the container. " +
+            "Represents the final destination for the put-away operation")
     private String locationCode = "";
 
-    @Column(columnDefinition = "json comment '扩展字段'")
+    @Column
     @JdbcTypeCode(SqlTypes.JSON)
+    @Comment("Extended Fields - Dynamic JSON map for additional attributes. " +
+            "Stores task-specific data without requiring schema changes")
     private Map<String, Object> extendFields;
 
     @Version
+    @Comment("Version - Optimistic locking mechanism for concurrent updates")
     private Long version;
 }

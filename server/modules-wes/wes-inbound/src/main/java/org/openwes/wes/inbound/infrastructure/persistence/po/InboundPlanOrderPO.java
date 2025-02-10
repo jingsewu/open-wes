@@ -29,63 +29,111 @@ import java.util.Map;
         }
 )
 @DynamicUpdate
+@Comment("Inbound Plan Order - Master record for planned warehouse receipts. " +
+        "Tracks expected deliveries from creation through receiving and closure. " +
+        "Manages shipping details, quantities, and status transitions.")
 public class InboundPlanOrderPO extends AuditUserPO {
 
     @Id
     @GeneratedValue(generator = "databaseIdGenerator")
     @GenericGenerator(name = "databaseIdGenerator", strategy = "org.openwes.common.utils.id.IdGenerator")
+    @Comment("Primary key - Unique identifier for each inbound plan")
     private Long id;
 
-    @Column(nullable = false, columnDefinition = "varchar(64) comment '订单编号'")
+    @Column(nullable = false, length = 64)
+    @Comment("Order Number - Internal system reference number. " +
+            "Must be unique across all inbound plans")
     private String orderNo;
 
-    @Column(nullable = false, columnDefinition = "varchar(64) comment '客户订单编号'")
+    @Column(nullable = false, length = 64)
+    @Comment("Customer Order Number - External reference number from customer. " +
+            "Used for customer communication and tracking")
     private String customerOrderNo;
 
-    @Column(nullable = false, columnDefinition = "varchar(64) comment 'LPN'")
+    @Column(nullable = false, length = 64)
+    @Comment("License Plate Number (LPN) - Unique identifier for the physical shipment. " +
+            "Used for tracking and receiving operations")
     private String lpnCode = "";
 
-    @Column(nullable = false, columnDefinition = "varchar(64) comment '仓库'")
+    @Column(nullable = false, length = 64)
+    @Comment("Warehouse Code - Identifies the receiving warehouse location. " +
+            "Controls inventory assignment and operations")
     private String warehouseCode;
 
     @Column(length = 128, nullable = false)
-    @Comment("customer order type")
+    @Comment("Customer Order Type - Categorizes the order based on customer requirements. " +
+            "Affects handling procedures and priorities")
     private String customerOrderType = "";
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, columnDefinition = "varchar(20) comment '存储类型'")
+    @Column(nullable = false, length = 20)
+    @Comment("Storage Type - Defines how goods should be stored after receipt. " +
+            "Affects put-away rules and location assignment")
     private StorageTypeEnum storageType;
+
+    @Comment("Abnormal Flag - Indicates if this inbound plan has any exceptions. " +
+            "Used for exception handling and reporting")
     private boolean abnormal;
 
-    @Column(nullable = false, columnDefinition = "varchar(128) comment '发货方'")
+    @Column(nullable = false, length = 128)
+    @Comment("Sender - Name or identifier of the shipping party. " +
+            "Used for shipment verification and communication")
     private String sender = "";
-    @Column(nullable = false, columnDefinition = "varchar(128) comment '承运商'")
+
+    @Column(nullable = false, length = 128)
+    @Comment("Carrier - Transportation company handling the delivery. " +
+            "Used for delivery coordination and tracking")
     private String carrier = "";
-    @Column(nullable = false, columnDefinition = "varchar(64) comment '承运方式'")
+
+    @Column(nullable = false, length = 64)
+    @Comment("Shipping Method - Mode of transportation used. " +
+            "Affects receiving preparation and handling requirements")
     private String shippingMethod = "";
-    @Column(nullable = false, columnDefinition = "varchar(128) comment '承运单号'")
+
+    @Column(nullable = false, length = 128)
+    @Comment("Tracking Number - Carrier's shipment tracking number. " +
+            "Used for shipment tracking and receipt verification")
     private String trackingNumber = "";
-    @Column(nullable = false, columnDefinition = "bigint comment '预计到达时间'")
+
+    @Column(nullable = false)
+    @Comment("Estimated Arrival Date - Expected delivery timestamp (epoch millis). " +
+            "Used for resource planning and scheduling")
     private Long estimatedArrivalDate = 0L;
 
-    @Column(nullable = false, columnDefinition = "varchar(255) comment '备注'")
+    @Column(nullable = false)
+    @Comment("Remarks - Additional notes about the inbound plan. " +
+            "Used for special instructions or requirements")
     private String remark = "";
 
-    @Column(nullable = false, columnDefinition = "int(11) comment 'SKU种类'")
+    @Column(nullable = false)
+    @Comment("SKU Kind Number - Count of distinct SKUs in the order. " +
+            "Used for planning receiving operations")
     private Integer skuKindNum;
-    @Column(nullable = false, columnDefinition = "int(11) default 0 comment '总数量'")
+
+    @Column(nullable = false)
+    @Comment("Total Quantity - Total number of individual items expected. " +
+            "Used for receipt verification and capacity planning")
     private Integer totalQty;
-    @Column(nullable = false, columnDefinition = "int(11) default 0 comment '总箱数'")
+
+    @Column(nullable = false)
+    @Comment("Total Boxes - Number of physical boxes/containers expected. " +
+            "Used for space planning and handling preparation")
     private Integer totalBox;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, columnDefinition = "varchar(20) comment '状态'")
+    @Column(nullable = false, length = 20)
+    @Comment("Inbound Plan Status - Current state in lifecycle: " +
+            "NEW (新单据) -> ACCEPTING (收货中) -> ACCEPTED (收货完成) " +
+            "Can be CANCEL (取消) or CLOSED (关闭) as terminal states")
     private InboundPlanOrderStatusEnum inboundPlanOrderStatus = InboundPlanOrderStatusEnum.NEW;
 
-    @Column(columnDefinition = "json comment '扩展字段'")
+    @Column
     @JdbcTypeCode(SqlTypes.JSON)
+    @Comment("Extended Fields - Dynamic JSON map for additional attributes. " +
+            "Stores custom fields without schema changes")
     private Map<String, Object> extendFields;
 
     @Version
+    @Comment("Version - Optimistic locking mechanism for concurrent updates")
     private Long version;
 }

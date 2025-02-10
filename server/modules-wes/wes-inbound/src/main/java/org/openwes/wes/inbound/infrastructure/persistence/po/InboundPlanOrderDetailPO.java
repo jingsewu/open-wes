@@ -4,6 +4,7 @@ import org.openwes.common.utils.base.UpdateUserPO;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -25,56 +26,85 @@ import java.util.TreeMap;
         }
 )
 @DynamicUpdate
+@Comment("Inbound Plan Order Detail Management Table - " +
+        "This table stores detailed information about inbound plan order items, " +
+        "including box details, quantities, SKU information, and additional attributes. " +
+        "It is used to manage and track the process of inbound operations.")
 public class InboundPlanOrderDetailPO extends UpdateUserPO {
 
     @Id
     @GeneratedValue(generator = "databaseIdGenerator")
     @GenericGenerator(name = "databaseIdGenerator", strategy = "org.openwes.common.utils.id.IdGenerator")
+    @Comment("Unique identifier for the inbound plan order detail record")
     private Long id;
 
-    @Column(nullable = false, columnDefinition = "bigint comment '入库通知单ID'")
+    @Column(nullable = false)
+    @Comment("ID of the inbound plan order (Reference to w_inbound_plan_order table id)")
     private Long inboundPlanOrderId;
 
-    @Column(nullable = false, columnDefinition = "varchar(64) comment '箱号'")
+    @Column(nullable = false, length = 64)
+    @Comment("Box number for the inbound plan order detail")
     private String boxNo = "";
 
-    @Column(nullable = false, columnDefinition = "int(11) comment '计划数量'")
+    @Column(nullable = false)
+    @Comment("Planned quantity to be restocked")
     private Integer qtyRestocked = 0;
-    @Column(nullable = false, columnDefinition = "int(11) comment '验收数量'")
-    private Integer qtyAccepted = 0;
-    @Column(nullable = false, columnDefinition = "int(11) comment '未收货数量'")
-    private Integer qtyUnreceived = 0;
 
-    @Column(nullable = false, columnDefinition = "int(11) comment '异常数量'")
+    @Column(nullable = false)
+    @Comment("Accepted quantity after inspection")
+    private Integer qtyAccepted = 0;
+
+    @Column(nullable = false)
+    @Comment("Quantity with abnormalities")
     private Integer qtyAbnormal = 0;
-    @Column(columnDefinition = "varchar(128) comment '异常原因'")
+
+    @Column(length = 128)
+    @Comment("Reason for the abnormality")
     private String abnormalReason;
-    @Column(columnDefinition = "varchar(128) comment '异常原因责任方'")
+
+    @Column(length = 128)
+    @Comment("Party responsible for the abnormality")
     private String responsibleParty;
 
-    @Column(nullable = false, columnDefinition = "varchar(64) comment '货主编码'")
+    @Column(nullable = false, length = 64)
+    @Comment("Code of the owner of the goods")
     private String ownerCode;
-    @Column(nullable = false, columnDefinition = "bigint comment 'skuID'")
+
+    @Column(nullable = false)
+    @Comment("ID of the SKU (Reference to m_sku_main_data table id)")
     private Long skuId;
-    @Column(nullable = false, columnDefinition = "varchar(64) comment 'sku编码'")
+
+    @Column(nullable = false, length = 64)
+    @Comment("Code of the SKU")
     private String skuCode;
-    @Column(nullable = false, columnDefinition = "varchar(512) comment 'sku名称'")
+
+    @Column(nullable = false, length = 512)
+    @Comment("Name of the SKU")
     private String skuName = "";
 
-    @Column(columnDefinition = "varchar(64) comment '款式'")
+    @Column(length = 64)
+    @Comment("Style of the SKU")
     private String style;
-    @Column(columnDefinition = "varchar(64) comment '颜色'")
+
+    @Column(length = 64)
+    @Comment("Color of the SKU")
     private String color;
-    @Column(columnDefinition = "varchar(64) comment '尺码'")
+
+    @Column(length = 64)
+    @Comment("Size of the SKU")
     private String size;
-    @Column(columnDefinition = "varchar(64) comment '品牌'")
+
+    @Column(length = 64)
+    @Comment("Brand of the SKU")
     private String brand;
 
-    @Column(columnDefinition = "json comment '批次属性'")
+    @Column
     @JdbcTypeCode(SqlTypes.JSON)
+    @Comment("Batch attributes stored as JSON")
     private Map<String, Object> batchAttributes = new TreeMap<>();
 
-    @Column(columnDefinition = "json comment '扩展字段'")
+    @Column
     @JdbcTypeCode(SqlTypes.JSON)
+    @Comment("Extended fields stored as JSON")
     private Map<String, Object> extendFields = new TreeMap<>();
 }
