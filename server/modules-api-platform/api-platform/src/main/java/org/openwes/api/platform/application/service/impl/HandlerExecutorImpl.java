@@ -1,6 +1,8 @@
 package org.openwes.api.platform.application.service.impl;
 
 import com.alibaba.fastjson2.JSON;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.openwes.api.platform.api.dto.callback.CallbackMessage;
 import org.openwes.api.platform.api.exception.error_code.ApiPlatformErrorCodeEnum;
 import org.openwes.api.platform.application.context.CallbackHandleContext;
@@ -18,12 +20,7 @@ import org.openwes.api.platform.utils.AssertUtils;
 import org.openwes.api.platform.utils.ConverterHelper;
 import org.openwes.api.platform.utils.ResponseUtils;
 import org.openwes.common.utils.http.Response;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-
-import java.util.concurrent.CompletableFuture;
 
 import static org.openwes.api.platform.api.exception.error_code.ApiPlatformErrorCodeEnum.API_API_IS_NOT_ENABLE;
 
@@ -72,16 +69,6 @@ public class HandlerExecutorImpl implements HandlerExecutor {
             log.error("handle customer request error.apiType:{},body:{}", apiType, body, e);
             return ConverterHelper.convertResponse(handleContext.getApiConfig(), ResponseUtils.buildResponse(e));
         }
-    }
-
-    /**
-     * 执行回调处理
-     */
-    @Override
-    @ApiLog(apiCode = "#apiPO.code", messageId = "#sourceData.messageId")
-    @Async(value = "callbackExecutor")
-    public <T> CompletableFuture<Response> executeCallback(CallbackHandler handler, ApiPO apiPO, CallbackMessage<T> sourceData) {
-        return CompletableFuture.completedFuture(executeCallbackWithoutLog(handler, apiPO, sourceData));
     }
 
     @ApiLog(apiCode = "#apiPO.code", messageId = "#sourceData != null ? #sourceData.messageId : ''")

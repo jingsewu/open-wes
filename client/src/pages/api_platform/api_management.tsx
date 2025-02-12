@@ -188,7 +188,15 @@ const configForm = [
         name: "jsResponseConverter",
         visibleOn: "${responseConverterType == 'JS'}",
         language: "java",
-        placeholder: "Enter your java code here...",
+        placeholder: "Enter your java code here and named function as convert. for example: " +
+            "                //java:myMethod" +
+            "                public class MyClass {" +
+            "                    public Object myMethod(Object param) {\n" +
+            "                        Map<String, Object> input = (Map<String, Object>) param;\n" +
+            "                        return \"Hello,  \"+ input.get(\"name\");\n" +
+            "                    }\n" +
+            "                }\n" +
+            "                \"\"\"",
         options: {
             automaticLayout: true,
             lineNumbers: true,

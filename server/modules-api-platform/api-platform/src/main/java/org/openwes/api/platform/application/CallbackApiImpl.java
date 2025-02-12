@@ -34,16 +34,15 @@ public class CallbackApiImpl implements ICallbackApi {
     @Override
     public <T> Response callback(CallbackApiTypeEnum callbackType, String bizType, CallbackMessage<T> sourceData) {
 
-        //1.1:业务场景（服务）路由
         CallbackHandler handler = callbackHandlerFactory.getHandler(callbackType);
 
-        //1.1 查询接口配置，由于回传可能根据客户的订单状态来回传到不通的系统，所以增加bizType-customerOrderType的判断
         ApiPO apiPO = apiService.getByCode(callbackType.name());
         if (apiPO == null && StringUtils.isNotEmpty(bizType)) {
+            //由于回传可能根据客户的订单状态来回传到不通的系统，所以增加bizType-customerOrderType的判断
             apiPO = apiService.getByCode(ApiPO.generateCode(callbackType, bizType));
         }
         if (apiPO == null) {
-            log.warn("api config is not exist，callbackType: {},bizType: {}", callbackType, bizType);
+            log.error("api config is not exist，callbackType: {},bizType: {}", callbackType, bizType);
             return null;
         }
         if (!apiPO.isEnabled()) {

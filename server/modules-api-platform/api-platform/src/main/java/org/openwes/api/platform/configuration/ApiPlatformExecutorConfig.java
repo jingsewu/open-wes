@@ -18,8 +18,8 @@ public class ApiPlatformExecutorConfig {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(Runtime.getRuntime().availableProcessors() * 2 + 1);
         executor.setMaxPoolSize(executor.getCorePoolSize() * 2);
-        executor.setQueueCapacity(256);
-        executor.setThreadNamePrefix("call-back-executor");
+        executor.setQueueCapacity(1000);
+        executor.setThreadNamePrefix("callback-executor-");
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
         executor.initialize();
         return TtlExecutors.getTtlExecutor(executor);
@@ -30,8 +30,8 @@ public class ApiPlatformExecutorConfig {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(Runtime.getRuntime().availableProcessors() * 2 + 1);
         executor.setMaxPoolSize(executor.getCorePoolSize() * 2);
-        executor.setQueueCapacity(256);
-        executor.setThreadNamePrefix("adapter-asyncService-");
+        executor.setQueueCapacity(1000);
+        executor.setThreadNamePrefix("request-executor-");
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
         executor.initialize();
         return TtlExecutors.getTtlExecutor(executor);

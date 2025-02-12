@@ -152,6 +152,8 @@ subprojects {
             dependency group: 'org.graalvm.js', name: 'js', version: '22.3.1'
             dependency group: 'org.graalvm.js', name: 'js-scriptengine', version: '22.3.1'
 
+            dependency group: 'org.apache.groovy', name: 'groovy', version: '4.0.22'
+
             dependency group: 'org.liquibase', name: 'liquibase-core', version: '4.29.2'
         }
     }

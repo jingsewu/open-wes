@@ -19,4 +19,6 @@ dependencies {
     implementation 'org.graalvm.js:js-scriptengine'
 
     implementation 'io.swagger.core.v3:swagger-annotations'
+
+    implementation 'org.apache.groovy:groovy'
 }

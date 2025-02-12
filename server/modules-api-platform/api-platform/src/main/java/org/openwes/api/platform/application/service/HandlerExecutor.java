@@ -11,8 +11,6 @@ public interface HandlerExecutor {
 
     Object executeRequest(String apiType, String body);
 
-    <T> CompletableFuture<Response> executeCallback(CallbackHandler handler, ApiPO apiPO, CallbackMessage<T> sourceData);
-
     <T> Response synchronizeExecuteCallback(CallbackHandler handler, ApiPO apiPO, CallbackMessage<T> sourceData);
 
     Response executeCallbackWithoutLog(CallbackHandler handler, ApiPO apiPO, Object sourceData);

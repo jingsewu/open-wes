@@ -1,6 +1,7 @@
 package org.openwes.api.platform.application.service.handler;
 
 import com.alibaba.fastjson2.JSONObject;
+import lombok.extern.slf4j.Slf4j;
 import org.openwes.api.platform.api.exception.error_code.ApiPlatformErrorCodeEnum;
 import org.openwes.api.platform.application.context.CallbackHandleContext;
 import org.openwes.api.platform.application.service.CallbackHandlerService;
@@ -9,7 +10,6 @@ import org.openwes.api.platform.infrastructure.WmsClientService;
 import org.openwes.api.platform.utils.ConverterHelper;
 import org.openwes.common.utils.exception.code_enum.CommonErrorDescEnum;
 import org.openwes.common.utils.http.Response;
-import lombok.extern.slf4j.Slf4j;
 import org.openwes.common.utils.utils.JsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,19 +40,16 @@ public abstract class CallbackHandler implements CallbackHandlerService {
 
     @Override
     public void invoke(CallbackHandleContext context) {
-        //判断是否无需回传：1、接口配置回传忽略，2、afterConvert场景中的插件可能处理为无需发送
         if (context.isIgnoreCallback() || context.getTargetData() == null) {
             return;
         }
         Object result = invoke(context.getApiPO(), context.getTargetData());
 
-        //异常
         if (result instanceof Response response) {
             context.setResponse(response);
             return;
         }
 
-        //通过模板解析回调结果
         Response response;
         Object convertResponse = ConverterHelper.convertResponse(context.getApiConfig(), result);
         if (convertResponse == null) {
