@@ -2,6 +2,11 @@ package org.openwes.user.controller.controller;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.openwes.common.utils.http.Response;
 import org.openwes.common.utils.user.UserContext;
 import org.openwes.user.application.CurrentUserService;
@@ -12,12 +17,6 @@ import org.openwes.user.controller.param.user.UserInfoUpdatedParam;
 import org.openwes.user.controller.param.user.UserUpdatePasswordParam;
 import org.openwes.user.domain.entity.Menu;
 import org.openwes.user.domain.entity.Role;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -25,7 +24,6 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(BaseResource.API + "currentUser")
-@Api(tags = "当前认证的用户接口")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "User Module Api")
@@ -36,7 +34,7 @@ public class CurrentUserController extends BaseResource {
     private final UserRoleService userRoleService;
 
     @GetMapping("/getAuth")
-    @ApiOperation("查询菜单树")
+    @Operation(summary ="查询菜单树")
     public Object getAuth() {
         List<Role> roles = userRoleService.getByUserName(UserContext.getCurrentUser());
         Set<String> warehouseSet = roles.stream()
@@ -54,7 +52,7 @@ public class CurrentUserController extends BaseResource {
     }
 
     @PostMapping("/searchMenuTree")
-    @ApiOperation(value = "查询菜单树(前端使用)", response = Menu.class)
+    @Operation(summary = "查询菜单树(前端使用)", description = "查询菜单树的 API")
     public Object searchMenuTree(@RequestParam Integer pageIndex,
                                  @RequestParam Integer pageSize) {
         if (pageIndex == null || pageIndex <= 0) {
@@ -85,7 +83,7 @@ public class CurrentUserController extends BaseResource {
     }
 
     @PostMapping("/password")
-    @ApiOperation("修改密码")
+    @Operation(summary ="修改密码")
     public Object updatePassword(@RequestBody @Valid UserUpdatePasswordParam param) {
         Preconditions.checkState(Objects.equals(param.getNewPassword(), param.getConfirmNewPassword()));
         userService.updateCurrentUserPassword(UserContext.getCurrentUser(), param.getOldPassword(), param.getNewPassword());
@@ -93,7 +91,7 @@ public class CurrentUserController extends BaseResource {
     }
 
     @PostMapping("/updateUserInfo")
-    @ApiOperation("修改当前用户信息")
+    @Operation(summary ="修改当前用户信息")
     public Object updateUserInfo(@RequestBody @Valid UserInfoUpdatedParam param) {
         userService.updateInfo(UserContext.getCurrentUser(), param);
         return Response.success();

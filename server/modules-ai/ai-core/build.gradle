@@ -1,0 +1,18 @@
+dependencies {
+    implementation project(path: ":modules-utils:common-utils", configuration: 'default')
+    implementation project(path: ":modules-ai:ai-api", configuration: 'default')
+
+    implementation 'org.springframework.boot:spring-boot-starter'
+
+    implementation 'org.springframework:spring-tx'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+    implementation 'org.springframework.ai:spring-ai-zhipuai-spring-boot-starter'
+//    implementation 'org.springframework.ai:spring-ai-openai-spring-boot-starter'
+
+    implementation "org.springframework.retry:spring-retry:2.0.5"
+    implementation "org.springframework:spring-aspects"
+
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui'
+}

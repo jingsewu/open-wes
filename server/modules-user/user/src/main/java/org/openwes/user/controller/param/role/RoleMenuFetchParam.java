@@ -1,14 +1,13 @@
 package org.openwes.user.controller.param.role;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-@ApiModel("查询当前角色的菜单和权限参数")
+@Schema(title = "查询当前角色的菜单和权限参数")
 public class RoleMenuFetchParam {
-    @ApiModelProperty(name = "roleId", value = "角色Id")
+    @Schema(name = "roleId", title = "角色Id")
     @NotNull(message = "角色id不能为空")
     private Long roleId;
 }

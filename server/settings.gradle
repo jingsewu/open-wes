@@ -26,6 +26,9 @@ include 'modules-api-platform:api-platform-api'
 include 'modules-search:search-core'
 include 'modules-search:search-api'
 
+include 'modules-ai:ai-core'
+include 'modules-ai:ai-api'
+
 include 'modules-utils:common-utils'
 include 'modules-utils:domain-event'
 include 'modules-utils:distribute-lock'

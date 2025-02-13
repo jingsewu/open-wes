@@ -1,8 +1,7 @@
 package org.openwes.user.controller.param.role;
 
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 
@@ -12,13 +11,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Data
-@ApiModel("添加角色权限参数")
+@Schema(title = "添加角色权限参数")
 public class RoleMenuUpdateParam {
 
-    @ApiModelProperty(name = "menus", value = "选中菜单id")
+    @Schema(name = "menus", title = "选中菜单id")
     private Set<Long> menuSet;
 
-    @ApiModelProperty(name = "roleId", value = "角色id")
+    @Schema(name = "roleId", title = "角色id")
     private Long roleId;
 
     private String menus;

@@ -3,7 +3,7 @@ import org.springframework.boot.gradle.plugin.SpringBootPlugin
 plugins {
     id 'java'
     id "io.spring.dependency-management" version "1.1.0"
-    id "org.springframework.boot" version "3.0.4"
+    id "org.springframework.boot" version "3.2.2"
 }
 
 group 'com.open.wes'
@@ -21,6 +21,8 @@ allprojects {
     repositories {
         maven { url 'https://maven.aliyun.com/nexus/content/groups/public/' }
         mavenCentral()
+        maven { url 'https://repo.spring.io/milestone' }
+        maven { url 'https://repo.spring.io/snapshot' }
     }
 }
 
@@ -39,7 +41,7 @@ subprojects {
         testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
         testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
         testImplementation('org.springframework.boot:spring-boot-starter-test')
-        testImplementation 'org.mockito:mockito-inline'
+//        testImplementation 'org.mockito:mockito-inline'
         testImplementation 'org.hibernate.orm:hibernate-core'
         testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa'
         testImplementation 'mysql:mysql-connector-java'
@@ -62,6 +64,10 @@ subprojects {
         }
 
         imports {
+            mavenBom "org.springframework.ai:spring-ai-bom:1.0.0-SNAPSHOT"
+        }
+
+        imports {
             mavenBom(SpringBootPlugin.BOM_COORDINATES)
         }
 
@@ -71,15 +77,15 @@ subprojects {
 
         dependencies {
 
-            dependency group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis', version: '3.0.4'
-            dependency group: 'org.springframework.boot', name: 'spring-boot-starter-websocket', version: '3.0.4'
-            dependency group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: '3.0.4'
-            dependency group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: '3.0.4'
-            dependency group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: '3.0.4'
-            dependency group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc', version: '3.0.4'
-            dependency group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client', version: '3.0.4'
+            dependency group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis', version: '3.2.2'
+            dependency group: 'org.springframework.boot', name: 'spring-boot-starter-websocket', version: '3.2.2'
+            dependency group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: '3.2.2'
+            dependency group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: '3.2.2'
+            dependency group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: '3.2.2'
+            dependency group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc', version: '3.2.2'
+            dependency group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client', version: '3.2.2'
 
-            dependency group: 'org.springframework', name: 'spring-tx', version: '6.0.6'
+//            dependency group: 'org.springframework', name: 'spring-tx', version: '6.0.6'
             dependency group: 'org.springframework.security.oauth', name: 'spring-security-oauth2', version: '2.5.2.RELEASE'
             dependency group: 'org.springframework.security.oauth.boot', name: 'spring-security-oauth2-autoconfigure', version: '2.6.8'
             dependency group: 'org.springframework.security', name: 'spring-security-jwt', version: '1.1.1.RELEASE'
@@ -87,8 +93,8 @@ subprojects {
             dependency group: 'org.apache.dubbo', name: 'dubbo-spring-boot-starter', version: '3.2.10'
 
             dependency group: 'org.springframework.cloud', name: 'spring-cloud-starter-stream-kafka', version: '4.0.1'
-            dependency group: 'com.alibaba.cloud', name: 'spring-cloud-starter-alibaba-nacos-config', version: '2022.0.0.0-RC1'
-            dependency group: 'com.alibaba.cloud', name: 'spring-cloud-starter-alibaba-nacos-discovery', version: '2022.0.0.0-RC1'
+            dependency group: 'com.alibaba.cloud', name: 'spring-cloud-starter-alibaba-nacos-config', version: '2023.0.1.0'
+            dependency group: 'com.alibaba.cloud', name: 'spring-cloud-starter-alibaba-nacos-discovery', version: '2023.0.1.0'
 
             dependency group: 'org.projectlombok', name: 'lombok', version: '1.18.26'
             dependency group: 'com.google.guava', name: 'guava', version: '31.1-jre'
@@ -110,15 +116,17 @@ subprojects {
 
             dependency group: 'com.auth0', name: 'java-jwt', version: '4.4.0'
 
-            dependency group: 'jakarta.servlet', name: 'jakarta.servlet-api', version: '6.0.0'
-            dependency group: 'jakarta.validation', name: 'jakarta.validation-api', version: '3.0.2'
+            dependency group: 'jakarta.servlet', name: 'jakarta.servlet-api', version: '6.1.0'
+            dependency group: 'jakarta.validation', name: 'jakarta.validation-api', version: '3.1.0'
 
-            dependency group: 'io.springfox', name: 'springfox-swagger2', version: '3.0.0'
-            dependency group: 'io.springfox', name: 'springfox-swagger-ui', version: '3.0.0'
-            dependency group: 'io.swagger.core.v3', name: 'swagger-models', version: '2.2.8'
-            dependency group: 'io.swagger.core.v3', name: 'swagger-annotations', version: '2.2.8'
+            dependency group: 'io.swagger.core.v3', name: 'swagger-annotations', version: '2.2.26'
 
-            dependency group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.0.0'
+//            dependency group: 'io.springfox', name: 'springfox-swagger2', version: '3.0.0'
+//            dependency group: 'io.springfox', name: 'springfox-swagger-ui', version: '3.0.0'
+//            dependency group: 'io.swagger.core.v3', name: 'swagger-models', version: '2.2.8'
+//            dependency group: 'io.swagger.core.v3', name: 'swagger-annotations', version: '2.2.8'
+
+            dependency group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.4.0'
 
             dependency group: 'org.fluentd', name: 'fluent-logger', version: '0.7.0'
             dependency group: 'com.sndyuk', name: 'logback-more-appenders', version: '1.8.4'

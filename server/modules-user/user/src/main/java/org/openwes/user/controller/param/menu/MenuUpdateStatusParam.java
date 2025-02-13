@@ -1,19 +1,18 @@
 package org.openwes.user.controller.param.menu;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-@ApiModel("修改菜单状态参数")
+@Schema(title = "修改菜单状态参数")
 public class MenuUpdateStatusParam {
 
-    @ApiModelProperty(name = "menuId", value = "菜单id", required = true)
+    @Schema(name = "menuId", title = "菜单id", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull(message = "菜单id不能为空")
     private Long menuId;
 
-    @ApiModelProperty(name = "enable", value = "是否启用（1启用, 0停用，参考枚举YesOrNo）", required = true)
+    @Schema(name = "enable", title = "是否启用（1启用, 0停用，参考枚举YesOrNo）", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull(message = "是否启用不能为空")
     private Integer enable;
 }
