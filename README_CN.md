@@ -1,6 +1,6 @@
 # 开源仓库执行系统 (Open WES)
 
-[English](README.md) | [中文](#README_CN.md)
+[English](README.md) | [中文](#README_CN.md) | [日本語](README_JP.md)
 
 Open WES 是一个可定制的开源仓库执行系统，旨在简化仓库操作。它可与各种自动化技术无缝集成，提供高效的工作流管理、任务调度和实时数据跟踪功能。
 
