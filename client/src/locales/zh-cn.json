@@ -553,6 +553,7 @@
     "enum.lessGoods": "少货",
     "enum.damaged": "破损",
 
+    "interfacePlatform.dashboard.title": "Dashboard",
     "interfacePlatform.interfaceManagement.title": "接口管理",
     "interfacePlatform.interfaceManagement.button.parameterConversionConfiguration": "参数转换配置",
     "interfacePlatform.interfaceManagement.dialog.modifyParameterConversionConfiguration": "修改参数转换配置",

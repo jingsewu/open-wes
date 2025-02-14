@@ -9,6 +9,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.openwes.common.utils.base.UpdateUserPO;
+import org.openwes.common.utils.id.IdGenerator;
 import org.openwes.wes.api.basic.constants.LocationStatusEnum;
 import org.openwes.wes.api.basic.constants.LocationTypeEnum;
 import org.openwes.wes.api.basic.dto.PositionDTO;
@@ -34,7 +35,7 @@ public class LocationPO extends UpdateUserPO {
 
     @Id
     @GeneratedValue(generator = "databaseIdGenerator")
-    @GenericGenerator(name = "databaseIdGenerator", strategy = "org.openwes.common.utils.id.IdGenerator")
+    @GenericGenerator(name = "databaseIdGenerator", type = IdGenerator.class)
     @Comment("Unique identifier for the location record")
     private Long id;
 
@@ -63,7 +64,7 @@ public class LocationPO extends UpdateUserPO {
     private Long warehouseLogicId;
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 20)
+    @Column(length = 20, columnDefinition = "varchar(20) default 'RACK'")
     @Comment("Type of the storage location. Possible values are: " +
             "RACK")
     private LocationTypeEnum locationType;
@@ -77,7 +78,7 @@ public class LocationPO extends UpdateUserPO {
     private boolean occupied;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 20, columnDefinition = "varchar(20) default 'PUT_AWAY_PUT_DOWN'")
     @Comment("Status of the storage location. Possible values are: " +
             "PUT_AWAY_ONLY (PUT_AWAY_ONLY - 仅上架), " +
             "TAKE_OFF_ONLY (TAKE_OFF_ONLY - 仅下架), " +

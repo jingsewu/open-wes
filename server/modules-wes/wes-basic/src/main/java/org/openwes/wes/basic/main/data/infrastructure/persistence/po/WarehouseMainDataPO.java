@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
 import org.openwes.common.utils.base.UpdateUserPO;
+import org.openwes.common.utils.id.IdGenerator;
 import org.openwes.wes.api.main.data.constants.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -24,7 +25,7 @@ public class WarehouseMainDataPO extends UpdateUserPO {
 
     @Id
     @GeneratedValue(generator = "databaseIdGenerator")
-    @GenericGenerator(name = "databaseIdGenerator", strategy = "org.openwes.common.utils.id.IdGenerator")
+    @GenericGenerator(name = "databaseIdGenerator", type = IdGenerator.class)
     @Comment("Unique identifier for the warehouse main data record")
     private Long id;
 
@@ -37,7 +38,7 @@ public class WarehouseMainDataPO extends UpdateUserPO {
     private String warehouseName;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 20, columnDefinition = "varchar(20)")
     @Comment("Type of the warehouse. Possible values are: " +
             "CENTER_WAREHOUSE (CENTER_WAREHOUSE - 中央仓库), " +
             "DELIVERY_WAREHOUSE (DELIVERY_WAREHOUSE - 分发仓), " +

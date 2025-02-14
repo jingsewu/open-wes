@@ -6,7 +6,6 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-@Schema(title = "导航模型")
 public class NavigationVo {
 
     @Schema(title = "导航信息")

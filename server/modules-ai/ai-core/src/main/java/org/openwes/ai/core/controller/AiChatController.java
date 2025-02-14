@@ -1,5 +1,6 @@
 package org.openwes.ai.core.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.openwes.ai.api.dto.AnalysisQueryVO;
 import org.openwes.ai.api.dto.AnalysisResult;
@@ -15,6 +16,7 @@ import java.sql.SQLException;
 @RestController
 @RequestMapping("ai")
 @RequiredArgsConstructor
+@Tag(name = "AI Module Api")
 public class AiChatController {
 
     private final AiChatService aiService;

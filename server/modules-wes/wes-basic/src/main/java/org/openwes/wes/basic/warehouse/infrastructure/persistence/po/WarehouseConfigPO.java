@@ -9,6 +9,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.openwes.common.utils.base.UpdateUserPO;
+import org.openwes.common.utils.id.IdGenerator;
 import org.openwes.wes.api.config.dto.WarehouseMainDataConfigDTO;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -28,7 +29,7 @@ public class WarehouseConfigPO extends UpdateUserPO {
 
     @Id
     @GeneratedValue(generator = "databaseIdGenerator")
-    @GenericGenerator(name = "databaseIdGenerator", strategy = "org.openwes.common.utils.id.IdGenerator")
+    @GenericGenerator(name = "databaseIdGenerator", type = IdGenerator.class)
     @Comment("Unique identifier for the warehouse configuration record")
     private Long id;
 

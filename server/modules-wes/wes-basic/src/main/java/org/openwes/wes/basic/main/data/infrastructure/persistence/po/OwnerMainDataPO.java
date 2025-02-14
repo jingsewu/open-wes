@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
 import org.openwes.common.utils.base.UpdateUserPO;
+import org.openwes.common.utils.id.IdGenerator;
 import org.openwes.wes.api.main.data.constants.OwnerTypeEnum;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -24,7 +25,7 @@ public class OwnerMainDataPO extends UpdateUserPO {
 
     @Id
     @GeneratedValue(generator = "databaseIdGenerator")
-    @GenericGenerator(name = "databaseIdGenerator", strategy = "org.openwes.common.utils.id.IdGenerator")
+    @GenericGenerator(name = "databaseIdGenerator", type = IdGenerator.class)
     @Comment("Unique identifier for the owner main data record")
     private Long id;
 
@@ -41,7 +42,7 @@ public class OwnerMainDataPO extends UpdateUserPO {
     private String ownerName;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 20, columnDefinition = "varchar(20) default 'SELF'")
     @Comment("Type of the owner. Possible values are: " +
             "SELF (SELF - 自营), " +
             "THIRD_PARTY (THIRD_PARTY - 第三方)")

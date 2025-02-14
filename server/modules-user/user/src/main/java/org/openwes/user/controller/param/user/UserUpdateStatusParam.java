@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-@Schema(title = "修改用户状态参数")
 public class UserUpdateStatusParam {
 
     @Schema(name = "userId", title = "用户id", requiredMode = Schema.RequiredMode.REQUIRED)

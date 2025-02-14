@@ -60,7 +60,7 @@ subprojects {
 
     dependencyManagement {
         imports {
-            mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2022.0.2'
+            mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2023.0.2'
         }
 
         imports {
@@ -110,7 +110,6 @@ subprojects {
             dependency group: 'commons-io', name: 'commons-io', version: '2.13.0'
 
             dependency group: 'commons-codec', name: 'commons-codec', version: '1.15'
-            dependency group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.3'
             dependency group: 'org.javassist', name: 'javassist', version: '3.29.2-GA'
             dependency group: 'org.reflections', name: 'reflections', version: '0.10.2'
 

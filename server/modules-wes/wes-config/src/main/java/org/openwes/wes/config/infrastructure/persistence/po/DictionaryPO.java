@@ -1,6 +1,7 @@
 package org.openwes.wes.config.infrastructure.persistence.po;
 
 import org.openwes.common.utils.base.UpdateUserPO;
+import org.openwes.common.utils.id.IdGenerator;
 import org.openwes.common.utils.language.MultiLanguage;
 import org.openwes.wes.config.domain.entity.Dictionary;
 import jakarta.persistence.*;
@@ -28,7 +29,7 @@ public class DictionaryPO extends UpdateUserPO {
 
     @Id
     @GeneratedValue(generator = "databaseIdGenerator")
-    @GenericGenerator(name = "databaseIdGenerator", strategy = "org.openwes.common.utils.id.IdGenerator")
+    @GenericGenerator(name = "databaseIdGenerator", type = IdGenerator.class)
     private Long id;
 
     @Column(nullable = false, length = 64)

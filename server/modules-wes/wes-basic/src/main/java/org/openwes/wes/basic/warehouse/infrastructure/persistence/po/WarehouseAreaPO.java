@@ -8,6 +8,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Where;
 import org.openwes.common.utils.base.UpdateUserPO;
+import org.openwes.common.utils.id.IdGenerator;
 import org.openwes.wes.api.basic.constants.WarehouseAreaTypeEnum;
 import org.openwes.wes.api.basic.constants.WarehouseAreaUseEnum;
 import org.openwes.wes.api.basic.constants.WarehouseAreaWorkTypeEnum;
@@ -31,7 +32,7 @@ public class WarehouseAreaPO extends UpdateUserPO {
 
     @Id
     @GeneratedValue(generator = "databaseIdGenerator")
-    @GenericGenerator(name = "databaseIdGenerator", strategy = "org.openwes.common.utils.id.IdGenerator")
+    @GenericGenerator(name = "databaseIdGenerator", type = IdGenerator.class)
     @Comment("Unique identifier for the warehouse area record")
     private Long id;
 
@@ -52,7 +53,7 @@ public class WarehouseAreaPO extends UpdateUserPO {
     private String warehouseAreaName;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 20, columnDefinition = "varchar(20) default 'STORAGE_AREA'")
     @Comment("Type of the warehouse area. Possible values are: " +
             "STORAGE_AREA (STORAGE_AREA - 存储区), " +
             "STORAGE_CACHE (STORAGE_CACHE - 暂存区), " +
@@ -61,7 +62,7 @@ public class WarehouseAreaPO extends UpdateUserPO {
     private WarehouseAreaTypeEnum warehouseAreaType;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 20, columnDefinition = "varchar(20) default 'RECEIVE'")
     @Comment("Usage of the warehouse area. Possible values are: " +
             "RECEIVE (RECEIVE - 收货), " +
             "PUT_AWAY_HOLDER (PUT_AWAY_HOLDER - 上架暂存), " +
@@ -69,7 +70,7 @@ public class WarehouseAreaPO extends UpdateUserPO {
     private WarehouseAreaUseEnum warehouseAreaUse;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 20, columnDefinition = "varchar(20) default 'ROBOT'")
     @Comment("Work type of the warehouse area. Possible values are: " +
             "MANUAL (MANUAL - 人工区), " +
             "ROBOT (ROBOT - 机器人区)")

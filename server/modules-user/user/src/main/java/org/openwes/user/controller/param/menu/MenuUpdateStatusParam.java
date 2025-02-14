@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-@Schema(title = "修改菜单状态参数")
 public class MenuUpdateStatusParam {
 
     @Schema(name = "menuId", title = "菜单id", requiredMode = Schema.RequiredMode.REQUIRED)

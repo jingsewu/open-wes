@@ -1,13 +1,14 @@
 package org.openwes.api.platform.domain.entity;
 
-import org.openwes.api.platform.api.constants.ConverterTypeEnum;
-import org.openwes.common.utils.base.UpdateUserPO;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
+import org.openwes.api.platform.api.constants.ConverterTypeEnum;
+import org.openwes.common.utils.base.UpdateUserPO;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Data
@@ -30,7 +31,12 @@ public class ApiConfigPO extends UpdateUserPO {
     @Column(length = 128, nullable = false)
     private String code;
 
+    @Column(length = 20, nullable = false, columnDefinition = "varchar(20)")
+    @Comment("parameter convert type")
     private ConverterTypeEnum paramConverterType;
+
+    @Column(length = 20, nullable = false, columnDefinition = "varchar(20)")
+    @Comment("response convert type")
     private ConverterTypeEnum responseConverterType;
 
     @Column(columnDefinition = "text comment '请求参数转换脚本'")

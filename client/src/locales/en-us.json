@@ -553,6 +553,7 @@
     "enum.lessGoods": "Shortage",
     "enum.damaged": "Damaged",
 
+    "interfacePlatform.dashboard.title": "Dashboard",
     "interfacePlatform.interfaceManagement.title": "Interface management",
     "interfacePlatform.interfaceManagement.button.parameterConversionConfiguration": "Parameter conversion configuration",
     "interfacePlatform.interfaceManagement.dialog.modifyParameterConversionConfiguration": "Modify parameter conversion configuration",

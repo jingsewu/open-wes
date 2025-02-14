@@ -13,7 +13,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Data
-@Schema(name = "修改用户参数")
 public class UserDTO {
 
     @Schema(name = "id", example = "用户id")

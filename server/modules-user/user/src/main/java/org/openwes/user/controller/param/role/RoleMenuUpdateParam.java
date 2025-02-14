@@ -11,7 +11,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Data
-@Schema(title = "添加角色权限参数")
 public class RoleMenuUpdateParam {
 
     @Schema(name = "menus", title = "选中菜单id")

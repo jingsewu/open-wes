@@ -1,6 +1,7 @@
 package org.openwes.wes.config.infrastructure.persistence.po;
 
 import org.openwes.common.utils.base.UpdateUserPO;
+import org.openwes.common.utils.id.IdGenerator;
 import org.openwes.wes.api.config.constants.BusinessFlowEnum;
 import org.openwes.wes.api.config.constants.ExecuteTimeEnum;
 import org.openwes.wes.api.config.constants.UnionLocationEnum;
@@ -31,7 +32,7 @@ public class BarcodeParseRulePO extends UpdateUserPO {
 
     @Id
     @GeneratedValue(generator = "databaseIdGenerator")
-    @GenericGenerator(name = "databaseIdGenerator", strategy = "org.openwes.common.utils.id.IdGenerator")
+    @GenericGenerator(name = "databaseIdGenerator", type = IdGenerator.class)
     private Long id;
 
     @Column(nullable = false, columnDefinition = "varchar(64) comment '编码'")

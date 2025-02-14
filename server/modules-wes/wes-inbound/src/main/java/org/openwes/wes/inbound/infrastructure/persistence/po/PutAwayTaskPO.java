@@ -9,6 +9,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.openwes.common.utils.base.AuditUserPO;
+import org.openwes.common.utils.id.IdGenerator;
 import org.openwes.wes.api.inbound.constants.PutAwayTaskStatusEnum;
 import org.openwes.wes.api.inbound.constants.PutAwayTaskTypeEnum;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -33,7 +34,7 @@ public class PutAwayTaskPO extends AuditUserPO {
 
     @Id
     @GeneratedValue(generator = "databaseIdGenerator")
-    @GenericGenerator(name = "databaseIdGenerator", strategy = "org.openwes.common.utils.id.IdGenerator")
+    @GenericGenerator(name = "databaseIdGenerator", type = IdGenerator.class)
     @Comment("Primary key - Unique identifier for each put-away task")
     private Long id;
 
@@ -43,7 +44,7 @@ public class PutAwayTaskPO extends AuditUserPO {
     private String taskNo;
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 50)
+    @Column(length = 50, columnDefinition = "varchar(50)")
     @Comment("Task Type - Categorizes the put-away operation type. " +
             "Determines handling procedures and system behavior")
     private PutAwayTaskTypeEnum taskType;
@@ -74,7 +75,7 @@ public class PutAwayTaskPO extends AuditUserPO {
     private String containerSpecCode;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 20, columnDefinition = "varchar(20)")
     @Comment("Put away task Status - Current state in lifecycle: " +
             "NEW (新单据) -> PUTTING_AWAY (上架中) -> PUTTED_AWAY (上架完成) ")
     private PutAwayTaskStatusEnum taskStatus;

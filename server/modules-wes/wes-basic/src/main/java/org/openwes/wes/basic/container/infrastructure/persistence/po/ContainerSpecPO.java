@@ -9,6 +9,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.openwes.common.utils.base.UpdateUserPO;
+import org.openwes.common.utils.id.IdGenerator;
 import org.openwes.wes.api.basic.constants.ContainerTypeEnum;
 import org.openwes.wes.api.basic.dto.ContainerSpecDTO;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -32,7 +33,7 @@ public class ContainerSpecPO extends UpdateUserPO {
 
     @Id
     @GeneratedValue(generator = "databaseIdGenerator")
-    @GenericGenerator(name = "databaseIdGenerator", strategy = "org.openwes.common.utils.id.IdGenerator")
+    @GenericGenerator(name = "databaseIdGenerator", type = IdGenerator.class)
     @Comment("Unique identifier for the container specification")
     private Long id;
 
@@ -73,7 +74,7 @@ public class ContainerSpecPO extends UpdateUserPO {
     private String description;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 20, columnDefinition = "varchar(20)")
     @Comment("Type of the container. Possible values are: " +
             "CONTAINER (CONTAINER - 料箱), " +
             "TRANSFER_CONTAINER (TRANSFER_CONTAINER - 周转箱), " +

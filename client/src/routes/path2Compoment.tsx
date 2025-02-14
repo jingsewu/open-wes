@@ -74,6 +74,15 @@ const menuRouter = [
 
     // API Platform
     {
+        path: "/api-platform/api-dashboard",
+        name: (
+            <Translation>
+                {(t) => t("interfacePlatform.dashboard.title")}
+            </Translation>
+        ),
+        component: lazy(() => import("@/pages/api_platform/api_dashboard"))
+    },
+    {
         path: "/api-platform/api-management",
         name: (
             <Translation>

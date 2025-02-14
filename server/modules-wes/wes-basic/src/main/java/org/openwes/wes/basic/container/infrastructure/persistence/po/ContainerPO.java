@@ -9,6 +9,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.openwes.common.utils.base.UpdateUserPO;
+import org.openwes.common.utils.id.IdGenerator;
 import org.openwes.wes.api.basic.constants.ContainerStatusEnum;
 import org.openwes.wes.api.basic.dto.ContainerDTO;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -33,7 +34,7 @@ public class ContainerPO extends UpdateUserPO {
 
     @Id
     @GeneratedValue(generator = "databaseIdGenerator")
-    @GenericGenerator(name = "databaseIdGenerator", strategy = "org.openwes.common.utils.id.IdGenerator")
+    @GenericGenerator(name = "databaseIdGenerator", type = IdGenerator.class)
     @Comment("Unique identifier for container")
     private Long id;
 
@@ -95,7 +96,7 @@ public class ContainerPO extends UpdateUserPO {
     private Integer emptySlotNum;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 20, columnDefinition = "varchar(20) default 'IN_SIDE'")
     @Comment("Current container status: IN_SIDE=Container is in side,OUT_SIDE=Container is outside")
     private ContainerStatusEnum containerStatus;
 

@@ -7,6 +7,7 @@ import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.openwes.common.utils.base.UpdateUserPO;
+import org.openwes.common.utils.id.IdGenerator;
 import org.openwes.wes.api.task.constants.TransferContainerStatusEnum;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -30,7 +31,7 @@ public class TransferContainerPO extends UpdateUserPO {
 
     @Id
     @GeneratedValue(generator = "databaseIdGenerator")
-    @GenericGenerator(name = "databaseIdGenerator", strategy = "org.openwes.common.utils.id.IdGenerator")
+    @GenericGenerator(name = "databaseIdGenerator", type = IdGenerator.class)
     @Comment("Unique identifier for the transfer container")
     private Long id;
 
@@ -58,7 +59,7 @@ public class TransferContainerPO extends UpdateUserPO {
     private boolean virtualContainer;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 32)
+    @Column(nullable = false, length = 32, columnDefinition = "varchar(32) default 'IDLE'")
     @Comment("Current status of the transfer container. Possible values are: " +
             "IDLE (IDLE - 空闲), " +
             "OCCUPANCY (OCCUPANCY - 占用), " +

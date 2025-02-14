@@ -9,6 +9,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.openwes.common.utils.base.UpdateUserPO;
+import org.openwes.common.utils.id.IdGenerator;
 import org.openwes.wes.api.basic.constants.WorkStationModeEnum;
 import org.openwes.wes.api.basic.constants.WorkStationStatusEnum;
 import org.openwes.wes.api.basic.dto.PositionDTO;
@@ -33,7 +34,7 @@ public class WorkStationPO extends UpdateUserPO {
 
     @Id
     @GeneratedValue(generator = "databaseIdGenerator")
-    @GenericGenerator(name = "databaseIdGenerator", strategy = "org.openwes.common.utils.id.IdGenerator")
+    @GenericGenerator(name = "databaseIdGenerator", type = IdGenerator.class)
     @Comment("Unique identifier for the workstation record")
     private Long id;
 
@@ -46,7 +47,7 @@ public class WorkStationPO extends UpdateUserPO {
     private String stationName;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 20, columnDefinition = "VARCHAR(20) DEFAULT 'OFFLINE'")
     @Comment("Status of the workstation. Possible values are: " +
             "ONLINE (ONLINE - Online), " +
             "PAUSED (PAUSED - Paused), " +
@@ -62,7 +63,7 @@ public class WorkStationPO extends UpdateUserPO {
     private Long warehouseAreaId;
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 50)
+    @Column(length = 50, columnDefinition = "VARCHAR(50) DEFAULT 'RECEIVE'")
     @Comment("Operation mode of the workstation. Possible values are: " +
             "RECEIVE (RECEIVE - Receive), " +
             "SELECT_CONTAINER_PUT_AWAY (SELECT_CONTAINER_PUT_AWAY - Select container for put away), " +

@@ -7,7 +7,6 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-@Schema(title = "修改菜单参数")
 public class MenuUpdatedParam extends MenuAddParam {
     @Schema(name = "menuId", title = "菜单id", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull(message = "菜单id不能为空")

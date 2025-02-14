@@ -1,6 +1,7 @@
 package org.openwes.wes.basic.work_station.infrastructure.persistence.po;
 
 import org.openwes.common.utils.base.UpdateUserPO;
+import org.openwes.common.utils.id.IdGenerator;
 import org.openwes.wes.api.basic.dto.WorkStationConfigDTO;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -26,7 +27,7 @@ public class WorkStationConfigPO extends UpdateUserPO {
 
     @Id
     @GeneratedValue(generator = "databaseIdGenerator")
-    @GenericGenerator(name = "databaseIdGenerator", strategy = "org.openwes.common.utils.id.IdGenerator")
+    @GenericGenerator(name = "databaseIdGenerator", type = IdGenerator.class)
     private Long id;
 
     @Column(nullable = false, columnDefinition = "bigint(11) comment '工作站ID'")

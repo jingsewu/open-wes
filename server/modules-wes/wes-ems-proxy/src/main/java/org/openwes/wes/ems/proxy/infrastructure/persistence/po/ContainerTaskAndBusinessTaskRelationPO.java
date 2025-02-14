@@ -1,6 +1,7 @@
 package org.openwes.wes.ems.proxy.infrastructure.persistence.po;
 
 import org.openwes.common.utils.base.UpdateUserPO;
+import org.openwes.common.utils.id.IdGenerator;
 import org.openwes.wes.api.ems.proxy.constants.ContainerTaskAndBusinessTaskRelationStatusEnum;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -26,7 +27,7 @@ public class ContainerTaskAndBusinessTaskRelationPO extends UpdateUserPO {
 
     @Id
     @GeneratedValue(generator = "databaseIdGenerator")
-    @GenericGenerator(name = "databaseIdGenerator", strategy = "org.openwes.common.utils.id.IdGenerator")
+    @GenericGenerator(name = "databaseIdGenerator", type = IdGenerator.class)
     private Long id;
 
     @Column(columnDefinition = "bigint(11) comment '搬箱任务ID'")

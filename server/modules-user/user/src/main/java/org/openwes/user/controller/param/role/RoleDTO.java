@@ -10,7 +10,6 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-@Schema(title = "修改角色参数")
 public class RoleDTO {
 
     @Schema(name = "id", title = "角色id")

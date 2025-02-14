@@ -7,6 +7,7 @@ import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 import org.openwes.common.utils.base.AuditUserPO;
+import org.openwes.common.utils.id.IdGenerator;
 import org.openwes.wes.api.inbound.constants.AcceptMethodEnum;
 import org.openwes.wes.api.inbound.constants.AcceptOrderStatusEnum;
 import org.openwes.wes.api.inbound.constants.AcceptTypeEnum;
@@ -31,7 +32,7 @@ public class AcceptOrderPO extends AuditUserPO {
 
     @Id
     @GeneratedValue(generator = "databaseIdGenerator")
-    @GenericGenerator(name = "databaseIdGenerator", strategy = "org.openwes.common.utils.id.IdGenerator")
+    @GenericGenerator(name = "databaseIdGenerator", type = IdGenerator.class)
     @Comment("Primary key - Unique identifier for each acceptance order, generated using custom IdGenerator")
     private Long id;
 
@@ -50,7 +51,7 @@ public class AcceptOrderPO extends AuditUserPO {
     private String warehouseCode;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 20, columnDefinition = "varchar(20) default 'LOOSE_INVENTORY'")
     @Comment("Acceptance method - Defines physical receiving process: " +
             "BOX_CONTENT (pre-packed boxes), " +
             "LOOSE_INVENTORY (individual items), " +
@@ -59,7 +60,7 @@ public class AcceptOrderPO extends AuditUserPO {
     private AcceptMethodEnum acceptMethod = AcceptMethodEnum.LOOSE_INVENTORY;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 20, columnDefinition = "varchar(20) default 'RECEIVE'")
     @Comment("Acceptance type - Business scenario for receiving: " +
             "DIRECT (immediate), RECEIVE (standard), " +
             "IN_WAREHOUSE (internal), WAYBILL (document-driven), " +
@@ -87,7 +88,7 @@ public class AcceptOrderPO extends AuditUserPO {
     private String remark = "";
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 20, columnDefinition = "varchar(20) default 'NEW'")
     @Comment("Order status - Tracks acceptance order lifecycle: " +
             "NEW (初始状态-待处理), " +
             "COMPLETE (已完成-验收完成). " +

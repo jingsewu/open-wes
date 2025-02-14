@@ -5,7 +5,6 @@ import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
 @Data
-@Schema(name = "修改当前用户信息")
 public class UserInfoUpdatedParam {
 
     @Schema(name = "name", example = "用户名称")

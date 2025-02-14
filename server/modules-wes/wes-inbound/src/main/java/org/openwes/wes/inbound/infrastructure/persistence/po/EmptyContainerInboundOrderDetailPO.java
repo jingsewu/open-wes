@@ -1,6 +1,7 @@
 package org.openwes.wes.inbound.infrastructure.persistence.po;
 
 import org.openwes.common.utils.base.AuditUserPO;
+import org.openwes.common.utils.id.IdGenerator;
 import org.openwes.wes.api.inbound.constants.PutAwayTaskStatusEnum;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -26,7 +27,7 @@ public class EmptyContainerInboundOrderDetailPO extends AuditUserPO {
 
     @Id
     @GeneratedValue(generator = "databaseIdGenerator")
-    @GenericGenerator(name = "databaseIdGenerator", strategy = "org.openwes.common.utils.id.IdGenerator")
+    @GenericGenerator(name = "databaseIdGenerator", type = IdGenerator.class)
     private Long id;
 
     @Column(nullable = false, columnDefinition = "bigint comment '空箱入库单ID'")

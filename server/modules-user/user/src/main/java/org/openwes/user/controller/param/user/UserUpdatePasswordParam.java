@@ -6,7 +6,6 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-@Schema(name = "修改当前用户密码")
 public class UserUpdatePasswordParam {
 
     @Schema(title = "旧密码", requiredMode = Schema.RequiredMode.REQUIRED)

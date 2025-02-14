@@ -14,9 +14,5 @@ dependencies {
 
     implementation 'org.redisson:redisson-spring-boot-starter'
 
-    implementation 'io.springfox:springfox-swagger2'
-    implementation 'io.springfox:springfox-swagger-ui'
-    implementation 'io.swagger.core.v3:swagger-models'
-    implementation 'io.swagger.core.v3:swagger-annotations'
-
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui'
 }

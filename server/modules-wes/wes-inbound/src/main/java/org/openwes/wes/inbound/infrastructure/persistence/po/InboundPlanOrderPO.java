@@ -9,6 +9,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.openwes.common.utils.base.AuditUserPO;
+import org.openwes.common.utils.id.IdGenerator;
 import org.openwes.wes.api.inbound.constants.InboundPlanOrderStatusEnum;
 import org.openwes.wes.api.inbound.constants.StorageTypeEnum;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -36,7 +37,7 @@ public class InboundPlanOrderPO extends AuditUserPO {
 
     @Id
     @GeneratedValue(generator = "databaseIdGenerator")
-    @GenericGenerator(name = "databaseIdGenerator", strategy = "org.openwes.common.utils.id.IdGenerator")
+    @GenericGenerator(name = "databaseIdGenerator", type = IdGenerator.class)
     @Comment("Primary key - Unique identifier for each inbound plan")
     private Long id;
 
@@ -66,7 +67,7 @@ public class InboundPlanOrderPO extends AuditUserPO {
     private String customerOrderType = "";
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 20, columnDefinition = "varchar(20) default 'STORAGE'")
     @Comment("Storage Type - Defines how goods should be stored after receipt. " +
             "Affects put-away rules and location assignment")
     private StorageTypeEnum storageType;
@@ -91,7 +92,7 @@ public class InboundPlanOrderPO extends AuditUserPO {
     private String shippingMethod = "";
 
     @Column(nullable = false, length = 128)
-    @Comment("Tracking Number - Carrier's shipment tracking number. " +
+    @Comment("Tracking Number - Carrier shipment tracking number. " +
             "Used for shipment tracking and receipt verification")
     private String trackingNumber = "";
 
@@ -121,7 +122,7 @@ public class InboundPlanOrderPO extends AuditUserPO {
     private Integer totalBox;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 20, columnDefinition = "varchar(20) default 'NEW'")
     @Comment("Inbound Plan Status - Current state in lifecycle: " +
             "NEW (新单据) -> ACCEPTING (收货中) -> ACCEPTED (收货完成) " +
             "Can be CANCEL (取消) or CLOSED (关闭) as terminal states")

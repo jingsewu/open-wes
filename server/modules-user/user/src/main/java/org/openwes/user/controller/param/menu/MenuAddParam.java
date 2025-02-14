@@ -8,7 +8,6 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-@Schema(title = "添加菜单参数")
 public class MenuAddParam {
     @Schema(name = "systemCode", title = "所属系统（参考枚举AppCodeEnum）")
     private String systemCode;

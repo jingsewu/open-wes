@@ -7,6 +7,7 @@ import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 import org.openwes.common.utils.base.UpdateUserPO;
+import org.openwes.common.utils.id.IdGenerator;
 import org.openwes.wes.api.basic.constants.PutWallSlotStatusEnum;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -28,7 +29,7 @@ public class PutWallSlotPO extends UpdateUserPO {
 
     @Id
     @GeneratedValue(generator = "databaseIdGenerator")
-    @GenericGenerator(name = "databaseIdGenerator", strategy = "org.openwes.common.utils.id.IdGenerator")
+    @GenericGenerator(name = "databaseIdGenerator", type = IdGenerator.class)
     @Comment("Unique identifier for the put wall slot record")
     private Long id;
 
@@ -81,7 +82,7 @@ public class PutWallSlotPO extends UpdateUserPO {
     private Long pickingOrderId = 0L;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false, length = 50, columnDefinition = "varchar(50) default 'IDLE'")
     @Comment("Status of the put wall slot. Possible values are: " +
             "IDLE (IDLE - 空闲), " +
             "WAITING_BINDING (WAITING_BINDING - 待绑定), " +

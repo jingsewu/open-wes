@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
 import org.openwes.common.utils.base.UpdateUserPO;
+import org.openwes.common.utils.id.IdGenerator;
 import org.openwes.wes.api.task.constants.TransferContainerRecordStatusEnum;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -25,7 +26,7 @@ public class TransferContainerRecordPO extends UpdateUserPO {
 
     @Id
     @GeneratedValue(generator = "databaseIdGenerator")
-    @GenericGenerator(name = "databaseIdGenerator", strategy = "org.openwes.common.utils.id.IdGenerator")
+    @GenericGenerator(name = "databaseIdGenerator", type = IdGenerator.class)
     @Comment("Unique identifier for the transfer container record")
     private Long id;
 
@@ -62,7 +63,7 @@ public class TransferContainerRecordPO extends UpdateUserPO {
     private Long sealTime = 0L;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 20, columnDefinition = "varchar(20)")
     @Comment("Status of the transfer container record. Possible values are: " +
             "BOUNDED (BOUNDED - 绑定), " +
             "SEALED (SEALED - 已封箱)")

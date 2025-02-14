@@ -12,7 +12,7 @@ import java.io.Serializable;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Schema(description = "响应数据")
+@Schema(description = "Response")
 public final class Response<T> implements Serializable {
 
     /**
@@ -50,7 +50,7 @@ public final class Response<T> implements Serializable {
     /**
      * 存储返回前端的数据
      */
-    @Schema(title = "响应数据")
+    @Schema(title = "Data")
     private T data;
 
     public Response(String code, String msg) {
