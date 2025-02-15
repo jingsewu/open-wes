@@ -13,7 +13,7 @@ export const api_api_log_get = "get:/api-platform/api-log-management/${id}"
 // help me check if i defined the const here correct?
 let debounceTimer: NodeJS.Timeout | null = null;
 
-export const editorDidMount = (editor, monaco) => {
+export const editorDidMount = (editor: any, monaco: any) => {
 
     // Clear any existing debounce timer
     if (debounceTimer) {
@@ -24,13 +24,13 @@ export const editorDidMount = (editor, monaco) => {
     debounceTimer = setTimeout(async function () {
 
         monaco.languages.registerCompletionItemProvider("java", {
-            provideCompletionItems: async function (model, position) {
+            provideCompletionItems: async function (model: any, position: any) {
                 console.log("Completion triggered");
                 const codeContext = model.getValue();
                 const lineContent = model.getLineContent(position.lineNumber);
                 const language = "Java"
 
-                const response = await request({
+                const response: any = await request({
                     url: "ai/ai/generateCode",
                     method: "POST",
                     headers: {"Content-Type": "application/json"},
@@ -38,7 +38,7 @@ export const editorDidMount = (editor, monaco) => {
                 });
 
                 if (response.data && typeof response.data === "string") {
-                    const fullCode = response.data.trim();
+                    let fullCode: string = response.data.trim();
                     fullCode = fullCode.split('\n').join('\n');
                     console.log("Generated Code:", fullCode);
 
