@@ -156,7 +156,15 @@ const configForm = [
             "interfacePlatform.interfaceManagement.form.requestTransformationScript.description",
         visibleOn: "${paramConverterType == 'JS'}",
         language: "java",
-        placeholder: "Enter your java code here...",
+        placeholder: "Enter your java code here and named function as convert. for example: \n" +
+            "                //java:convert \n" +
+            "                public class MyClass { \n" +
+            "                    public Object convert(Object param) {\n" +
+            "                        Map<String, Object> input = (Map<String, Object>) param;\n" +
+            "                        return \"Hello,  \"+ input.get(\"name\");\n" +
+            "                    }\n" +
+            "                }\n" +
+            "                \"\"\"",
         options: {
             automaticLayout: true,
             lineNumbers: true,
@@ -188,10 +196,10 @@ const configForm = [
         name: "jsResponseConverter",
         visibleOn: "${responseConverterType == 'JS'}",
         language: "java",
-        placeholder: "Enter your java code here and named function as convert. for example: " +
-            "                //java:myMethod" +
-            "                public class MyClass {" +
-            "                    public Object myMethod(Object param) {\n" +
+        placeholder: "Enter your java code here and named function as convert. for example: \n" +
+            "                //java:convert \n" +
+            "                public class MyClass { \n" +
+            "                    public Object convert(Object param) {\n" +
             "                        Map<String, Object> input = (Map<String, Object>) param;\n" +
             "                        return \"Hello,  \"+ input.get(\"name\");\n" +
             "                    }\n" +

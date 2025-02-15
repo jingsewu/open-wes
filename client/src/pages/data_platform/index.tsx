@@ -47,7 +47,6 @@ function App() {
                 data: {query: query.trim()}
             });
 
-            debugger
             const data = await response.data;
             setResult(data);
         } catch (error) {
