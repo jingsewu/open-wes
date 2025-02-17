@@ -11,7 +11,7 @@ public interface AiChatService {
 
     Flux<String> generateSql(String message, String conversationId, String contextWithErrors) throws SQLException;
 
-    Flux<String> chat(String message, String conversationId);
+    String chat(String message, String conversationId);
 
     AnalysisResult analysis(String message, String currentUser) throws SQLException;
 

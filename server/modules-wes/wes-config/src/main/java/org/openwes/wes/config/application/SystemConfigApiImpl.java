@@ -24,6 +24,13 @@ public class SystemConfigApiImpl implements ISystemConfigApi {
     }
 
     @Override
+    public void update(SystemConfigDTO systemConfigDTO) {
+        SystemConfig systemConfig = systemConfigRepository.findSystemConfig();
+        systemConfigTransfer.toDO(systemConfigDTO, systemConfig);
+        systemConfigRepository.save(systemConfig);
+    }
+
+    @Override
     public SystemConfigDTO.InboundConfigDTO getInboundConfig() {
 
         SystemConfig systemConfig = systemConfigRepository.findSystemConfig();

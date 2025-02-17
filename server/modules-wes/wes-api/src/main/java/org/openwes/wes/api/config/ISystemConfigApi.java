@@ -6,6 +6,8 @@ public interface ISystemConfigApi {
 
     void save(SystemConfigDTO systemConfigDTO);
 
+    void update(SystemConfigDTO systemConfigDTO);
+
     SystemConfigDTO.InboundConfigDTO getInboundConfig();
 
     SystemConfigDTO.OutboundConfigDTO getOutboundConfig();

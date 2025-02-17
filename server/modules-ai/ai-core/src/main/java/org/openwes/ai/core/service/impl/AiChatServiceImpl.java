@@ -11,7 +11,9 @@ import org.openwes.ai.core.domain.DatabaseSchema;
 import org.openwes.ai.core.service.AiChatService;
 import org.openwes.ai.core.service.DatabaseSchemaService;
 import org.openwes.ai.core.template.AiPromptTemplate;
+import org.openwes.ai.core.tool.SystemConfigTool;
 import org.openwes.common.utils.language.core.LanguageContext;
+import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.Message;
@@ -39,6 +41,7 @@ public class AiChatServiceImpl implements AiChatService {
     private final DatabaseSchemaService databaseSchemaService;
     private final ChatMemory chatMemory;
     private final DataSource dataSource;
+    private final SystemConfigTool systemConfigTool;
 
     @Override
     public Flux<String> generateSql(String message, String conversationId, String contextWithErrors) throws SQLException {
@@ -55,13 +58,31 @@ public class AiChatServiceImpl implements AiChatService {
     }
 
     @Override
-    public Flux<String> chat(String message, String conversationId) {
+    public String chat(String message, String conversationId) {
 
         PromptTemplate template = new PromptTemplate(AiPromptTemplate.QA_PROMPT_TEMPLATE);
         template.add("question", message);
         template.add("language", LanguageContext.getLanguage());
 
-        return executeAI(message, conversationId + "chat", template);
+        return executeAIAndReturnString(message, conversationId + "chat", template);
+    }
+
+    private String executeAIAndReturnString(String message, String conversationId, PromptTemplate template) {
+
+        String relevantHistory = chatMemory.get(conversationId, 10)
+                .stream()
+                .map(this::formatMessage)
+                .collect(Collectors.joining("\n"));
+
+        template.add("context", relevantHistory);
+
+        chatMemory.add(conversationId, new UserMessage(message));
+
+        String content = ChatClient.create(chatModel).prompt(template.create()).tools(systemConfigTool).call().content();
+        chatMemory.add(conversationId, new AssistantMessage(content));
+
+        return content;
+
     }
 
     @Override
@@ -153,7 +174,7 @@ public class AiChatServiceImpl implements AiChatService {
         // Create a StringBuilder to accumulate the response
         StringBuilder fullResponse = new StringBuilder();
 
-        return this.chatModel.stream(template.createMessage()).map(chunk -> {
+        return chatModel.stream(template.createMessage()).map(chunk -> {
             fullResponse.append(chunk);
             return chunk;
         }).doOnComplete(() -> {
@@ -164,7 +185,7 @@ public class AiChatServiceImpl implements AiChatService {
 
 
     private Flux<String> executeAIWithoutMemory(String conversationId, PromptTemplate template) {
-        return this.chatModel.stream(template.createMessage()).map(chunk -> chunk);
+        return chatModel.stream(template.createMessage()).map(chunk -> chunk);
     }
 
     private String formatMessage(Message msg) {

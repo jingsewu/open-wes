@@ -7,6 +7,8 @@ import {Button, Input} from "antd";
 import request from "@/utils/requestInterceptor";
 import {toast} from "amis";
 import {useTranslation} from "react-i18next";
+import ReactMarkdown from 'react-markdown';
+import remarkBreaks from 'remark-breaks';
 
 const Chatbot = () => {
     const [messages, setMessages] = useState<any[]>([]);
@@ -93,11 +95,23 @@ const Chatbot = () => {
                             alt={`${message.sender} avatar`}
                             className="avatar"
                         />
-                        <div
-                            className={`message ${message.sender}`}
-                            style={{whiteSpace: "pre-wrap"}}
-                            dangerouslySetInnerHTML={{__html: message.text.replace(/\\n/g, "<br/>")}} // Ensure to sanitize input to prevent XSS
-                        />
+                        {message.sender === "user" ? (
+                            <div
+                                className={`message ${message.sender}`}
+                                style={{ whiteSpace: "pre-wrap" }}
+                                dangerouslySetInnerHTML={{
+                                    __html: message.text.replace(/\\n/g, "<br/>"), // Ensure to sanitize input to prevent XSS
+                                }}
+                            />
+                        ) : (
+                            <ReactMarkdown
+                                className="markdown-container"
+                                remarkPlugins={[remarkBreaks]}
+                                rehypePlugins={[]} // Add any necessary rehype plugins here
+                            >
+                                {message.text}
+                            </ReactMarkdown>
+                        )}
                     </div>
                 ))}
                 {loading && (

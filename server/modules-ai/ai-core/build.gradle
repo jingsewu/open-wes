@@ -1,6 +1,7 @@
 dependencies {
     implementation project(path: ":modules-utils:common-utils", configuration: 'default')
     implementation project(path: ":modules-ai:ai-api", configuration: 'default')
+    implementation project(path: ":modules-wes:wes-api", configuration: 'default')
 
     implementation 'org.springframework.boot:spring-boot-starter'
 

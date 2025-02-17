@@ -22,7 +22,7 @@ public class AiChatController {
     private final AiChatService aiService;
 
     @GetMapping("chat")
-    public Flux<String> chat(@RequestParam(value = "message") String message) {
+    public String chat(@RequestParam(value = "message") String message) {
         String currentUser = UserContext.getCurrentUser();
         return aiService.chat(message, currentUser);
     }
