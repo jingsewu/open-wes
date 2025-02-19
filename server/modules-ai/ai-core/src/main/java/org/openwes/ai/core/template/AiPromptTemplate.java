@@ -2,6 +2,19 @@ package org.openwes.ai.core.template;
 
 public class AiPromptTemplate {
 
+    public static final String QA_QUESTION_CLARIFY_TEMPLATE = """
+            判断下面问题类型：1.普通咨询 2.需函数调用
+            {question}
+            输出格式: 输出数字1或者2
+            例如: 1
+            """;
+
+    public static final String QA_TOOL_CALL_TEMPLATE = """
+            用户问题：{question}
+            历史上下文：{context}
+            输出语言：{language}
+            """;
+
     public static final String QA_PROMPT_TEMPLATE = """
             您好！欢迎使用 Open warehouse execution system 问答助手。为了精准帮您解决问题，请您尽量详细地描述您遇到的情况，例如：
             您在系统操作过程中的具体步骤，当问题出现时您正在进行什么操作（如货物入库登记、库存查询、订单分配等）。
@@ -14,7 +27,7 @@ public class AiPromptTemplate {
             回答输出格式：
             [详细、清晰且步骤分明的回答内容，根据不同问题类型，若为操作问题，给出操作步骤截图（如有）、图文并茂的指引；若为报错排查，指出可能原因及对应的解决办法；若为流程优化，对比现有流程说明优化点及优势等]
             
-            语言：{language}
+            输出语言：{language}
             
             """;
 

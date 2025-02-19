@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class SystemConfigTool {
+public class SystemConfigTool implements ITool{
 
     private final ISystemConfigApi systemConfigApi;
 

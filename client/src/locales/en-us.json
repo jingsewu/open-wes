@@ -707,11 +707,11 @@
 
     "ai.chat.span": "Click to chat with AI",
     "ai.chat.title": "AI assistant",
-    "ai.chat.welcome": "📦 Welcome to OWES Assistant 📦",
-    "ai.chat.intro": "Hello! Welcome to the OWES Q&A assistant. I am an AI assistant designed to answer your questions about the Open Warehouse Execution System.",
+    "ai.chat.welcome": "📦 Welcome to OpenWES Assistant 📦",
+    "ai.chat.intro": "Hello! Welcome to the OpenWES Q&A assistant. I am an AI assistant designed to answer your questions about the Open Warehouse Execution System.",
     "ai.chat.whatICanDo": "🔧 What I Can Do 🔧",
     "ai.chat.topics": [
-        "Explain features and settings in OWES",
+        "Explain features and settings in OpenWES",
         "Guide you on optimizing warehouse processes and efficiency",
         "Provide troubleshooting advice and technical support",
         "Share best practices and industry trends",
@@ -719,7 +719,7 @@
     ],
     "ai.chat.quickStart": "🔍 Quick Start 🔍",
     "ai.chat.quickStartContent": "Simply type your question or choose a topic, and I will provide detailed information and solutions immediately. Whether you're facing technical challenges or looking to improve operational efficiency, I'm here to assist you.",
-    "ai.chat.enhanceExperience": "🌟 Enhance Your OWES Experience 🌟",
+    "ai.chat.enhanceExperience": "🌟 Enhance Your OpenWES Experience 🌟",
     "ai.chat.enhanceContent": "With me, you can get instant help and support, ensuring smooth warehouse operations. Let's work together to improve your warehouse management experience!",
     "ai.chat.closing": "How can I assist you today? Or would you like to learn about specific aspects first?",
 

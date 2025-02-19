@@ -11,7 +11,7 @@ import org.openwes.ai.core.domain.DatabaseSchema;
 import org.openwes.ai.core.service.AiChatService;
 import org.openwes.ai.core.service.DatabaseSchemaService;
 import org.openwes.ai.core.template.AiPromptTemplate;
-import org.openwes.ai.core.tool.SystemConfigTool;
+import org.openwes.ai.core.tool.*;
 import org.openwes.common.utils.language.core.LanguageContext;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.memory.ChatMemory;
@@ -32,6 +32,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static org.openwes.ai.core.template.AiPromptTemplate.QA_TOOL_CALL_TEMPLATE;
+
 @RequiredArgsConstructor
 @Service
 @Slf4j
@@ -41,7 +43,7 @@ public class AiChatServiceImpl implements AiChatService {
     private final DatabaseSchemaService databaseSchemaService;
     private final ChatMemory chatMemory;
     private final DataSource dataSource;
-    private final SystemConfigTool systemConfigTool;
+    private final List<ITool> tools;
 
     @Override
     public Flux<String> generateSql(String message, String conversationId, String contextWithErrors) throws SQLException {
@@ -60,9 +62,21 @@ public class AiChatServiceImpl implements AiChatService {
     @Override
     public String chat(String message, String conversationId) {
 
-        PromptTemplate template = new PromptTemplate(AiPromptTemplate.QA_PROMPT_TEMPLATE);
+        PromptTemplate template = new PromptTemplate(AiPromptTemplate.QA_QUESTION_CLARIFY_TEMPLATE);
         template.add("question", message);
-        template.add("language", LanguageContext.getLanguage());
+        String intent = ChatClient.create(chatModel).prompt(template.create())
+                .call().content();
+
+        if ("1".equals(intent)) {
+            template = new PromptTemplate(AiPromptTemplate.QA_PROMPT_TEMPLATE);
+            template.add("question", message);
+            template.add("language", LanguageContext.getLanguage());
+
+        } else {
+            template = new PromptTemplate(QA_TOOL_CALL_TEMPLATE);
+            template.add("question", message);
+            template.add("language", LanguageContext.getLanguage());
+        }
 
         return executeAIAndReturnString(message, conversationId + "chat", template);
     }
@@ -78,7 +92,7 @@ public class AiChatServiceImpl implements AiChatService {
 
         chatMemory.add(conversationId, new UserMessage(message));
 
-        String content = ChatClient.create(chatModel).prompt(template.create()).tools(systemConfigTool).call().content();
+        String content = ChatClient.create(chatModel).prompt(template.create()).tools(tools.toArray()).call().content();
         chatMemory.add(conversationId, new AssistantMessage(content));
 
         return content;
