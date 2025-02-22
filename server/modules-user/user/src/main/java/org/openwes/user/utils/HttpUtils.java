@@ -29,7 +29,17 @@ public class HttpUtils {
         if (request == null) {
             return "Not found";
         }
-        return request.getRemoteAddr();
+        String xForwardedForHeader = request.getHeader("X-Forwarded-For");
+        String clientIp = null;
+
+        if (xForwardedForHeader != null && !xForwardedForHeader.isEmpty()) {
+            // Extract the first IP from the list
+            clientIp = xForwardedForHeader.split(",")[0].trim();
+        } else {
+            // Fallback to the remote address
+            clientIp = request.getRemoteAddr();
+        }
+        return clientIp;
     }
 
     /**
