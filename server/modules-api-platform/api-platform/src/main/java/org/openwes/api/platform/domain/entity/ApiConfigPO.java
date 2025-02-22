@@ -31,11 +31,11 @@ public class ApiConfigPO extends UpdateUserPO {
     @Column(length = 128, nullable = false)
     private String code;
 
-    @Column(length = 20, nullable = false, columnDefinition = "varchar(20)")
+    @Column(length = 20, columnDefinition = "varchar(20)")
     @Comment("parameter convert type")
     private ConverterTypeEnum paramConverterType;
 
-    @Column(length = 20, nullable = false, columnDefinition = "varchar(20)")
+    @Column(length = 20, columnDefinition = "varchar(20)")
     @Comment("response convert type")
     private ConverterTypeEnum responseConverterType;
 
