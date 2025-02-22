@@ -31,7 +31,7 @@ export const editorDidMount = (editor: any, monaco: any) => {
                 const language = "Java"
 
                 const response: any = await request({
-                    url: "ai/ai/generateCode",
+                    url: "/ai/ai/generateCode",
                     method: "POST",
                     headers: {"Content-Type": "application/json"},
                     data: JSON.stringify({codeContext, lineContent, language})
