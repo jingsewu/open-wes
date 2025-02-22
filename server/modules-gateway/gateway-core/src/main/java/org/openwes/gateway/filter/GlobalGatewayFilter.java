@@ -26,6 +26,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * authorization and filter request
@@ -93,8 +94,13 @@ public class GlobalGatewayFilter implements GlobalFilter, Ordered {
             return unauthorized(requestUrl, exchange.getResponse(), "request access denied, may be unauthorized.");
         }
 
+        String existingHeader = exchange.getRequest().getHeaders().getFirst("X-Forwarded-For");
+        String clientIp = Objects.requireNonNull(exchange.getRequest().getRemoteAddress()).getAddress().getHostAddress();
+        String newHeader = (existingHeader == null) ? clientIp : existingHeader + ", " + clientIp;
+
         //set username in request header
         ServerHttpRequest newRequest = request.mutate()
+                .header("X-Forwarded-For", newHeader)
                 .header(SystemConstant.HEADER_AUTHORIZATION, "")
                 .header(AuthConstants.USERNAME, username)
                 .header(AuthConstants.AUTH_WAREHOUSE, "").build();
