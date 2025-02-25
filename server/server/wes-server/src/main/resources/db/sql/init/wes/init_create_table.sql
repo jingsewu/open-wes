@@ -859,7 +859,6 @@ CREATE TABLE `w_inbound_plan_order_detail`  (
                                                 `qty_abnormal` int NOT NULL COMMENT '异常数量',
                                                 `qty_accepted` int NOT NULL COMMENT '验收数量',
                                                 `qty_restocked` int NOT NULL COMMENT '计划数量',
-                                                `qty_unreceived` int NOT NULL COMMENT '未收货数量',
                                                 `responsible_party` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '异常原因责任方',
                                                 `size` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '尺码',
                                                 `sku_code` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT 'sku编码',

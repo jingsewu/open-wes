@@ -1,17 +1,18 @@
 package org.openwes.api.platform.aspect;
 
-import org.openwes.api.platform.api.constants.ApiLogStatusEnum;
-import org.openwes.api.platform.domain.entity.ApiLogPO;
-import org.openwes.api.platform.domain.repository.ApiLogPORepository;
-import org.openwes.api.platform.utils.SpringExpressionUtils;
-import org.openwes.common.utils.http.Response;
-import org.openwes.common.utils.id.SnowflakeUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.openwes.api.platform.api.constants.ApiLogStatusEnum;
+import org.openwes.api.platform.domain.entity.ApiLogPO;
+import org.openwes.api.platform.domain.repository.ApiLogPORepository;
+import org.openwes.api.platform.utils.SpringExpressionUtils;
+import org.openwes.common.utils.http.Response;
+import org.openwes.common.utils.id.SnowflakeUtils;
+import org.openwes.common.utils.utils.JsonUtils;
 import org.springframework.stereotype.Component;
 
 @Aspect
@@ -34,7 +35,7 @@ public class ApiLogAspect {
                 ? SnowflakeUtils.generateId() : Long.parseLong(messageId));
 
         if (args.length > 0) {
-            apiLogPO.setRequestData(args[args.length - 1]);
+            apiLogPO.setRequestData(subString(JsonUtils.obj2String(args[args.length - 1]), 65535));
         }
 
         long startTime = System.currentTimeMillis();
@@ -49,7 +50,7 @@ public class ApiLogAspect {
             throw e;
         } finally {
             long endTime = System.currentTimeMillis();
-            apiLogPO.setResponseData(result);
+            apiLogPO.setResponseData(subString(JsonUtils.obj2String(result), 65535));
             apiLogPO.setCostTime(endTime - startTime);
 
             if (result instanceof Response response) {
@@ -64,5 +65,13 @@ public class ApiLogAspect {
             }
         }
         return result;
+    }
+
+    private String subString(String str, int length) {
+
+        if (StringUtils.isBlank(str) || str.length() <= length) {
+            return str;
+        }
+        return str.substring(0, length - 1);
     }
 }

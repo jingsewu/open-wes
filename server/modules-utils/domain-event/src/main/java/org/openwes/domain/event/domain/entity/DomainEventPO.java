@@ -20,10 +20,10 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(
-    name = "d_domain_event",
-    indexes = {
-        @Index(name = "idx_create_time", columnList = "createTime")
-    }
+        name = "d_domain_event",
+        indexes = {
+                @Index(name = "idx_create_time", columnList = "createTime")
+        }
 )
 public class DomainEventPO {
 
@@ -50,7 +50,7 @@ public class DomainEventPO {
     private Long version;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 20, columnDefinition = "varchar(20)")
     @Comment("状态")
     private DomainEventStatusEnum status = DomainEventStatusEnum.NEW;
 

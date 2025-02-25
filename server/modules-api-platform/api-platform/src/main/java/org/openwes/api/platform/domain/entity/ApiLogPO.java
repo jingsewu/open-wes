@@ -1,14 +1,14 @@
 package org.openwes.api.platform.domain.entity;
 
-import org.openwes.api.platform.api.constants.ApiLogStatusEnum;
-import org.openwes.common.utils.base.CreateUserPO;
-import jakarta.persistence.Index;
-import jakarta.persistence.Table;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.hibernate.annotations.*;
-import org.hibernate.type.SqlTypes;
+import org.hibernate.annotations.Comment;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.GenericGenerator;
+import org.openwes.api.platform.api.constants.ApiLogStatusEnum;
+import org.openwes.common.utils.base.CreateUserPO;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Data
@@ -36,14 +36,12 @@ public class ApiLogPO extends CreateUserPO {
     private String apiCode;
 
     @Column(length = 65535)
-    @JdbcTypeCode(SqlTypes.JSON)
     @Comment("请求参数")
-    private Object requestData;
+    private String requestData;
 
     @Column(length = 65535)
     @Comment("返回参数")
-    @JdbcTypeCode(SqlTypes.JSON)
-    private Object responseData;
+    private String responseData;
 
     @Column(columnDefinition = "int(11) not null default 0")
     private Integer retryCount = 0;
