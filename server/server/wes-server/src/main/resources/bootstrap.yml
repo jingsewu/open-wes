@@ -18,6 +18,11 @@ spring:
     change-log: classpath:/db/changelog/db.changelog-master.xml
     database-change-log-table: l_change_log
     database-change-log-lock-table: l_change_log_lock
+  ai:
+    zhipuai:
+      api-key: xxx
+      chat.options.model: GLM-4-air
+      chat.options.temperature: 0
 
 server:
   port: 9010

@@ -4,11 +4,11 @@ import {
     api_api_config_get,
     api_api_config_update,
     api_api_delete,
-    api_api_update, editorDidMount
+    api_api_update,
+    editorDidMount
 } from "@/pages/api_platform/constants/api_constant"
 import {create_update_columns, true_false_options} from "@/utils/commonContants"
 import {api_crud_search, api_crud_search_total} from "@/pages/constantApi"
-import request from "@/utils/requestInterceptor";
 
 const baseform = [
     {

@@ -1,11 +1,5 @@
 package org.openwes.api.platform.domain.entity;
 
-import org.openwes.api.platform.api.constants.ApiCallTypeEnum;
-import org.openwes.api.platform.api.constants.CallbackApiTypeEnum;
-import org.openwes.api.platform.utils.AuthUtils;
-import org.openwes.api.platform.utils.HttpHelper;
-import org.openwes.common.utils.base.UpdateUserPO;
-import org.openwes.common.utils.constants.MarkConstant;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -14,6 +8,13 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+import org.openwes.api.platform.api.constants.ApiCallTypeEnum;
+import org.openwes.api.platform.api.constants.CallbackApiTypeEnum;
+import org.openwes.api.platform.utils.AuthUtils;
+import org.openwes.api.platform.utils.HttpHelper;
+import org.openwes.common.utils.base.UpdateUserPO;
+import org.openwes.common.utils.constants.MarkConstant;
+import org.openwes.common.utils.id.IdGenerator;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.Map;
@@ -33,7 +34,7 @@ public class ApiPO extends UpdateUserPO {
 
     @Id
     @GeneratedValue(generator = "databaseIdGenerator")
-    @GenericGenerator(name = "databaseIdGenerator", strategy = "org.openwes.common.utils.id.IdGenerator")
+    @GenericGenerator(name = "databaseIdGenerator", type = IdGenerator.class)
     private Long id;
 
     @Column(length = 128, nullable = false)

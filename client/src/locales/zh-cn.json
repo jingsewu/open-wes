@@ -574,6 +574,9 @@
     "interfacePlatform.interfaceManagement.table.keys": "密钥",
     "interfacePlatform.interfaceManagement.table.tokenName": "token 名称",
     "interfacePlatform.interfaceManagement.table.tokenName.description": "认证服务器响应的 token 的名称",
+    "interfacePlatform.interfaceManagement.table.apiKeyName": "Api Key 名称",
+
+
     "interfacePlatform.interfaceManagement.form.interfaceDescription": "接口描述",
     "interfacePlatform.interfaceManagement.form.converseScriptType": "请求转换脚本类型",
     "interfacePlatform.interfaceManagement.form.requestTransformationScript": "请求转换脚本",
@@ -582,6 +585,7 @@
     "interfacePlatform.interfaceManagement.form.responseTransformationScripts": "响应转换脚本",
 
     "interfacePlatform.interfaceLogs.title": "接口日志",
+    "interfacePlatform.apiKeys.title": "API Keys",
     "interfacePlatform.interfaceLogs.table.duration": "花费时长",
     "interfacePlatform.interfaceLogs.table.numberOfRetries": "重试次数",
     "interfacePlatform.interfaceLogs.from.requestPackets": "请求报文",

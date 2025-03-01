@@ -574,6 +574,9 @@
     "interfacePlatform.interfaceManagement.table.keys": "Keys",
     "interfacePlatform.interfaceManagement.table.tokenName": "Token name",
     "interfacePlatform.interfaceManagement.table.tokenName.description": "The name of the token responded by the authentication server",
+    "interfacePlatform.interfaceManagement.table.apiKeyName": "Api Key Name",
+
+
     "interfacePlatform.interfaceManagement.form.interfaceDescription": "Interface description",
     "interfacePlatform.interfaceManagement.form.converseScriptType": "Request transformation script type",
     "interfacePlatform.interfaceManagement.form.requestTransformationScript": "Request transformation script",
@@ -582,6 +585,7 @@
     "interfacePlatform.interfaceManagement.form.responseTransformationScripts": "Response transformation scripts",
 
     "interfacePlatform.interfaceLogs.title": "Interface logs",
+    "interfacePlatform.apiKeys.title": "API Keys",
     "interfacePlatform.interfaceLogs.table.duration": "Duration",
     "interfacePlatform.interfaceLogs.table.numberOfRetries": "Number of retries",
     "interfacePlatform.interfaceLogs.from.requestPackets": "Request packets",

@@ -100,6 +100,15 @@ const menuRouter = [
         ),
         component: lazy(() => import("@/pages/api_platform/api_log"))
     },
+    {
+        path: "/api-platform/api-keys",
+        name: (
+            <Translation>
+                {(t) => t("interfacePlatform.apiKeys.title")}
+            </Translation>
+        ),
+        component: lazy(() => import("@/pages/api_platform/api_keys"))
+    },
 
     // WMS - config center - basic
     {

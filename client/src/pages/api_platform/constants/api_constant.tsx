@@ -9,6 +9,10 @@ export const api_api_config_update = "post:/api-platform/api-config-management/u
 
 export const api_api_log_get = "get:/api-platform/api-log-management/${id}"
 
+export const api_api_keys_get = "post:/api-platform/api-keys/${id}"
+export const api_api_keys_create = "post:/api-platform/api-keys/create"
+export const api_api_keys_delete = "delete:/api-platform/api-keys/${id}"
+
 //todo by Evlyn
 // help me check if i defined the const here correct?
 let debounceTimer: NodeJS.Timeout | null = null;

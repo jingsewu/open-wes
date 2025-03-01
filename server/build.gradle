@@ -133,7 +133,6 @@ subprojects {
             dependency group: 'cn.afterturn', name: 'easypoi-web', version: '3.2.0'
 
             dependency group: 'org.apache.shardingsphere', name: 'shardingsphere-jdbc-core-spring-boot-starter', version: '5.2.1'
-            dependency group: 'org.liquibase', name: 'liquibase-core', version: '4.21.1'
             dependency group: 'org.lazyluke', name: 'log4jdbc-remix', version: '0.2.7'
             dependency group: 'mysql', name: 'mysql-connector-java', version: '8.0.32'
             dependency group: 'cn.zhxu', name: 'bean-searcher-boot-starter', version: '4.2.4'
