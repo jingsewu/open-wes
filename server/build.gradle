@@ -41,7 +41,6 @@ subprojects {
         testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
         testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
         testImplementation('org.springframework.boot:spring-boot-starter-test')
-//        testImplementation 'org.mockito:mockito-inline'
         testImplementation 'org.hibernate.orm:hibernate-core'
         testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa'
         testImplementation 'mysql:mysql-connector-java'
@@ -85,7 +84,6 @@ subprojects {
             dependency group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc', version: '3.2.2'
             dependency group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client', version: '3.2.2'
 
-//            dependency group: 'org.springframework', name: 'spring-tx', version: '6.0.6'
             dependency group: 'org.springframework.security.oauth', name: 'spring-security-oauth2', version: '2.5.2.RELEASE'
             dependency group: 'org.springframework.security.oauth.boot', name: 'spring-security-oauth2-autoconfigure', version: '2.6.8'
             dependency group: 'org.springframework.security', name: 'spring-security-jwt', version: '1.1.1.RELEASE'
@@ -120,11 +118,6 @@ subprojects {
 
             dependency group: 'io.swagger.core.v3', name: 'swagger-annotations', version: '2.2.26'
 
-//            dependency group: 'io.springfox', name: 'springfox-swagger2', version: '3.0.0'
-//            dependency group: 'io.springfox', name: 'springfox-swagger-ui', version: '3.0.0'
-//            dependency group: 'io.swagger.core.v3', name: 'swagger-models', version: '2.2.8'
-//            dependency group: 'io.swagger.core.v3', name: 'swagger-annotations', version: '2.2.8'
-
             dependency group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.4.0'
 
             dependency group: 'org.fluentd', name: 'fluent-logger', version: '0.7.0'
@@ -151,8 +144,6 @@ subprojects {
             dependency group: 'org.powermock', name: 'powermock-classloading-xstream', version: '2.0.9'
 
             dependency group: 'com.xuxueli', name: 'xxl-job-core', version: '2.4.0'
-
-            dependency group: 'dev.langchain4j', name: 'langchain4j', version: '0.18.0'
 
             dependency group: 'org.pf4j', name: 'pf4j-spring', version: '0.8.0'
 
