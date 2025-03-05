@@ -1,5 +1,10 @@
 # Open Warehouse Execution System (WES)
 
+![GitHub Repo stars](https://img.shields.io/github/stars/jingsewu/open-wes?style=social)
+![License](https://img.shields.io/github/license/jingsewu/open-wes)
+![Release](https://img.shields.io/github/v/release/jingsewu/open-wes)
+![Gitee Stars](https://gitee.com/pigTear/open-wes/badge/star.svg?theme=social)
+
 [English](README.md) | [中文](README_CN.md) | [日本語](README_JP.md)
 
 **Open WES** is a customizable, open-source Warehouse Execution System designed to streamline warehouse operations. It
@@ -13,76 +18,62 @@ and real-time data tracking.
 - **Modular Design**: Easily integrate with existing warehouse systems.
 - **Customizable Rules**: Configure rules for task allocation, sorting, and routing.
 - **Open API**: Interact with the system using RESTful or WebSocket APIs.
+- **AI-Powered Optimization**: Leverage artificial intelligence to optimize warehouse operations, predict demand, and automate decision-making.
 
-## Installation
+## Project Setup with Docker Compose
 
 ### Prerequisites
 
-- [Java](https://www.java.com/) (17+): For running the backend server applications.
-- [MySQL](https://www.mysql.com/) (8.0+): Used as the relational database for storing warehouse data.
-- [Nacos](https://nacos.io/) (2.0+): A service registry and configuration management tool.
-- [Redis](https://redis.io/) (7.0+): Used for caching and session management.
-- [Node.js](https://nodejs.org/)(18+): For running the client application.
+Before you begin, ensure you have the following installed:
 
-> Mysql, Nacos and Redis should be installed on the same machine.
-> You can use server/docker/docker-compose to install all the middlewares like mysql, nacos and redis.
-### Steps
+1. **Docker**: [Install Docker](https://docs.docker.com/get-docker/)
+2. **Docker Compose**: [Install Docker Compose](https://docs.docker.com/compose/install/)
 
-**Clone the repository:**
-   ```bash
-   git clone https://github.com/jingsewu/open-wes.git
-   ```
-#### Run server
 
-1. Add nacos config through executing the scripts in the server/script folder
+### Run the project within 30s
+
+Run the following commands to clone the repository and start the project in under 30 seconds:
+
 ```bash
-mysql -u root -p nacos_config < server/script/nacos_config.sql
+git clone https://github.com/jingsewu/open-wes
+cd open-wes
+docker-compose up --build
 ```
-2. Configure the hostname `nacos.openwes.com` by editing your hosts file (e.g., `/etc/hosts` on Linux or `C:\Windows\System32\drivers\etc\hosts` on Windows):  
-   ```172.0.0.1 nacos.openwes.com```
-3. Create database openwes:
-  ```sql
-    create database openwes;
-  ```
-4. Start the servers: WesApplication, GatewayApplication and StationApplication located in the server/server directory
 
-#### Run client
-1. update [webpack.config.example.dev.js](client/build/webpack.config.example.dev.js) to webpack.config.dev.js
-```bash
-mv client/build/webpack.config.example.dev.js client/build/webpack.config.dev.js
-```
-2. Start the client: cd client and run：
-  ```bash
-  npm install
-  npm start
-  ```
+## Comparison
+| **Category**               | **Open-WES**                                                                 | **Traditional WMS**                                                                 |
+|-----------------------------|--------------------------------------------------------------------------------|-------------------------------------------------------------------------------------|
+| **Core Focus**              | Real-time orchestration of warehouse workflows, automation, and execution.     | Inventory tracking, order management, and broad operational oversight.              |
+| **Automation Integration** | Built for seamless integration with robots, AGVs, IoT, and real-time systems.  | Limited automation support; often requires middleware or custom development.        |
+| **Open Source**             | Free, open-source (MIT license). Community-driven development.                 | Proprietary, closed-source. Licensing fees and vendor lock-in.                     |
+| **Customization**           | Fully customizable (code access). Adapt workflows to specific needs.           | Limited customization; depends on vendor-provided configurations.                  |
+| **Cost**                    | No licensing fees. Low cost for deployment (hosting/maintenance only).         | High upfront licensing costs + recurring fees for support/upgrades.                |
+| **Scalability**             | Modular design scales with automation and business needs.                      | Scalability limited by vendor roadmap and licensing tiers.                         |
+| **Real-Time Processing**    | Optimizes tasks dynamically (e.g., order prioritization, resource allocation). | Batch-oriented processing; slower response to real-time changes.                   |
+| **Deployment**              | Cloud-native or on-premise. Flexible infrastructure.                           | Often on-premise or vendor-hosted. Limited cloud flexibility.                       |
+| **Integration**             | APIs for modern tools (e.g., ROS, IoT platforms, microservices).               | Legacy APIs; integration may require costly middleware.                             |
+| **User Interface**          | Developer-friendly (code-first). UI customizable via open frameworks.          | Pre-built UI with limited flexibility.                                              |
+| **Support**                 | Community-driven support (GitHub, forums). Optional paid consultancy.          | Vendor-provided support (additional cost). Slower fixes for niche use cases.        |
+| **Use Cases**               | High-automation warehouses, e-commerce/3PLs needing real-time adaptability.    | General inventory management, low-to-medium automation facilities.                 |
+| **Transparency**            | Full visibility into code and processes. Auditable and secure.                 | Opaque systems; security/processes depend on vendor trust.                         |
 
-## Usage
+---
 
-The Open WES provides a user-friendly interface for managing your warehouse. You can perform tasks such as:
+### **Key Differentiators**:
+1. **Automation-Centric**: Open-WES is designed for warehouses using robots, IoT, and real-time workflows, while traditional WMS focuses on inventory and order management.
+2. **Cost Efficiency**: Open-WES eliminates licensing fees and leverages community contributions for innovation.
+3. **Flexibility**: Customize Open-WES to integrate with niche tools (e.g., custom robots, AI schedulers).
+4. **Real-Time vs. Batch**: Open-WES reacts instantly to changes (e.g., order surges, machine downtime), whereas WMS relies on scheduled updates.
 
-- **Adding New Products:** Easily add new products to your inventory, simplifying the process of introducing new items
-  to your warehouse.
+### **When to Use Open-WES**:
+- You need **real-time coordination** of robots, AGVs, or IoT devices.
+- You prioritize **cost savings** and **custom workflows**.
+- Your warehouse is evolving toward Industry 4.0 (smart automation).
 
-- **Managing Inventory Levels:** Effortlessly monitor and manage inventory levels to ensure optimal stock availability
-  and prevent overstocking or understocking.
-
-- **Supporting Full Warehouse Flows:** Open WES supports complete warehouse workflows, encompassing inbound processes (
-  receiving), outbound processes (shipping), rechecking, packing, stocktaking, and inventory relocation. This
-  comprehensive support ensures efficient and organized operations.
-
-- **Generating Performance Reports:** Access detailed reports on warehouse performance, providing valuable insights into
-  key metrics, such as inventory turnover, order fulfillment rates, and operational efficiency.
-
-- **Supporting Operator and Robot Operations:** Open WES seamlessly accommodates both human and robot operations,
-  promoting
-  a flexible and efficient work environment. Warehouse staff can collaborate effectively with automated systems,
-  optimizing productivity.
-
-- **Easy Integration with WCS and RCS:** Open WES is designed for easy integration with Warehouse Control Systems (WCS)
-  and
-  Robot Control Systems (RCS). This streamlined connectivity allows for synchronized and efficient management of robotic
-  systems within the warehouse environment.
+### **When to Use Traditional WMS**:
+- You require a **proven, out-of-the-box** solution for basic inventory/order management.
+- Your operations rely on **legacy systems** with minimal automation.
+- You prefer **vendor-managed support** over self-hosting.
 
 For detailed instructions and examples, refer to our example [website](https://www.openwes.top/).
 
@@ -117,4 +108,4 @@ The architecture of Open WES is modular and scalable, designed to handle complex
 
 If you encounter issues or have questions, check out the following resources:
 - [GitHub Issues](https://github.com/jingsewu/open-wes/issues): Report bugs or request features.
-- [Documentation](./doc): Find detailed guides and API documentation.  
+- [Documentation](https://docs.openwes.top): Find detailed guides and API documentation.  

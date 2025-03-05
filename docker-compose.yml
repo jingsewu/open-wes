@@ -1,0 +1,108 @@
+version: '3.8'
+
+services:
+  # Frontend Service
+  frontend:
+    build: ./client
+    ports:
+      - "80:80"
+    networks:
+      - my-network
+
+  # Gateway Server
+  gateway-server:
+    build: ./server/server/gateway-server
+    ports:
+      - "8090:8090"
+    depends_on:
+      - mysql
+      - redis
+      - nacos
+    networks:
+      - my-network
+
+  # Station Server
+  station-server:
+    build: ./server/server/station-server
+    ports:
+      - "9040:9040"
+    depends_on:
+      - mysql
+      - redis
+      - nacos
+    networks:
+      - my-network
+
+  # WES Server
+  wes-server:
+    build: ./server/server/wes-server
+    ports:
+      - "9010:9010"
+    depends_on:
+      - mysql
+      - redis
+      - nacos
+    networks:
+      - my-network
+
+  # MySQL Service
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - /data/mysql_data:/var/lib/mysql
+      - ./initdb.d:/docker-entrypoint-initdb.d  # Mount SQL file for initialization
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+    networks:
+      my-network:
+        aliases:
+          - nacos.openwes.com
+
+  # Redis Service
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+    networks:
+      my-network:
+        aliases:
+          - nacos.openwes.com
+
+  # Nacos Service
+  nacos:
+    image: nacos/nacos-server:latest
+    ports:
+      - "8848:8848"
+    environment:
+      MODE: standalone
+      SPRING_DATASOURCE_PLATFORM: mysql
+      MYSQL_SERVICE_HOST: mysql
+      MYSQL_SERVICE_DB_NAME: nacos_config
+      MYSQL_SERVICE_USER: root
+      MYSQL_SERVICE_PASSWORD: root
+    depends_on:
+      mysql:
+        condition: service_healthy  # Wait for MySQL to be ready
+    networks:
+      my-network:
+        aliases:
+          - nacos.openwes.com
+
+# Networks
+networks:
+  my-network:
+    driver: bridge

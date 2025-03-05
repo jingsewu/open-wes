@@ -1,4 +1,7 @@
 
+CREATE DATABASE IF NOT EXISTS nacos_config;
+USE nacos_config;
+
 -- add tenant
 INSERT INTO `tenant_info` (`id`, `kp`, `tenant_id`, `tenant_name`, `tenant_desc`, `create_source`, `gmt_create`, `gmt_modified`) VALUES (6, '1', 'test', 'test', 'test', 'nacos', 1678756828142, 1678756828142);
 
