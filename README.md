@@ -97,7 +97,7 @@ This project is licensed under the [MIT License](LICENSE).
 If you have any questions or need assistance, feel free to reach out to us on
 our [GitHub Issues](https://github.com/jingsewu/open-wes/issues) page.
 
-Thank you for using and contributing to the Smart Warehouse Management System!
+Thank you for using and contributing !
 
 ## Architecture
 The architecture of Open WES is modular and scalable, designed to handle complex warehouse operations. Below is a high-level overview of its components:
