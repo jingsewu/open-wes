@@ -36,6 +36,7 @@ include 'modules-utils:mq'
 include 'modules-utils:distribute-file'
 include 'modules-utils:exception-handler'
 include 'modules-utils:common-import'
+include 'modules-utils:distribute-scheduler'
 
 include 'server:station-server'
 include 'server:gateway-server'

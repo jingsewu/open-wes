@@ -3,7 +3,10 @@ version: '3.8'
 services:
   # Frontend Service
   frontend:
-    build: ./client
+    build:
+      context: ./client
+      args:
+        NPM_REGISTRY: ${NPM_REGISTRY:-https://registry.npmjs.org}
     ports:
       - "80:80"
     networks:
@@ -11,7 +14,9 @@ services:
 
   # Gateway Server
   gateway-server:
-    build: ./server/server/gateway-server
+    build:
+      context: ./server/
+      target: gateway
     ports:
       - "8090:8090"
     depends_on:
@@ -23,7 +28,9 @@ services:
 
   # Station Server
   station-server:
-    build: ./server/server/station-server
+    build:
+      context: ./server/
+      target: station
     ports:
       - "9040:9040"
     depends_on:
@@ -35,7 +42,9 @@ services:
 
   # WES Server
   wes-server:
-    build: ./server/server/wes-server
+    build:
+      context: ./server/
+      target: wes
     ports:
       - "9010:9010"
     depends_on:
@@ -56,7 +65,7 @@ services:
       - /data/mysql_data:/var/lib/mysql
       - ./initdb.d:/docker-entrypoint-initdb.d  # Mount SQL file for initialization
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
       interval: 5s
       timeout: 10s
       retries: 10
@@ -72,7 +81,7 @@ services:
     ports:
       - "6379:6379"
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: [ "CMD", "redis-cli", "ping" ]
       interval: 5s
       timeout: 10s
       retries: 10
@@ -95,8 +104,7 @@ services:
       MYSQL_SERVICE_USER: root
       MYSQL_SERVICE_PASSWORD: root
     depends_on:
-      mysql:
-        condition: service_healthy  # Wait for MySQL to be ready
+      - mysql
     networks:
       my-network:
         aliases:

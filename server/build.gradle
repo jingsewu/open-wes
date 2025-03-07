@@ -152,6 +152,9 @@ subprojects {
             dependency group: 'org.apache.groovy', name: 'groovy', version: '4.0.22'
 
             dependency group: 'org.liquibase', name: 'liquibase-core', version: '4.29.2'
+
+            dependency group: 'net.javacrumbs.shedlock', name: 'shedlock-spring', version: '6.3.0'
+            dependency group: 'net.javacrumbs.shedlock', name: 'shedlock-provider-redis-spring', version: '6.3.0'
         }
     }
 

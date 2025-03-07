@@ -1,0 +1,9 @@
+dependencies {
+    implementation 'net.javacrumbs.shedlock:shedlock-spring'
+    implementation 'net.javacrumbs.shedlock:shedlock-provider-redis-spring'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+}
+
+test {
+    useJUnitPlatform()
+}
