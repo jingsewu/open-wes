@@ -24,6 +24,12 @@ spring:
       chat.options.model: GLM-4-air
       chat.options.temperature: 0
 
+    vectorstore:
+      pinecone:
+        apiKey: pcsk_4fXqXq_2Letb8YmcVtevz8NQcBaWhSv3jQmvzXufPzLkgJKQ7xWRaT2V27LZqjoyWxLxrZ
+        environment: aped-4627-b74a
+        index-name: chatbot
+        project-id: 5k87fkv
 server:
   port: 9010
 

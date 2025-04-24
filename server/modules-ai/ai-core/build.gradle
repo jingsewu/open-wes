@@ -16,4 +16,9 @@ dependencies {
     implementation "org.springframework:spring-aspects"
 
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui'
+
+    implementation "org.jsoup:jsoup"
+    implementation "com.google.code.gson:gson"
+
+    implementation "org.springframework.ai:spring-ai-pinecone-store-spring-boot-starter"
 }

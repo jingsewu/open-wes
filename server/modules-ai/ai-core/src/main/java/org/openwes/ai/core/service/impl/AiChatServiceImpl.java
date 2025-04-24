@@ -14,12 +14,14 @@ import org.openwes.ai.core.template.AiPromptTemplate;
 import org.openwes.ai.core.tool.*;
 import org.openwes.common.utils.language.core.LanguageContext;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.prompt.PromptTemplate;
+import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -44,6 +46,7 @@ public class AiChatServiceImpl implements AiChatService {
     private final ChatMemory chatMemory;
     private final DataSource dataSource;
     private final List<ITool> tools;
+    private final VectorStore vectorStore;
 
     @Override
     public Flux<String> generateSql(String message, String conversationId, String contextWithErrors) throws SQLException {
@@ -92,7 +95,9 @@ public class AiChatServiceImpl implements AiChatService {
 
         chatMemory.add(conversationId, new UserMessage(message));
 
-        String content = ChatClient.create(chatModel).prompt(template.create()).tools(tools.toArray()).call().content();
+        String content = ChatClient.create(chatModel).prompt(template.create())
+                .advisors(new QuestionAnswerAdvisor(vectorStore))
+                .tools(tools.toArray()).call().content();
         chatMemory.add(conversationId, new AssistantMessage(content));
 
         return content;
@@ -191,10 +196,10 @@ public class AiChatServiceImpl implements AiChatService {
         return chatModel.stream(template.createMessage()).map(chunk -> {
             fullResponse.append(chunk);
             return chunk;
-        }).doOnComplete(() -> {
+        }).doOnComplete(() ->
             // Only save to chat memory once we have the complete response
-            chatMemory.add(conversationId, new AssistantMessage(fullResponse.toString()));
-        });
+            chatMemory.add(conversationId, new AssistantMessage(fullResponse.toString()))
+        );
     }
 
 
