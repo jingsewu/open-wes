@@ -63,7 +63,7 @@ subprojects {
         }
 
         imports {
-            mavenBom "org.springframework.ai:spring-ai-bom:1.0.0-SNAPSHOT"
+            mavenBom "org.springframework.ai:spring-ai-bom:1.0.0-M6" // Match your Spring AI version
         }
 
         imports {
@@ -157,6 +157,10 @@ subprojects {
 
             dependency group: 'net.javacrumbs.shedlock', name: 'shedlock-spring', version: '6.3.0'
             dependency group: 'net.javacrumbs.shedlock', name: 'shedlock-provider-redis-spring', version: '6.3.0'
+
+            dependency("org.jsoup:jsoup:1.17.2")
+
+            dependency("com.google.code.gson:gson:2.10.1")
         }
     }
 
