@@ -109,8 +109,8 @@ public class InboundPlanOrder extends AggregatorRoot {
 
         this.inboundPlanOrderStatus = InboundPlanOrderStatusEnum.CLOSED;
         this.details.forEach(InboundPlanOrderDetail::close);
+        DomainEventPublisher.sendAsyncDomainEvent(new InboundOrderCompletionEvent().setInboundOrderId(this.id));
 
-        this.addAsynchronousDomainEvents(new InboundOrderCompletionEvent().setInboundOrderId(this.id));
     }
 
     public void cancel() {
