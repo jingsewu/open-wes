@@ -3,6 +3,7 @@ package org.openwes.wes.inbound.domain.entity;
 import com.google.common.collect.Lists;
 import org.openwes.common.utils.exception.WmsException;
 import org.openwes.common.utils.id.OrderNoGenerator;
+import org.openwes.domain.event.AggregatorRoot;
 import org.openwes.wes.api.inbound.constants.AcceptMethodEnum;
 import org.openwes.wes.api.inbound.constants.AcceptOrderStatusEnum;
 import org.openwes.wes.api.inbound.constants.AcceptTypeEnum;
@@ -16,7 +17,7 @@ import static org.openwes.common.utils.exception.code_enum.InboundErrorDescEnum.
 
 @Data
 @Slf4j
-public class AcceptOrder {
+public class AcceptOrder implements AggregatorRoot {
 
     private Long id;
 

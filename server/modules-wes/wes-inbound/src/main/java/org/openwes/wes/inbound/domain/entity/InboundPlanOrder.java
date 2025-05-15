@@ -2,17 +2,18 @@ package org.openwes.wes.inbound.domain.entity;
 
 
 import com.google.common.collect.Sets;
-import org.openwes.common.utils.exception.WmsException;
-import org.openwes.common.utils.id.OrderNoGenerator;
-import org.openwes.domain.event.DomainEventPublisher;
-import org.openwes.wes.api.inbound.constants.InboundPlanOrderStatusEnum;
-import org.openwes.wes.api.inbound.constants.StorageTypeEnum;
-import org.openwes.wes.api.inbound.dto.AcceptRecordDTO;
-import org.openwes.wes.api.inbound.event.InboundOrderCompletionEvent;
-import org.openwes.wes.api.main.data.dto.SkuMainDataDTO;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.openwes.common.utils.exception.WmsException;
+import org.openwes.common.utils.id.OrderNoGenerator;
+import org.openwes.domain.event.AggregatorRoot;
+import org.openwes.wes.api.inbound.constants.InboundPlanOrderStatusEnum;
+import org.openwes.wes.api.inbound.constants.StorageTypeEnum;
+import org.openwes.wes.api.inbound.dto.AcceptRecordDTO;
+import org.openwes.wes.api.inbound.event.AcceptEvent;
+import org.openwes.wes.api.inbound.event.InboundOrderCompletionEvent;
+import org.openwes.wes.api.main.data.dto.SkuMainDataDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -24,7 +25,7 @@ import static org.openwes.common.utils.exception.code_enum.InboundErrorDescEnum.
 
 @Data
 @Slf4j
-public class InboundPlanOrder {
+public class InboundPlanOrder implements AggregatorRoot {
 
     private Long id;
 
@@ -95,6 +96,7 @@ public class InboundPlanOrder {
         if (this.inboundPlanOrderStatus == InboundPlanOrderStatusEnum.NEW) {
             this.inboundPlanOrderStatus = InboundPlanOrderStatusEnum.ACCEPTING;
         }
+
     }
 
     public void close() {
@@ -106,8 +108,8 @@ public class InboundPlanOrder {
 
         this.inboundPlanOrderStatus = InboundPlanOrderStatusEnum.CLOSED;
         this.details.forEach(InboundPlanOrderDetail::close);
-        DomainEventPublisher.sendAsyncDomainEvent(new InboundOrderCompletionEvent().setInboundOrderId(this.id));
 
+        this.addAsynchronousDomainEvents(new InboundOrderCompletionEvent().setInboundOrderId(this.id));
     }
 
     public void cancel() {
@@ -123,7 +125,9 @@ public class InboundPlanOrder {
         log.info("inbound order: {} detail: {} cancel accept qty: {}", this.orderNo,
                 inboundPlanOrderDetailId, qtyAccepted);
 
-        this.details.stream().filter(v -> Objects.equals(v.getId(), inboundPlanOrderDetailId)).forEach(v -> v.cancelAccept(qtyAccepted));
+        this.details.stream()
+                .filter(v -> Objects.equals(v.getId(), inboundPlanOrderDetailId))
+                .forEach(v -> v.cancelAccept(qtyAccepted));
     }
 
     public boolean isFullAccepted() {
@@ -139,7 +143,7 @@ public class InboundPlanOrder {
         }
         this.inboundPlanOrderStatus = InboundPlanOrderStatusEnum.ACCEPTED;
 
-        DomainEventPublisher.sendAsyncDomainEvent(new InboundOrderCompletionEvent().setInboundOrderId(this.id));
+        this.addAsynchronousDomainEvents(new InboundOrderCompletionEvent().setInboundOrderId(this.id));
     }
 
     public void forceCompleteAccepted() {
@@ -148,7 +152,7 @@ public class InboundPlanOrder {
         this.details.forEach(InboundPlanOrderDetail::forceCompleteAccepted);
         this.inboundPlanOrderStatus = InboundPlanOrderStatusEnum.ACCEPTED;
 
-        DomainEventPublisher.sendAsyncDomainEvent(new InboundOrderCompletionEvent().setInboundOrderId(this.id));
+        this.addAsynchronousDomainEvents(new InboundOrderCompletionEvent().setInboundOrderId(this.id));
     }
 
     public InboundPlanOrderDetail getDetail(Long inboundPlanOrderDetailId) {
