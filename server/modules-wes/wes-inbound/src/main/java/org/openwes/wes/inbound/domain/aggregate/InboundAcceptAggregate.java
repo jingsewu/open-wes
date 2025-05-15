@@ -22,27 +22,7 @@ public class InboundAcceptAggregate {
     private final InboundPlanOrderRepository inboundPlanOrderRepository;
     private final AcceptOrderRepository acceptOrderRepository;
 
-    @Transactional(rollbackFor = Exception.class)
-    public void accept(AcceptRecordDTO acceptRecord, InboundPlanOrder inboundPlanOrder) {
-
-        if (inboundPlanOrder != null) {
-            inboundPlanOrder.accept(acceptRecord);
-            inboundPlanOrderRepository.saveOrderAndDetail(inboundPlanOrder);
-        }
-        DomainEventPublisher.sendAsyncDomainEvent(AcceptEvent.builder()
-                .warehouseCode(acceptRecord.getWarehouseCode())
-                .inboundPlanOrderId(acceptRecord.getInboundPlanOrderId())
-                .inboundPlanOrderDetailId(acceptRecord.getInboundPlanOrderDetailId())
-                .skuId(acceptRecord.getSkuId())
-                .workStationId(acceptRecord.getWorkStationId())
-                .targetContainerId(acceptRecord.getTargetContainerId())
-                .targetContainerCode(acceptRecord.getTargetContainerCode())
-                .targetContainerFace(acceptRecord.getTargetContainerFace())
-                .targetContainerSlotCode(acceptRecord.getTargetContainerSlotCode())
-                .targetContainerSpecCode(acceptRecord.getTargetContainerSpecCode())
-                .qtyAccepted(acceptRecord.getQtyAccepted()).build());
-    }
-
+    //TODO need to use Domain event instead of the @Transactional
     @Transactional(rollbackFor = Exception.class)
     public void cancelAccept(AcceptOrder acceptOrder, Long acceptOrderDetailId, List<InboundPlanOrder> inboundPlanOrders) {
 
@@ -62,13 +42,13 @@ public class InboundAcceptAggregate {
 
     }
 
+    //TODO need to use Domain event instead of the @Transactional
     @Transactional(rollbackFor = Exception.class)
     public void complete(AcceptOrder acceptOrder, List<InboundPlanOrder> inboundPlanOrders) {
         acceptOrder.complete();
         acceptOrderRepository.saveOrder(acceptOrder);
 
         inboundPlanOrders.stream().filter(InboundPlanOrder::isFullAccepted).forEach(InboundPlanOrder::completeAccepted);
-
         inboundPlanOrderRepository.saveOrders(inboundPlanOrders);
 
         DomainEventPublisher.sendAsyncDomainEvent(new PutAwayCreationEvent().setAcceptOrderId(acceptOrder.getId()));

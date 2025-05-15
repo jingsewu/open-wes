@@ -1,27 +1,28 @@
 package org.openwes.wes.inbound.application;
 
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.dubbo.config.annotation.DubboService;
 import org.openwes.common.utils.constants.RedisConstants;
 import org.openwes.common.utils.exception.WmsException;
 import org.openwes.common.utils.exception.code_enum.InboundErrorDescEnum;
 import org.openwes.distribute.lock.DistributeLock;
+import org.openwes.domain.event.DomainEventPublisher;
 import org.openwes.wes.api.inbound.IInboundPlanOrderApi;
 import org.openwes.wes.api.inbound.constants.InboundPlanOrderStatusEnum;
 import org.openwes.wes.api.inbound.dto.AcceptRecordDTO;
 import org.openwes.wes.api.inbound.dto.InboundPlanOrderDTO;
+import org.openwes.wes.api.inbound.event.AcceptEvent;
 import org.openwes.wes.api.main.data.dto.SkuMainDataDTO;
 import org.openwes.wes.common.validator.IValidator;
 import org.openwes.wes.common.validator.ValidateResult;
-import org.openwes.wes.inbound.domain.aggregate.InboundAcceptAggregate;
 import org.openwes.wes.inbound.domain.entity.AcceptOrderDetail;
 import org.openwes.wes.inbound.domain.entity.InboundPlanOrder;
 import org.openwes.wes.inbound.domain.repository.AcceptOrderRepository;
 import org.openwes.wes.inbound.domain.repository.InboundPlanOrderRepository;
 import org.openwes.wes.inbound.domain.service.InboundPlanOrderService;
 import org.openwes.wes.inbound.domain.transfer.InboundPlanOrderTransfer;
-import lombok.RequiredArgsConstructor;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.context.annotation.Primary;
 import org.springframework.validation.annotation.Validated;
 
@@ -39,7 +40,6 @@ public class InboundPlanOrderApiImpl implements IInboundPlanOrderApi {
     private final InboundPlanOrderRepository inboundPlanOrderRepository;
     private final AcceptOrderRepository acceptOrderRepository;
     private final DistributeLock distributeLock;
-    private final InboundAcceptAggregate inboundAcceptAggregate;
 
     @Override
     public void createInboundPlanOrder(List<InboundPlanOrderDTO> inboundPlanOrderDTOS) {
@@ -73,7 +73,22 @@ public class InboundPlanOrderApiImpl implements IInboundPlanOrderApi {
 
         inboundPlanOrderService.validateAccept(acceptRecord, acceptRecord.getSkuId());
 
-        inboundAcceptAggregate.accept(acceptRecord, inboundPlanOrder);
+        if (inboundPlanOrder != null) {
+            inboundPlanOrder.accept(acceptRecord);
+            inboundPlanOrderRepository.saveOrderAndDetail(inboundPlanOrder);
+        }
+        DomainEventPublisher.sendAsyncDomainEvent(AcceptEvent.builder()
+                .warehouseCode(acceptRecord.getWarehouseCode())
+                .inboundPlanOrderId(acceptRecord.getInboundPlanOrderId())
+                .inboundPlanOrderDetailId(acceptRecord.getInboundPlanOrderDetailId())
+                .skuId(acceptRecord.getSkuId())
+                .workStationId(acceptRecord.getWorkStationId())
+                .targetContainerId(acceptRecord.getTargetContainerId())
+                .targetContainerCode(acceptRecord.getTargetContainerCode())
+                .targetContainerFace(acceptRecord.getTargetContainerFace())
+                .targetContainerSlotCode(acceptRecord.getTargetContainerSlotCode())
+                .targetContainerSpecCode(acceptRecord.getTargetContainerSpecCode())
+                .qtyAccepted(acceptRecord.getQtyAccepted()).build());
     }
 
     @Override

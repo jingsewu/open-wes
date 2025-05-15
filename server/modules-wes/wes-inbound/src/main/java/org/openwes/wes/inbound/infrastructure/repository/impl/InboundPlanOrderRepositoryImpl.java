@@ -1,5 +1,11 @@
 package org.openwes.wes.inbound.infrastructure.repository.impl;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.openwes.domain.event.AggregatorRoot;
 import org.openwes.wes.api.inbound.constants.InboundPlanOrderStatusEnum;
 import org.openwes.wes.inbound.domain.entity.InboundPlanOrder;
 import org.openwes.wes.inbound.domain.repository.InboundPlanOrderRepository;
@@ -8,11 +14,6 @@ import org.openwes.wes.inbound.infrastructure.persistence.mapper.InboundPlanOrde
 import org.openwes.wes.inbound.infrastructure.persistence.po.InboundPlanOrderDetailPO;
 import org.openwes.wes.inbound.infrastructure.persistence.po.InboundPlanOrderPO;
 import org.openwes.wes.inbound.infrastructure.persistence.transfer.InboundPlanOrderPOTransfer;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,13 +37,25 @@ public class InboundPlanOrderRepositoryImpl implements InboundPlanOrderRepositor
         List<InboundPlanOrderDetailPO> inboundPlanOrderDetailPOS = inboundPlanOrderPOTransfer.toDetailPOs(inboundPlanOrder.getDetails());
         inboundPlanOrderDetailPOS.forEach(v -> v.setInboundPlanOrderId(inboundPlanOrderPO.getId()));
         inboundPlanOrderDetailPORepository.saveAll(inboundPlanOrderDetailPOS);
+
+        inboundPlanOrder.sendAndClearEvents();
+
         return inboundPlanOrderPOTransfer.toDO(inboundPlanOrderPO, inboundPlanOrderDetailPOS);
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void saveOrders(Collection<InboundPlanOrder> inboundPlanOrders) {
         Collection<InboundPlanOrderPO> orderPOs = inboundPlanOrderPOTransfer.toPOs(inboundPlanOrders);
+        inboundPlanOrders.forEach(AggregatorRoot::sendAndClearEvents);
         inboundPlanOrderPOTransfer.toDOs(inboundPlanOrderPORepository.saveAll(orderPOs));
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public List<InboundPlanOrder> saveAllOrdersAndDetails(List<InboundPlanOrder> inboundPlanOrders) {
+        inboundPlanOrders.forEach(AggregatorRoot::sendAndClearEvents);
+        return inboundPlanOrders.stream().map(this::saveOrderAndDetail).toList();
     }
 
     @Override
@@ -152,9 +165,4 @@ public class InboundPlanOrderRepositoryImpl implements InboundPlanOrderRepositor
         return inboundPlanOrderPORepository.existsByLpnCodeInAndInboundPlanOrderStatusInAndWarehouseCode(lpnCodes, statues, warehouseCode);
     }
 
-    @Transactional(rollbackFor = Exception.class)
-    @Override
-    public List<InboundPlanOrder> saveAllOrdersAndDetails(List<InboundPlanOrder> inboundPlanOrders) {
-        return inboundPlanOrders.stream().map(this::saveOrderAndDetail).toList();
-    }
 }
