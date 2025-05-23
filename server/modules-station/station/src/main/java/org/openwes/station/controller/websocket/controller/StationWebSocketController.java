@@ -1,12 +1,12 @@
 package org.openwes.station.controller.websocket.controller;
 
 import com.google.common.collect.Maps;
-import lombok.Getter;
-import org.openwes.station.infrastructure.filters.HttpStationContext;
 import jakarta.websocket.*;
 import jakarta.websocket.server.ServerEndpoint;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
+import org.openwes.station.infrastructure.filters.HttpStationContext;
 import org.springframework.stereotype.Controller;
 
 import java.io.IOException;

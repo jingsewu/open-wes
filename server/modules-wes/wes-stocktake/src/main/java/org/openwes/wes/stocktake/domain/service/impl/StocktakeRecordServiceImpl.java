@@ -21,7 +21,8 @@ public class StocktakeRecordServiceImpl implements StocktakeRecordService {
     private final StocktakeRecordPOTransfer stocktakeRecordPOTransfer;
 
     @Override
-    public List<StocktakeRecord> generateStocktakeRecords(StocktakeTaskDetail stocktakeTaskDetail, StocktakeOrder stocktakeOrder, List<ContainerStockDTO> containerStockDTOs) {
+    public List<StocktakeRecord> generateStocktakeRecords(StocktakeTaskDetail stocktakeTaskDetail,
+                                                          StocktakeOrder stocktakeOrder, List<ContainerStockDTO> containerStockDTOs) {
 
         List<Long> allStocktakeUnitIds = stocktakeOrder.getAllStocktakeUnitIds();
         if (stocktakeOrder.getStocktakeUnitType() == StocktakeUnitTypeEnum.STOCK) {

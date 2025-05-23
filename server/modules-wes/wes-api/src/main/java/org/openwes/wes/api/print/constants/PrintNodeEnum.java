@@ -1,4 +1,4 @@
-package org.openwes.wes.printer.domain.constants;
+package org.openwes.wes.api.print.constants;
 
 import org.openwes.common.utils.dictionary.IEnum;
 import lombok.AllArgsConstructor;

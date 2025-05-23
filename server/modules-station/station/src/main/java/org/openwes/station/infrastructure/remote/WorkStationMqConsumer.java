@@ -1,5 +1,8 @@
 package org.openwes.station.infrastructure.remote;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.openwes.common.utils.constants.RedisConstants;
 import org.openwes.common.utils.utils.JsonUtils;
 import org.openwes.mq.redis.RedisListener;
@@ -7,6 +10,7 @@ import org.openwes.station.api.constants.ApiCodeEnum;
 import org.openwes.station.application.PtlApiImpl;
 import org.openwes.station.application.executor.HandlerExecutor;
 import org.openwes.station.controller.websocket.cluster.SseMessageListenerUtils;
+import org.openwes.station.controller.websocket.controller.StationWebSocketController;
 import org.openwes.station.domain.entity.WorkStationCache;
 import org.openwes.station.domain.repository.WorkStationCacheRepository;
 import org.openwes.station.domain.service.WorkStationService;
@@ -14,8 +18,7 @@ import org.openwes.wes.api.basic.dto.PutWallSlotAssignedDTO;
 import org.openwes.wes.api.basic.dto.PutWallSlotRemindSealedDTO;
 import org.openwes.wes.api.basic.dto.WorkStationConfigDTO;
 import org.openwes.wes.api.ems.proxy.dto.ContainerArrivedEvent;
-import lombok.RequiredArgsConstructor;
-import org.apache.commons.collections4.CollectionUtils;
+import org.openwes.wes.api.print.dto.PrintContentDTO;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -24,6 +27,7 @@ import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class WorkStationMqConsumer<T extends WorkStationCache> {
 
     private final WorkStationService<T> workStationService;
@@ -100,5 +104,49 @@ public class WorkStationMqConsumer<T extends WorkStationCache> {
 
             sseMessageListenerUtils.noticeWorkStationVOChanged(workStation.getId());
         });
+    }
+
+    /**
+     * TODO by Kinser
+     *  we can group the same workStationId and just refresh once.
+     *  maybe one of the available approaches is fetching more then one message once, then group the same workStationId
+     */
+    @RedisListener(topic = RedisConstants.STATION_LISTEN_STATION_WEBSOCKET, type = Long.class)
+    public void onMessage(String topic, Long workStationId) {
+
+        if (workStationId == null) {
+            log.error("received work station id is null");
+            return;
+        }
+        StationWebSocketController stationWebSocketController = StationWebSocketController.getInstance(String.valueOf(workStationId));
+
+        if (stationWebSocketController != null) {
+            log.info("work station: {} send message to websocket: {}.", workStationId,
+                    stationWebSocketController.getSession() == null ? "NULL" : stationWebSocketController.getSession().getId());
+
+            stationWebSocketController.sendMessage("changed");
+        } else {
+            log.debug("work station: {} does not exist! do not send message: {}", workStationId, "changed");
+        }
+    }
+
+    @RedisListener(topic = RedisConstants.PRINTER_TOPIC, type = PrintContentDTO.class)
+    public void onMessage(String topic, PrintContentDTO printContentDTO) {
+
+        Long workStationId = printContentDTO.getWorkStationId();
+        if (workStationId == null) {
+            log.error("received work station id is null");
+            return;
+        }
+        StationWebSocketController stationWebSocketController = StationWebSocketController.getInstance(String.valueOf(workStationId));
+
+        if (stationWebSocketController != null) {
+            log.info("work station: {} send message to websocket: {} to print", workStationId,
+                    stationWebSocketController.getSession() == null ? "NULL" : stationWebSocketController.getSession().getId());
+
+            stationWebSocketController.sendMessage(JsonUtils.obj2String(printContentDTO));
+        } else {
+            log.debug("work station: {} does not exist! do not send message to print", workStationId);
+        }
     }
 }

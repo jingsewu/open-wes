@@ -9,13 +9,10 @@ import org.openwes.wes.api.basic.IContainerApi;
 import org.openwes.wes.api.basic.dto.ContainerDTO;
 import org.openwes.wes.api.stock.IStockApi;
 import org.openwes.wes.api.stock.dto.ContainerStockDTO;
-import org.openwes.wes.api.stocktake.constants.StocktakeTaskDetailStatusEnum;
-import org.openwes.wes.api.stocktake.constants.StocktakeTaskStatusEnum;
 import org.openwes.wes.api.stocktake.constants.StocktakeUnitTypeEnum;
 import org.openwes.wes.stocktake.domain.entity.StocktakeOrder;
 import org.openwes.wes.stocktake.domain.entity.StocktakeRecord;
 import org.openwes.wes.stocktake.domain.entity.StocktakeTask;
-import org.openwes.wes.stocktake.domain.entity.StocktakeTaskDetail;
 import org.openwes.wes.stocktake.domain.service.StocktakeOrderService;
 import org.springframework.stereotype.Service;
 
@@ -31,12 +28,6 @@ public class StocktakeOrderServiceImpl implements StocktakeOrderService {
 
     private final IStockApi stockApi;
     private final IContainerApi containerApi;
-
-    @Override
-    public List<StocktakeOrder> cancelStocktakeOrder(List<StocktakeOrder> stocktakeOrderList) {
-        stocktakeOrderList.forEach(StocktakeOrder::cancel);
-        return stocktakeOrderList;
-    }
 
     @Override
     public List<StocktakeTask> splitStocktakeOrder(StocktakeOrder stocktakeOrder, Integer taskCount) {
@@ -74,7 +65,7 @@ public class StocktakeOrderServiceImpl implements StocktakeOrderService {
         ));
 
         List<StocktakeTask> stocktakeTasks = Lists.partition(containerCodes, taskCount).stream().map(subContainerCodes ->
-                        buildStocktakeTask(stocktakeOrder, containerFaceMap, subContainerCodes))
+                        StocktakeTask.createFromOrder(stocktakeOrder, containerFaceMap, subContainerCodes))
                 .toList();
         for (int i = 0; i < stocktakeTasks.size(); i++) {
             stocktakeTasks.get(i).initialize(stocktakeOrder.getOrderNo(), i);
@@ -101,29 +92,4 @@ public class StocktakeOrderServiceImpl implements StocktakeOrderService {
         }
 
     }
-
-    private StocktakeTask buildStocktakeTask(StocktakeOrder stocktakeOrder, Map<String, Set<String>> containerFaceMap,
-                                             List<String> subContainerCodes) {
-        List<StocktakeTaskDetail> stocktakeTaskDetails = subContainerCodes.stream().flatMap(containerCode ->
-                containerFaceMap.get(containerCode).stream().map(containerFace -> {
-                    StocktakeTaskDetail stocktakeTaskDetail = new StocktakeTaskDetail();
-                    stocktakeTaskDetail.setContainerCode(containerCode);
-                    stocktakeTaskDetail.setStocktakeOrderId(stocktakeOrder.getId());
-                    stocktakeTaskDetail.setContainerFace(containerFace);
-                    stocktakeTaskDetail.setStocktakeTaskDetailStatus(StocktakeTaskDetailStatusEnum.NEW);
-                    stocktakeTaskDetail.setWarehouseCode(stocktakeOrder.getWarehouseCode());
-                    return stocktakeTaskDetail;
-                }).toList().stream()).toList();
-        StocktakeTask stocktakeTask = new StocktakeTask();
-        stocktakeTask.setStocktakeMethod(stocktakeOrder.getStocktakeMethod());
-        stocktakeTask.setStocktakeUnitType(stocktakeOrder.getStocktakeUnitType());
-        stocktakeTask.setStocktakeType(stocktakeOrder.getStocktakeType());
-        stocktakeTask.setStocktakeCreateMethod(stocktakeOrder.getStocktakeCreateMethod());
-        stocktakeTask.setStocktakeOrderId(stocktakeOrder.getId());
-        stocktakeTask.setStocktakeTaskStatus(StocktakeTaskStatusEnum.NEW);
-        stocktakeTask.setWarehouseCode(stocktakeOrder.getWarehouseCode());
-        stocktakeTask.setDetails(stocktakeTaskDetails);
-        return stocktakeTask;
-    }
-
 }

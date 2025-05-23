@@ -64,3 +64,15 @@ export const api_put_wall_delete = "post:/wms/basic/putWall/delete/${id}"
 
 // transfer container module
 export const api_transfer_container_release = "post:/wms/basic/transfer/container/release/${id}"
+
+// print module
+export const api_print_config_add = "post:/wms/print/config/createOrUpdate"
+export const api_print_config_get = "post:/wms/print/config/get/${id}"
+export const api_print_config_delete = "post:/wms/print/config/delete/${id}"
+
+export const api_print_rule_add = "post:/wms/print/rule/createOrUpdate"
+export const api_print_rule_get = "post:/wms/print/rule/get/${id}"
+export const api_print_rule_delete = "post:/wms/print/rule/delete/${id}"
+
+export const api_print_template_add = "post:/wms/print/template/createOrUpdate"
+export const api_print_template_get = "post:/wms/print/template/get/${id}"

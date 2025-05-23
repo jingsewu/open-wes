@@ -21,7 +21,7 @@ import static org.mapstruct.NullValueMappingStrategy.RETURN_NULL;
 public interface StocktakeTaskTransfer {
     StocktakeTaskDTO toDTO(StocktakeTask task);
 
-    List<StocktakeTaskDTO> toDTOS(List<StocktakeTask> taskList);
+    List<StocktakeTaskDTO> toDTOs(List<StocktakeTask> taskList);
 
     StocktakeTaskDetailDTO toDetailDTO(StocktakeTaskDetail detail);
 

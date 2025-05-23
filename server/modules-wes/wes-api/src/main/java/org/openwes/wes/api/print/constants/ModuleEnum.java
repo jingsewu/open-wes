@@ -1,4 +1,4 @@
-package org.openwes.wes.printer.domain.constants;
+package org.openwes.wes.api.print.constants;
 
 import org.openwes.common.utils.dictionary.IEnum;
 import lombok.AllArgsConstructor;
@@ -12,6 +12,6 @@ public enum ModuleEnum implements IEnum {
     OUTBOUND("OUTBOUND", "OUTBOUND"),
     STOCKTAKE("STOCKTAKE", "STOCKTAKE");
 
-    private String value;
-    private String label;
+    private final String value;
+    private final String label;
 }

@@ -822,5 +822,57 @@
     "智能数据平台": "智能数据平台",
     "智能分析": "智能分析",
 
-    "dataPlatform.ai.analysis.title": "智能分析"
+    "dataPlatform.ai.analysis.title": "智能分析",
+
+    "printConfig.title": "打印配置",
+    "printConfig.configCode": "配置代码",
+    "printConfig.workStationId": "工作站ID",
+    "printConfig.enabled": "已启用",
+    "printConfig.disabled": "已禁用",
+    "printConfig.details": "打印规则",
+    "printConfig.ruleCode": "规则代码",
+    "printConfig.printer": "打印机",
+    "printConfig.addConfig": "添加打印配置",
+    "printConfig.editConfig": "编辑打印配置",
+    "printConfig.deleteConfirm": "确定要删除此打印配置吗？",
+    "printConfig.deleteSuccess": "打印配置删除成功",
+    "printConfig.saveSuccess": "打印配置保存成功",
+    "printConfig.validation.configCodeRequired": "配置代码必填",
+    "printConfig.validation.workStationIdRequired": "工作站ID必填",
+    "printConfig.validation.detailsRequired": "至少需要一条打印规则",
+    "printConfig.validation.ruleCodeRequired": "每条打印规则必须填写规则代码",
+    "printConfig.validation.printerRequired": "每条打印规则必须指定打印机",
+    "printConfig.status.active": "激活",
+    "printConfig.status.inactive": "未激活",
+
+    "printRule.id": "ID",
+    "printRule.ruleName": "规则名称",
+    "printRule.ruleCode": "规则编码",
+    "printRule.ownerCodes": "所属货主",
+    "printRule.salesPlatforms": "销售平台",
+    "printRule.carrierCodes": "承运商",
+    "printRule.inboundOrderTypes": "入库单类型",
+    "printRule.outboundOrderTypes": "出库单类型",
+    "printRule.module": "模块",
+    "printRule.printNode": "打印节点",
+    "printRule.printCount": "打印份数",
+    "printRule.templateCode": "模板编码",
+    "printRule.sqlScript": "SQL脚本",
+    "printRule.deleted": "已删除",
+    "printRule.deleteTime": "删除时间",
+    "printRule.enabled": "是否启用",
+
+    "printTemplate.title": "打印模板管理",
+    "printTemplate.templateCode": "模板编码",
+    "printTemplate.templateName": "模板名称",
+    "printTemplate.templateContent": "模板内容",
+    "printTemplate.enabled": "是否启用",
+    "printTemplate.preview": "预览模板",
+
+    "form.tab.templateContent": "模板内容",
+    "form.tab.editor": "编辑器",
+    "form.tab.preview": "预览",
+
+    "button.preview": "预览"
+
 }
