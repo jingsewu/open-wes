@@ -4,6 +4,7 @@ import {toast} from "amis"
 import type {WorkStationEvent, WorkStationEventLoopConfig, WorkStationInfo} from "./types"
 import {CurrentOperationType, WorkStationStatus} from "./types"
 import {abnormalVoiceTips} from "@/pages/wms/station/event-loop/utils"
+import {PrintData, qzPrinter} from "@/pages/wms/station/widgets/printer";
 
 type EventListener = (event: WorkStationEvent<any> | undefined) => void
 type InfoListener = (info: WorkStationInfo) => void
@@ -60,7 +61,6 @@ export default class WorkStationEventLoop {
     /** 是否开启调试模式 */
     private debugType: DebugType | boolean = false
     /** mock数据 */
-        // private mockData: any[] = []
     private mockData: any
     private eventSource: EventSource | null = null
     private websocket: WebSocket | null = null
@@ -141,7 +141,7 @@ export default class WorkStationEventLoop {
      */
     public start: () => void = async () => {
         await this.getApiData()
-        this.queryEvent()
+        await this.queryEvent()
     }
 
     /**
@@ -149,13 +149,7 @@ export default class WorkStationEventLoop {
      */
     public stop: () => void = async () => {
         console.log("%c =====> event loop stop", "color:red;font-size:20px;")
-        // window.clearInterval(this.pollId)
-        // this.eventSource?.close()
         this.websocket?.close()
-        // const res = await request({
-        //     method: "delete",
-        //     url: "/station/sse/disconnect"
-        // })
     }
 
     /**
@@ -166,7 +160,6 @@ export default class WorkStationEventLoop {
             method: "post",
             url: this.confirmURL,
             data: {
-                // operationId: this.currentEvent?.operationId,
                 operationType: this.currentEvent?.operationType,
                 ...payload
             }
@@ -174,17 +167,9 @@ export default class WorkStationEventLoop {
 
         if (res?.errorCode) {
             abnormalVoiceTips().then()
-            console.log(
-                "%c =====> 切换操作错误",
-                "color:red;font-size:20px;",
-                res
-            )
+            console.error("%c action confirmed error", res)
         }
-        console.log(
-            "%c =====> 切换操作payload",
-            "color:red;font-size:20px;",
-            payload
-        )
+        console.log("%c action confirmed successfully", payload)
         return res
     }
     /**
@@ -200,19 +185,9 @@ export default class WorkStationEventLoop {
                 data: payload.data,
                 headers: {"Content-Type": "text/plain"}
             })
-            console.log(
-                "%c =====> 切换操作payload",
-                "color:red;font-size:20px;",
-                payload,
-                res
-            )
             return res
         } catch (error) {
-            console.log(
-                "%c =====> send event http error",
-                "color:red;font-size:20px;",
-                error
-            )
+            console.log("send event http error: %c", "color:red;font-size:20px;", error)
             toast["error"](error.message)
             return {
                 code: "-1",
@@ -266,32 +241,36 @@ export default class WorkStationEventLoop {
                 }
             }, 10000);
 
+            // Initialize QZ Tray
+            try {
+                await qzPrinter.initialize();
+            } catch (error) {
+                console.error("Failed to initialize QZ Tray:", error);
+            }
+
             this.websocket.onopen = () => {
-                console.log(`websocket 连接成功，状态${this.websocket}`)
+                console.log(`websocket connect successfully and the session id is: ${this.websocket}`)
             }
             // 监听消息事件
             this.websocket.addEventListener("message", (event) => {
-                console.log("websocket", event.data)
                 if (!event.data) return
-                if (event.data === "changed") {
+                console.log("websocket receive data: ", event.data)
+                const message = JSON.parse(event.data);
+                if (event.type === "DATA_CHANGED") {
                     that.getApiData()
+                } else if (message.type === "PRINT") {
+                    qzPrinter.printAndUpdateRecord(message as PrintData);
                 }
 
-                // that.handleEventChange(data)
-                // 服务端推送的数据
-                console.log(event.data, "######")
             })
             this.websocket.onerror = () => {
-                console.log(
-                    `websocket 连接错误，状态${this.eventSource?.readyState}`
-                )
+                console.error(`websocket connect failed, the status is: ${this.eventSource?.readyState}`)
                 clearInterval(heartbeatInterval);
             }
 
             this.websocket.onclose = () => {
-                clearInterval(heartbeatInterval);
                 console.log("WebSocket closed");
-                //todo need to reconnect?
+                clearInterval(heartbeatInterval);
             };
             return data
         }

@@ -3,13 +3,14 @@ package org.openwes.wes.printer.domain.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 import org.openwes.common.utils.base.CreateUserDTO;
 import org.openwes.common.utils.id.IdGenerator;
-import org.openwes.wes.api.print.constants.PrintStatusEnum;
 import org.openwes.wes.api.print.constants.ModuleEnum;
 import org.openwes.wes.api.print.constants.PrintNodeEnum;
+import org.openwes.wes.api.print.constants.PrintStatusEnum;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Data
@@ -51,6 +52,9 @@ public class PrintRecord extends CreateUserDTO {
     @Column(nullable = false, columnDefinition = "varchar(20) comment '状态'")
     private PrintStatusEnum printStatus;
 
+    @Column(columnDefinition = "varchar(500) comment '错误信息'")
+    private String errorMessage;
+
     public static PrintRecord create(ModuleEnum module, PrintNodeEnum printNode,
                                      String templateCode, String templateName, Long workStationId,
                                      String message, String printer) {
@@ -63,5 +67,10 @@ public class PrintRecord extends CreateUserDTO {
         printRecord.setMessage(message);
         printRecord.setPrinter(printer);
         return printRecord;
+    }
+
+    public void updateStatus(PrintStatusEnum status, String errorMessage) {
+        this.printStatus = status;
+        this.errorMessage = StringUtils.isNotEmpty(errorMessage) ? errorMessage.substring(0, 255) : errorMessage;
     }
 }

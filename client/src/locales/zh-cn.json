@@ -821,6 +821,11 @@
     "库内操作": "库内操作",
     "智能数据平台": "智能数据平台",
     "智能分析": "智能分析",
+    "打印配置": "打印配置",
+    "打印配置管理": "打印配置管理",
+    "打印规则管理": "打印规则管理",
+    "打印模板管理": "打印模板管理",
+    "打印记录管理": "打印记录管理",
 
     "dataPlatform.ai.analysis.title": "智能分析",
 
@@ -873,6 +878,28 @@
     "form.tab.editor": "编辑器",
     "form.tab.preview": "预览",
 
-    "button.preview": "预览"
+    "button.preview": "预览",
+
+    "wms.menu.printConfig": "打印配置",
+    "printConfigManagement.title": "打印配置管理",
+    "printRecordManagement.title": "打印记录管理",
+    "printRuleManagement.title": "打印规则管理",
+    "printTemplateManagement.title": "打印模板管理",
+
+    "printRecord.title": "打印记录管理",
+    "printRecord.module": "模块",
+    "printRecord.printNode": "打印节点",
+    "printRecord.templateCode": "模板编码",
+    "printRecord.templateName": "模板名称",
+    "printRecord.workStationId": "工作站ID",
+    "printRecord.printTime": "打印时间",
+    "printRecord.printer": "打印机",
+    "printRecord.printStatus": "状态",
+    "printRecord.errorMessage": "错误信息",
+    "printRecord.createTime": "创建时间",
+    "printRecord.createUser": "创建人",
+    "printRecord.updateStatus": "更新状态",
+    "printRecord.status": "状态",
+    "button.updateStatus": "更新状态"
 
 }

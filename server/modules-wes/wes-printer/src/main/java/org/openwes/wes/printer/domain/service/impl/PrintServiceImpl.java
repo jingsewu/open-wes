@@ -41,23 +41,23 @@ public class PrintServiceImpl implements PrintService {
     public void print(List<PrintRule> printRulePOS, Set<PrintConfig.PrintConfigDetail> printConfigDetails, @Valid PrintEvent event) {
         Map<String, PrintRule> rulePOMap = printRulePOS.stream().collect(Collectors.toMap(PrintRule::getRuleCode, v -> v));
         printConfigDetails.forEach(printConfigDetail -> {
-            PrintRule printRulePO = rulePOMap.get(printConfigDetail.getRuleCode());
-            if (printRulePO == null) {
+            PrintRule printRule = rulePOMap.get(printConfigDetail.getRuleCode());
+            if (printRule == null) {
                 return;
             }
 
             Map<String, Object> args = event.getTargetArgs();
-            if (StringUtils.isNotEmpty(printRulePO.getSqlScript()) && event.getParameter() != null) {
-                Object[] objects = NamedParameterUtils.buildValueArray(printRulePO.getSqlScript(),
+            if (StringUtils.isNotEmpty(printRule.getSqlScript()) && event.getParameter() != null) {
+                Object[] objects = NamedParameterUtils.buildValueArray(printRule.getSqlScript(),
                         JsonUtils.string2Map(JsonUtils.obj2String(event.getParameter())));
-                List<Map<String, Object>> results = jdbcTemplate.queryForList(printRulePO.getSqlScript(), objects);
+                List<Map<String, Object>> results = jdbcTemplate.queryForList(printRule.getSqlScript(), objects);
 
                 if (CollectionUtils.isNotEmpty(results)) {
                     args.putAll(results.get(0));
                 }
             }
 
-            PrintTemplate printTemplate = printTemplateRepository.findByTemplateCode(printRulePO.getTemplateCode());
+            PrintTemplate printTemplate = printTemplateRepository.findByTemplateCode(printRule.getTemplateCode());
 
             Context ctx = new Context();
             ctx.setVariables(args);
@@ -72,9 +72,10 @@ public class PrintServiceImpl implements PrintService {
             //send print message
             mqClient.sendMessage(RedisConstants.PRINTER_TOPIC, new PrintContentDTO()
                     .setPrintRecordId(saved.getId())
-                    .setHtml(html)
+                    .setContent(html)
                     .setWorkStationId(event.getWorkStationId())
-                    .setPrinter(printConfigDetail.getPrinter()));
+                    .setPrinter(printConfigDetail.getPrinter())
+                    .setCopies(printRule.getPrintCount()));
         });
     }
 }

@@ -3,6 +3,7 @@ package org.openwes.station.infrastructure.remote;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.openwes.common.utils.base.BaseWebsocketMessage;
 import org.openwes.common.utils.constants.RedisConstants;
 import org.openwes.common.utils.utils.JsonUtils;
 import org.openwes.mq.redis.RedisListener;
@@ -124,7 +125,7 @@ public class WorkStationMqConsumer<T extends WorkStationCache> {
             log.info("work station: {} send message to websocket: {}.", workStationId,
                     stationWebSocketController.getSession() == null ? "NULL" : stationWebSocketController.getSession().getId());
 
-            stationWebSocketController.sendMessage("changed");
+            stationWebSocketController.sendMessage(JsonUtils.obj2String(new BaseWebsocketMessage().setType(BaseWebsocketMessage.WebsocketMessageTypeEnum.DATA_CHANGED)));
         } else {
             log.debug("work station: {} does not exist! do not send message: {}", workStationId, "changed");
         }
@@ -144,6 +145,7 @@ public class WorkStationMqConsumer<T extends WorkStationCache> {
             log.info("work station: {} send message to websocket: {} to print", workStationId,
                     stationWebSocketController.getSession() == null ? "NULL" : stationWebSocketController.getSession().getId());
 
+            printContentDTO.setType(BaseWebsocketMessage.WebsocketMessageTypeEnum.PRINT);
             stationWebSocketController.sendMessage(JsonUtils.obj2String(printContentDTO));
         } else {
             log.debug("work station: {} does not exist! do not send message to print", workStationId);
