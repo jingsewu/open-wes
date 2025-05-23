@@ -1,6 +1,7 @@
 package org.openwes.wes.outbound.infrastructure.repository.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.openwes.domain.event.AggregatorRoot;
 import org.openwes.wes.api.outbound.constants.OutboundPlanOrderStatusEnum;
 import org.openwes.wes.outbound.domain.entity.OutboundPlanOrder;
 import org.openwes.wes.outbound.domain.entity.OutboundPlanOrderDetail;
@@ -21,9 +22,7 @@ import java.util.List;
 public class OutboundPlanOrderRepositoryImpl implements OutboundPlanOrderRepository {
 
     private final OutboundPlanOrderPORepository outboundPlanOrderPORepository;
-
     private final OutboundPlanOrderDetailPORepository outboundPlanOrderDetailPORepository;
-
     private final OutboundPlanOrderPOTransfer outboundPlanOrderPOTransfer;
 
     @Override
@@ -36,6 +35,8 @@ public class OutboundPlanOrderRepositoryImpl implements OutboundPlanOrderReposit
 
         List<OutboundPlanOrderDetailPO> details = outboundPlanOrderDetailPORepository.saveAll(outboundPlanOrderDetailPOS);
 
+        outboundPlanOrder.sendAndClearEvents();
+
         return outboundPlanOrderPOTransfer.toDO(outboundPlanOrderPO, details);
     }
 
@@ -43,6 +44,7 @@ public class OutboundPlanOrderRepositoryImpl implements OutboundPlanOrderReposit
     @Transactional(rollbackFor = Exception.class)
     public void saveAll(List<OutboundPlanOrder> outboundPlanOrders) {
         outboundPlanOrderPORepository.saveAll(outboundPlanOrderPOTransfer.toPOs(outboundPlanOrders));
+        outboundPlanOrders.forEach(AggregatorRoot::sendAndClearEvents);
     }
 
     @Override
@@ -104,13 +106,17 @@ public class OutboundPlanOrderRepositoryImpl implements OutboundPlanOrderReposit
     @Transactional(rollbackFor = Exception.class)
     public void saveOrderAndDetails(List<OutboundPlanOrder> outboundPlanOrders) {
         outboundPlanOrderPORepository.saveAll(outboundPlanOrderPOTransfer.toPOs(outboundPlanOrders));
+
         List<OutboundPlanOrderDetail> outboundPlanOrderDetails = outboundPlanOrders.stream().flatMap(v -> v.getDetails().stream()).toList();
         outboundPlanOrderDetailPORepository.saveAll(outboundPlanOrderPOTransfer.toDetailPOs(outboundPlanOrderDetails));
+
+        outboundPlanOrders.forEach(AggregatorRoot::sendAndClearEvents);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public List<OutboundPlanOrder> saveAllOrderAndDetails(List<OutboundPlanOrder> outboundPlanOrders) {
+        outboundPlanOrders.forEach(AggregatorRoot::sendAndClearEvents);
         return outboundPlanOrders.stream().map(this::saveOutboundPlanOrder).toList();
     }
 

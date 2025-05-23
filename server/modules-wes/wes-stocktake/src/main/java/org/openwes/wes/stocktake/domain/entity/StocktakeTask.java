@@ -1,13 +1,17 @@
 package org.openwes.wes.stocktake.domain.entity;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.openwes.domain.event.DomainEventPublisher;
 import org.openwes.wes.api.stocktake.constants.*;
 import org.openwes.wes.api.stocktake.event.StocktakeTaskCloseEvent;
+import org.springframework.util.Assert;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 @Data
 @Slf4j
@@ -38,6 +42,42 @@ public class StocktakeTask {
     private Long version;
 
     private List<StocktakeTaskDetail> details;
+
+    public static StocktakeTask createFromOrder(@NotNull StocktakeOrder stocktakeOrder,
+                                                Map<String, Set<String>> containerFaceMap,
+                                                List<String> subContainerCodes
+    ) {
+
+        Assert.notNull(stocktakeOrder, "stocktake order must not be null");
+        Assert.notNull(containerFaceMap, "container face map must not be null");
+        Assert.notEmpty(containerFaceMap, "container face map must not be empty");
+
+        List<StocktakeTaskDetail> stocktakeTaskDetails = subContainerCodes.stream().flatMap(containerCode ->
+                containerFaceMap.get(containerCode).stream().map(containerFace -> {
+                    StocktakeTaskDetail stocktakeTaskDetail = new StocktakeTaskDetail();
+                    stocktakeTaskDetail.setContainerCode(containerCode);
+                    stocktakeTaskDetail.setStocktakeOrderId(stocktakeOrder.getId());
+                    stocktakeTaskDetail.setContainerFace(containerFace);
+                    stocktakeTaskDetail.setStocktakeTaskDetailStatus(StocktakeTaskDetailStatusEnum.NEW);
+                    stocktakeTaskDetail.setWarehouseCode(stocktakeOrder.getWarehouseCode());
+                    return stocktakeTaskDetail;
+                }).toList().stream()).toList();
+        return buildStocktakeTask(stocktakeOrder, stocktakeTaskDetails);
+    }
+
+    private static StocktakeTask buildStocktakeTask(StocktakeOrder stocktakeOrder,
+                                                    List<StocktakeTaskDetail> stocktakeTaskDetails) {
+        StocktakeTask stocktakeTask = new StocktakeTask();
+        stocktakeTask.setStocktakeMethod(stocktakeOrder.getStocktakeMethod());
+        stocktakeTask.setStocktakeUnitType(stocktakeOrder.getStocktakeUnitType());
+        stocktakeTask.setStocktakeType(stocktakeOrder.getStocktakeType());
+        stocktakeTask.setStocktakeCreateMethod(stocktakeOrder.getStocktakeCreateMethod());
+        stocktakeTask.setStocktakeOrderId(stocktakeOrder.getId());
+        stocktakeTask.setStocktakeTaskStatus(StocktakeTaskStatusEnum.NEW);
+        stocktakeTask.setWarehouseCode(stocktakeOrder.getWarehouseCode());
+        stocktakeTask.setDetails(stocktakeTaskDetails);
+        return stocktakeTask;
+    }
 
     public void initialize(String stocktakeOrderNo, int index) {
         this.stocktakeTaskStatus = StocktakeTaskStatusEnum.NEW;

@@ -3,6 +3,7 @@ package org.openwes.common.utils.constants;
 public class RedisConstants {
 
 
+
     private RedisConstants() {
         throw new IllegalStateException("RedisConstants class");
     }
@@ -19,6 +20,9 @@ public class RedisConstants {
     public static final String STATION_LISTEN_STATION_WEBSOCKET = "station.listen.station.websocket";
 
     public static final String PLUGIN_LISTEN_PLUGIN_MANAGEMENT = "plugin:listen:plugin:management";
+
+    public static final String PRINTER_TOPIC = "print:topic";
+
 
     /**
      * distributed lock

@@ -1,11 +1,11 @@
 package org.openwes.wes.stocktake.application.event;
 
 import com.google.common.eventbus.Subscribe;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.openwes.wes.api.stocktake.event.StocktakeOrderCompleteEvent;
 import org.openwes.wes.stocktake.domain.entity.StocktakeOrder;
 import org.openwes.wes.stocktake.domain.repository.StocktakeOrderRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Slf4j

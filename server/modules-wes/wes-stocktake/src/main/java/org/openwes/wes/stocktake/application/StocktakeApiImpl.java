@@ -74,10 +74,11 @@ public class StocktakeApiImpl implements IStocktakeApi {
                 StocktakeOrderStatusEnum.CANCELABLE_LIST
         );
 
-        List<StocktakeOrder> canceledOrders = stocktakeOrderService.cancelStocktakeOrder(cancelableOrders);
-        canceledOrders = stocktakeOrderRepository.saveAllOrderAndDetails(canceledOrders);
+        cancelableOrders.forEach(StocktakeOrder::cancel);
 
-        return canceledOrders.stream().map(StocktakeOrder::getOrderNo).toList();
+        cancelableOrders = stocktakeOrderRepository.saveAllOrderAndDetails(cancelableOrders);
+
+        return cancelableOrders.stream().map(StocktakeOrder::getOrderNo).toList();
     }
 
     @Override
@@ -108,10 +109,10 @@ public class StocktakeApiImpl implements IStocktakeApi {
     @Override
     public void submitStocktakeRecord(StocktakeRecordSubmitDTO submitDTO) {
         StocktakeRecord stocktakeRecord = stocktakeRecordRepository.findById(submitDTO.getRecordId());
+        stocktakeOrderService.validateSubmit(stocktakeRecord);
+
         StocktakeTask stocktakeTask = stocktakeTaskRepository.findById(stocktakeRecord.getStocktakeTaskId());
         SkuMainDataDTO skuMainDataDTO = skuMainDataApi.getById(stocktakeRecord.getSkuId());
-
-        stocktakeOrderService.validateSubmit(stocktakeRecord);
         stocktakeAggregate.submitStocktakeRecord(stocktakeRecord, stocktakeTask, skuMainDataDTO, submitDTO);
     }
 
@@ -122,21 +123,17 @@ public class StocktakeApiImpl implements IStocktakeApi {
                 .stream().filter(v -> StocktakeTaskStatusEnum.CLOSEABLE_LIST.contains(v.getStocktakeTaskStatus()))
                 .toList();
 
-        if (CollectionUtils.isEmpty(stocktakeTasks)) {
-            return;
-        }
-
-        List<Long> stocktakeTaskIds = stocktakeTasks.stream().map(StocktakeTask::getId).toList();
-        List<StocktakeRecord> closeableRecordList = stocktakeRecordRepository
-                .findAllByTaskIdAndStatuses(stocktakeTaskIds, StocktakeRecordStatusEnum.CLOSEABLE_LIST);
-
-        stocktakeAggregate.closeStocktakeTask(stocktakeTasks, closeableRecordList);
+        closeStocktakeTasks(stocktakeTasks);
     }
 
     @Override
     public void closeStocktakeTask(Long workStationId) {
         List<StocktakeTask> stocktakeTasks = stocktakeTaskRepository.findAllByWorkStationIdAndStatus(workStationId, StocktakeTaskStatusEnum.CLOSEABLE_LIST);
 
+        closeStocktakeTasks(stocktakeTasks);
+    }
+
+    private void closeStocktakeTasks(List<StocktakeTask> stocktakeTasks) {
         if (CollectionUtils.isEmpty(stocktakeTasks)) {
             return;
         }
@@ -169,7 +166,7 @@ public class StocktakeApiImpl implements IStocktakeApi {
             List<StocktakeRecord> stocktakeRecords = stocktakeRecordRepository.findAllByTaskDetailId(stocktakeTaskDetail.getId())
                     .stream().filter(v -> v.getStocktakeRecordStatus() == StocktakeRecordStatusEnum.NEW).toList();
 
-            return stocktakeRecordTransfer.toDTOS(stocktakeRecords);
+            return stocktakeRecordTransfer.toDTOs(stocktakeRecords);
         }
         StocktakeOrder stocktakeOrder = stocktakeOrderRepository.findById(stocktakeTaskDetail.getStocktakeOrderId());
         List<ContainerStockDTO> containerStockDTOs = stockApi.getByContainerAndFace(stocktakeOrder.getWarehouseCode(),
@@ -179,13 +176,13 @@ public class StocktakeApiImpl implements IStocktakeApi {
 
         List<StocktakeRecord> savedList = stocktakeAggregate.createStocktakeRecord(stocktakeRecords, stocktakeTaskDetail);
 
-        return stocktakeRecordTransfer.toDTOS(savedList);
+        return stocktakeRecordTransfer.toDTOs(savedList);
     }
 
     @Override
     public List<StocktakeTaskDTO> getStocktakeTasksByWorkStationId(Long workStationId) {
         List<StocktakeTask> stocktakeTasks = stocktakeTaskRepository.findAllTasksByWorkStationIdAndStatus(workStationId,
                 Lists.newArrayList(StocktakeTaskStatusEnum.NEW, StocktakeTaskStatusEnum.STARTED));
-        return stocktakeTaskTransfer.toDTOS(stocktakeTasks);
+        return stocktakeTaskTransfer.toDTOs(stocktakeTasks);
     }
 }

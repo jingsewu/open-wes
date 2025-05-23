@@ -822,5 +822,57 @@
     "智能数据平台": "AI Data Platform",
     "智能分析": "AI analysis",
 
-    "dataPlatform.ai.analysis.title": "AI Analysis"
+    "dataPlatform.ai.analysis.title": "AI Analysis",
+
+    "printConfig.title": "Print Configuration",
+    "printConfig.configCode": "Config Code",
+    "printConfig.workStationId": "Work Station ID",
+    "printConfig.enabled": "Enabled",
+    "printConfig.disabled": "Disabled",
+    "printConfig.details": "Print Rules",
+    "printConfig.ruleCode": "Rule Code",
+    "printConfig.printer": "Printer",
+    "printConfig.addConfig": "Add Print Config",
+    "printConfig.editConfig": "Edit Print Config",
+    "printConfig.deleteConfirm": "Are you sure you want to delete this print configuration?",
+    "printConfig.deleteSuccess": "Print configuration deleted successfully",
+    "printConfig.saveSuccess": "Print configuration saved successfully",
+    "printConfig.validation.configCodeRequired": "Config code is required",
+    "printConfig.validation.workStationIdRequired": "Work station ID is required",
+    "printConfig.validation.detailsRequired": "At least one print rule is required",
+    "printConfig.validation.ruleCodeRequired": "Rule code is required for each print rule",
+    "printConfig.validation.printerRequired": "Printer is required for each print rule",
+    "printConfig.status.active": "Active",
+    "printConfig.status.inactive": "Inactive",
+
+    "printRule.id": "ID",
+    "printRule.ruleName": "Rule Name",
+    "printRule.ruleCode": "Rule Code",
+    "printRule.ownerCodes": "Owners",
+    "printRule.salesPlatforms": "Sales Platforms",
+    "printRule.carrierCodes": "Carriers",
+    "printRule.inboundOrderTypes": "Inbound Order Types",
+    "printRule.outboundOrderTypes": "Outbound Order Types",
+    "printRule.module": "Module",
+    "printRule.printNode": "Print Node",
+    "printRule.printCount": "Print Count",
+    "printRule.templateCode": "Template Code",
+    "printRule.sqlScript": "SQL Script",
+    "printRule.deleted": "Deleted",
+    "printRule.deleteTime": "Delete Time",
+    "printRule.enabled": "Enabled",
+
+    "printTemplate.title": "Print Template Management",
+    "printTemplate.templateCode": "Template Code",
+    "printTemplate.templateName": "Template Name",
+    "printTemplate.templateContent": "Template Content",
+    "printTemplate.enabled": "Enabled",
+    "printTemplate.preview": "Preview Template",
+
+    "form.tab.templateContent": "Template Content",
+    "form.tab.editor": "Editor",
+    "form.tab.preview": "Preview",
+
+    "button.preview": "Preview"
+
 }

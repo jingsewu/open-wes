@@ -32,7 +32,7 @@ public class BatchAttributeConfigDTO {
 
     public void validateBatchAttribute(Map<String, Object> batchAttributes) {
 
-        for (BatchAttributeFieldConfigDTO fieldConfig : batchAttributeFieldConfigs) {
+        for (BatchAttributeFieldConfigDTO fieldConfig : this.batchAttributeFieldConfigs) {
             String fieldCode = fieldConfig.getFieldCode();
             if (fieldConfig.isRequired() && (batchAttributes == null || ObjectUtils.isEmpty(batchAttributes.get(fieldCode)))) {
                 throw WmsException.throwWmsException(BATCH_ATTRIBUTE_IS_REQUIRED, fieldCode);

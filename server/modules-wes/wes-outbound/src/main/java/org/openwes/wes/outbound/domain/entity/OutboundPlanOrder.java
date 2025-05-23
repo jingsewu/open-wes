@@ -2,16 +2,16 @@ package org.openwes.wes.outbound.domain.entity;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.openwes.common.utils.id.OrderNoGenerator;
-import org.openwes.domain.event.DomainEventPublisher;
+import org.openwes.domain.event.AggregatorRoot;
 import org.openwes.wes.api.main.data.dto.SkuMainDataDTO;
 import org.openwes.wes.api.outbound.constants.OutboundPlanOrderDetailStatusEnum;
 import org.openwes.wes.api.outbound.constants.OutboundPlanOrderStatusEnum;
 import org.openwes.wes.api.outbound.event.OutboundPlanOrderAssignedEvent;
 import org.openwes.wes.api.outbound.event.OutboundPlanOrderCompleteEvent;
-import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 @Data
 @Slf4j
-public class OutboundPlanOrder {
+public class OutboundPlanOrder implements AggregatorRoot {
 
     private Long id;
 
@@ -107,7 +107,7 @@ public class OutboundPlanOrder {
         if (totalRequired.equals(totalPreAllocated)) {
             log.info("outbound plan order id: {} orderNo: {} assigned", this.id, this.orderNo);
             this.outboundPlanOrderStatus = OutboundPlanOrderStatusEnum.ASSIGNED;
-            DomainEventPublisher.sendAsyncDomainEvent(new OutboundPlanOrderAssignedEvent().setWarehouseCode(this.warehouseCode).setOutboundPlanOrderId(this.id));
+            this.addAsynchronousDomainEvents(new OutboundPlanOrderAssignedEvent().setWarehouseCode(this.warehouseCode).setOutboundPlanOrderId(this.id));
             return true;
         }
 
@@ -122,7 +122,7 @@ public class OutboundPlanOrder {
             this.abnormal = true;
             this.abnormalReason = "short preAllocate";
             this.outboundPlanOrderStatus = OutboundPlanOrderStatusEnum.ASSIGNED;
-            DomainEventPublisher.sendAsyncDomainEvent(new OutboundPlanOrderAssignedEvent().setWarehouseCode(this.warehouseCode).setOutboundPlanOrderId(this.id));
+            this.addAsynchronousDomainEvents(new OutboundPlanOrderAssignedEvent().setWarehouseCode(this.warehouseCode).setOutboundPlanOrderId(this.id));
             return true;
         }
 
@@ -159,7 +159,7 @@ public class OutboundPlanOrder {
 
         if (details.stream().allMatch(v -> v.getOutboundPlanOrderDetailStatus() == OutboundPlanOrderDetailStatusEnum.PICKED)) {
             this.outboundPlanOrderStatus = OutboundPlanOrderStatusEnum.PICKED;
-            DomainEventPublisher.sendAsyncDomainEvent(new OutboundPlanOrderCompleteEvent().setOutboundPlanOrderIds(Lists.newArrayList(this.id)));
+            this.addAsynchronousDomainEvents(new OutboundPlanOrderCompleteEvent().setOutboundPlanOrderIds(Lists.newArrayList(this.id)));
         } else {
             this.outboundPlanOrderStatus = OutboundPlanOrderStatusEnum.PICKING;
         }
@@ -181,8 +181,7 @@ public class OutboundPlanOrder {
         this.details.stream().filter(v -> v.getOutboundPlanOrderDetailStatus() != OutboundPlanOrderDetailStatusEnum.PICKED)
                 .forEach(OutboundPlanOrderDetail::shortComplete);
 
-        DomainEventPublisher.sendAsyncDomainEvent(new OutboundPlanOrderCompleteEvent().setOutboundPlanOrderIds(Lists.newArrayList(this.id)));
-
+        this.addAsynchronousDomainEvents(new OutboundPlanOrderCompleteEvent().setOutboundPlanOrderIds(Lists.newArrayList(this.id)));
         return true;
     }
 }

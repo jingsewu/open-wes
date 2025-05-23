@@ -1,14 +1,13 @@
 package org.openwes.wes.printer.application.event;
 
-import org.openwes.domain.event.DomainEvent;
-import org.openwes.wes.printer.domain.constants.ModuleEnum;
-import org.openwes.wes.printer.domain.constants.PrintNodeEnum;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.openwes.domain.event.DomainEvent;
+import org.openwes.wes.api.print.constants.ModuleEnum;
+import org.openwes.wes.api.print.constants.PrintNodeEnum;
 
-import java.util.List;
 import java.util.Map;
 
 @EqualsAndHashCode(callSuper = true)
@@ -25,5 +24,5 @@ public class PrintEvent extends DomainEvent {
     private Object parameter;
 
     // targetArgs that impact on the template
-    private List<Map<String, Object>> targetArgs;
+    private Map<String, Object> targetArgs;
 }

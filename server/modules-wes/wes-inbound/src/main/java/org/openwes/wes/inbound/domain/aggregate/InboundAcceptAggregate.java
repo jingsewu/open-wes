@@ -1,15 +1,13 @@
 package org.openwes.wes.inbound.domain.aggregate;
 
+import lombok.RequiredArgsConstructor;
 import org.openwes.domain.event.DomainEventPublisher;
-import org.openwes.wes.api.inbound.dto.AcceptRecordDTO;
-import org.openwes.wes.api.inbound.event.AcceptEvent;
 import org.openwes.wes.api.inbound.event.PutAwayCreationEvent;
 import org.openwes.wes.inbound.domain.entity.AcceptOrder;
 import org.openwes.wes.inbound.domain.entity.AcceptOrderDetail;
 import org.openwes.wes.inbound.domain.entity.InboundPlanOrder;
 import org.openwes.wes.inbound.domain.repository.AcceptOrderRepository;
 import org.openwes.wes.inbound.domain.repository.InboundPlanOrderRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +20,6 @@ public class InboundAcceptAggregate {
     private final InboundPlanOrderRepository inboundPlanOrderRepository;
     private final AcceptOrderRepository acceptOrderRepository;
 
-    //TODO need to use Domain event instead of the @Transactional
     @Transactional(rollbackFor = Exception.class)
     public void cancelAccept(AcceptOrder acceptOrder, Long acceptOrderDetailId, List<InboundPlanOrder> inboundPlanOrders) {
 
@@ -42,7 +39,6 @@ public class InboundAcceptAggregate {
 
     }
 
-    //TODO need to use Domain event instead of the @Transactional
     @Transactional(rollbackFor = Exception.class)
     public void complete(AcceptOrder acceptOrder, List<InboundPlanOrder> inboundPlanOrders) {
         acceptOrder.complete();

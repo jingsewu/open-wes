@@ -1,6 +1,8 @@
 package org.openwes.wes.stocktake.application.event;
 
 import com.google.common.eventbus.Subscribe;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.openwes.domain.event.DomainEventPublisher;
 import org.openwes.wes.api.stocktake.constants.StocktakeRecordStatusEnum;
 import org.openwes.wes.api.stocktake.constants.StocktakeTaskStatusEnum;
@@ -11,8 +13,6 @@ import org.openwes.wes.stocktake.domain.entity.StocktakeRecord;
 import org.openwes.wes.stocktake.domain.entity.StocktakeTask;
 import org.openwes.wes.stocktake.domain.repository.StocktakeRecordRepository;
 import org.openwes.wes.stocktake.domain.repository.StocktakeTaskRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -37,21 +37,16 @@ public class StocktakeTaskSubscriber {
         stocktakeTask.submit(event.getStocktakeTaskDetailId());
         stocktakeTaskRepository.saveOrderAndDetail(stocktakeTask);
 
-        List<StocktakeTask> stocktakeTasks = stocktakeTaskRepository.findAllByStocktakeOrderId(stocktakeTask.getStocktakeOrderId());
-
-        boolean result = stocktakeTasks.stream().anyMatch(v -> v.getStocktakeTaskStatus() == StocktakeTaskStatusEnum.NEW
-                || v.getStocktakeTaskStatus() == StocktakeTaskStatusEnum.STARTED);
-
-        if (result) {
-            return;
-        }
-
-        DomainEventPublisher.sendAsyncDomainEvent(new StocktakeOrderCompleteEvent().setStocktakeOrderId(stocktakeTask.getStocktakeOrderId()));
+        completeStocktakeTask(stocktakeTask.getStocktakeOrderId());
     }
 
     @Subscribe
     public void onClose(StocktakeTaskCloseEvent event) {
-        List<StocktakeTask> stocktakeTasks = stocktakeTaskRepository.findAllByStocktakeOrderId(event.getStocktakeOrderId());
+        completeStocktakeTask(event.getStocktakeOrderId());
+    }
+
+    private void completeStocktakeTask(Long stocktakeOrderId) {
+        List<StocktakeTask> stocktakeTasks = stocktakeTaskRepository.findAllByStocktakeOrderId(stocktakeOrderId);
 
         boolean result = stocktakeTasks.stream().anyMatch(v -> v.getStocktakeTaskStatus() == StocktakeTaskStatusEnum.NEW
                 || v.getStocktakeTaskStatus() == StocktakeTaskStatusEnum.STARTED);
@@ -60,6 +55,6 @@ public class StocktakeTaskSubscriber {
             return;
         }
 
-        DomainEventPublisher.sendAsyncDomainEvent(new StocktakeOrderCompleteEvent().setStocktakeOrderId(event.getStocktakeOrderId()));
+        DomainEventPublisher.sendAsyncDomainEvent(new StocktakeOrderCompleteEvent().setStocktakeOrderId(stocktakeOrderId));
     }
 }
