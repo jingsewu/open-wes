@@ -821,6 +821,11 @@
     "库内操作": "In-warehouse Operation",
     "智能数据平台": "AI Data Platform",
     "智能分析": "AI analysis",
+    "打印配置": "Print Configuration",
+    "打印配置管理": "Print Configuration Management",
+    "打印规则管理": "Print Rule Management",
+    "打印模板管理": "Print Template Management",
+    "打印记录管理": "Print Record Management",
 
     "dataPlatform.ai.analysis.title": "AI Analysis",
 
@@ -873,6 +878,27 @@
     "form.tab.editor": "Editor",
     "form.tab.preview": "Preview",
 
-    "button.preview": "Preview"
+    "button.preview": "Preview",
 
+    "wms.menu.printConfig": "Print Configuration",
+    "printConfigManagement.title": "Print Configuration Management",
+    "printRecordManagement.title": "Print Record Management",
+    "printRuleManagement.title": "Print Rule Management",
+    "printTemplateManagement.title": "Print Template Management",
+
+    "printRecord.title": "Print Record Management",
+    "printRecord.module": "Module",
+    "printRecord.printNode": "Print Node",
+    "printRecord.templateCode": "Template Code",
+    "printRecord.templateName": "Template Name",
+    "printRecord.workStationId": "Workstation ID",
+    "printRecord.printTime": "Print Time",
+    "printRecord.printer": "Printer",
+    "printRecord.printStatus": "Status",
+    "printRecord.errorMessage": "Error Message",
+    "printRecord.createTime": "Create Time",
+    "printRecord.createUser": "Create User",
+    "printRecord.updateStatus": "Update Status",
+    "printRecord.status": "Status",
+    "button.updateStatus": "Update Status"
 }

@@ -8,8 +8,6 @@ import java.util.List;
 
 public interface StocktakeOrderService {
 
-    List<StocktakeOrder> cancelStocktakeOrder(List<StocktakeOrder> stocktakeOrderList);
-
     List<StocktakeTask> splitStocktakeOrder(StocktakeOrder stocktakeOrder, Integer taskCount);
 
     void validateSubmit(StocktakeRecord stocktakeRecord);

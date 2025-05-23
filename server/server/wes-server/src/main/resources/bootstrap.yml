@@ -14,7 +14,7 @@ spring:
         username: nacos
         password: nacos
   liquibase:
-    enabled: false
+    enabled: true
     change-log: classpath:/db/changelog/db.changelog-master.xml
     database-change-log-table: l_change_log
     database-change-log-lock-table: l_change_log_lock

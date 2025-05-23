@@ -94,7 +94,6 @@ function WorkStationValueProvider(props: WorkStationProviderProps) {
 
         return () => {
             workStationEventLoop.resetCurrentEvent()
-            workStationEventLoop.resetCurrentInfo()
         }
     }, [])
 

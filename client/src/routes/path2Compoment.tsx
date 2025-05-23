@@ -304,6 +304,57 @@ const menuRouter = [
             () => import("@/pages/wms/config_center/rule/barcode_parse_rule")
         )
     },
+
+    // WMS - config center - print
+    {
+        path: "/wms/print-config",
+        name: <Translation>{(t) => t("wms.menu.printConfig")}</Translation>
+    },
+    {
+        path: "/wms/config-center/print-config",
+        name: (
+            <Translation>
+                {(t) => t("printConfigManagement.title")}
+            </Translation>
+        ),
+        component: lazy(
+            () => import("@/pages/wms/config_center/print/print_config")
+        )
+    },
+    {
+        path: "/wms/config-center/print-rule",
+        name: (
+            <Translation>
+                {(t) => t("printRuleManagement.title")}
+            </Translation>
+        ),
+        component: lazy(
+            () => import("@/pages/wms/config_center/print/print_rule")
+        )
+    },
+    {
+        path: "/wms/config-center/print-template",
+        name: (
+            <Translation>
+                {(t) => t("printTemplateManagement.title")}
+            </Translation>
+        ),
+        component: lazy(
+            () => import("@/pages/wms/config_center/print/print_template")
+        )
+    },
+    {
+        path: "/wms/config-center/print-record",
+        name: (
+            <Translation>
+                {(t) => t("printRecordManagement.title")}
+            </Translation>
+        ),
+        component: lazy(
+            () => import("@/pages/wms/config_center/print/print_record")
+        )
+    },
+
     {
         path: "/wms/data-center",
         name: <Translation>{(t) => t("wms.menu.dataCenters")}</Translation>

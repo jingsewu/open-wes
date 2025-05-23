@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="u_menu_add_print_config_menus" author="Kinser">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="u_menu"/>
+            </and>
+        </preConditions>
+        <comment>add print config menus</comment>
+        <sql>
+            -- WMS Print Config Folder (type=1 for folder)
+            INSERT INTO `u_menu` (`id`, `create_user`, `system_code`, `parent_id`, `type`, `title`, `description`, `permissions`, `order_num`, `icon`, `path`, `enable`, `create_time`, `update_time`, `update_user`, `iframe_show`)
+            VALUES (1005030000, 'admin', 'wms', 1005000000, 2, '打印配置', NULL, '/wms/print-config', 10, 'printer', '/wms/print-config', 1, 0, 1731206214893, 'admin', 0);
+
+-- Print Config Management (type=2 for menu item)
+            INSERT INTO `u_menu` (`id`, `create_user`, `system_code`, `parent_id`, `type`, `title`, `description`, `permissions`, `order_num`, `icon`, `path`, `enable`, `create_time`, `update_time`, `update_user`, `iframe_show`)
+            VALUES (1005030100, 'admin', 'wms', 1005030000, 2, '打印配置管理', NULL, '/wms/config-center/print-config', 1, NULL, '/wms/config-center/print-config', 1, 0, 0, '', NULL);
+
+-- Print Rule Management (type=2 for menu item)
+            INSERT INTO `u_menu` (`id`, `create_user`, `system_code`, `parent_id`, `type`, `title`, `description`, `permissions`, `order_num`, `icon`, `path`, `enable`, `create_time`, `update_time`, `update_user`, `iframe_show`)
+            VALUES (1005030200, 'admin', 'wms', 1005030000, 2, '打印规则管理', NULL, '/wms/config-center/print-rule', 2, NULL, '/wms/config-center/print-rule', 1, 0, 0, '', NULL);
+
+-- Print Template Management (type=2 for menu item)
+            INSERT INTO `u_menu` (`id`, `create_user`, `system_code`, `parent_id`, `type`, `title`, `description`, `permissions`, `order_num`, `icon`, `path`, `enable`, `create_time`, `update_time`, `update_user`, `iframe_show`)
+            VALUES (1005030300, 'admin', 'wms', 1005030000, 2, '打印模板管理', NULL, '/wms/config-center/print-template', 3, NULL, '/wms/config-center/print-template', 1, 0, 0, '', NULL);
+
+-- Print Record Management (type=2 for menu item)
+            INSERT INTO `u_menu` (`id`, `create_user`, `system_code`, `parent_id`, `type`, `title`, `description`, `permissions`, `order_num`, `icon`, `path`, `enable`, `create_time`, `update_time`, `update_user`, `iframe_show`)
+            VALUES (1005030400, 'admin', 'wms', 1005030000, 2, '打印记录管理', NULL, '/wms/config-center/print-record', 4, NULL, '/wms/config-center/print-record', 1, 0, 0, '', NULL);
+        </sql>
+    </changeSet>
+
+
+</databaseChangeLog>
