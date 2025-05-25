@@ -2,124 +2,115 @@ import schema2component from "@/utils/schema2component"
 import {api_print_rule_add, api_print_rule_get} from "@/pages/wms/config_center/constants/api_constant"
 import {create_update_columns, enable_options} from "@/utils/commonContants"
 import {api_crud_search} from "@/pages/constantApi"
+import {
+    owner_code,
+    select_print_template_code
+} from "@/pages/wms/constants/select_search_api_contant";
 
 const form = [
-    {
-        type: "tabs",
-        tabs: [
-            {
-                title: "form.tab.basicInformation",
-                controls: [
-                    {
-                        type: "input-text",
-                        name: "id",
-                        label: "ID",
-                        hidden: true
-                    },
-                    {
-                        type: "input-text",
-                        name: "ruleName",
-                        label: "printRule.ruleName",
-                        required: true
-                    },
-                    {
-                        type: "input-text",
-                        name: "ruleCode",
-                        label: "printRule.ruleCode",
-                        required: true
-                    },
-                    {
-                        type: "select",
-                        name: "module",
-                        label: "printRule.module",
-                        required: true,
-                        source: "/api/enum/module-enum"
-                    },
-                    {
-                        type: "select",
-                        name: "printNode",
-                        label: "printRule.printNode",
-                        required: true,
-                        source: "/api/enum/print-node-enum"
-                    },
-                    {
-                        type: "input-number",
-                        name: "printCount",
-                        label: "printRule.printCount",
-                        value: 1
-                    },
-                    {
-                        type: "input-text",
-                        name: "templateCode",
-                        label: "printRule.templateCode",
-                        required: true
-                    },
-                    {
-                        type: "textarea",
-                        name: "sqlScript",
-                        label: "printRule.sqlScript"
-                    },
-                    {
-                        type: "switch",
-                        name: "enabled",
-                        label: "printRule.enabled",
-                        options: enable_options
-                    }
-                ]
-            },
-            {
-                title: "form.tab.conditionSettings",
-                controls: [
-                    {
-                        type: "checkboxes",
-                        name: "ownerCodes",
-                        label: "printRule.ownerCodes",
-                        source: "/api/owners",
-                        multiple: true
-                    },
-                    {
-                        type: "checkboxes",
-                        name: "salesPlatforms",
-                        label: "printRule.salesPlatforms",
-                        source: "/api/sales-platforms",
-                        multiple: true
-                    },
-                    {
-                        type: "checkboxes",
-                        name: "carrierCodes",
-                        label: "printRule.carrierCodes",
-                        source: "/api/carriers",
-                        multiple: true
-                    },
-                    {
-                        type: "checkboxes",
-                        name: "inboundOrderTypes",
-                        label: "printRule.inboundOrderTypes",
-                        source: "/api/order-types/inbound",
-                        multiple: true
-                    },
-                    {
-                        type: "checkboxes",
-                        name: "outboundOrderTypes",
-                        label: "printRule.outboundOrderTypes",
-                        source: "/api/order-types/outbound",
-                        multiple: true
-                    }
-                ]
-            }
-        ]
-    }
+        {
+            type: "input-text",
+            name: "id",
+            label: "ID",
+            hidden: true
+        },
+        {
+            type: "input-text",
+            name: "ruleName",
+            label: "printRule.ruleName",
+            required: true
+        },
+        {
+            type: "input-text",
+            name: "ruleCode",
+            label: "printRule.ruleCode",
+            required: true
+        },
+        {
+            type: "select",
+            name: "module",
+            label: "printRule.module",
+            required: true,
+            source: "${dictionary.Module}",
+        },
+        {
+            type: "select",
+            name: "printNode",
+            label: "printRule.printNode",
+            required: true,
+            source: "${dictionary.PrintNode}"
+        },
+        {
+            type: "input-number",
+            name: "printCount",
+            label: "printRule.printCount",
+            value: 1
+        },
+        {
+            type: "select",
+            name: "templateCode",
+            label: "printRule.templateCode",
+            source: select_print_template_code,
+            required: true
+        },
+        {
+            type: "textarea",
+            name: "sqlScript",
+            label: "printRule.sqlScript"
+        },
+        {
+            type: "switch",
+            name: "enabled",
+            label: "printRule.enabled",
+            options: enable_options
+        },
+        {
+            type: "select",
+            name: "ownerCodes",
+            label: "printRule.ownerCodes",
+            source: owner_code,
+            multiple: true
+        },
+        {
+            type: "select",
+            name: "salesPlatforms",
+            label: "printRule.salesPlatforms",
+            source: "${dictionary.SalesPlatform}",
+            multiple: true
+        },
+        {
+            type: "select",
+            name: "carrierCodes",
+            label: "printRule.carrierCodes",
+            source: "${dictionary.Carrier}",
+            multiple: true
+        },
+        {
+            type: "select",
+            name: "inboundOrderTypes",
+            label: "printRule.inboundOrderTypes",
+            source: "${dictionary.InboundOrderType}",
+            multiple: true
+        },
+        {
+            type: "select",
+            name: "outboundOrderTypes",
+            label: "printRule.outboundOrderTypes",
+            source: "${dictionary.OutboundOrderType}",
+            multiple: true
+        }
 ]
 
 const add = {
     type: "button",
-    actionType: "drawer",
+    actionType: "dialog",
     icon: "fa fa-plus",
     label: "button.add",
-    target: "printRule",
-    drawer: {
+    target: "Table",
+    dialog: {
         title: "button.add",
         closeOnEsc: true,
+        size: "lg",
         body: {
             type: "form",
             api: api_print_rule_add,
@@ -166,7 +157,7 @@ const columns = [
     ...create_update_columns
 ]
 
-const searchIdentity = "PrintRule"
+const searchIdentity = "PPrintRule"
 const showColumns = columns
 
 const schema = {
@@ -206,8 +197,8 @@ const schema = {
                         {
                             label: "button.modify",
                             type: "button",
-                            actionType: "drawer",
-                            drawer: {
+                            actionType: "dialog",
+                            dialog: {
                                 title: "button.modify",
                                 closeOnEsc: true,
                                 closeOnOutside: true,

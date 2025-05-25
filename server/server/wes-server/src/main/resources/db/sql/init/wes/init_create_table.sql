@@ -395,66 +395,87 @@ CREATE TABLE `m_warehouse_main_data`  (
 -- ----------------------------
 -- Table structure for p_print_config
 -- ----------------------------
-CREATE TABLE `p_print_config`  (
-                                   `id` bigint NOT NULL,
-                                   `create_time` bigint NOT NULL DEFAULT 0 COMMENT 'Creation time',
-                                   `create_user` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT 'Create user',
-                                   `update_time` bigint NOT NULL DEFAULT 0 COMMENT 'Update time',
-                                   `update_user` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT 'Update user',
-                                   `config_code` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT '配置编码',
-                                   `delete_time` bigint NOT NULL DEFAULT 0 COMMENT '删除时间',
-                                   `deleted` bit(1) NOT NULL,
-                                   `enabled` bit(1) NOT NULL,
-                                   `print_config_details` json NULL COMMENT '打印配置详情',
-                                   `work_station_id` bigint NOT NULL COMMENT '工作站ID',
-                                   PRIMARY KEY (`id`) USING BTREE,
-                                   UNIQUE INDEX `idx_print_config_code`(`config_code` ASC, `delete_time` ASC) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
+CREATE TABLE `p_print_config` (
+                                  `id` bigint NOT NULL AUTO_INCREMENT,
+                                  `config_code` varchar(255) NOT NULL DEFAULT '' COMMENT '配置编码',
+                                  `work_station_id` bigint NOT NULL COMMENT '工作站ID',
+                                  `print_config_details` json COMMENT '打印配置详情',
+                                  `enabled` bit(1) DEFAULT NULL,
+                                  `deleted` bit(1) DEFAULT NULL,
+                                  `delete_time` bigint NOT NULL DEFAULT 0 COMMENT '删除时间',
+                                  `create_time` bigint DEFAULT NULL,
+                                  `create_user` varchar(64) DEFAULT NULL,
+                                  `update_time` bigint DEFAULT NULL,
+                                  `update_user` varchar(64) DEFAULT NULL,
+                                  PRIMARY KEY (`id`),
+                                  UNIQUE KEY `uk_print_config_code` (`config_code`, `delete_time`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- ----------------------------
 -- Table structure for p_print_rule
 -- ----------------------------
-CREATE TABLE `p_print_rule`  (
-                                 `id` bigint NOT NULL,
-                                 `create_time` bigint NOT NULL DEFAULT 0 COMMENT 'Creation time',
-                                 `create_user` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT 'Create user',
-                                 `update_time` bigint NOT NULL DEFAULT 0 COMMENT 'Update time',
-                                 `update_user` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT 'Update user',
-                                 `currier_codes` json NULL COMMENT '承运商编码',
-                                 `delete_time` bigint NOT NULL DEFAULT 0 COMMENT '删除时间',
-                                 `deleted` bit(1) NOT NULL,
-                                 `enabled` bit(1) NOT NULL,
-                                 `inbound_order_types` json NULL COMMENT '入库单类型',
-                                 `module` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '模块',
-                                 `outbound_order_types` json NULL COMMENT '出库单类型',
-                                 `owner_codes` json NULL COMMENT '货主编码',
-                                 `print_count` int NOT NULL DEFAULT 1 COMMENT '打印份数',
-                                 `print_node` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '打印节点',
-                                 `rule_code` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '规则编码',
-                                 `rule_name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT '规则名称',
-                                 `sales_platforms` json NULL COMMENT '销售平台',
-                                 `sql_script` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT 'sql script that query target args for the template',
-                                 `template_code` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT '模板编码',
-                                 PRIMARY KEY (`id`) USING BTREE,
-                                 UNIQUE INDEX `idx_print_rule_code`(`rule_code` ASC, `delete_time` ASC) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
+CREATE TABLE `p_print_rule` (
+                                `id` bigint NOT NULL AUTO_INCREMENT,
+                                `rule_name` varchar(128) NOT NULL DEFAULT '' COMMENT '规则名称',
+                                `rule_code` varchar(64) NOT NULL COMMENT '规则编码',
+                                `owner_codes` json COMMENT '货主编码',
+                                `sales_platforms` json COMMENT '销售平台',
+                                `carrier_codes` json COMMENT '承运商编码',
+                                `inbound_order_types` json COMMENT '入库单类型',
+                                `outbound_order_types` json COMMENT '出库单类型',
+                                `module` varchar(64) NOT NULL COMMENT '模块',
+                                `print_node` varchar(64) NOT NULL COMMENT '打印节点',
+                                `print_count` int NOT NULL DEFAULT 1 COMMENT '打印份数',
+                                `template_code` varchar(255) NOT NULL DEFAULT '' COMMENT '模板编码',
+                                `sql_script` text COMMENT 'sql script that query target args for the template',
+                                `deleted` bit(1) DEFAULT NULL,
+                                `delete_time` bigint NOT NULL DEFAULT 0 COMMENT '删除时间',
+                                `enabled` bit(1) DEFAULT NULL,
+                                `create_time` bigint DEFAULT NULL,
+                                `create_user` varchar(64) DEFAULT NULL,
+                                `update_time` bigint DEFAULT NULL,
+                                `update_user` varchar(64) DEFAULT NULL,
+                                PRIMARY KEY (`id`),
+                                UNIQUE KEY `uk_print_rule_code` (`rule_code`, `delete_time`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- ----------------------------
 -- Table structure for p_print_template
 -- ----------------------------
-CREATE TABLE `p_print_template`  (
-                                     `id` bigint NOT NULL,
-                                     `create_time` bigint NOT NULL DEFAULT 0 COMMENT 'Creation time',
-                                     `create_user` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT 'Create user',
-                                     `update_time` bigint NOT NULL DEFAULT 0 COMMENT 'Update time',
-                                     `update_user` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT 'Update user',
-                                     `enabled` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '启用状态',
-                                     `template_code` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT '模板编码',
-                                     `template_file_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT '' COMMENT '模板文件名',
-                                     `template_name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT '模板名称',
-                                     PRIMARY KEY (`id`) USING BTREE,
-                                     UNIQUE INDEX `idx_template_code`(`template_code` ASC) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
+CREATE TABLE `p_print_template` (
+                                    `id` bigint NOT NULL AUTO_INCREMENT,
+                                    `template_code` varchar(64) NOT NULL DEFAULT '' COMMENT '模板编码',
+                                    `template_name` varchar(128) NOT NULL DEFAULT '' COMMENT '模板名称',
+                                    `template_content` TEXT COMMENT '模板文件html内容',
+                                    `enabled` bit(1) NOT NULL COMMENT '启用状态',
+                                    `create_time` bigint DEFAULT NULL,
+                                    `create_user` varchar(64) DEFAULT NULL,
+                                    `update_time` bigint DEFAULT NULL,
+                                    `update_user` varchar(64) DEFAULT NULL,
+                                    PRIMARY KEY (`id`),
+                                    UNIQUE KEY `uk_template_code` (`template_code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- ----------------------------
+-- Table structure for p_print_record
+-- ----------------------------
+CREATE TABLE `p_print_record` (
+                                  `id` bigint NOT NULL AUTO_INCREMENT,
+                                  `module` varchar(64) NOT NULL COMMENT '模块',
+                                  `print_node` varchar(64) NOT NULL COMMENT '打印节点',
+                                  `template_code` varchar(64) NOT NULL DEFAULT '' COMMENT '模板编码',
+                                  `template_name` varchar(128) NOT NULL DEFAULT '' COMMENT '模板名称',
+                                  `work_station_id` bigint DEFAULT NULL,
+                                  `print_time` bigint DEFAULT NULL,
+                                  `printer` varchar(255) DEFAULT NULL,
+                                  `message` text DEFAULT NULL,
+                                  `print_status` varchar(20) NOT NULL COMMENT '状态',
+                                  `error_message` varchar(500) COMMENT '错误信息',
+                                  `create_time` bigint DEFAULT NULL,
+                                  `create_user` varchar(64) DEFAULT NULL,
+                                  PRIMARY KEY (`id`),
+                                  KEY `idx_create_time` (`create_time`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------
 -- Table structure for u_login_log

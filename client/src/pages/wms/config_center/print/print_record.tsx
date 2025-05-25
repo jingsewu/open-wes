@@ -12,17 +12,20 @@ const columns = [
         name: "module",
         label: "printRecord.module",
         type: "mapping",
-        source: "${dictionary.ModuleEnum}"
+        source: "${dictionary.ModuleEnum}",
+        searchable: true
     },
     {
         name: "printNode",
         label: "printRecord.printNode",
         type: "mapping",
-        source: "${dictionary.PrintNodeEnum}"
+        source: "${dictionary.PrintNodeEnum}",
+        searchable: true
     },
     {
         name: "templateCode",
-        label: "printRecord.templateCode"
+        label: "printRecord.templateCode",
+        searchable: true
     },
     {
         name: "templateName",
@@ -30,22 +33,30 @@ const columns = [
     },
     {
         name: "workStationId",
-        label: "printRecord.workStationId"
+        label: "printRecord.workStationId",
+        searchable: true
     },
     {
         name: "printTime",
         label: "printRecord.printTime",
-        type: "datetime"
+        type: "datetime",
+        tpl: "${createTime/1000|date:YYYY-MM-DD HH\\:mm\\:ss}",
+        searchable: {
+            type: "input-date-range",
+            valueFormat: "x"
+        }
     },
     {
         name: "printer",
-        label: "printRecord.printer"
+        label: "printRecord.printer",
+        searchable: true
     },
     {
         name: "printStatus",
         label: "printRecord.printStatus",
         type: "mapping",
-        source: "${dictionary.PrintStatusEnum}"
+        source: "${dictionary.PrintStatusEnum}",
+        searchable: true
     },
     {
         name: "errorMessage",
@@ -56,7 +67,7 @@ const columns = [
     ...create_update_columns
 ]
 
-const searchIdentity = "PrintRecord"
+const searchIdentity = "PPrintRecord"
 const showColumns = columns
 
 const schema = {

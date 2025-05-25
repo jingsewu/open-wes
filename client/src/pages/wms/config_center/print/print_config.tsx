@@ -2,79 +2,68 @@ import schema2component from "@/utils/schema2component"
 import {api_print_config_add, api_print_config_get} from "@/pages/wms/config_center/constants/api_constant"
 import {create_update_columns, enable_options} from "@/utils/commonContants"
 import {api_crud_search} from "@/pages/constantApi"
+import {select_print_rule_code, work_station} from "@/pages/wms/constants/select_search_api_contant";
 
 const form = [
     {
-        type: "tabs",
-        tabs: [
+        type: "input-text",
+        name: "id",
+        label: "ID",
+        hidden: true
+    },
+    {
+        type: "input-text",
+        name: "configCode",
+        label: "printConfig.configCode",
+        required: true
+    },
+    {
+        name: "workStationId",
+        label: "printConfig.workStationId",
+        type: "select",
+        source: work_station,
+        required: true
+    },
+    {
+        type: "combo",
+        name: "printConfigDetails",
+        label: "printConfig.details",
+        multiple: true,
+        required: true,
+        items: [
             {
-                title: "form.tab.basicInformation",
-                controls: [
-                    {
-                        type: "input-text",
-                        name: "id",
-                        label: "ID",
-                        hidden: true
-                    },
-                    {
-                        type: "input-text",
-                        name: "configCode",
-                        label: "printConfig.configCode",
-                        required: true
-                    },
-                    {
-                        type: "input-number",
-                        name: "workStationId",
-                        label: "printConfig.workStationId",
-                        required: true
-                    },
-                    {
-                        type: "switch",
-                        name: "enabled",
-                        label: "printConfig.enabled",
-                        options: enable_options
-                    }
-                ]
+                type: "select",
+                name: "ruleCode",
+                label: "printConfig.ruleCode",
+                source: select_print_rule_code,
+                required: true
             },
             {
-                title: "form.tab.printConfigDetails",
-                controls: [
-                    {
-                        type: "combo",
-                        name: "printConfigDetails",
-                        label: "printConfig.details",
-                        multiple: true,
-                        required: true,
-                        items: [
-                            {
-                                type: "input-text",
-                                name: "ruleCode",
-                                label: "printConfig.ruleCode",
-                                required: true
-                            },
-                            {
-                                type: "input-text",
-                                name: "printer",
-                                label: "printConfig.printer",
-                                required: true
-                            }
-                        ]
-                    }
-                ]
+                type: "input-text",
+                name: "printer",
+                label: "printConfig.printer",
+                required: true
             }
         ]
+    },
+    {
+        type: "switch",
+        name: "enabled",
+        label: "printConfig.enabled",
+        options: enable_options
     }
 ]
 
 const add = {
     type: "button",
-    actionType: "drawer",
+    actionType: "dialog",
     icon: "fa fa-plus",
     label: "button.add",
-    target: "printConfig",
-    drawer: {
+    target: "Table",
+    dialog: {
         title: "button.add",
         closeOnEsc: true,
+        size: "lg",
         body: {
             type: "form",
             api: api_print_config_add,
@@ -97,7 +86,7 @@ const columns = [
     {
         name: "workStationId",
         label: "printConfig.workStationId",
-        type: "number"
+        searchable: true
     },
     {
         name: "enabled",
@@ -108,7 +97,7 @@ const columns = [
     ...create_update_columns
 ]
 
-const searchIdentity = "PrintConfig"
+const searchIdentity = "PPrintConfig"
 const showColumns = columns
 
 const schema = {
