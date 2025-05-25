@@ -23,7 +23,7 @@ import java.util.List;
 @DynamicUpdate
 @Table(name = "p_print_rule",
         indexes = {
-                @Index(unique = true, name = "idx_print_rule_code", columnList = "ruleCode,deleteTime")
+                @Index(unique = true, name = "uk_print_rule_code", columnList = "ruleCode,deleteTime")
         })
 @Filter(name = "filterDeleted", condition = "deleted = false")
 public class PrintRule extends UpdateUserPO {

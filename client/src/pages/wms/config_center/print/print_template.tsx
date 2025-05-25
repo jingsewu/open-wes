@@ -4,12 +4,6 @@ import {create_update_columns, enable_options} from "@/utils/commonContants"
 import {api_crud_search} from "@/pages/constantApi"
 
 const form = [
-    {
-        type: "tabs",
-        tabs: [
-            {
-                title: "form.tab.basicInformation",
-                controls: [
                     {
                         type: "input-text",
                         name: "id",
@@ -33,62 +27,36 @@ const form = [
                         name: "enabled",
                         label: "printTemplate.enabled",
                         options: enable_options
-                    }
-                ]
-            },
-            {
-                title: "form.tab.templateContent",
-                controls: [
+                    },
                     {
-                        type: "tabs",
-                        tabs: [
-                            {
-                                title: "form.tab.editor",
-                                controls: [
-                                    {
-                                        type: "editor",
-                                        name: "templateContent",
-                                        label: "printTemplate.templateContent",
-                                        language: "html",
-                                        required: true,
-                                        options: {
-                                            minimap: {
-                                                enabled: false
-                                            },
-                                            lineNumbers: "on",
-                                            theme: "vs-dark"
-                                        },
-                                        size: "xxl"
-                                    }
-                                ]
-                            },
-                            {
-                                title: "form.tab.preview",
-                                controls: [
-                                    {
-                                        type: "html",
-                                        name: "templateContent",
-                                        html: "<div>${templateContent}</div>"
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                ]
-            }
-        ]
-    }
+                        type: "editor",
+                        name: "templateContent",
+                        label: "printTemplate.templateContent",
+                        language: "html",
+                        required: true
+                    },
+                    // {
+                    //     type: "html",
+                    //     html: "<div class='preview-pane'>${templateContent}</div>",
+                    //     disableHtmlEncode: true,
+                    //     style: {
+                    //         border: "1px solid #e4e9f0",
+                    //         padding: "16px",
+                    //         "min-height": "100px"
+                    //     }
+                    // }
 ]
 
 const add = {
     type: "button",
-    actionType: "drawer",
+    actionType: "dialog",
     icon: "fa fa-plus",
     label: "button.add",
-    target: "printTemplate",
-    drawer: {
+    target: "Table",
+    dialog: {
         title: "button.add",
         closeOnEsc: true,
+        size: "lg",
         body: {
             type: "form",
             api: api_print_template_add,
@@ -122,7 +90,7 @@ const columns = [
     ...create_update_columns
 ]
 
-const searchIdentity = "PrintTemplate"
+const searchIdentity = "PPrintTemplate"
 const showColumns = columns
 
 const schema = {
@@ -162,29 +130,17 @@ const schema = {
                         {
                             label: "button.modify",
                             type: "button",
-                            actionType: "drawer",
-                            drawer: {
+                            actionType: "dialog",
+                            dialog: {
                                 title: "button.modify",
                                 closeOnEsc: true,
                                 closeOnOutside: true,
+                                size: "lg",
                                 body: {
                                     type: "form",
                                     initApi: api_print_template_get,
                                     api: api_print_template_add,
                                     controls: form
-                                }
-                            }
-                        },
-                        {
-                            label: "button.preview",
-                            type: "button",
-                            actionType: "dialog",
-                            dialog: {
-                                title: "printTemplate.preview",
-                                size: "lg",
-                                body: {
-                                    type: "html",
-                                    html: "<div>${templateContent}</div>"
                                 }
                             }
                         }

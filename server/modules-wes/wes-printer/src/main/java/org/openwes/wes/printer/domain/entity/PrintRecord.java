@@ -18,7 +18,10 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @DynamicUpdate
-@Table(name = "p_print_record")
+@Table(name = "p_print_record",
+        indexes = {
+            @Index(name = "idx_create_time", columnList = "createTime")
+        })
 public class PrintRecord extends CreateUserDTO {
 
     @Id

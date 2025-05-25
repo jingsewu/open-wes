@@ -6,6 +6,8 @@ import jakarta.websocket.server.ServerEndpoint;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
+import org.openwes.common.utils.base.BaseWebsocketMessage;
+import org.openwes.common.utils.utils.JsonUtils;
 import org.openwes.station.infrastructure.filters.HttpStationContext;
 import org.springframework.stereotype.Controller;
 
@@ -75,12 +77,12 @@ public class StationWebSocketController {
     @OnMessage
     public void onMessage(String message, Session session) {
         log.debug("websocket: {} receive message: {}.", session.getId(), message);
-        sendMessage("pong");
+        sendMessage(JsonUtils.obj2String(new BaseWebsocketMessage().setType(BaseWebsocketMessage.WebsocketMessageTypeEnum.PONG)));
     }
 
     @OnError
     public void onError(Session session, Throwable error) {
-        log.error("websocket err: ", error);
+        log.error("websocket error: ", error);
     }
 
     public void sendMessage(String message) {

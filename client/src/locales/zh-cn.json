@@ -822,10 +822,10 @@
     "智能数据平台": "智能数据平台",
     "智能分析": "智能分析",
     "打印配置": "打印配置",
-    "打印配置管理": "打印配置管理",
-    "打印规则管理": "打印规则管理",
-    "打印模板管理": "打印模板管理",
-    "打印记录管理": "打印记录管理",
+    "打印配置管理": "打印配置",
+    "打印规则管理": "打印规则",
+    "打印模板管理": "打印模板",
+    "打印记录管理": "打印记录",
 
     "dataPlatform.ai.analysis.title": "智能分析",
 
@@ -850,6 +850,7 @@
     "printConfig.status.active": "激活",
     "printConfig.status.inactive": "未激活",
 
+    "printRule.title": "打印规则",
     "printRule.id": "ID",
     "printRule.ruleName": "规则名称",
     "printRule.ruleCode": "规则编码",
@@ -867,7 +868,7 @@
     "printRule.deleteTime": "删除时间",
     "printRule.enabled": "是否启用",
 
-    "printTemplate.title": "打印模板管理",
+    "printTemplate.title": "打印模板",
     "printTemplate.templateCode": "模板编码",
     "printTemplate.templateName": "模板名称",
     "printTemplate.templateContent": "模板内容",
@@ -881,12 +882,12 @@
     "button.preview": "预览",
 
     "wms.menu.printConfig": "打印配置",
-    "printConfigManagement.title": "打印配置管理",
-    "printRecordManagement.title": "打印记录管理",
-    "printRuleManagement.title": "打印规则管理",
-    "printTemplateManagement.title": "打印模板管理",
+    "printConfigManagement.title": "打印配置",
+    "printRecordManagement.title": "打印记录",
+    "printRuleManagement.title": "打印规则",
+    "printTemplateManagement.title": "打印模板",
 
-    "printRecord.title": "打印记录管理",
+    "printRecord.title": "打印记录",
     "printRecord.module": "模块",
     "printRecord.printNode": "打印节点",
     "printRecord.templateCode": "模板编码",

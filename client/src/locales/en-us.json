@@ -822,10 +822,10 @@
     "智能数据平台": "AI Data Platform",
     "智能分析": "AI analysis",
     "打印配置": "Print Configuration",
-    "打印配置管理": "Print Configuration Management",
-    "打印规则管理": "Print Rule Management",
-    "打印模板管理": "Print Template Management",
-    "打印记录管理": "Print Record Management",
+    "打印配置管理": "Print Configuration",
+    "打印规则管理": "Print Rule",
+    "打印模板管理": "Print Template",
+    "打印记录管理": "Print Record",
 
     "dataPlatform.ai.analysis.title": "AI Analysis",
 
@@ -850,6 +850,7 @@
     "printConfig.status.active": "Active",
     "printConfig.status.inactive": "Inactive",
 
+    "printRule.title": "Print Rule Management",
     "printRule.id": "ID",
     "printRule.ruleName": "Rule Name",
     "printRule.ruleCode": "Rule Code",
@@ -881,10 +882,10 @@
     "button.preview": "Preview",
 
     "wms.menu.printConfig": "Print Configuration",
-    "printConfigManagement.title": "Print Configuration Management",
-    "printRecordManagement.title": "Print Record Management",
-    "printRuleManagement.title": "Print Rule Management",
-    "printTemplateManagement.title": "Print Template Management",
+    "printConfigManagement.title": "Print Configuration",
+    "printRecordManagement.title": "Print Record",
+    "printRuleManagement.title": "Print Rule",
+    "printTemplateManagement.title": "Print Template",
 
     "printRecord.title": "Print Record Management",
     "printRecord.module": "Module",

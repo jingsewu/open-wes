@@ -784,10 +784,56 @@ export const available_stock_sku_code_table = {
     }
 }
 
-export const stock_id_table = {
-    method: "post",
-    url: "/search/searchV2?page=1&perPage=500&warehouseCode-eq=${ls:warehouseCode}",
+export const select_print_template_code = {
+    ...baseApi_warehouseCode,
     data: {
-        searchIdentity: "stocktakeByStock"
+        searchIdentity: "SearchPrintTemplate",
+        searchObject: {
+            tables: "p_print_template"
+        },
+        showColumns: [
+            {
+                dbField: "template_code",
+                name: "templateCode",
+                javaType: "java.lang.String"
+            },
+            {
+                dbField: "template_Code",
+                name: "value",
+                javaType: "java.lang.String"
+            },
+            {
+                dbField: "template_name",
+                name: "label",
+                javaType: "java.lang.String"
+            }
+        ]
+    }
+}
+
+export const select_print_rule_code = {
+    ...baseApi_warehouseCode,
+    data: {
+        searchIdentity: "SearchPrintRule",
+        searchObject: {
+            tables: "p_print_rule"
+        },
+        showColumns: [
+            {
+                dbField: "rule_code",
+                name: "ruleCode",
+                javaType: "java.lang.String"
+            },
+            {
+                dbField: "rule_code",
+                name: "value",
+                javaType: "java.lang.String"
+            },
+            {
+                dbField: "rule_name",
+                name: "label",
+                javaType: "java.lang.String"
+            }
+        ]
     }
 }
