@@ -38,10 +38,10 @@ public class PrintServiceImpl implements PrintService {
     private final PrintRecordRepository printRecordRepository;
 
     @Override
-    public void print(List<PrintRule> printRulePOS, Set<PrintConfig.PrintConfigDetail> printConfigDetails, @Valid PrintEvent event) {
-        Map<String, PrintRule> rulePOMap = printRulePOS.stream().collect(Collectors.toMap(PrintRule::getRuleCode, v -> v));
+    public void print(List<PrintRule> printRules, Set<PrintConfig.PrintConfigDetail> printConfigDetails, @Valid PrintEvent event) {
+        Map<String, PrintRule> ruleMap = printRules.stream().collect(Collectors.toMap(PrintRule::getRuleCode, v -> v));
         printConfigDetails.forEach(printConfigDetail -> {
-            PrintRule printRule = rulePOMap.get(printConfigDetail.getRuleCode());
+            PrintRule printRule = ruleMap.get(printConfigDetail.getRuleCode());
             if (printRule == null) {
                 return;
             }
