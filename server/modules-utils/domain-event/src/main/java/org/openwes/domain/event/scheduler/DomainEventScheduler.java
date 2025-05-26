@@ -2,6 +2,7 @@ package org.openwes.domain.event.scheduler;
 
 import com.google.common.eventbus.EventBus;
 import org.openwes.common.utils.utils.JsonUtils;
+import org.openwes.distribute.scheduler.annotation.DistributedScheduled;
 import org.openwes.domain.event.constants.DomainEventStatusEnum;
 import org.openwes.domain.event.domain.entity.DomainEventPO;
 import org.openwes.domain.event.domain.repository.DomainEventPORepository;
@@ -29,7 +30,7 @@ public class DomainEventScheduler {
     private static final long DELAY_TIME_IN_MILLIS = 600 * 1000L;
     private static final int MAX_SIZE_PER_TIME = 100;
 
-    @Scheduled(cron = "0 */2 * * * *")
+    @DistributedScheduled(cron = "0 */2 * * * *", name = "DomainEventScheduler#handleFailedDomainEvent")
     public void handleFailedDomainEvent() {
         CompletableFuture.runAsync(this::doHandleFailedDomainEvent, asyncEventBusExecutor)
                 .exceptionally(e -> {

@@ -1,6 +1,7 @@
 dependencies {
     implementation project(path: ":modules-utils:common-utils", configuration: 'default')
     implementation project(path: ":modules-utils:distribute-lock", configuration: 'default')
+    implementation project(path: ":modules-utils:distribute-scheduler", configuration: 'default')
     implementation project(path: ":modules-wes:wes-api", configuration: 'default')
     implementation project(path: ":modules-utils:distribute-file", configuration: 'default')
     implementation project(path: ":modules-api-platform:api-platform-api", configuration: 'default')

@@ -1,6 +1,7 @@
 package org.openwes.wes.outbound.application.scheduler;
 
 import com.alibaba.ttl.TtlRunnable;
+import org.openwes.distribute.scheduler.annotation.DistributedScheduled;
 import org.openwes.domain.event.DomainEventPublisher;
 import org.openwes.wes.api.outbound.constants.OutboundPlanOrderStatusEnum;
 import org.openwes.wes.api.outbound.event.NewOutboundPlanOrderEvent;
@@ -23,7 +24,7 @@ public class OutboundPlanOrderScheduler {
 
     private final OutboundPlanOrderRepository outboundPlanOrderRepository;
 
-    @Scheduled(cron = "${wms.schedule.config.handleShortWaitingOrders:0 0/5 * * * *}")
+    @DistributedScheduled(cron = "${wms.schedule.config.handleShortWaitingOrders:0 0/5 * * * *}", name = "OutboundPlanOrderScheduler#handleShortWaitingOrders")
     public void handleShortWaitingOrders() {
 
         CompletableFuture.runAsync(Objects.requireNonNull(TtlRunnable.get(this::doHandleShortWaitingOrders)))
