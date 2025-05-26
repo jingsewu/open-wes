@@ -5,6 +5,8 @@ dependencies {
     testImplementation 'com.h2database:h2:2.2.224'
 
     implementation project(path: ":modules-utils:common-utils", configuration: 'default')
+    implementation project(path: ":modules-utils:distribute-scheduler", configuration: 'default')
+
     implementation 'com.alibaba:transmittable-thread-local'
     implementation 'org.springframework.boot:spring-boot-starter-aop'
     implementation 'com.google.guava:guava'

@@ -2,6 +2,7 @@ package org.openwes.wes.stock.application.scheduler;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.openwes.distribute.scheduler.annotation.DistributedScheduled;
 import org.openwes.wes.api.config.ISystemConfigApi;
 import org.openwes.wes.api.config.dto.SystemConfigDTO;
 import org.openwes.wes.stock.domain.repository.ContainerStockRepository;
@@ -20,7 +21,7 @@ public class StockScheduler {
     private final SkuBatchStockRepository skuBatchStockRepository;
     private final ContainerStockRepository containerStockRepository;
 
-    @Scheduled(cron = "0 1 0 * * *")
+    @DistributedScheduled(cron = "0 1 0 * * *", name = "StockScheduler#cleanZeroQtyStocks")
     public void cleanZeroQtyStocks() {
 
         SystemConfigDTO.StockConfigDTO stockConfig = systemConfigApi.getStockConfig();

@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.openwes.common.utils.constants.RedisConstants;
 import org.openwes.distribute.lock.DistributeLock;
+import org.openwes.distribute.scheduler.annotation.DistributedScheduled;
 import org.openwes.wes.api.config.ISystemConfigApi;
 import org.openwes.wes.api.config.constants.TransferContainerReleaseMethodEnum;
 import org.openwes.wes.api.config.dto.SystemConfigDTO;
@@ -30,7 +31,7 @@ public class TransferContainerScheduler {
 
     private static final int LIMIT_SIZE_PER_TIME = 100;
 
-    @Scheduled(cron = "0 0/10 * * * *")
+    @DistributedScheduled(cron = "0 0/10 * * * *", name = "TransferContainerScheduler#handleTransferContainer")
     public void handleTransferContainer() {
 
         CompletableFuture

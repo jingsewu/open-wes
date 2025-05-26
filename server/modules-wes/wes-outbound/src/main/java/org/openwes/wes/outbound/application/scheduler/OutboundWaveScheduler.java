@@ -4,6 +4,7 @@ import com.alibaba.ttl.TtlRunnable;
 import org.openwes.common.utils.constants.RedisConstants;
 import org.openwes.common.utils.utils.RedisUtils;
 import org.openwes.distribute.lock.DistributeLock;
+import org.openwes.distribute.scheduler.annotation.DistributedScheduled;
 import org.openwes.domain.event.DomainEventPublisher;
 import org.openwes.wes.api.outbound.constants.OutboundPlanOrderStatusEnum;
 import org.openwes.wes.api.outbound.event.NewOutboundWaveEvent;
@@ -42,7 +43,7 @@ public class OutboundWaveScheduler {
     @Qualifier("wavePickingExecutor")
     private Executor wavePickingExecutor;
 
-    @Scheduled(cron = "${wms.schedule.config.wavePicking:0 0/5 * * * *}")
+    @DistributedScheduled(cron = "${wms.schedule.config.wavePicking:0 0/5 * * * *}", name = "OutboundWaveScheduler#wavePicking")
     public void wavePicking() {
         List<String> keys = redisUtils.keys(RedisUtils.generateKeysPatten("", OUTBOUND_PLAN_ORDER_ASSIGNED_IDS));
         keys.forEach(key -> {

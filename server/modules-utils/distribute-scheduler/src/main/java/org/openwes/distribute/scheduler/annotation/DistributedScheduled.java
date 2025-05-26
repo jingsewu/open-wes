@@ -21,7 +21,10 @@ public @interface DistributedScheduled {
 
     // Alias for @Scheduled.cron
     @AliasFor(annotation = Scheduled.class, attribute = "cron")
-    String cron();
+    String cron() default "";
+
+    @AliasFor(annotation = Scheduled.class, attribute = "fixedDelayString")
+    String fixedDelayString() default "";
 
     // Alias for @SchedulerLock.name
     @AliasFor(annotation = SchedulerLock.class, attribute = "name")

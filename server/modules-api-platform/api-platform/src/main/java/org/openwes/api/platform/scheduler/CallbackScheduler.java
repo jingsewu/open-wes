@@ -19,6 +19,7 @@ import org.openwes.distribute.lock.DistributeLock;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.DateUtils;
+import org.openwes.distribute.scheduler.annotation.DistributedScheduled;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -43,7 +44,7 @@ public class CallbackScheduler {
     private final DistributeLock distributeLock;
     private final ApiLogService apiLogService;
 
-    @Scheduled(fixedDelayString = "${api.fail.callback.fixedDelay:20000}")
+    @DistributedScheduled(fixedDelayString = "${api.fail.callback.fixedDelay:20000}", name = "CallbackScheduler#callbackSchedule")
     public void callbackSchedule() {
 
         log.debug("callback start...");
@@ -104,7 +105,7 @@ public class CallbackScheduler {
         }
     }
 
-    @Scheduled(cron = "0 0 2 * * *")
+    @DistributedScheduled(cron = "0 0 2 * * *", name = "CallbackScheduler#cleanApiLog")
     public void cleanApiLog() {
 
         log.debug("clean api log start...");

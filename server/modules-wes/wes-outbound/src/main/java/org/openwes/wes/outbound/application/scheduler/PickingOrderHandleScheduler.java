@@ -4,6 +4,7 @@ import com.alibaba.ttl.TtlRunnable;
 import org.openwes.common.utils.constants.RedisConstants;
 import org.openwes.common.utils.utils.RedisUtils;
 import org.openwes.distribute.lock.DistributeLock;
+import org.openwes.distribute.scheduler.annotation.DistributedScheduled;
 import org.openwes.wes.api.algo.dto.PickingOrderAssignedResult;
 import org.openwes.wes.api.algo.dto.PickingOrderDispatchedResult;
 import org.openwes.wes.api.algo.dto.PickingOrderHandlerContext;
@@ -51,7 +52,7 @@ public class PickingOrderHandleScheduler {
 
     private static final int MAX_SIZE_PER_TIME = 1000;
 
-    @Scheduled(cron = "*/5 * * * * *")
+    @DistributedScheduled(cron = "*/5 * * * * *", name = "PickingOrderHandleScheduler#pickingOrderHandle")
     public void pickingOrderHandle() {
         List<String> keys = redisUtils.keys(RedisUtils.generateKeysPatten("", NEW_PICKING_ORDER_IDS));
         keys.forEach(key -> {
@@ -146,7 +147,7 @@ public class PickingOrderHandleScheduler {
     }
 
 
-    @Scheduled(cron = "0 0/5 * * * *")
+    @DistributedScheduled(cron = "0 0/5 * * * *", name = "PickingOrderHandleScheduler#handleAbnormalOrders")
     public void handleAbnormalOrders() {
 
         List<Long> abnormalTaskIds = redisUtils.getList(RedisConstants.PICKING_ORDER_ABNORMAL_DETAIL_IDS);
