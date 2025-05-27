@@ -18,6 +18,11 @@ include 'modules-station:station-api'
 include 'modules-user:user'
 include 'modules-user:user-api'
 
+include 'modules-plugin:plugin-api'
+include 'modules-plugin:plugin-core'
+include 'modules-plugin:plugin-sdk'
+include 'modules-plugin:plugin-extension'
+
 include 'modules-gateway:gateway-core'
 
 include 'modules-api-platform:api-platform'

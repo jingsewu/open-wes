@@ -1,0 +1,41 @@
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation project(path: ":modules-utils:common-utils", configuration: 'default')
+    implementation project(path: ":modules-utils:mq", configuration: 'default')
+    implementation project(path: ":modules-plugin:plugin-api", configuration: 'default')
+    implementation project(path: ":modules-plugin:plugin-extension", configuration: 'default')
+    implementation project(path: ":modules-utils:distribute-file", configuration: 'default')
+
+    implementation 'org.pf4j:pf4j-spring'
+
+    compileOnly 'org.apache.dubbo:dubbo-spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    implementation 'org.mapstruct:mapstruct'
+    annotationProcessor 'org.mapstruct:mapstruct-processor'
+    implementation 'org.projectlombok:lombok-mapstruct-binding'
+}
+
+bootJar {
+    enabled = false
+}
+
+jar {
+    enabled = true
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allJava
+    archiveClassifier.set('sources')
+}
+
+task javadocJar(type: Jar) {
+    from javadoc
+    archiveClassifier.set('javadoc')
+}
+
