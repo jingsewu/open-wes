@@ -1,0 +1,6 @@
+dependencies {
+    implementation project(path: ":modules-wes:wes-api", configuration: 'default')
+    implementation project(path: ":modules-plugin:plugin-api", configuration: 'default')
+    implementation 'org.pf4j:pf4j-spring'
+}
+
