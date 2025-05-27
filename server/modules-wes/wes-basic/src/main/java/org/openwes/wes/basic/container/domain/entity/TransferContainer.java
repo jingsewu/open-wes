@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
+import org.openwes.domain.event.AggregatorRoot;
 import org.openwes.domain.event.DomainEventPublisher;
 import org.openwes.wes.api.stock.event.StockClearEvent;
 import org.openwes.wes.api.task.constants.TransferContainerStatusEnum;
@@ -19,7 +20,7 @@ import static org.openwes.wes.api.task.constants.TransferContainerStatusEnum.*;
 @Accessors(chain = true)
 @NoArgsConstructor
 @Slf4j
-public class TransferContainer implements Serializable {
+public class TransferContainer implements Serializable, AggregatorRoot {
 
     private Long id;
     private String transferContainerCode;
@@ -98,7 +99,7 @@ public class TransferContainer implements Serializable {
         this.currentPeriodRelateRecordIds = null;
         this.locationCode = "";
 
-        DomainEventPublisher.sendAsyncDomainEvent(new StockClearEvent()
+        this.addAsynchronousDomainEvents(new StockClearEvent()
                 .setContainerCode(this.transferContainerCode).setWarehouseCode(this.warehouseCode));
     }
 

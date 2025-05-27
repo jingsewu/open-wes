@@ -1,16 +1,16 @@
 package org.openwes.wes.outbound.domain.entity;
 
 import com.google.common.collect.Sets;
-import org.openwes.common.utils.id.OrderNoGenerator;
-import org.openwes.common.utils.utils.ObjectUtils;
-import org.openwes.common.utils.utils.RedisUtils;
-import org.openwes.wes.api.main.data.dto.SkuMainDataDTO;
-import org.openwes.wes.api.outbound.constants.OutboundPlanOrderStatusEnum;
 import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.openwes.common.utils.id.OrderNoGenerator;
+import org.openwes.common.utils.utils.ObjectUtils;
+import org.openwes.common.utils.utils.RedisUtils;
+import org.openwes.wes.api.main.data.dto.SkuMainDataDTO;
+import org.openwes.wes.api.outbound.constants.OutboundPlanOrderStatusEnum;
 
 import java.util.List;
 
@@ -42,6 +42,8 @@ class OutboundPlanOrderTest {
 
         SkuMainDataDTO skuMainDataDTO = ObjectUtils.getRandomObject(SkuMainDataDTO.class);
         skuMainDataDTO.setSkuCode(randomObject.getDetails().iterator().next().getSkuCode());
+        skuMainDataDTO.setWarehouseCode(randomObject.getWarehouseCode());
+        skuMainDataDTO.setOwnerCode(randomObject.getDetails().iterator().next().getOwnerCode());
 
         randomObject.initSkuInfo(Sets.newHashSet(skuMainDataDTO));
 
