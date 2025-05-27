@@ -2,13 +2,18 @@ package org.openwes.wes.basic.container.domain.entity;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openwes.common.utils.id.Snowflake;
+import org.openwes.common.utils.id.SnowflakeUtils;
 import org.openwes.wes.api.task.constants.TransferContainerStatusEnum;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 class TransferContainerTest {
 
     private TransferContainer transferContainer;
+
+    private static Snowflake snowflake;
 
     @BeforeEach
     public void setUp() {
@@ -16,6 +21,8 @@ class TransferContainerTest {
         transferContainer.setId(1L);
         transferContainer.setTransferContainerCode("TC001");
         transferContainer.setTransferContainerStatus(TransferContainerStatusEnum.IDLE);
+        snowflake = mock(Snowflake.class);
+        new SnowflakeUtils(snowflake);
     }
 
     @Test

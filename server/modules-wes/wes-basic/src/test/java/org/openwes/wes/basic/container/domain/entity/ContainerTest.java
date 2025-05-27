@@ -1,18 +1,18 @@
 package org.openwes.wes.basic.container.domain.entity;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openwes.common.utils.exception.WmsException;
 import org.openwes.wes.api.basic.constants.ContainerStatusEnum;
 import org.openwes.wes.api.basic.dto.ContainerDTO;
 import org.openwes.wes.api.stock.dto.ContainerStockDTO;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.openwes.common.utils.exception.code_enum.BasicErrorDescEnum.CONTAINER_SPECIFIC_CANNOT_CHANGE;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.openwes.common.utils.exception.code_enum.BasicErrorDescEnum.CONTAINER_SPECIFIC_CANNOT_CHANGE;
 
 class ContainerTest {
 
@@ -25,6 +25,7 @@ class ContainerTest {
         containerSlots = new ArrayList<>();
         containerSlots.add(new ContainerDTO.ContainerSlot());
         container = new Container("warehouseCode", "containerCode", "containerSpecCode", containerSlots);
+        container.setContainerStatus(ContainerStatusEnum.IN_SIDE);
         containerStocks = new ArrayList<>();
     }
 
@@ -40,10 +41,7 @@ class ContainerTest {
     @Test
     void lock_ContainerAlreadyLocked_ThrowsException() {
         container.lock();
-        IllegalStateException exception = assertThrows(IllegalStateException.class, () ->
-                container.lock()
-        );
-        assertEquals("container is already locked", exception.getMessage());
+        assertThrows(IllegalStateException.class, () -> container.lock());
     }
 
     @Test

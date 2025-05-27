@@ -2,6 +2,7 @@ package org.openwes.wes.basic.container.infrastructure.repository.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.time.DateUtils;
+import org.openwes.domain.event.AggregatorRoot;
 import org.openwes.wes.api.task.constants.TransferContainerStatusEnum;
 import org.openwes.wes.basic.container.domain.entity.TransferContainer;
 import org.openwes.wes.basic.container.domain.repository.TransferContainerRepository;
@@ -9,6 +10,7 @@ import org.openwes.wes.basic.container.infrastructure.persistence.mapper.Transfe
 import org.openwes.wes.basic.container.infrastructure.persistence.po.TransferContainerPO;
 import org.openwes.wes.basic.container.infrastructure.persistence.transfer.TransferContainerPOTransfer;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.Date;
@@ -22,8 +24,17 @@ public class TransferContainerRepositoryImpl implements TransferContainerReposit
     private final TransferContainerPOTransfer transferContainerPOTransfer;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void save(TransferContainer transferContainer) {
         transferContainerPORepository.save(transferContainerPOTransfer.toPO(transferContainer));
+        transferContainer.sendAndClearEvents();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void saveAll(List<TransferContainer> transferContainers) {
+        transferContainerPORepository.saveAll(transferContainerPOTransfer.toPOs(transferContainers));
+        transferContainers.forEach(AggregatorRoot::sendAndClearEvents);
     }
 
     @Override
@@ -55,8 +66,4 @@ public class TransferContainerRepositoryImpl implements TransferContainerReposit
         return transferContainerPORepository.existsByContainerSpecCodeAndWarehouseCode(containerSpecCode, warehouseCode);
     }
 
-    @Override
-    public void saveAll(List<TransferContainer> transferContainers) {
-        transferContainerPORepository.saveAll(transferContainerPOTransfer.toPOs(transferContainers));
-    }
 }

@@ -14,13 +14,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.math.BigDecimal;
 import java.math.MathContext;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author sws
@@ -132,6 +126,9 @@ public class ObjectUtils {
                 break;
             case "java.util.TreeMap":
                 value = Maps.newTreeMap();
+                break;
+            case "java.util.Collection":
+                value = Collections.EMPTY_LIST;
                 break;
             case "java.util.Set":
                 ParameterizedType fieldGenericType2 = (ParameterizedType) field.getGenericType();
