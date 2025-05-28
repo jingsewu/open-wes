@@ -1,6 +1,6 @@
 package org.openwes.plugin.api.dto;
 
-import org.openwes.plugin.api.constants.PluginManageTypeEnum;
+import org.openwes.plugin.api.constants.PluginStatusEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PluginManageDTO {
 
-    private PluginManageTypeEnum pluginManageType;
+    private PluginStatusEnum pluginManageType;
 
     private String tenantName;
     private Long pluginId;
