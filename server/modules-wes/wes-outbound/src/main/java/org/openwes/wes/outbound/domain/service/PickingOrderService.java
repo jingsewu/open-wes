@@ -21,14 +21,6 @@ public interface PickingOrderService {
     PickingOrderReallocateContext prepareReallocateStockContext(String warehouseCode, PickingOrder pickingOrder);
 
     /**
-     * split a wave into a list of picking orders
-     *
-     * @param outboundWave outboundWave
-     * @return
-     */
-    List<PickingOrder> spiltWave(OutboundWave outboundWave);
-
-    /**
      * allocate stocks for the picking orders
      *
      * @param pickingOrders pickingOrders

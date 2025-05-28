@@ -1,7 +1,11 @@
 package org.openwes.wes.outbound.domain.service.impl;
 
 import com.google.common.collect.Lists;
-import org.openwes.common.utils.id.OrderNoGenerator;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.openwes.wes.api.algo.IPickingOrderAlgoApi;
 import org.openwes.wes.api.algo.PickingOrderAlgoApiFactory;
 import org.openwes.wes.api.algo.dto.PickingOrderDispatchedResult;
@@ -28,19 +32,10 @@ import org.openwes.wes.api.stock.dto.SkuBatchAttributeDTO;
 import org.openwes.wes.api.stock.dto.SkuBatchStockDTO;
 import org.openwes.wes.api.task.ITaskApi;
 import org.openwes.wes.api.task.dto.OperationTaskDTO;
-import org.openwes.wes.outbound.domain.entity.OutboundPreAllocatedRecord;
-import org.openwes.wes.outbound.domain.entity.OutboundWave;
-import org.openwes.wes.outbound.domain.entity.PickingOrder;
-import org.openwes.wes.outbound.domain.entity.PickingOrderDetail;
-import org.openwes.wes.outbound.domain.repository.OutboundPreAllocatedRecordRepository;
+import org.openwes.wes.outbound.domain.entity.*;
 import org.openwes.wes.outbound.domain.repository.PickingOrderRepository;
 import org.openwes.wes.outbound.domain.service.PickingOrderService;
 import org.openwes.wes.outbound.domain.transfer.PickingOrderTransfer;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -60,53 +55,12 @@ public class PickingOrderServiceImpl implements PickingOrderService {
     private final ITaskApi taskApi;
     private final IWorkStationApi workStationApi;
     private final PickingOrderRepository pickingOrderRepository;
-    private final OutboundPreAllocatedRecordRepository outboundPreAllocatedRecordRepository;
     private final PickingOrderTransfer pickingOrderTransfer;
     private final PickingOrderAlgoApiFactory pickingOrderAlgoApiFactory;
     private final ISkuBatchAttributeApi skuBatchAttributeApi;
     private final ISkuMainDataApi skuMainDataApi;
     private final IBatchAttributeConfigApi batchAttributeConfigFacade;
     private final IWarehouseAreaApi warehouseAreaApi;
-
-    @Override
-    public List<PickingOrder> spiltWave(OutboundWave outboundWave) {
-
-        Map<Long, List<OutboundPreAllocatedRecord>> warehouseAreaRecordMap = outboundPreAllocatedRecordRepository
-                .findByOutboundPlanOrderIds(outboundWave.getOutboundPlanOrderIds())
-                .stream().collect(Collectors.groupingBy(OutboundPreAllocatedRecord::getWarehouseAreaId));
-
-        List<PickingOrder> pickingOrders = Lists.newArrayList();
-        warehouseAreaRecordMap.forEach((key, value) -> {
-
-            List<PickingOrderDetail> pickingOrderDetails = value.stream()
-                    .map(preAllocatedRecord -> {
-                                PickingOrderDetail pickingOrderDetail = new PickingOrderDetail()
-                                        .setSkuId(preAllocatedRecord.getSkuId())
-                                        .setOwnerCode(preAllocatedRecord.getOwnerCode())
-                                        .setOutboundOrderPlanId(preAllocatedRecord.getOutboundPlanOrderId())
-                                        .setBatchAttributes(preAllocatedRecord.getBatchAttributes())
-                                        .setQtyRequired(preAllocatedRecord.getQtyPreAllocated())
-                                        .setSkuBatchStockId(preAllocatedRecord.getSkuBatchStockId())
-                                        .setOutboundOrderPlanDetailId(preAllocatedRecord.getOutboundPlanOrderDetailId())
-                                        .setRetargetingWarehouseAreaIds(preAllocatedRecord.getWarehouseAreaIds());
-                                pickingOrderDetail.setModified(true);
-                                return pickingOrderDetail;
-                            }
-                    ).toList();
-
-            PickingOrder pickingOrder = new PickingOrder()
-                    .setPriority(outboundWave.getPriority())
-                    .setShortOutbound(outboundWave.isShortOutbound())
-                    .setWarehouseCode(outboundWave.getWarehouseCode())
-                    .setWarehouseAreaId(key)
-                    .setPickingOrderNo(OrderNoGenerator.generationPickingOrderNo())
-                    .setWaveNo(outboundWave.getWaveNo())
-                    .setDetails(pickingOrderDetails);
-            pickingOrder.setAllowReceive(true);
-            pickingOrders.add(pickingOrder);
-        });
-        return pickingOrders;
-    }
 
     @Override
     public List<OperationTaskDTO> allocateStocks(PickingOrderHandlerContext pickingOrderHandlerContext) {

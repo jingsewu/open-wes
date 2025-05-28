@@ -8,6 +8,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 import org.openwes.common.utils.base.UpdateUserPO;
 import org.openwes.common.utils.id.IdGenerator;
+import org.openwes.plugin.api.constants.ApplicationPluginStatusEnum;
 import org.openwes.plugin.api.constants.PluginStatusEnum;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -58,13 +59,16 @@ public class Plugin extends UpdateUserPO {
     @Comment("jar文件地址")
     private String jarFilePath;
 
+    private String sourceCodeUrl;
+
+    private String license;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 64)
     private PluginStatusEnum pluginStatus;
 
     @Version
     private Long version;
-
 
     public void approve() {
         if (this.pluginStatus != PluginStatusEnum.NEW) {

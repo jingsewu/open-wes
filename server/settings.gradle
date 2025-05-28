@@ -46,4 +46,6 @@ include 'modules-utils:distribute-scheduler'
 include 'server:station-server'
 include 'server:gateway-server'
 include 'server:wes-server'
+include 'server:plugin-server'
+findProject(':server:plugin-server')?.name = 'plugin-server'
 

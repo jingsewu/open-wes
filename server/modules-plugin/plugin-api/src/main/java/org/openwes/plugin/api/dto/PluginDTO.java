@@ -44,6 +44,10 @@ public class PluginDTO {
     @Size(max = 256)
     private String jarFilePath;
 
+    private String sourceCodeUrl;
+
+    private String license;
+
     private Long version;
 
 }
