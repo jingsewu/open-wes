@@ -16,6 +16,7 @@ dependencies {
     implementation project(path: ":modules-wes:wes-ems-proxy", configuration: 'default')
     implementation project(path: ":modules-wes:wes-stocktake", configuration: 'default')
     implementation project(path: ":modules-ai:ai-core", configuration: 'default')
+    implementation project(path: ":modules-plugin:plugin-sdk", configuration: 'default')
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'

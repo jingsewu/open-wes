@@ -1,5 +1,6 @@
 package org.openwes.api.platform.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.openwes.api.platform.domain.entity.ApiKeyPO;
 import org.openwes.api.platform.domain.service.ApiKeyService;
@@ -12,6 +13,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("api-keys")
 @RequiredArgsConstructor
+@Tag(name = "Api Platform Module Api")
 public class ApiKeyController {
 
     private final ApiKeyService apiKeyService;

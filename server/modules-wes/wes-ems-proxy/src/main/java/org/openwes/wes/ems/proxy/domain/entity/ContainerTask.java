@@ -58,10 +58,11 @@ public class ContainerTask implements Serializable {
         this.id = IdGenerator.generateId();
     }
 
-    public void updateTaskStatus(ContainerTaskStatusEnum taskStatus) {
+    public void updateTaskStatus(ContainerTaskStatusEnum taskStatus, String locationCode) {
 
         log.info("container task id: {} task code: {} update task status to: {}", this.id, this.taskCode, taskStatus);
 
+        this.finalDestination = locationCode;
         if ((ContainerTaskTypeEnum.INBOUND == this.containerTaskType
                 || BusinessTaskTypeEnum.EMPTY_CONTAINER_OUTBOUND == this.businessTaskType)
                 && ContainerTaskStatusEnum.WCS_SUCCEEDED == taskStatus) {
@@ -87,7 +88,7 @@ public class ContainerTask implements Serializable {
 
     public boolean cancel() {
 
-        log.info("container task id: {} task code: {}  cancel", this.id, this.taskCode);
+        log.info("container task id: {} task code: {} cancel", this.id, this.taskCode);
 
         if (ContainerTaskStatusEnum.processingStates.contains(this.taskStatus)) {
             this.taskStatus = ContainerTaskStatusEnum.CANCELED;
