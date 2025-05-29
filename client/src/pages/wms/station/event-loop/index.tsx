@@ -235,19 +235,6 @@ export default class WorkStationEventLoop {
                 )
             )
 
-            const heartbeatInterval = setInterval(() => {
-                if (this.websocket?.readyState === WebSocket.OPEN) {
-                    this.websocket.send("ping");
-                }
-            }, 10000);
-
-            // Initialize QZ Tray
-            try {
-                await qzPrinter.initialize();
-            } catch (error) {
-                console.error("Failed to initialize QZ Tray:", error);
-            }
-
             this.websocket.onopen = () => {
                 console.log(`websocket connect successfully and the session id is: ${this.websocket}`)
             }
@@ -256,7 +243,7 @@ export default class WorkStationEventLoop {
                 if (!event.data) return
                 console.log("websocket receive data: ", event.data)
                 const message = JSON.parse(event.data);
-                if (event.type === "DATA_CHANGED") {
+                if (message.type === "DATA_CHANGED") {
                     that.getApiData()
                 } else if (message.type === "PRINT") {
                     qzPrinter.printAndUpdateRecord(message as PrintData);
@@ -272,6 +259,20 @@ export default class WorkStationEventLoop {
                 console.log("WebSocket closed");
                 clearInterval(heartbeatInterval);
             };
+
+            const heartbeatInterval = setInterval(() => {
+                if (this.websocket?.readyState === WebSocket.OPEN) {
+                    this.websocket.send("ping");
+                }
+            }, 10000);
+
+            // Initialize QZ Tray
+            try {
+                await qzPrinter.initialize();
+            } catch (error) {
+                console.error("Failed to initialize QZ Tray:", error);
+            }
+
             return data
         }
 
