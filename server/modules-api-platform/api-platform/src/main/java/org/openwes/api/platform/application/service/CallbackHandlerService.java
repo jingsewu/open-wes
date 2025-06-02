@@ -1,7 +1,7 @@
 package org.openwes.api.platform.application.service;
 
 import org.openwes.api.platform.api.constants.CallbackApiTypeEnum;
-import org.openwes.api.platform.application.context.CallbackHandleContext;
+import org.openwes.api.platform.api.dto.callback.CallbackHandleContext;
 
 public interface CallbackHandlerService {
 

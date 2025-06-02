@@ -1,8 +1,8 @@
 package org.openwes.plugin.core.domain.service;
 
+import jakarta.validation.Valid;
 import org.openwes.plugin.api.dto.PluginDTO;
 import org.openwes.plugin.core.domain.entity.Plugin;
-import jakarta.validation.Valid;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,7 +26,7 @@ public interface PluginManagementService {
 
     void unpublish(Long pluginId);
 
-    String saveFileToLocalStorage(MultipartFile file) throws IOException;
+    PluginDTO parseJarFile(String filePath) throws IOException;
 
-    void parseJarFile(String filePath, PluginDTO pluginDTO) throws IOException;
+    String downloadPlugin(Long pluginId);
 }

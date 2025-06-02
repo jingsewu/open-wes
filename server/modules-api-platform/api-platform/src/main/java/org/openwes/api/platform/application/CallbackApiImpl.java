@@ -8,8 +8,8 @@ import org.apache.dubbo.config.annotation.DubboService;
 import org.openwes.api.platform.api.ICallbackApi;
 import org.openwes.api.platform.api.constants.CallbackApiTypeEnum;
 import org.openwes.api.platform.api.dto.callback.CallbackMessage;
-import org.openwes.api.platform.application.service.HandlerExecutor;
-import org.openwes.api.platform.application.service.handler.CallbackHandler;
+import org.openwes.api.platform.application.service.CallbackExecutor;
+import org.openwes.api.platform.application.service.handler.AbstractCallbackHandler;
 import org.openwes.api.platform.application.service.handler.CallbackHandlerFactory;
 import org.openwes.api.platform.domain.entity.ApiPO;
 import org.openwes.api.platform.domain.service.ApiService;
@@ -26,7 +26,7 @@ import java.util.concurrent.Executor;
 @DubboService
 public class CallbackApiImpl implements ICallbackApi {
 
-    private final HandlerExecutor handlerExecutor;
+    private final CallbackExecutor handlerExecutor;
     private final CallbackHandlerFactory callbackHandlerFactory;
     private final ApiService apiService;
     private final Executor callbackExecutor;
@@ -34,7 +34,7 @@ public class CallbackApiImpl implements ICallbackApi {
     @Override
     public <T> Response callback(CallbackApiTypeEnum callbackType, String bizType, CallbackMessage<T> sourceData) {
 
-        CallbackHandler handler = callbackHandlerFactory.getHandler(callbackType);
+        AbstractCallbackHandler handler = callbackHandlerFactory.getHandler(callbackType);
 
         ApiPO apiPO = apiService.getByCode(callbackType.name());
         if (apiPO == null && StringUtils.isNotEmpty(bizType)) {

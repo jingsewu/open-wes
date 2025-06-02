@@ -1,9 +1,9 @@
 package org.openwes.api.platform.application.service.handler.request.ems;
 
 import org.openwes.api.platform.api.constants.ApiTypeEnum;
-import org.openwes.api.platform.application.context.RequestHandleContext;
+import org.openwes.api.platform.api.dto.request.RequestHandleContext;
 import org.openwes.api.platform.infrastructure.EmsClientService;
-import org.openwes.api.platform.application.service.handler.RequestHandler;
+import org.openwes.api.platform.application.service.handler.AbstractRequestHandler;
 import org.openwes.wes.api.ems.proxy.dto.ContainerArrivedEvent;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
@@ -13,7 +13,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class ContainerArriveRequestHandler extends RequestHandler {
+public class ContainerArriveRequestHandler extends AbstractRequestHandler {
 
     private final EmsClientService emsClientService;
 
