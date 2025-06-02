@@ -575,6 +575,27 @@ const menuRouter = [
         component: lazy(() => import("@/pages/data_platform/index"))
     },
 
+    // Plugin Platform
+    {
+        path: "/plugin-platform/plugin-management",
+        name: (
+            <Translation>
+                {(t) => t("pluginPlatform.plugin.management.title")}
+            </Translation>
+        ),
+        component: lazy(() => import("@/pages/plugin_platform/plugin_management"))
+    },
+    // Plugin Platform
+    {
+        path: "/plugin-platform/plugin-store",
+        name: (
+            <Translation>
+                {(t) => t("pluginPlatform.plugin.store.title")}
+            </Translation>
+        ),
+        component: lazy(() => import("@/pages/plugin_platform/plugin_store"))
+    },
+
 ]
 
 const router = menuRouter.map((item: RouterItem) => {

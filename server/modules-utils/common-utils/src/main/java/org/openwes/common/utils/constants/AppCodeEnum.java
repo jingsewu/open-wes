@@ -14,6 +14,7 @@ public enum AppCodeEnum implements IEnum {
     WMS("wms", "wms"),
     USER("user", "user"),
     API_PLATFORM("api_platform", "api_platform"),
+    PLUGIN_PLATFORM("plugin_platform", "plugin_platform"),
     ;
 
     private final String value;
