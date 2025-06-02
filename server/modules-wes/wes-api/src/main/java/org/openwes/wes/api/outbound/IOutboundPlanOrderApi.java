@@ -6,6 +6,7 @@ import org.openwes.wes.api.outbound.dto.OutboundPlanOrderDTO;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 public interface IOutboundPlanOrderApi {
 
