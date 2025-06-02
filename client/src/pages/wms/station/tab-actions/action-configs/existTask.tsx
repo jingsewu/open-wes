@@ -2,15 +2,10 @@ import React from "react"
 import { Translation } from "react-i18next"
 
 import ExitSvg from "@/icon/fontIcons/exit.svg" // path to your '*.svg' file.
-import { EXIST_STATION_API } from "@/pages/wms/station/constant"
 import { TabActionType } from "@/pages/wms/station/tab-actions/constant"
 import type { TabAction } from "@/pages/wms/station/tab-actions/types"
 import { TabActionModalType } from "@/pages/wms/station/tab-actions/types"
 import { MessageType } from "@/pages/wms/station/widgets/message"
-import request from "@/utils/requestInterceptor"
-// import IntlMessages from "@/util/IntlMessages"
-import type { APIResponse } from "../../request"
-import { abnormalVoiceTips } from "@/pages/wms/station/event-loop/utils"
 import { CustomActionType } from "@/pages/wms/station/instances/outbound/customActionType"
 
 const disabledOperationType = [
