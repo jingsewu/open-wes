@@ -1,5 +1,10 @@
 package org.openwes.wes.stock.domain.service.impl;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.openwes.wes.api.stock.constants.StockLockTypeEnum;
 import org.openwes.wes.api.stock.dto.StockTransferDTO;
 import org.openwes.wes.stock.domain.entity.ContainerStock;
@@ -8,13 +13,11 @@ import org.openwes.wes.stock.domain.repository.ContainerStockRepository;
 import org.openwes.wes.stock.domain.repository.SkuBatchStockRepository;
 import org.openwes.wes.stock.domain.transfer.ContainerStockTransferImpl;
 import org.openwes.wes.stock.domain.transfer.SkuBatchStockTransferImpl;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class StockServiceImplTest {
 
     private StockServiceImpl stockService;
@@ -62,10 +65,10 @@ class StockServiceImplTest {
 
         // Assertions
         assertEquals(targetContainerStock, result);
-        assertEquals(containerStock.getTotalQty(), 0);
-        assertEquals(containerStock.getAvailableQty(), 0);
-        assertEquals(targetContainerStock.getTotalQty(), 5);
-        assertEquals(targetContainerStock.getAvailableQty(), 5);
+        assertEquals(0, containerStock.getTotalQty());
+        assertEquals(0, containerStock.getAvailableQty());
+        assertEquals(5, targetContainerStock.getTotalQty());
+        assertEquals(5, targetContainerStock.getAvailableQty());
     }
 
     @Test
@@ -91,10 +94,10 @@ class StockServiceImplTest {
 
         // Assertions
         assertEquals(targetSkuBatchStock, result);
-        assertEquals(skuBatchStock.getTotalQty(), 8);
-        assertEquals(skuBatchStock.getAvailableQty(), 8);
-        assertEquals(targetSkuBatchStock.getTotalQty(), 2);
-        assertEquals(targetSkuBatchStock.getAvailableQty(), 2);
+        assertEquals(8, skuBatchStock.getTotalQty());
+        assertEquals(8, skuBatchStock.getAvailableQty());
+        assertEquals(2, targetSkuBatchStock.getTotalQty());
+        assertEquals(2, targetSkuBatchStock.getAvailableQty());
     }
 
 }

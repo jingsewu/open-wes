@@ -88,7 +88,8 @@ public class PickingOrder {
         PickingOrderDetail pickingOrderDetail = this.details.stream().filter(v -> v.getId().equals(detailId)).findFirst().orElseThrow();
         pickingOrderDetail.picking(operatedQty);
 
-        OutboundPlanOrderPickingEvent.PickingDetail pickingDetail = new OutboundPlanOrderPickingEvent.PickingDetail().setOperatedQty(operatedQty)
+        OutboundPlanOrderPickingEvent.PickingDetail pickingDetail = new OutboundPlanOrderPickingEvent.PickingDetail()
+                .setOperatedQty(operatedQty)
                 .setOutboundOrderDetailId(pickingOrderDetail.getOutboundOrderPlanDetailId())
                 .setOutboundOrderId(pickingOrderDetail.getOutboundOrderPlanId());
         DomainEventPublisher.sendSyncDomainEvent(new OutboundPlanOrderPickingEvent().setPickingDetails(Lists.newArrayList(pickingDetail)));

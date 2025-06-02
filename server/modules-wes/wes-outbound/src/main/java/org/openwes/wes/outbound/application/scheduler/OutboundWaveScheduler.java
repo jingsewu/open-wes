@@ -1,7 +1,9 @@
 package org.openwes.wes.outbound.application.scheduler;
 
 import com.alibaba.ttl.TtlRunnable;
-import org.openwes.common.utils.constants.RedisConstants;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.openwes.common.utils.utils.RedisUtils;
 import org.openwes.distribute.lock.DistributeLock;
 import org.openwes.distribute.scheduler.annotation.DistributedScheduled;
@@ -12,12 +14,6 @@ import org.openwes.wes.outbound.domain.aggregate.OutboundWaveAggregate;
 import org.openwes.wes.outbound.domain.entity.OutboundPlanOrder;
 import org.openwes.wes.outbound.domain.repository.OutboundPlanOrderRepository;
 import org.openwes.wes.outbound.domain.service.OutboundWaveService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
@@ -37,11 +33,7 @@ public class OutboundWaveScheduler {
     private final OutboundWaveService outboundWaveService;
     private final OutboundWaveAggregate outboundWaveAggregate;
     private final OutboundPlanOrderRepository outboundPlanOrderRepository;
-    private final DistributeLock distributeLock;
-
-    @Autowired
-    @Qualifier("wavePickingExecutor")
-    private Executor wavePickingExecutor;
+    private final Executor wavePickingExecutor;
 
     @DistributedScheduled(cron = "${wms.schedule.config.wavePicking:0 0/5 * * * *}", name = "OutboundWaveScheduler#wavePicking")
     public void wavePicking() {
@@ -54,24 +46,13 @@ public class OutboundWaveScheduler {
 
             CompletableFuture
                     .runAsync(Objects.requireNonNull(TtlRunnable.get(()
-                            -> this.tryWavePickingSingleWarehouse(orderIds, key))), wavePickingExecutor)
+                            -> this.wavePickingSingleWarehouse(orderIds, key))), wavePickingExecutor)
                     .exceptionally(e -> {
                         log.error("handle waving order failed.", e);
                         return null;
                     });
         });
 
-    }
-
-    private void tryWavePickingSingleWarehouse(List<Long> orderIds, String key) {
-        boolean acquireLock = distributeLock.acquireLock(RedisConstants.OUTBOUND_WAVE_SCHEDULE_EXECUTE_LOCK, 0);
-        if (acquireLock) {
-            try {
-                wavePickingSingleWarehouse(orderIds, key);
-            } finally {
-                distributeLock.releaseLock(RedisConstants.OUTBOUND_WAVE_SCHEDULE_EXECUTE_LOCK);
-            }
-        }
     }
 
     public void wavePickingSingleWarehouse(List<Long> orderIds, String key) {

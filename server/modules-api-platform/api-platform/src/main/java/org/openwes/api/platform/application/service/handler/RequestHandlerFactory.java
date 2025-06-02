@@ -11,19 +11,19 @@ import java.util.Map;
 @Component
 public class RequestHandlerFactory implements InitializingBean {
 
-    private static final Map<String, RequestHandler> map = new HashMap<>();
+    private static final Map<String, AbstractRequestHandler> map = new HashMap<>();
 
     @Autowired
-    private List<RequestHandler> handlerList;
+    private List<AbstractRequestHandler> handlerList;
 
     @Override
     public void afterPropertiesSet() {
-        for (RequestHandler handler : handlerList) {
+        for (AbstractRequestHandler handler : handlerList) {
             map.put(handler.getApiType(), handler);
         }
     }
 
-    public RequestHandler getHandler(String apiType) {
+    public AbstractRequestHandler getHandler(String apiType) {
         return map.get(apiType);
     }
 }

@@ -6,11 +6,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.common.utils.CollectionUtils;
 import org.openwes.common.utils.id.IdGenerator;
 import org.openwes.common.utils.id.OrderNoGenerator;
+import org.openwes.domain.event.AggregatorRoot;
+import org.openwes.plugin.api.dto.event.LifeCycleStatusChangeEvent;
 import org.openwes.wes.api.ems.proxy.constants.BusinessTaskTypeEnum;
 import org.openwes.wes.api.ems.proxy.constants.ContainerTaskAndBusinessTaskRelationStatusEnum;
 import org.openwes.wes.api.ems.proxy.constants.ContainerTaskStatusEnum;
 import org.openwes.wes.api.ems.proxy.constants.ContainerTaskTypeEnum;
-import org.openwes.wes.ems.proxy.domain.repository.ContainerTaskAndBusinessTaskRelation;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -19,7 +20,7 @@ import java.util.List;
 @Accessors(chain = true)
 @Data
 @Slf4j
-public class ContainerTask implements Serializable {
+public class ContainerTask implements Serializable, AggregatorRoot {
 
     private Long id;
 
@@ -56,6 +57,9 @@ public class ContainerTask implements Serializable {
         this.taskCode = OrderNoGenerator.generationContainerTaskCode();
         this.taskStatus = ContainerTaskStatusEnum.NEW;
         this.id = IdGenerator.generateId();
+
+        this.addAsynchronousDomainEvents(new LifeCycleStatusChangeEvent(this.taskStatus.name(),
+                this.id, this.getClass().getSimpleName()));
     }
 
     public void updateTaskStatus(ContainerTaskStatusEnum taskStatus, String locationCode) {
@@ -70,6 +74,9 @@ public class ContainerTask implements Serializable {
         } else {
             this.taskStatus = taskStatus;
         }
+
+        this.addAsynchronousDomainEvents(new LifeCycleStatusChangeEvent(this.taskStatus.name(),
+                this.id, this.getClass().getSimpleName()));
 
         if (CollectionUtils.isEmpty(relations)) {
             return;
@@ -93,6 +100,10 @@ public class ContainerTask implements Serializable {
         if (ContainerTaskStatusEnum.processingStates.contains(this.taskStatus)) {
             this.taskStatus = ContainerTaskStatusEnum.CANCELED;
             this.relations.forEach(ContainerTaskAndBusinessTaskRelation::cancel);
+
+            this.addAsynchronousDomainEvents(new LifeCycleStatusChangeEvent(this.taskStatus.name(),
+                    this.id, this.getClass().getSimpleName()));
+
             return true;
         }
         return false;

@@ -2,9 +2,10 @@ dependencies {
     implementation project(path: ":modules-utils:common-utils", configuration: 'default')
     implementation project(path: ":modules-utils:distribute-lock", configuration: 'default')
     implementation project(path: ":modules-utils:distribute-scheduler", configuration: 'default')
-    implementation project(path: ":modules-wes:wes-api", configuration: 'default')
     implementation project(path: ":modules-utils:distribute-file", configuration: 'default')
+    implementation project(path: ":modules-wes:wes-api", configuration: 'default')
     implementation project(path: ":modules-api-platform:api-platform-api", configuration: 'default')
+    implementation project(path: ":modules-plugin:plugin-sdk", configuration: 'default')
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
@@ -15,6 +16,10 @@ dependencies {
     implementation "org.freemarker:freemarker"
     implementation 'org.apache.commons:commons-lang3'
     implementation 'commons-io:commons-io'
+
+    implementation 'org.mapstruct:mapstruct'
+    annotationProcessor 'org.mapstruct:mapstruct-processor'
+    implementation 'org.projectlombok:lombok-mapstruct-binding'
 
     implementation 'org.graalvm.js:js'
     implementation 'org.graalvm.js:js-scriptengine'

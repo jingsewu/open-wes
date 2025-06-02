@@ -12,5 +12,4 @@ public class OutboundWaveDTO {
     private boolean shortOutbound;
     private String waveNo;
     private List<OutboundPlanOrderDTO> outboundPlanOrders;
-    private boolean hasRobotPickingOrder;
 }

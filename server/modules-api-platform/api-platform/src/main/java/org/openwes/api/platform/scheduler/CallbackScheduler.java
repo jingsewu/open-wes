@@ -2,11 +2,14 @@ package org.openwes.api.platform.scheduler;
 
 import com.alibaba.ttl.TtlRunnable;
 import com.google.common.collect.Maps;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.time.DateUtils;
 import org.openwes.api.platform.api.constants.ApiCallTypeEnum;
 import org.openwes.api.platform.api.constants.ApiLogStatusEnum;
 import org.openwes.api.platform.api.constants.CallbackApiTypeEnum;
-import org.openwes.api.platform.application.service.HandlerExecutor;
-import org.openwes.api.platform.application.service.handler.CallbackHandler;
+import org.openwes.api.platform.application.service.CallbackExecutor;
+import org.openwes.api.platform.application.service.handler.AbstractCallbackHandler;
 import org.openwes.api.platform.application.service.handler.CallbackHandlerFactory;
 import org.openwes.api.platform.domain.entity.ApiLogPO;
 import org.openwes.api.platform.domain.entity.ApiPO;
@@ -16,11 +19,7 @@ import org.openwes.api.platform.domain.service.ApiLogService;
 import org.openwes.common.utils.constants.RedisConstants;
 import org.openwes.common.utils.http.Response;
 import org.openwes.distribute.lock.DistributeLock;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.time.DateUtils;
 import org.openwes.distribute.scheduler.annotation.DistributedScheduled;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -39,7 +38,7 @@ public class CallbackScheduler {
 
     private final ApiLogPORepository apiLogPORepository;
     private final ApiPORepository apiPORepository;
-    private final HandlerExecutor handlerExecutor;
+    private final CallbackExecutor handlerExecutor;
     private final CallbackHandlerFactory callbackHandlerFactory;
     private final DistributeLock distributeLock;
     private final ApiLogService apiLogService;
@@ -87,7 +86,7 @@ public class CallbackScheduler {
                 }
 
                 long startTime = System.currentTimeMillis();
-                CallbackHandler handler = callbackHandlerFactory.getHandler(CallbackApiTypeEnum.valueOf(apiPO.resolveCallbackType()));
+                AbstractCallbackHandler handler = callbackHandlerFactory.getHandler(CallbackApiTypeEnum.valueOf(apiPO.resolveCallbackType()));
                 Response response = handlerExecutor.executeCallbackWithoutLog(handler, apiPO, apiLogPO.getRequestData());
 
                 apiLogPO.setRetryCount(apiLogPO.getRetryCount() + 1);

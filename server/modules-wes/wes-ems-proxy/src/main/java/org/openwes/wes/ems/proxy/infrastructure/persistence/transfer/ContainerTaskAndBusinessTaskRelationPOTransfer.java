@@ -1,6 +1,6 @@
 package org.openwes.wes.ems.proxy.infrastructure.persistence.transfer;
 
-import org.openwes.wes.ems.proxy.domain.repository.ContainerTaskAndBusinessTaskRelation;
+import org.openwes.wes.ems.proxy.domain.entity.ContainerTaskAndBusinessTaskRelation;
 import org.openwes.wes.ems.proxy.infrastructure.persistence.po.ContainerTaskAndBusinessTaskRelationPO;
 import org.mapstruct.Mapper;
 import org.mapstruct.NullValuePropertyMappingStrategy;

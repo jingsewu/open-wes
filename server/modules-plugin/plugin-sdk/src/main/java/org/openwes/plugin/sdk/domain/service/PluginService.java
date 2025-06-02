@@ -1,8 +1,8 @@
 package org.openwes.plugin.sdk.domain.service;
 
 import lombok.RequiredArgsConstructor;
-import org.openwes.plugin.api.constants.PluginCacheConstants;
 import org.openwes.plugin.api.constants.ApplicationPluginStatusEnum;
+import org.openwes.plugin.api.constants.PluginCacheConstants;
 import org.openwes.plugin.api.dto.PluginConfigDTO;
 import org.openwes.plugin.sdk.domain.entity.ApplicationPlugin;
 import org.openwes.plugin.sdk.domain.entity.ApplicationPluginConfig;
@@ -58,6 +58,7 @@ public class PluginService {
         ApplicationPlugin plugin = pluginRepository.findByPluginUniqueKey(pluginUniqueKey);
         plugin.start();
         pluginRepository.save(plugin);
+        pluginManager.startPlugin(plugin.getPluginUniqueKey());
     }
 
     @CacheEvict(cacheNames = PluginCacheConstants.PLUGIN_STARTED_CACHE_KEY)
@@ -65,10 +66,15 @@ public class PluginService {
         ApplicationPlugin plugin = pluginRepository.findByPluginUniqueKey(pluginUniqueKey);
         plugin.stop();
         pluginRepository.save(plugin);
+        pluginManager.stopPlugin(plugin.getPluginUniqueKey());
     }
 
     @CacheEvict(cacheNames = PluginCacheConstants.PLUGIN_STARTED_CACHE_KEY)
     public List<ApplicationPlugin> getAllStartedPlugins() {
         return pluginRepository.findAllByStatus(ApplicationPluginStatusEnum.STARTED);
+    }
+
+    public List<ApplicationPlugin> list() {
+        return pluginRepository.findAll();
     }
 }

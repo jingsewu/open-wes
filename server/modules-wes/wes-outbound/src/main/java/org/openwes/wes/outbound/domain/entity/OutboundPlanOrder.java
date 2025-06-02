@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.openwes.common.utils.id.OrderNoGenerator;
 import org.openwes.domain.event.AggregatorRoot;
+import org.openwes.plugin.api.dto.event.LifeCycleStatusChangeEvent;
 import org.openwes.wes.api.main.data.dto.SkuMainDataDTO;
 import org.openwes.wes.api.outbound.constants.OutboundPlanOrderDetailStatusEnum;
 import org.openwes.wes.api.outbound.constants.OutboundPlanOrderStatusEnum;
@@ -68,6 +69,8 @@ public class OutboundPlanOrder implements AggregatorRoot {
         this.totalQty = total;
         this.skuKindNum = skuSet.size();
         this.orderNo = OrderNoGenerator.generationOutboundPlanOrderNo();
+        this.outboundPlanOrderStatus = OutboundPlanOrderStatusEnum.NEW;
+        this.addAsynchronousDomainEvents(new LifeCycleStatusChangeEvent(this.outboundPlanOrderStatus.name(), this.id, this.getClass().getSimpleName()));
     }
 
     public void initSkuInfo(Set<SkuMainDataDTO> skuMainDataDTOS) {
@@ -108,21 +111,26 @@ public class OutboundPlanOrder implements AggregatorRoot {
             log.info("outbound plan order id: {} orderNo: {} assigned", this.id, this.orderNo);
             this.outboundPlanOrderStatus = OutboundPlanOrderStatusEnum.ASSIGNED;
             this.addAsynchronousDomainEvents(new OutboundPlanOrderAssignedEvent().setWarehouseCode(this.warehouseCode).setOutboundPlanOrderId(this.id));
+            this.addAsynchronousDomainEvents(new LifeCycleStatusChangeEvent(this.outboundPlanOrderStatus.name(), this.id, this.getClass().getSimpleName()));
             return true;
         }
 
-        if (shortWaiting) {
-            log.info("outbound plan order id: {} orderNo: {} assigned but it is short waiting", this.id, this.orderNo);
-            this.outboundPlanOrderStatus = OutboundPlanOrderStatusEnum.SHORT_WAITING;
+        if (this.shortWaiting) {
+            if (this.outboundPlanOrderStatus != OutboundPlanOrderStatusEnum.SHORT_WAITING) {
+                log.info("outbound plan order id: {} orderNo: {} assigned but it is short waiting", this.id, this.orderNo);
+                this.outboundPlanOrderStatus = OutboundPlanOrderStatusEnum.SHORT_WAITING;
+                this.addAsynchronousDomainEvents(new LifeCycleStatusChangeEvent(this.outboundPlanOrderStatus.name(), this.id, this.getClass().getSimpleName()));
+            }
             return true;
         }
 
-        if (shortOutbound && CollectionUtils.isNotEmpty(planPreAllocatedRecords)) {
+        if (this.shortOutbound && CollectionUtils.isNotEmpty(planPreAllocatedRecords)) {
             log.info("outbound plan order id: {} orderNo: {} assigned but is short pre allocated.", this.id, this.orderNo);
             this.abnormal = true;
             this.abnormalReason = "short preAllocate";
             this.outboundPlanOrderStatus = OutboundPlanOrderStatusEnum.ASSIGNED;
             this.addAsynchronousDomainEvents(new OutboundPlanOrderAssignedEvent().setWarehouseCode(this.warehouseCode).setOutboundPlanOrderId(this.id));
+            this.addAsynchronousDomainEvents(new LifeCycleStatusChangeEvent(this.outboundPlanOrderStatus.name(), this.id, this.getClass().getSimpleName()));
             return true;
         }
 
@@ -134,10 +142,12 @@ public class OutboundPlanOrder implements AggregatorRoot {
 
         log.info("outbound plan order id: {}, orderNo: {} cancel", this.id, this.orderNo);
 
-        if (OutboundPlanOrderStatusEnum.cancellability(this.outboundPlanOrderStatus)) {
-            this.outboundPlanOrderStatus = OutboundPlanOrderStatusEnum.CANCELED;
-            this.details.forEach(OutboundPlanOrderDetail::cancel);
+        if (!OutboundPlanOrderStatusEnum.cancellability(this.outboundPlanOrderStatus)) {
+            return;
         }
+        this.outboundPlanOrderStatus = OutboundPlanOrderStatusEnum.CANCELED;
+        this.details.forEach(OutboundPlanOrderDetail::cancel);
+        this.addAsynchronousDomainEvents(new LifeCycleStatusChangeEvent(this.outboundPlanOrderStatus.name(), this.id, this.getClass().getSimpleName()));
     }
 
     public void dispatch() {
@@ -148,6 +158,7 @@ public class OutboundPlanOrder implements AggregatorRoot {
             return;
         }
         this.outboundPlanOrderStatus = OutboundPlanOrderStatusEnum.DISPATCHED;
+        this.addAsynchronousDomainEvents(new LifeCycleStatusChangeEvent(this.outboundPlanOrderStatus.name(), this.id, this.getClass().getSimpleName()));
     }
 
     public void picking(Integer operatedQty, Long outboundOrderDetailId) {
@@ -160,8 +171,10 @@ public class OutboundPlanOrder implements AggregatorRoot {
         if (details.stream().allMatch(v -> v.getOutboundPlanOrderDetailStatus() == OutboundPlanOrderDetailStatusEnum.PICKED)) {
             this.outboundPlanOrderStatus = OutboundPlanOrderStatusEnum.PICKED;
             this.addAsynchronousDomainEvents(new OutboundPlanOrderCompleteEvent().setOutboundPlanOrderIds(Lists.newArrayList(this.id)));
-        } else {
+            this.addAsynchronousDomainEvents(new LifeCycleStatusChangeEvent(this.outboundPlanOrderStatus.name(), this.id, this.getClass().getSimpleName()));
+        } else if (this.outboundPlanOrderStatus != OutboundPlanOrderStatusEnum.PICKING) {
             this.outboundPlanOrderStatus = OutboundPlanOrderStatusEnum.PICKING;
+            this.addAsynchronousDomainEvents(new LifeCycleStatusChangeEvent(this.outboundPlanOrderStatus.name(), this.id, this.getClass().getSimpleName()));
         }
     }
 
@@ -182,6 +195,7 @@ public class OutboundPlanOrder implements AggregatorRoot {
                 .forEach(OutboundPlanOrderDetail::shortComplete);
 
         this.addAsynchronousDomainEvents(new OutboundPlanOrderCompleteEvent().setOutboundPlanOrderIds(Lists.newArrayList(this.id)));
+        this.addAsynchronousDomainEvents(new LifeCycleStatusChangeEvent(this.outboundPlanOrderStatus.name(), this.id, this.getClass().getSimpleName()));
         return true;
     }
 }

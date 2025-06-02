@@ -3,6 +3,7 @@ package org.openwes.plugin.api.dto;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import org.openwes.plugin.api.constants.PluginStatusEnum;
 
 @Data
 public class PluginDTO {
@@ -47,6 +48,8 @@ public class PluginDTO {
     private String sourceCodeUrl;
 
     private String license;
+
+    private PluginStatusEnum pluginStatus;
 
     private Long version;
 

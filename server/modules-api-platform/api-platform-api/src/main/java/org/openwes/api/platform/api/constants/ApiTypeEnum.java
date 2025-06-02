@@ -38,7 +38,12 @@ public enum ApiTypeEnum implements IEnum {
 
     CONTAINER_TASK_STATUS_REPORT("CONTAINER_TASK_STATUS_REPORT", "容器任务状态上报"),
 
-    PTL_REPORT("PTL_REPORT", "电子标签上报");
+    PTL_REPORT("PTL_REPORT", "电子标签上报"),
+
+    /**
+     * CUSTOM API
+     */
+    CUSTOM_API("CUSTOM_API", "自定义API");
 
     private final String value;
     private final String label;

@@ -8,7 +8,6 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 import org.openwes.common.utils.base.UpdateUserPO;
 import org.openwes.common.utils.id.IdGenerator;
-import org.openwes.plugin.api.constants.ApplicationPluginStatusEnum;
 import org.openwes.plugin.api.constants.PluginStatusEnum;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -67,6 +66,8 @@ public class Plugin extends UpdateUserPO {
     @Column(nullable = false, length = 64)
     private PluginStatusEnum pluginStatus;
 
+    private int downloadCount;
+
     @Version
     private Long version;
 
@@ -103,5 +104,12 @@ public class Plugin extends UpdateUserPO {
             throw new IllegalArgumentException("illegal states");
         }
         this.pluginStatus = PluginStatusEnum.DELETED;
+    }
+
+    public void download() {
+        if (this.pluginStatus != PluginStatusEnum.PUBLISHED) {
+            throw new IllegalArgumentException("illegal states");
+        }
+        this.downloadCount++;
     }
 }

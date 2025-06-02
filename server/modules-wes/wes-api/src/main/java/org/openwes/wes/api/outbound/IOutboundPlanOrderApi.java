@@ -5,6 +5,7 @@ import org.openwes.wes.api.outbound.dto.OutboundPlanOrderDTO;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 public interface IOutboundPlanOrderApi {
 
@@ -17,4 +18,5 @@ public interface IOutboundPlanOrderApi {
     List<OutboundPlanOrderDTO> getByCustomerWaveNos(Collection<String> waveNos);
 
     List<OutboundPlanOrderDTO> getByIds(Collection<Long> outboundPlanOrderIds);
+
 }

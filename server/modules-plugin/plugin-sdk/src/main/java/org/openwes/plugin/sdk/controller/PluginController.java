@@ -2,16 +2,21 @@ package org.openwes.plugin.sdk.controller;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.openwes.common.utils.file.FileUtils;
 import org.openwes.common.utils.http.Response;
 import org.openwes.plugin.api.dto.PluginConfigDTO;
+import org.openwes.plugin.sdk.domain.entity.ApplicationPlugin;
 import org.openwes.plugin.sdk.domain.service.PluginService;
+import org.pf4j.AbstractPluginManager;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.UUID;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
 
 @RestController
 @Validated
@@ -22,18 +27,24 @@ public class PluginController {
 
     private final PluginService pluginService;
 
-    @GetMapping(value = "install")
+    @PostMapping(value = "install", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Response<Object> install(@RequestPart("file") MultipartFile file) throws IOException {
 
-        File tempFile = File.createTempFile(UUID.randomUUID().toString(), ".jar");
-        file.transferTo(tempFile);
+        String filePath = FileUtils.saveFile(file, AbstractPluginManager.DEFAULT_PLUGINS_DIR);
+
         try {
-            pluginService.install(tempFile.getPath());
-        } finally {
-            tempFile.deleteOnExit();
+            pluginService.install(filePath);
+        } catch (Exception e) {
+            Files.deleteIfExists(Paths.get(filePath));
+            throw new RuntimeException(e);
         }
 
         return Response.success();
+    }
+
+    @GetMapping(value = "/list")
+    public List<ApplicationPlugin> list() {
+        return pluginService.list();
     }
 
     @GetMapping(value = "/start/{pluginUniqueKey}")

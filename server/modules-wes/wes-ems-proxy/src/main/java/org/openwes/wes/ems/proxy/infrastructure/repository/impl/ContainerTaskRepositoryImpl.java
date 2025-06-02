@@ -2,8 +2,9 @@ package org.openwes.wes.ems.proxy.infrastructure.repository.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
+import org.openwes.domain.event.AggregatorRoot;
 import org.openwes.wes.ems.proxy.domain.entity.ContainerTask;
-import org.openwes.wes.ems.proxy.domain.repository.ContainerTaskAndBusinessTaskRelation;
+import org.openwes.wes.ems.proxy.domain.entity.ContainerTaskAndBusinessTaskRelation;
 import org.openwes.wes.ems.proxy.domain.repository.ContainerTaskRepository;
 import org.openwes.wes.ems.proxy.infrastructure.persistence.mapper.ContainerTaskAndBusinessTaskRelationPORepository;
 import org.openwes.wes.ems.proxy.infrastructure.persistence.mapper.ContainerTaskPORepository;
@@ -41,6 +42,8 @@ public class ContainerTaskRepositoryImpl implements ContainerTaskRepository {
 
         List<ContainerTaskAndBusinessTaskRelationPO> relationPOS = containerTaskAndBusinessTaskRelationPOTransfer.toPOs(relations);
         containerTaskAndBusinessTaskRelationPORepository.saveAll(relationPOS);
+
+        containerTasks.forEach(AggregatorRoot::sendAndClearEvents);
     }
 
     @Override

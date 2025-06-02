@@ -2,15 +2,15 @@ package org.openwes.api.platform.application.service.handler.request.wms;
 
 
 import org.openwes.api.platform.api.constants.ApiTypeEnum;
-import org.openwes.api.platform.application.context.RequestHandleContext;
-import org.openwes.api.platform.application.service.handler.RequestHandler;
+import org.openwes.api.platform.api.dto.request.RequestHandleContext;
+import org.openwes.api.platform.application.service.handler.AbstractRequestHandler;
 import org.openwes.common.utils.http.Response;
 import org.openwes.common.utils.utils.JsonUtils;
 import org.openwes.wes.api.inbound.dto.InboundPlanOrderCancelDTO;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CancelInboundRequestHandler extends RequestHandler {
+public class CancelInboundRequestHandler extends AbstractRequestHandler {
 
     @Override
     public String getApiType() {

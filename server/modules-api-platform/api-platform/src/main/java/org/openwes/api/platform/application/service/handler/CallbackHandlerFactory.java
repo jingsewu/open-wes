@@ -13,25 +13,25 @@ import java.util.Map;
 @Component
 public class CallbackHandlerFactory implements InitializingBean {
 
-    private static final Map<CallbackApiTypeEnum, CallbackHandler> map = Maps.newHashMap();
+    private static final Map<CallbackApiTypeEnum, AbstractCallbackHandler> map = Maps.newHashMap();
 
-    private final List<CallbackHandler> handlerList;
+    private final List<AbstractCallbackHandler> handlerList;
     private final CommonCallbackHandler commonCallbackHandler;
 
     @Autowired
-    public CallbackHandlerFactory(List<CallbackHandler> handlerList, CommonCallbackHandler commonCallbackHandler) {
+    public CallbackHandlerFactory(List<AbstractCallbackHandler> handlerList, CommonCallbackHandler commonCallbackHandler) {
         this.handlerList = handlerList;
         this.commonCallbackHandler = commonCallbackHandler;
     }
 
     @Override
     public void afterPropertiesSet() {
-        for (CallbackHandler handler : handlerList) {
+        for (AbstractCallbackHandler handler : handlerList) {
             map.put(handler.getCallbackType(), handler);
         }
     }
 
-    public CallbackHandler getHandler(CallbackApiTypeEnum callbackType) {
+    public AbstractCallbackHandler getHandler(CallbackApiTypeEnum callbackType) {
         return map.getOrDefault(callbackType, commonCallbackHandler);
     }
 }
