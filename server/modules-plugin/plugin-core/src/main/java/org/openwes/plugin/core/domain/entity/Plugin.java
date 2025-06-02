@@ -8,7 +8,6 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 import org.openwes.common.utils.base.UpdateUserPO;
 import org.openwes.common.utils.id.IdGenerator;
-import org.openwes.plugin.api.constants.ApplicationPluginStatusEnum;
 import org.openwes.plugin.api.constants.PluginStatusEnum;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
