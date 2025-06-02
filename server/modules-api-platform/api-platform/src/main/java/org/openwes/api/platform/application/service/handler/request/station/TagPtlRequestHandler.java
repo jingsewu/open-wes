@@ -6,8 +6,8 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections.CollectionUtils;
 import org.openwes.api.platform.api.constants.ApiTypeEnum;
-import org.openwes.api.platform.application.context.RequestHandleContext;
-import org.openwes.api.platform.application.service.handler.RequestHandler;
+import org.openwes.api.platform.api.dto.request.RequestHandleContext;
+import org.openwes.api.platform.application.service.handler.AbstractRequestHandler;
 import org.openwes.api.platform.infrastructure.WorkStationClientService;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +15,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class TagPtlRequestHandler extends RequestHandler {
+public class TagPtlRequestHandler extends AbstractRequestHandler {
 
     private final WorkStationClientService workStationClientService;
 

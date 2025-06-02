@@ -1,9 +1,8 @@
 package org.openwes.wes.outbound.domain.service.impl;
 
 import com.google.common.collect.Lists;
-import com.open.wes.extension.business.wes.outbound.IOutboundWavePlugin;
-import com.open.wes.extension.business.wes.outbound.action.IOutboundWaveSplitAction;
-import com.open.wes.extension.business.wes.outbound.action.IOutboundWaveWaveAction;
+import org.openwes.plugin.extension.business.wes.outbound.action.IOutboundWaveSplitAction;
+import org.openwes.plugin.extension.business.wes.outbound.action.IOutboundWaveWaveAction;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;

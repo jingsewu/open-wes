@@ -5,6 +5,7 @@ dependencies {
     implementation project(path: ":modules-wes:wes-api", configuration: 'default')
     implementation project(path: ":modules-api-platform:api-platform-api", configuration: 'default')
     implementation project(path: ":modules-station:station-api", configuration: 'default')
+    implementation project(path: ":modules-plugin:plugin-sdk", configuration: 'default')
 
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-websocket'

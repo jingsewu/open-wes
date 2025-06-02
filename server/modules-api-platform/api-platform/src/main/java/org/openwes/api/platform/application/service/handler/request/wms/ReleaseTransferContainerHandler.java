@@ -1,15 +1,15 @@
 package org.openwes.api.platform.application.service.handler.request.wms;
 
 import org.openwes.api.platform.api.constants.ApiTypeEnum;
-import org.openwes.api.platform.application.context.RequestHandleContext;
-import org.openwes.api.platform.application.service.handler.RequestHandler;
+import org.openwes.api.platform.api.dto.request.RequestHandleContext;
+import org.openwes.api.platform.application.service.handler.AbstractRequestHandler;
 import org.openwes.wes.api.task.dto.TransferContainerReleaseDTO;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
-public class ReleaseTransferContainerHandler extends RequestHandler {
+public class ReleaseTransferContainerHandler extends AbstractRequestHandler {
 
     @Override
     public String getApiType() {
