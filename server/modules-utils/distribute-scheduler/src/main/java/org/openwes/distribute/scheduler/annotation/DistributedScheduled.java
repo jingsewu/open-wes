@@ -14,8 +14,8 @@ import java.lang.annotation.Target;
 @Scheduled(cron = "${task.default.cron}")
 @SchedulerLock(
         name = "TASK_DEFAULT",
-        lockAtLeastFor = "10m",
-        lockAtMostFor = "15m"
+        lockAtLeastFor = "5m",
+        lockAtMostFor = "10m"
 )
 public @interface DistributedScheduled {
 
@@ -32,10 +32,10 @@ public @interface DistributedScheduled {
 
     // Override lock durations if needed
     @AliasFor(annotation = SchedulerLock.class, attribute = "lockAtMostFor")
-    String lockAtMostFor() default "15m";
+    String lockAtMostFor() default "10m";
 
     @AliasFor(annotation = SchedulerLock.class, attribute = "lockAtLeastFor")
-    String lockAtLeastFor() default "10m";
+    String lockAtLeastFor() default "5m";
 
     // Add this: Specify the scheduler bean name
     @AliasFor(annotation = Scheduled.class, attribute = "scheduler")
