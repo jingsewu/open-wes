@@ -4,6 +4,7 @@
 ![License](https://img.shields.io/github/license/jingsewu/open-wes)
 ![Release](https://img.shields.io/github/v/release/jingsewu/open-wes)
 ![Gitee Stars](https://gitee.com/pigTear/open-wes/badge/star.svg?theme=social)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/jingsewu/open-wes)
 
 [English](README.md) | [中文](README_CN.md) | [日本語](README_JP.md)
 
