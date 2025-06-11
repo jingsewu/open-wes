@@ -4,7 +4,6 @@ dependencies {
     implementation project(path: ":modules-plugin:plugin-api", configuration: 'default')
     implementation project(path: ":modules-plugin:plugin-extension", configuration: 'default')
     implementation project(path: ":modules-utils:distribute-file", configuration: 'default')
-    implementation project(path: ":modules-utils:domain-event", configuration: 'default')
 
     implementation 'org.pf4j:pf4j'
 
