@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.text.MessageFormat;
 import java.util.HashMap;
@@ -41,7 +42,7 @@ public class ControllerExceptionHandler {
 
     @ResponseBody
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler(NoHandlerFoundException.class)
+    @ExceptionHandler({NoHandlerFoundException.class, NoResourceFoundException.class})
     public ResponseEntity<OpenWesErrorResponse> noHandlerFoundHandler() {
         OpenWesErrorResponse errorResponse = OpenWesErrorResponse.builder().msg("Method Not Found")
                 .status(String.valueOf(HttpStatus.NOT_FOUND.value()))

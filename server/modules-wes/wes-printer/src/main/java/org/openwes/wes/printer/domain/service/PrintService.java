@@ -1,7 +1,7 @@
 package org.openwes.wes.printer.domain.service;
 
 import jakarta.validation.Valid;
-import org.openwes.wes.printer.application.event.PrintEvent;
+import org.openwes.wes.api.print.event.PrintEvent;
 import org.openwes.wes.printer.domain.entity.PrintConfig;
 import org.openwes.wes.printer.domain.entity.PrintRule;
 

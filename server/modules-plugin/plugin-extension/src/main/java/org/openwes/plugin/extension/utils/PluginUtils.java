@@ -21,10 +21,10 @@ public class PluginUtils {
 
     public static <T> T getPluginConfig(String pluginId, Class<T> clazz) {
 
-        PluginConfigDTO tenantPluginConfigDTO = pluginApi.getPluginConfig(pluginId);
+        String config = pluginApi.getPluginConfig(pluginId);
 
-        if (tenantPluginConfigDTO != null) {
-            return JsonUtils.string2Object(tenantPluginConfigDTO.getConfigInfo(), clazz);
+        if (config != null) {
+            return JsonUtils.string2Object(config, clazz);
         } else {
             return newClazzInstance(clazz);
         }

@@ -1,6 +1,6 @@
 package org.openwes.wes.api.stock.event;
 
-import org.openwes.domain.event.DomainEvent;
+import org.openwes.domain.event.api.DomainEvent;
 import org.openwes.wes.api.stock.dto.StockCreateDTO;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
