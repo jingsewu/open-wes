@@ -9,23 +9,21 @@ import java.lang.annotation.Target;
  * Config Param annotation that on the field level.
  * for example:
  * public class MyPluginConfig extends IExtensionConfig {
- *     @ConfigParam(
- *         label = "API Key",
- *         description = "Your service API key",
- *         type = InputType.PASSWORD,
- *         required = true
- *     )
- *     private String apiKey;
  *
- *     @ConfigParam(
- *         label = "Refresh Interval",
- *         description = "Data refresh interval in minutes",
- *         type = InputType.NUMBER,
- *         min = 1,
- *         max = 60
- *     )
- *     private int refreshInterval;
- *
+ * @ConfigParam( label = "API Key",
+ * description = "Your service API key",
+ * type = InputType.PASSWORD,
+ * required = true
+ * )
+ * private String apiKey;
+ * @ConfigParam( label = "Refresh Interval",
+ * description = "Data refresh interval in minutes",
+ * type = InputType.NUMBER,
+ * min = 1,
+ * max = 60
+ * )
+ * private int refreshInterval;
+ * <p>
  * }
  */
 @Retention(RetentionPolicy.RUNTIME)
@@ -44,8 +42,8 @@ public @interface ConfigParam {
 
     String validationRegex() default "";
 
-    double min() default Double.MIN_VALUE;
+    int min() default Integer.MIN_VALUE;
 
-    double max() default Double.MAX_VALUE;
+    int max() default Integer.MAX_VALUE;
 }
 

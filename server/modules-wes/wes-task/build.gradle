@@ -1,6 +1,6 @@
 dependencies {
     implementation project(path: ":modules-wes:wes-common", configuration: 'default')
-    implementation project(path: ":modules-utils:domain-event", configuration: 'default')
+    implementation project(path: ":modules-utils:domain-event:domain-event-core", configuration: 'default')
     implementation project(path: ":modules-utils:distribute-lock", configuration: 'default')
 
     implementation 'org.springframework.boot:spring-boot-starter'

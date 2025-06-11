@@ -1,6 +1,6 @@
 package org.openwes.wes.api.task.event;
 
-import org.openwes.domain.event.DomainEvent;
+import org.openwes.domain.event.api.DomainEvent;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

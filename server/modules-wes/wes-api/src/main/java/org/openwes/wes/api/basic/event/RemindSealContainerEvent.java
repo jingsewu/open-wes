@@ -1,6 +1,6 @@
 package org.openwes.wes.api.basic.event;
 
-import org.openwes.domain.event.DomainEvent;
+import org.openwes.domain.event.api.DomainEvent;
 import org.openwes.wes.api.basic.dto.PutWallSlotRemindSealedDTO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

@@ -1,6 +1,6 @@
 package org.openwes.wes.api.task.event;
 
-import org.openwes.domain.event.DomainEvent;
+import org.openwes.domain.event.api.DomainEvent;
 import org.openwes.wes.api.task.dto.OperationTaskPickingDTO;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;

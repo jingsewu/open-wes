@@ -1,7 +1,7 @@
 dependencies {
 
     implementation project(path: ":modules-utils:common-utils", configuration: 'default')
-    implementation project(path: ":modules-utils:domain-event", configuration: 'default')
+    implementation project(path: ":modules-utils:domain-event:domain-event-core", configuration: 'default')
     implementation project(path: ":modules-utils:mq", configuration: 'default')
     implementation project(path: ":modules-wes:wes-api", configuration: 'default')
 

@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.openwes.common.utils.constants.RedisConstants;
 import org.openwes.common.utils.utils.RedisUtils;
-import org.openwes.distribute.lock.DistributeLock;
 import org.openwes.distribute.scheduler.annotation.DistributedScheduled;
 import org.openwes.wes.api.algo.dto.PickingOrderAssignedResult;
 import org.openwes.wes.api.algo.dto.PickingOrderDispatchedResult;
@@ -52,6 +51,8 @@ public class PickingOrderHandleScheduler {
 
     @DistributedScheduled(cron = "*/5 * * * * *", name = "PickingOrderHandleScheduler#pickingOrderHandle")
     public void pickingOrderHandle() {
+        log.debug("schedule start execute picking order handler.");
+
         List<String> keys = redisUtils.keys(RedisUtils.generateKeysPatten("", NEW_PICKING_ORDER_IDS));
         keys.forEach(key -> {
             List<Long> pickingOrderIds = redisUtils.getListByPureKey(key, MAX_SIZE_PER_TIME);
@@ -64,7 +65,7 @@ public class PickingOrderHandleScheduler {
                     .exceptionally(e -> {
                         log.error("handle picking order failed.", e);
                         return null;
-                    });
+                    }).thenRun(() -> log.debug("schedule end execute picking order handler."));
         });
 
     }

@@ -56,8 +56,6 @@ public class CallbackScheduler {
                     return null;
                 })
                 .thenRun(() -> log.debug("callback execution finished successfully"));
-
-        log.debug("callback finish...");
     }
 
     private void doCallback() {

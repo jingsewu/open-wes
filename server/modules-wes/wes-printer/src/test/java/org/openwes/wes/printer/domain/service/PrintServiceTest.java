@@ -8,7 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.openwes.common.utils.constants.RedisConstants;
 import org.openwes.mq.MqClient;
 import org.openwes.wes.api.print.dto.PrintContentDTO;
-import org.openwes.wes.printer.application.event.PrintEvent;
+import org.openwes.wes.api.print.event.PrintEvent;
 import org.openwes.wes.api.print.constants.ModuleEnum;
 import org.openwes.wes.api.print.constants.PrintNodeEnum;
 import org.openwes.wes.printer.domain.entity.PrintConfig;

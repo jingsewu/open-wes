@@ -16,3 +16,10 @@ spring:
 
 server:
   port: 9040
+
+pf4j:
+  plugin:
+    jar:
+      dir: /plugins/station/jar
+    config:
+      dir: /plugins/station/config

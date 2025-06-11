@@ -1,5 +1,5 @@
 dependencies {
-    compileOnly project(path: ":modules-utils:domain-event", configuration: 'default')
+    implementation project(path: ":modules-utils:domain-event:domain-event-api", configuration: 'default')
     implementation 'jakarta.validation:jakarta.validation-api'
 }
 

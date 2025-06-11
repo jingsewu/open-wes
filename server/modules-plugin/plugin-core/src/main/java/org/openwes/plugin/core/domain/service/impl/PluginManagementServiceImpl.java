@@ -113,6 +113,8 @@ public class PluginManagementServiceImpl implements PluginManagementService {
                     pluginDTO.setDescription(value);
                 } else if (Objects.equals(key, "plugin.dependencies")) {
                     pluginDTO.setDependencies(value);
+                }else if (Objects.equals(key, "plugin.scan-packages")) {
+                    pluginDTO.setScanPackages(value);
                 }
             }
 

@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
-import org.openwes.domain.event.DomainEvent;
+import org.openwes.domain.event.api.DomainEvent;
 import org.openwes.wes.api.stock.dto.StockTransferDTO;
 import org.openwes.wes.api.task.constants.OperationTaskTypeEnum;
 
