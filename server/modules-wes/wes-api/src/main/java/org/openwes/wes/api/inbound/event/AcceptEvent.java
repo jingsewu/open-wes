@@ -1,6 +1,6 @@
 package org.openwes.wes.api.inbound.event;
 
-import org.openwes.domain.event.DomainEvent;
+import org.openwes.domain.event.api.DomainEvent;
 import lombok.*;
 
 import java.util.Map;

@@ -1,6 +1,6 @@
 package org.openwes.wes.api.task.event;
 
-import org.openwes.domain.event.DomainEvent;
+import org.openwes.domain.event.api.DomainEvent;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;

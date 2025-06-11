@@ -1,16 +1,11 @@
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     implementation project(path: ":modules-utils:common-utils", configuration: 'default')
     implementation project(path: ":modules-utils:mq", configuration: 'default')
     implementation project(path: ":modules-plugin:plugin-api", configuration: 'default')
     implementation project(path: ":modules-plugin:plugin-extension", configuration: 'default')
     implementation project(path: ":modules-utils:distribute-file", configuration: 'default')
-    implementation project(path: ":modules-utils:domain-event", configuration: 'default')
 
-    implementation 'org.pf4j:pf4j-spring'
+    implementation 'org.pf4j:pf4j'
 
     compileOnly 'org.apache.dubbo:dubbo-spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter'
@@ -21,22 +16,3 @@ dependencies {
     annotationProcessor 'org.mapstruct:mapstruct-processor'
     implementation 'org.projectlombok:lombok-mapstruct-binding'
 }
-
-bootJar {
-    enabled = false
-}
-
-jar {
-    enabled = true
-}
-
-task sourcesJar(type: Jar) {
-    from sourceSets.main.allJava
-    archiveClassifier.set('sources')
-}
-
-task javadocJar(type: Jar) {
-    from javadoc
-    archiveClassifier.set('javadoc')
-}
-

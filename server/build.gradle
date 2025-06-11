@@ -146,7 +146,8 @@ subprojects {
 
             dependency group: 'com.xuxueli', name: 'xxl-job-core', version: '2.4.0'
 
-            dependency group: 'org.pf4j', name: 'pf4j-spring', version: '0.8.0'
+//            dependency group: 'org.pf4j', name: 'pf4j-spring', version: '0.10.0'
+            dependency group: 'org.pf4j', name: 'pf4j', version: '3.13.0'
 
             dependency group: 'org.graalvm.js', name: 'js', version: '22.3.1'
             dependency group: 'org.graalvm.js', name: 'js-scriptengine', version: '22.3.1'

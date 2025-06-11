@@ -42,6 +42,9 @@ public class PluginDTO {
     @Size(max = 256)
     private String description = "";
 
+    @NotEmpty
+    private String scanPackages;
+
     @Size(max = 256)
     private String jarFilePath;
 
