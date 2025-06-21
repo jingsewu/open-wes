@@ -1,5 +1,6 @@
 package org.openwes.plugin.extension.config;
 
+import org.pf4j.Extension;
 import org.pf4j.ExtensionPoint;
 
 /**
@@ -10,5 +11,6 @@ import org.pf4j.ExtensionPoint;
  * 2. Every plugin config should container annotation @Extension and @NoArgsConstructor
  * 3. The @NoArgsConstructor is for deserialization to the config bean
  */
+@Extension
 public interface IExtensionConfig extends ExtensionPoint {
 }

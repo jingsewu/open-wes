@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.openwes.api.platform.api.IRequestExtensionApi;
 import org.openwes.api.platform.api.dto.request.RequestHandleContext;
 import org.openwes.api.platform.application.service.RequestHandlerService;
 import org.openwes.api.platform.domain.transfer.ApiConfigTransfer;
@@ -14,6 +13,8 @@ import org.openwes.api.platform.utils.CommonUtils;
 import org.openwes.api.platform.utils.ConverterHelper;
 import org.openwes.common.utils.utils.JsonUtils;
 import org.openwes.common.utils.utils.ValidatorUtils;
+import org.openwes.plugin.extension.business.api.platform.request.ICustomRequestPlugin;
+import org.openwes.plugin.extension.business.api.platform.request.IRequestPlugin;
 import org.openwes.plugin.sdk.utils.PluginSdkUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -55,7 +56,7 @@ public abstract class AbstractRequestHandler implements RequestHandlerService {
     @Override
     public void validate(RequestHandleContext context) {
 
-        List<IRequestExtensionApi> requestExtensionApis = pluginUtils.getExtractObject(IRequestExtensionApi.class);
+        List<IRequestPlugin> requestExtensionApis = pluginUtils.getExtractObject(IRequestPlugin.class);
         if (ObjectUtils.isEmpty(requestExtensionApis)) {
             return;
         }
@@ -67,7 +68,7 @@ public abstract class AbstractRequestHandler implements RequestHandlerService {
     @Override
     public void supply(RequestHandleContext context) {
 
-        List<IRequestExtensionApi> requestExtensionApis = pluginUtils.getExtractObject(IRequestExtensionApi.class);
+        List<IRequestPlugin> requestExtensionApis = pluginUtils.getExtractObject(IRequestPlugin.class);
         if (ObjectUtils.isEmpty(requestExtensionApis)) {
             return;
         }
@@ -79,7 +80,7 @@ public abstract class AbstractRequestHandler implements RequestHandlerService {
     @Override
     public void invoke(RequestHandleContext context) {
 
-        List<IRequestExtensionApi> requestExtensionApis = pluginUtils.getExtractObject(IRequestExtensionApi.class);
+        List<ICustomRequestPlugin> requestExtensionApis = pluginUtils.getExtractObject(ICustomRequestPlugin.class);
         if (ObjectUtils.isEmpty(requestExtensionApis)) {
             return;
         }
@@ -91,7 +92,7 @@ public abstract class AbstractRequestHandler implements RequestHandlerService {
     @Override
     public void afterInvoke(RequestHandleContext context) {
 
-        List<IRequestExtensionApi> requestExtensionApis = pluginUtils.getExtractObject(IRequestExtensionApi.class);
+        List<IRequestPlugin> requestExtensionApis = pluginUtils.getExtractObject(IRequestPlugin.class);
         if (ObjectUtils.isEmpty(requestExtensionApis)) {
             return;
         }

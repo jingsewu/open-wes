@@ -11,7 +11,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
@@ -51,6 +50,7 @@ public class ControllerRegister extends AbstractRegister {
         }
     }
 
+    //TODO unRegister the controller not clear
     @Override
     public void unRegister(ApplicationContext pluginContent, PluginWrapper plugin) {
         Set<RequestMappingInfo> requestMappingInfoSet = requestMappings.get(plugin.getPluginId());
@@ -93,10 +93,6 @@ public class ControllerRegister extends AbstractRegister {
     }
 
     private void unRegisterController(RequestMappingInfo requestMappingInfo) {
-        Map<RequestMappingInfo, HandlerMethod> handlerMethodMap = getRequestMappingHandlerMapping().getHandlerMethods();
-        HandlerMethod handlerMethod = handlerMethodMap.get(requestMappingInfo);
-        FieldUtils.setFieldValue(handlerMethod, "bean", new Object());
-        FieldUtils.setFieldValue(handlerMethod, "beanType", Object.class);
         getRequestMappingHandlerMapping().unregisterMapping(requestMappingInfo);
     }
 

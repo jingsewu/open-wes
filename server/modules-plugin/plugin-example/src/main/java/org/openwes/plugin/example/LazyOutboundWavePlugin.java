@@ -20,9 +20,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Extension
 @Slf4j
 @RequiredArgsConstructor
+@Extension
 public class LazyOutboundWavePlugin implements IOutboundWaveWaveAction {
 
     private static final String GET_PACKING_STATUS_API_CODE = "GET_PACKING_STATUS";
@@ -33,12 +33,11 @@ public class LazyOutboundWavePlugin implements IOutboundWaveWaveAction {
     private final IOutboundPlanOrderApi outboundPlanOrderApi;
     private final ICallbackApi callbackApi;
 
-    private final String pluginId = "Lazy-Waving-Plugin-0.0.1";
-
     @Override
     public List<List<OutboundPlanOrderDTO>> wave(List<OutboundPlanOrderDTO> originalOutboundPlanOrders) {
         log.debug("Receive lazy waving request, original outbound plan orders size: {}", originalOutboundPlanOrders.size());
 
+        String pluginId = "Lazy-Waving-Plugin-0.0.1";
         LazyOutboundWaveConfig pluginConfig = PluginUtils.getPluginConfig(pluginId, LazyOutboundWaveConfig.class);
 
         log.info("plugin config: {}", JsonUtils.obj2String(pluginConfig));

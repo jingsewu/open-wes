@@ -5,9 +5,7 @@ import lombok.NoArgsConstructor;
 import org.openwes.plugin.extension.config.ConfigParam;
 import org.openwes.plugin.extension.config.IExtensionConfig;
 import org.openwes.plugin.extension.config.InputType;
-import org.pf4j.Extension;
 
-@Extension
 @AllArgsConstructor
 @NoArgsConstructor
 public class LazyOutboundWaveConfig implements IExtensionConfig {
