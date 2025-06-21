@@ -11,7 +11,7 @@ public class CustomRequestHandler extends AbstractRequestHandler {
 
     @Override
     public String getApiType() {
-        return ApiTypeEnum.ORDER_INBOUND_CREATE.name();
+        return ApiTypeEnum.CUSTOM_API.name();
     }
 
 }
