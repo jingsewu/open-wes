@@ -70,7 +70,7 @@ public class OutboundPlanOrder implements AggregatorRoot {
         this.skuKindNum = skuSet.size();
         this.orderNo = OrderNoGenerator.generationOutboundPlanOrderNo();
         this.outboundPlanOrderStatus = OutboundPlanOrderStatusEnum.NEW;
-        this.addAsynchronousDomainEvents(new LifeCycleStatusChangeEvent(this.outboundPlanOrderStatus.name(), this.id, this.getClass().getSimpleName()));
+        this.addAsynchronousDomainEvents(new LifeCycleStatusChangeEvent(this.outboundPlanOrderStatus.name(), this.orderNo, this.getClass().getSimpleName()));
     }
 
     public void initSkuInfo(Set<SkuMainDataDTO> skuMainDataDTOS) {

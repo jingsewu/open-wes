@@ -17,6 +17,7 @@ public class LifeCycleStatusChangeEventSubscribe {
     @Subscribe
     public void onEvent(LifeCycleStatusChangeEvent event) {
         log.info("receive entity: {} status change event: {}", event.getEntityName(), event);
-        lifecycleListenerRegistry.fireAfterStatusChange(event.getEntityName(), event.getEntityId(), event.getNewStatus());
+        lifecycleListenerRegistry.fireAfterStatusChange(event.getEntityName(),
+                event.getEntityId(), event.getEntityNo(), event.getNewStatus());
     }
 }

@@ -37,6 +37,7 @@
             <maxFileSize>100MB</maxFileSize>
             <!-- 保存多少天的日志 -->
             <maxHistory>5</maxHistory>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
         </rollingPolicy>
 
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
@@ -49,7 +50,6 @@
             </layout>
             <charset>utf8</charset>
         </encoder>
-        <cleanHistoryOnStart>true</cleanHistoryOnStart>
     </appender>
 
     <!-- 按照每天生成日志文件 -->
@@ -63,6 +63,7 @@
             <maxFileSize>100MB</maxFileSize>
             <!-- 保存多少天的日志 -->
             <maxHistory>10</maxHistory>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
         </rollingPolicy>
 
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
@@ -75,7 +76,6 @@
             </layout>
             <charset>utf8</charset>
         </encoder>
-        <cleanHistoryOnStart>true</cleanHistoryOnStart>
     </appender>
 
     <appender name="DAY_ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -87,6 +87,7 @@
             <maxFileSize>100MB</maxFileSize>
             <!-- 保存多少天的日志 -->
             <maxHistory>30</maxHistory>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
         </rollingPolicy>
 
         <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
@@ -99,7 +100,6 @@
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>ERROR</level>
         </filter>
-        <cleanHistoryOnStart>true</cleanHistoryOnStart>
     </appender>
 
     <!-- 将控制指定name包下的所有类的日志的打印，通过level设置打印级别 -->

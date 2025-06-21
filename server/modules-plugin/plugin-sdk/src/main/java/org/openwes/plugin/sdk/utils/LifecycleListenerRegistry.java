@@ -13,13 +13,12 @@ public class LifecycleListenerRegistry {
 
     private final PluginManager pluginManager;
 
-    public <U> void fireAfterStatusChange(String entityName, U u, String status) {
+    @SuppressWarnings("unchecked")
+    public <U, V> void fireAfterStatusChange(String entityName, U u, V v, String status) {
 
         List<IEntityLifecycleListener> entityListeners =
                 pluginManager.getExtensions(IEntityLifecycleListener.class);
 
-        entityListeners.stream().filter(listener -> listener.getEntityName().equals(entityName)).forEach(listener -> {
-            ((IEntityLifecycleListener<U>) listener).afterStatusChange(u, status);
-        });
+        entityListeners.stream().filter(listener -> listener.getEntityName().equals(entityName)).forEach(listener -> listener.afterStatusChange(u, v, status));
     }
 }
