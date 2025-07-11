@@ -1,6 +1,5 @@
 package org.openwes.distribute.scheduler.annotation;
 
-import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.scheduling.annotation.Scheduled;

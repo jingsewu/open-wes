@@ -34,8 +34,8 @@ class LifecycleListenerRegistryTest {
         when(listener.getEntityName()).thenReturn("TestEntity");
         when(pluginManager.getExtensions(IEntityLifecycleListener.class)).thenReturn(List.of(listener));
 
-        registry.fireAfterStatusChange("TestEntity", "statusData", "NEW_STATUS");
+        registry.fireAfterStatusChange("TestEntity", 1L, "statusData", "NEW_STATUS");
 
-        verify(listener).afterStatusChange("statusData", "NEW_STATUS");
+        verify(listener).afterStatusChange("statusData", 1L, "NEW_STATUS");
     }
 }

@@ -27,5 +27,4 @@ public interface ICustomRequestPlugin extends IPlugin, IRequestPlugin {
      */
     default void invoke(RequestHandleContext context) {
     }
-
 }

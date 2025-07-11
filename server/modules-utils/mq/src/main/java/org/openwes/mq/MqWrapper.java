@@ -9,7 +9,7 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 public class MqWrapper {
     private String tenantId;
-    private String username;
+    private String userAccount;
 
     private Object message;
 }
