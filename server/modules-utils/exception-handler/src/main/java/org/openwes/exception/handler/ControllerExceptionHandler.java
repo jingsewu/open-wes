@@ -112,9 +112,6 @@ public class ControllerExceptionHandler {
         return ResponseEntity.status(HttpStatus.OK).body(errorResponse);
     }
 
-    /**
-     * 处理接口的数据检查异常
-     */
     @ResponseBody
     @ExceptionHandler({MethodArgumentNotValidException.class})
     public ResponseEntity<OpenWesErrorResponse> methodArgumentNotValidException(MethodArgumentNotValidException exception) {

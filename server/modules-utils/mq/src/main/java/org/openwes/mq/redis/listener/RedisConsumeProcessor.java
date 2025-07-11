@@ -46,7 +46,7 @@ public class RedisConsumeProcessor implements BeanPostProcessor {
                     log.debug("get message: {} from topic: {}", mqWrapper, channel);
                     try {
                         if (mqWrapper != null) {
-                            UserContext.setAccount(mqWrapper.getUsername());
+                            UserContext.setAccount(mqWrapper.getUserAccount());
                             method.invoke(bean, String.valueOf(channel), mqWrapper.getMessage());
                         } else {
                             log.error("redis topic: {} message is null error: ", channel);

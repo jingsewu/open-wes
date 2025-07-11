@@ -19,7 +19,7 @@ public class MqClient {
     private final RedisUtils redisUtils;
 
     public void sendMessage(String topic, Object message) {
-        MqWrapper mqWrapper = new MqWrapper().setUsername(UserContext.getCurrentUser())
+        MqWrapper mqWrapper = new MqWrapper().setUserAccount(UserContext.getCurrentUser())
                 .setTenantId("")
                 .setMessage(message);
 
