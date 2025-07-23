@@ -1,5 +1,5 @@
 import React, { useState, useEffect, memo } from "react"
-import { Select, Typography, Button } from "antd"
+import { Select, Typography, Button, message } from "antd"
 import store from "@/stores"
 import request from "@/utils/requestInterceptor"
 import {useTranslation} from "react-i18next";
@@ -9,6 +9,7 @@ const { Title } = Typography
 const SelectStation = ({ isConfigSationId, setIsConfigStationId }: any) => {
     const [stationId, setStationId] = useState("")
     const [options, setOptions] = useState<any[]>([])
+    const [error, setError] = useState("")
 
     useEffect(() => {
         if (isConfigSationId) return
@@ -72,9 +73,15 @@ const SelectStation = ({ isConfigSationId, setIsConfigStationId }: any) => {
 
     const handleChange = (val: string) => {
         setStationId(val)
+        setError("")
     }
 
     const handleClick = () => {
+        if (!stationId) {
+            setError(t("station.home.div.selectStation"))
+            message.error(t("station.home.div.selectStation"))
+            return;
+        }
         setIsConfigStationId(true)
         localStorage.setItem("stationId", stationId)
     }
@@ -93,6 +100,7 @@ const SelectStation = ({ isConfigSationId, setIsConfigStationId }: any) => {
                 onChange={handleChange}
                 options={options}
                 fieldNames={{ label: "stationName", value: "id" }}
+                status={error ? "error" : ""}
             />
             <Button
                 type="primary"
