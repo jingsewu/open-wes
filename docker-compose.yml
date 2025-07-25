@@ -6,7 +6,10 @@ services:
     build:
       context: ./client
       args:
-        NPM_REGISTRY: ${NPM_REGISTRY:-https://registry.npmjs.org}
+        # for international
+        #NPM_REGISTRY: ${NPM_REGISTRY:-https://registry.npmjs.org}
+        # for china main land
+        NPM_REGISTRY: ${NPM_REGISTRY:-https://registry.npmmirror.com}
     ports:
       - "80:80"
     networks:
@@ -20,9 +23,12 @@ services:
     ports:
       - "8090:8090"
     depends_on:
-      - mysql
-      - redis
-      - nacos
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      nacos:
+        condition: service_healthy
     networks:
       - my-network
 
@@ -34,9 +40,12 @@ services:
     ports:
       - "9040:9040"
     depends_on:
-      - mysql
-      - redis
-      - nacos
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      nacos:
+        condition: service_healthy
     networks:
       - my-network
 
@@ -48,9 +57,12 @@ services:
     ports:
       - "9010:9010"
     depends_on:
-      - mysql
-      - redis
-      - nacos
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      nacos:
+        condition: service_healthy
     networks:
       - my-network
 
@@ -73,11 +85,11 @@ services:
     networks:
       my-network:
         aliases:
-          - nacos.openwes.com
+          - mysql.openwes.com
 
   # Redis Service
   redis:
-    image: redis:alpine
+    image: redis:7.2
     ports:
       - "6379:6379"
     healthcheck:
@@ -89,13 +101,15 @@ services:
     networks:
       my-network:
         aliases:
-          - nacos.openwes.com
+          - redis.openwes.com
 
   # Nacos Service
   nacos:
-    image: nacos/nacos-server:latest
+    image: nacos/nacos-server:2.0.0
     ports:
       - "8848:8848"
+      - "9848:9848"
+      - "9849:9849"
     environment:
       MODE: standalone
       SPRING_DATASOURCE_PLATFORM: mysql
@@ -105,6 +119,12 @@ services:
       MYSQL_SERVICE_PASSWORD: root
     depends_on:
       - mysql
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8848/nacos/" ]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
     networks:
       my-network:
         aliases:
