@@ -12,6 +12,8 @@ services:
         NPM_REGISTRY: ${NPM_REGISTRY:-https://registry.npmmirror.com}
     ports:
       - "80:80"
+    extra_hosts:
+      - "api-gateway:${HOST_IP}"  # Uses the variable from the command
     networks:
       - my-network
 

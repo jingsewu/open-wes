@@ -28,7 +28,7 @@
 ```bash
 git clone https://github.com/jingsewu/open-wes
 cd open-wes
-docker-compose up --build
+HOST_IP=$(hostname -I | awk '{print $1}') docker-compose up -d
 ```
 
 ## 方案对比
