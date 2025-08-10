@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.GenericGenerator;
+import org.openwes.common.utils.id.IdGenerator;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @EqualsAndHashCode(callSuper = false)
@@ -16,14 +17,15 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
         indexes = {
                 @Index(unique = true, name = "uk_container_slot_sku_batch", columnList = "containerCode,containerSlotCode,skuBatchStockId"),
                 @Index(name = "idx_sku_batch_stock_id", columnList = "skuBatchStockId"),
-                @Index(name = "idx_sku_id", columnList = "skuId")
+                @Index(name = "idx_sku_id", columnList = "skuId"),
+                @Index(name = "idx_update_time",columnList = "updateTime")
         }
 )
 public class ContainerStockPO extends UpdateUserPO {
 
     @Id
     @GeneratedValue(generator = "databaseIdGenerator")
-    @GenericGenerator(name = "databaseIdGenerator", strategy = "org.openwes.common.utils.id.IdGenerator")
+    @GenericGenerator(name = "databaseIdGenerator", type = IdGenerator.class)
     private Long id;
 
     @Column(nullable = false, columnDefinition = "bigint default 0 comment 'skuId'")

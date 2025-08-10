@@ -9,7 +9,7 @@ import lombok.Getter;
 public enum StocktakeUnitTypeEnum implements IEnum {
 
     SHELF("SHELF", "按货架盘点"),
-    CONTAINER("CONTAINER", "按料箱盘点"),
+    CONTAINER("CONTAINER", "按容器盘点"),
     SKU("SKU", "按商品盘点"),
     STOCK("STOCK", "按库存盘点"),
     ;

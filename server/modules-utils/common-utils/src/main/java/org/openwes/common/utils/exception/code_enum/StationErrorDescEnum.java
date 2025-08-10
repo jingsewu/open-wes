@@ -20,7 +20,8 @@ public enum StationErrorDescEnum implements IBaseError {
     STATION_CACHE_IS_NULL("SAT010009", "stationCache {0} is null", AppCodeEnum.WMS.name()),
 
     //work station location error SAT02
-    STATION_CONVEYER_LOCATION_ERROR("SAT020001", "cannot find conveyer location code", AppCodeEnum.WMS.name()),
+    STATION_CONVEYOR_LOCATION_ERROR("SAT020001", "cannot find conveyor location code", AppCodeEnum.WMS.name()),
+    STATION_NO_ARRIVED_CONTAINER("SAT020002", "cannot find arrived container", AppCodeEnum.WMS.name()),
 
 
     //put wall error SAT03
