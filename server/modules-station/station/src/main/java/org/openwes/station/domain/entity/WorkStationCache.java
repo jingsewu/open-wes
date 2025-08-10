@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openwes.common.utils.exception.WmsException;
 import org.openwes.station.api.constants.ApiCodeEnum;
@@ -18,13 +19,11 @@ import org.openwes.wes.api.basic.dto.WorkStationConfigDTO;
 import org.openwes.wes.api.task.constants.OperationTaskStatusEnum;
 import org.openwes.wes.api.task.dto.OperationTaskVO;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.openwes.common.utils.exception.code_enum.OperationTaskErrorDescEnum.INCORRECT_BARCODE;
+import static org.openwes.common.utils.exception.code_enum.StationErrorDescEnum.STATION_NO_ARRIVED_CONTAINER;
 
 /**
  * definition：a place that operators working, only support one station one Operation Type at a time.
@@ -201,10 +200,19 @@ public class WorkStationCache {
             return;
         }
 
-        OperationTaskVO firstTaskVO = this.operateTasks.stream()
-                .filter(vo -> skuCode.equals(vo.getSkuMainDataDTO().getSkuCode())).findFirst().orElse(null);
+        if(ObjectUtils.isEmpty(this.getArrivedContainers())){
+            log.info("work station: {} no arrived containers", this.id);
+            throw WmsException.throwWmsException(STATION_NO_ARRIVED_CONTAINER);
+        }
+        ArrivedContainerCache arrivedContainerCache = this.getArrivedContainers().iterator().next();
 
-        if (firstTaskVO == null) {
+        List<OperationTaskVO> processingTasks = this.operateTasks.stream()
+                .filter(vo -> skuCode.equals(vo.getSkuMainDataDTO().getSkuCode())
+                        && Objects.equals(arrivedContainerCache.getContainerCode(), vo.getOperationTaskDTO().getSourceContainerCode())
+                        && Objects.equals(arrivedContainerCache.getForwardFace(), vo.getOperationTaskDTO().getSourceContainerFace()))
+                .toList();
+
+        if (ObjectUtils.isEmpty(processingTasks)) {
             throw WmsException.throwWmsException(INCORRECT_BARCODE);
         }
 
@@ -212,11 +220,8 @@ public class WorkStationCache {
             // reset process status to avoid operator scan a barcode but not picking then
             // scan another barcode. ensure only one sku operation task be processing once.
             operateTask.getOperationTaskDTO().setTaskStatus(OperationTaskStatusEnum.NEW);
-            if (firstTaskVO.getOperationTaskDTO().getSourceContainerSlot().equals(operateTask.getOperationTaskDTO().getSourceContainerSlot())
-                    && firstTaskVO.getSkuBatchAttributeDTO().getId().equals(operateTask.getSkuBatchAttributeDTO().getId())) {
-                operateTask.getOperationTaskDTO().setTaskStatus(OperationTaskStatusEnum.PROCESSING);
-            }
         }
+        processingTasks.forEach(operateTaskVO -> operateTaskVO.getOperationTaskDTO().setTaskStatus(OperationTaskStatusEnum.PROCESSING));
 
         resetActivePutWall(skuCode);
     }

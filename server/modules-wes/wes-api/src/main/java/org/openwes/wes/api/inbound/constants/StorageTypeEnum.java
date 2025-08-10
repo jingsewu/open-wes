@@ -11,11 +11,11 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum StorageTypeEnum implements IEnum {
 
-    STORAGE("storage", "存储"),
-    OVERSTOCK("overstock", "越库"),
-    IN_TRANSIT("in_transit", "在途"),
+    STORAGE("STORAGE", "存储"),
+    OVERSTOCK("OVERSTOCK", "越库"),
+    IN_TRANSIT("IN_TRANSIT", "在途"),
     ;
 
-    private String value;
-    private String label;
+    private final String value;
+    private final String label;
 }
