@@ -1,17 +1,17 @@
 package org.openwes.wes.basic.warehouse.controller;
 
 import com.google.common.collect.Lists;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.openwes.common.utils.exception.WmsException;
 import org.openwes.common.utils.http.Response;
 import org.openwes.wes.api.basic.IContainerSpecApi;
 import org.openwes.wes.api.basic.ILocationApi;
 import org.openwes.wes.api.basic.IWarehouseAreaApi;
+import org.openwes.wes.api.basic.dto.*;
 import org.openwes.wes.basic.warehouse.controller.parameter.AisleLocationQueryVO;
 import org.openwes.wes.basic.warehouse.controller.parameter.AisleLocationVO;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import org.openwes.wes.api.basic.dto.*;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,15 +35,13 @@ public class LocationController {
     private final IContainerSpecApi containerSpecApi;
 
     @PostMapping("create")
-    public Object create(@RequestBody @Valid AisleLocationVO locationVO) {
+    public void create(@RequestBody @Valid AisleLocationVO locationVO) {
         createLocations(locationVO);
-        return Response.success();
     }
 
     @PostMapping("update")
-    public Object update(@RequestBody @Valid LocationUpdateDTO locationUpdateDTO) {
+    public void update(@RequestBody @Valid LocationUpdateDTO locationUpdateDTO) {
         locationApi.update(locationUpdateDTO);
-        return Response.success();
     }
 
     @PostMapping("delete/{id}")

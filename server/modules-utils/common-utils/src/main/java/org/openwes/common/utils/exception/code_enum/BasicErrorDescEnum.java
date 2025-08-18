@@ -13,7 +13,7 @@ public enum BasicErrorDescEnum implements IBaseError {
     // container error
     CONTAINER_NOT_EXIST("BA001002", "container {0} not exist", AppCodeEnum.WMS.name()),
     CONTAINER_SLOT_NOT_EXIST("BA001003", "container slot {0} not exist", AppCodeEnum.WMS.name()),
-    CONTAINER_SPECIFIC_NOT_EXIST("BA001004", "container specific not exist", AppCodeEnum.WMS.name()),
+    CONTAINER_SPECIFIC_NOT_EXIST("BA001004", "container specific {0} not exist", AppCodeEnum.WMS.name()),
     CONTAINER_SPECIFIC_CANNOT_CHANGE("BA001005", "container specific cannot change, maybe it's already in use", AppCodeEnum.WMS.name()),
     CONTAINER_SPECIFIC_SLOT_CODE_REPEAT("BA001005", "container specific slot code repeat", AppCodeEnum.WMS.name()),
     CONTAINER_SPECIFIC_SLOT_LEVEL_BAY_REPEAT("BA001006", "container specific slot loc level bay repeat", AppCodeEnum.WMS.name()),

@@ -67,7 +67,7 @@ public class ContainerSpecDTO implements IValidate, Serializable {
 
         List<String> allLevelBay = this.containerSlotSpecs.stream()
                 .flatMap(containerSlotSpec ->
-                        containerSlotSpec.getAllLevelBay(containerSlotSpec.getChildren()).stream()).toList();
+                        containerSlotSpec.getAllLevelBay(containerSlotSpec.getChildren(),"").stream()).toList();
 
         if (allLevelBay.size() != allLevelBay.stream().distinct().count()) {
             throw WmsException.throwWmsException(CONTAINER_SPECIFIC_SLOT_LEVEL_BAY_REPEAT);
@@ -123,15 +123,16 @@ public class ContainerSpecDTO implements IValidate, Serializable {
             return allSlotSpecCodes;
         }
 
-        public List<String> getAllLevelBay(List<ContainerSlotSpec> children) {
+        public List<String> getAllLevelBay(List<ContainerSlotSpec> children, String currentLevelBay) {
 
-            List<String> allLevelBay = Lists.newArrayList(this.face + "-" + this.locLevel + "-" + this.locBay);
+            String levelBay = currentLevelBay + "-" + this.face + "-" + this.locLevel + "-" + this.locBay;
+            List<String> allLevelBay = Lists.newArrayList(levelBay);
 
             if (CollectionUtils.isEmpty(children)) {
                 return allLevelBay;
             }
 
-            allLevelBay.addAll(children.stream().flatMap(v -> v.getAllLevelBay(v.getChildren()).stream()).toList());
+            allLevelBay.addAll(children.stream().flatMap(v -> v.getAllLevelBay(v.getChildren(),levelBay).stream()).toList());
             return allLevelBay;
         }
     }

@@ -1,5 +1,9 @@
 package org.openwes.station.application.business.handler.common;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openwes.common.utils.exception.WmsException;
 import org.openwes.common.utils.exception.code_enum.OperationTaskErrorDescEnum;
 import org.openwes.station.api.constants.ApiCodeEnum;
@@ -16,10 +20,6 @@ import org.openwes.wes.api.config.dto.BarcodeParseRequestDTO;
 import org.openwes.wes.api.config.dto.BarcodeParseResult;
 import org.openwes.wes.api.main.data.dto.BarcodeDTO;
 import org.openwes.wes.api.main.data.dto.SkuMainDataDTO;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -101,5 +101,6 @@ public class ScanBarcodeHandler<T extends WorkStationCache> implements IBusiness
 
             throw WmsException.throwWmsException(OperationTaskErrorDescEnum.INCORRECT_BARCODE);
         }
+
     }
 }

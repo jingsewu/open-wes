@@ -58,7 +58,7 @@ public class ViewHelper<T extends WorkStationCache> {
         }
         if (WorkStationModeEnum.isPutAwayMode(workStationDTO.getWorkStationMode())) {
             return iViewHandlers.stream()
-                    .filter(v -> ViewHandlerTypeEnum.replenishmentViewHandlerTypes().contains(v.getViewTypeEnum())).toList();
+                    .filter(v -> ViewHandlerTypeEnum.putAwayViewHandlerTypes().contains(v.getViewTypeEnum())).toList();
         }
         if (workStationDTO.getWorkStationMode() == WorkStationModeEnum.RECEIVE) {
             return iViewHandlers.stream()

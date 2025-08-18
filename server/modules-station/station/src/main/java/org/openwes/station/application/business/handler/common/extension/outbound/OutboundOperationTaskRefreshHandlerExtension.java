@@ -49,7 +49,6 @@ public class OutboundOperationTaskRefreshHandlerExtension
         WorkStationConfigDTO workStationConfig = workStationCache.getWorkStationConfig();
         if (workStationConfig == null || !workStationConfig.getPickingStationConfig().isEmptyToteRecycle()) {
             equipmentService.containerLeave(doneContainers, ContainerOperationTypeEnum.LEAVE);
-            return;
         }
 
         // for the async update container empty flag, sleep 300ms

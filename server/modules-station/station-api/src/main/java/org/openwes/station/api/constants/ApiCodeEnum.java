@@ -10,6 +10,8 @@ public enum ApiCodeEnum {
     PAUSE,
     RESUME,
     CALL_ROBOT,
+    CALL_CONTAINER,
+
     CONTAINER_ARRIVED,
     CONTAINER_REFRESH,
     TAP_PTL,
@@ -43,5 +45,4 @@ public enum ApiCodeEnum {
      */
     CUSTOM_API,
     ;
-
 }
