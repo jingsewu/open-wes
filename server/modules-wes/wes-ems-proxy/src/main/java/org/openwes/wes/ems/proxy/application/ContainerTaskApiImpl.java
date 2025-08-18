@@ -10,12 +10,14 @@ import org.openwes.wes.api.ems.proxy.IContainerTaskApi;
 import org.openwes.wes.api.ems.proxy.constants.BusinessTaskTypeEnum;
 import org.openwes.wes.api.ems.proxy.constants.ContainerTaskStatusEnum;
 import org.openwes.wes.api.ems.proxy.constants.ContainerTaskTypeEnum;
+import org.openwes.wes.api.ems.proxy.dto.ContainerTaskDTO;
 import org.openwes.wes.api.ems.proxy.dto.CreateContainerTaskDTO;
 import org.openwes.wes.api.ems.proxy.dto.UpdateContainerTaskDTO;
 import org.openwes.wes.common.facade.CallbackApiFacade;
 import org.openwes.wes.ems.proxy.domain.entity.ContainerTask;
 import org.openwes.wes.ems.proxy.domain.repository.ContainerTaskRepository;
 import org.openwes.wes.ems.proxy.domain.service.ContainerTaskService;
+import org.openwes.wes.ems.proxy.domain.transfer.ContainerTaskTransfer;
 import org.openwes.wes.ems.proxy.infrastructure.remote.WmsTaskCallbackFacade;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -38,9 +40,10 @@ public class ContainerTaskApiImpl implements IContainerTaskApi {
     private final ContainerTaskRepository containerTaskRepository;
     private final CallbackApiFacade callbackApiFacade;
     private final WmsTaskCallbackFacade wmsTaskCallbackFacade;
+    private final ContainerTaskTransfer containerTaskTransfer;
 
     @Override
-    public void createContainerTasks(List<CreateContainerTaskDTO> createContainerTasks) {
+    public List<ContainerTaskDTO> createContainerTasks(List<CreateContainerTaskDTO> createContainerTasks) {
 
         List<ContainerTask> containerTasks = containerTaskService.groupContainerTasks(createContainerTasks);
         List<ContainerTask> flatContainerTasks = containerTaskService.flatContainerTasks(containerTasks);
@@ -51,6 +54,7 @@ public class ContainerTaskApiImpl implements IContainerTaskApi {
 
         callbackApiFacade.callback(CallbackApiTypeEnum.CONTAINER_TASK_CREATE, containerTasks, containerTaskType);
 
+        return containerTaskTransfer.toDTOs(flatContainerTasks);
     }
 
     @Override

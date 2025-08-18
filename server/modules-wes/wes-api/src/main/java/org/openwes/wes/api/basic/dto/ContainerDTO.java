@@ -1,6 +1,5 @@
 package org.openwes.wes.api.basic.dto;
 
-import org.openwes.wes.api.basic.constants.ContainerStatusEnum;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -9,11 +8,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
+import org.openwes.wes.api.basic.constants.ContainerStatusEnum;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Data
 @Builder
@@ -61,6 +63,11 @@ public class ContainerDTO implements Serializable {
 
     private List<ContainerSlot> containerSlots;
 
+    public Set<String> getEmptySlotFaces() {
+        return this.containerSlots.stream().filter(ContainerSlot::isEmptySlot).map(ContainerSlot::getFace)
+                .collect(Collectors.toSet());
+    }
+
     @Data
     public static class ContainerSlot implements Serializable {
 
@@ -87,11 +94,12 @@ public class ContainerDTO implements Serializable {
 
         private List<ContainerSlot> children;
 
-        public void setContainerSlotCode() {
+        public void initContainerSlot() {
             //use container slot spec code as the container slot code because container slot spec code is unique in a container spec
             this.containerSlotCode = this.containerSlotSpecCode;
+            this.emptySlot = true;
             if (CollectionUtils.isNotEmpty(this.children)) {
-                this.children.forEach(ContainerSlot::setContainerSlotCode);
+                this.children.forEach(ContainerSlot::initContainerSlot);
             }
         }
     }

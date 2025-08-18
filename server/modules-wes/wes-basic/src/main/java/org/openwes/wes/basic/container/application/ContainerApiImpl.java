@@ -2,13 +2,11 @@ package org.openwes.wes.basic.container.application;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.openwes.search.api.ISearchApi;
-import com.openwes.search.api.vo.ContainerSearchVO;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.dubbo.config.annotation.DubboService;
+import org.openwes.common.utils.exception.WmsException;
 import org.openwes.wes.api.basic.IContainerApi;
-import org.openwes.wes.api.basic.constants.ContainerStatusEnum;
 import org.openwes.wes.api.basic.dto.*;
 import org.openwes.wes.basic.container.domain.aggregate.ContainerLocationAggregate;
 import org.openwes.wes.basic.container.domain.entity.Container;
@@ -48,8 +46,9 @@ public class ContainerApiImpl implements IContainerApi {
     @Override
     public void createContainer(String warehouseCode, String containerCode, String containerSpecCode) {
         ContainerSpec containerSpec = containerSpecRepository.findByContainerSpecCode(containerSpecCode, warehouseCode);
-        Preconditions.checkState(containerSpec != null, CONTAINER_SPECIFIC_NOT_EXIST.getDesc());
-
+        if (containerSpec == null) {
+            throw WmsException.throwWmsException(CONTAINER_SPECIFIC_NOT_EXIST, containerSpecCode);
+        }
         Container container = new Container(warehouseCode, containerCode, containerSpecCode,
                 containerSpecTransfer.toContainerSlots(containerSpec.getContainerSlotSpecs()));
         containerRepository.save(container);
@@ -77,7 +76,9 @@ public class ContainerApiImpl implements IContainerApi {
     public void batchCreateContainer(BatchCreateContainerDTO createContainerDTO) {
         ContainerSpec containerSpec = containerSpecRepository
                 .findByContainerSpecCode(createContainerDTO.getContainerSpecCode(), createContainerDTO.getWarehouseCode());
-        Preconditions.checkState(containerSpec != null, CONTAINER_SPECIFIC_NOT_EXIST.getDesc());
+        if (containerSpec == null) {
+            throw WmsException.throwWmsException(CONTAINER_SPECIFIC_NOT_EXIST, createContainerDTO.getContainerSpecCode());
+        }
 
         String format = "%0" + createContainerDTO.getIndexNumber() + "d";
 
@@ -121,8 +122,9 @@ public class ContainerApiImpl implements IContainerApi {
         }
         ContainerSpec containerSpec = containerSpecRepository
                 .findByContainerSpecCode(containerSpecCode, container.getWarehouseCode());
-        Preconditions.checkState(containerSpec != null, CONTAINER_SPECIFIC_NOT_EXIST.getDesc());
-
+        if (containerSpec == null) {
+            throw WmsException.throwWmsException(CONTAINER_SPECIFIC_NOT_EXIST, containerSpecCode);
+        }
         container.changeContainerSpec(containerSpecCode,
                 containerSpecTransfer.toContainerSlots(containerSpec.getContainerSlotSpecs()));
         containerRepository.save(container);

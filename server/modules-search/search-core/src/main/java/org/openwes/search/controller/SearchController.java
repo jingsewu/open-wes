@@ -4,13 +4,13 @@ import cn.zhxu.bs.MapSearcher;
 import cn.zhxu.bs.SearchResult;
 import cn.zhxu.bs.util.MapUtils;
 import com.google.common.collect.Maps;
-import org.openwes.search.parameter.SearchPageResult;
-import org.openwes.search.parameter.SearchParam;
-import org.openwes.search.utils.SearchUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import javassist.CannotCompileException;
 import lombok.RequiredArgsConstructor;
+import org.openwes.search.parameter.SearchPageResult;
+import org.openwes.search.parameter.SearchParam;
+import org.openwes.search.utils.SearchUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -45,7 +45,7 @@ public class SearchController {
 
     @PostMapping("searchSelectResult")
     public Object searchSelectResult(HttpServletRequest request, @Validated @RequestBody SearchParam searchParam)
-            throws CannotCompileException, ClassNotFoundException {
+            throws CannotCompileException {
         Map<String, Object> requestMap = MapUtils.flat(request.getParameterMap());
 
         SearchResult<Map<String, Object>> searchResult = beanSearcher

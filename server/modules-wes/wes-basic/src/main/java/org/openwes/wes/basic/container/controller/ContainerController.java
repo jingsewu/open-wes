@@ -1,10 +1,13 @@
 package org.openwes.wes.basic.container.controller;
 
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.openwes.wes.api.basic.IContainerApi;
 import org.openwes.wes.api.basic.dto.BatchCreateContainerDTO;
 import org.openwes.wes.api.basic.dto.ContainerDTO;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +21,7 @@ public class ContainerController {
     private final IContainerApi containerApi;
 
     @PostMapping("create")
-    public void create(@RequestBody BatchCreateContainerDTO createContainerDTO) {
+    public void create(@RequestBody @Valid BatchCreateContainerDTO createContainerDTO) {
         containerApi.batchCreateContainer(createContainerDTO);
     }
 
