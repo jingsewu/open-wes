@@ -63,7 +63,7 @@ public class Container {
         this.containerSlotNum = containerSlots.size();
         this.occupationRatio = BigDecimal.ZERO;
 
-        this.containerSlots.forEach(ContainerDTO.ContainerSlot::setContainerSlotCode);
+        this.containerSlots.forEach(ContainerDTO.ContainerSlot::initContainerSlot);
 
     }
 
@@ -76,7 +76,7 @@ public class Container {
 
         this.containerSpecCode = containerSpecCode;
         this.containerSlots = containerSlots;
-        this.containerSlots.forEach(ContainerDTO.ContainerSlot::setContainerSlotCode);
+        this.containerSlots.forEach(ContainerDTO.ContainerSlot::initContainerSlot);
     }
 
     public void lock() {

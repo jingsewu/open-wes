@@ -17,7 +17,7 @@ allprojects {
 
     tasks.withType(JavaCompile).configureEach {
         options.encoding = 'UTF-8'
-        options.compilerArgs << '-parameters'
+        options.compilerArgs += '-parameters'
     }
     repositories {
         maven { url 'https://maven.aliyun.com/nexus/content/groups/public/' }

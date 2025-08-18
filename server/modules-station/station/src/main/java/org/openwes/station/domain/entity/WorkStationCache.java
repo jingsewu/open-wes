@@ -2,6 +2,7 @@ package org.openwes.station.domain.entity;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,6 +15,7 @@ import org.openwes.station.api.constants.ApiCodeEnum;
 import org.openwes.station.api.constants.ProcessStatusEnum;
 import org.openwes.station.api.vo.WorkStationVO;
 import org.openwes.wes.api.basic.constants.WorkStationModeEnum;
+import org.openwes.wes.api.basic.constants.WorkStationProcessingStatusEnum;
 import org.openwes.wes.api.basic.dto.PutWallSlotDTO;
 import org.openwes.wes.api.basic.dto.WorkStationConfigDTO;
 import org.openwes.wes.api.task.constants.OperationTaskStatusEnum;
@@ -69,7 +71,7 @@ public class WorkStationCache {
     }
 
     public void chooseArea(WorkStationVO.ChooseAreaEnum chooseArea) {
-        log.info("work station: {} choose area: {}", this.id, chooseArea);
+        log.info("work station: {} code: {} choose area: {}", this.id, this.stationCode, chooseArea);
         this.chooseArea = chooseArea;
     }
 
@@ -80,7 +82,7 @@ public class WorkStationCache {
      */
     public void addArrivedContainers(List<ArrivedContainerCache> newArrivedContainers) {
 
-        log.info("work station: {} add arrived containers: {}", this.id, newArrivedContainers);
+        log.info("work station: {} code: {} add arrived containers: {}", this.id, this.stationCode, newArrivedContainers);
 
         if (CollectionUtils.isEmpty(this.arrivedContainers)) {
             this.arrivedContainers = Lists.newArrayList(newArrivedContainers);
@@ -89,14 +91,20 @@ public class WorkStationCache {
         }
     }
 
-    public void clearArrivedContainers(Collection<String> containerCodes) {
-        log.info("work station: {} clear arrived containers: {}", this.id, containerCodes);
-        this.arrivedContainers.removeIf(v -> containerCodes.contains(v.getContainerCode()));
+    public List<ArrivedContainerCache> clearArrivedContainers(@NotEmpty Collection<String> containerCodes) {
+        log.info("work station: {} code: {} clear arrived containers: {}", this.id, this.stationCode, containerCodes);
+
+        List<ArrivedContainerCache> removedArrivedContainers = this.arrivedContainers.stream()
+                .filter(v -> containerCodes.contains(v.getContainerCode()))
+                .toList();
+        this.arrivedContainers.removeAll(removedArrivedContainers);
+
+        return removedArrivedContainers;
     }
 
     public void setUndoContainersProcessing(List<ArrivedContainerCache> arrivedContainers) {
 
-        log.info("work station: {} set undo containers: {} processing", this.id, arrivedContainers);
+        log.info("work station: {} code: {} set undo containers: {} processing", this.id, this.stationCode, arrivedContainers);
 
         if (CollectionUtils.isEmpty(arrivedContainers)) {
             return;
@@ -122,7 +130,7 @@ public class WorkStationCache {
         List<ArrivedContainerCache> doneContainers = this.arrivedContainers.stream().filter(v -> groupCodes.contains(v.getGroupCode())).toList();
         this.arrivedContainers.removeIf(v -> groupCodes.contains(v.getGroupCode()));
 
-        log.info("work station: {} remove proceed container size: {}", this.id, doneContainers.size());
+        log.info("work station: {} code: {} remove proceed container size: {}", this.id, this.stationCode, doneContainers.size());
 
         return doneContainers;
     }
@@ -133,12 +141,12 @@ public class WorkStationCache {
     }
 
     public void updateConfiguration(WorkStationConfigDTO workStationConfigDTO) {
-        log.info("work station: {} update configuration: {}", this.id, workStationConfigDTO);
+        log.info("work station: {} code: {} update configuration: {}", this.id, this.stationCode, workStationConfigDTO);
         this.workStationConfig = workStationConfigDTO;
     }
 
     public void addTip(WorkStationVO.Tip tip) {
-        log.info("work station: {} add tip: {}", this.id, tip);
+        log.info("work station: {} code: {} add tip: {}", this.id, this.stationCode, tip);
         if (this.tips == null) {
             this.tips = Lists.newArrayList();
         }
@@ -150,7 +158,7 @@ public class WorkStationCache {
     }
 
     public void closeTip(String tipCode) {
-        log.info("work station: {} close tip: {}", this.id, tipCode);
+        log.info("work station: {} code: {} close tip: {}", this.id, this.stationCode, tipCode);
         if (this.tips == null) {
             return;
         }
@@ -167,12 +175,12 @@ public class WorkStationCache {
     }
 
     public void scanBarcode(String barcode) {
-        log.info("work station: {} scan barcode: {}", this.id, barcode);
+        log.info("work station: {} code: {} scan barcode: {}", this.id, this.stationCode, barcode);
         this.scannedBarcode = barcode;
     }
 
     public void clearOperateTasks() {
-        log.info("work station: {} clear all operate tasks", this.id);
+        log.info("work station: {} code: {} clear all operate tasks", this.id, this.stationCode);
         if (CollectionUtils.isNotEmpty(this.operateTasks)) {
             this.operateTasks.clear();
         }
@@ -180,7 +188,7 @@ public class WorkStationCache {
 
     public void addOperateTasks(List<OperationTaskVO> containerOperateTasks) {
 
-        log.info("work station: {} add operate tasks size: {}", this.id, containerOperateTasks.size());
+        log.info("work station: {} code: {} add operate tasks size: {}", this.id, this.stationCode, containerOperateTasks.size());
 
         if (this.operateTasks == null) {
             this.operateTasks = Lists.newArrayList(containerOperateTasks);
@@ -191,7 +199,7 @@ public class WorkStationCache {
 
     public void processTasks(String skuCode) {
 
-        log.info("work station: {} process sku: {} tasks", this.id, skuCode);
+        log.info("work station: {} code: {} process sku: {} tasks", this.id, this.stationCode, skuCode);
 
         this.chooseArea = null;
         this.scannedBarcode = skuCode;
@@ -201,7 +209,7 @@ public class WorkStationCache {
         }
 
         if (ObjectUtils.isEmpty(this.getArrivedContainers())) {
-            log.info("work station: {} no arrived containers", this.id);
+            log.info("work station: {} code: {} no arrived containers", this.id, this.stationCode);
             throw WmsException.throwWmsException(STATION_NO_ARRIVED_CONTAINER);
         }
         ArrivedContainerCache arrivedContainerCache = this.getArrivedContainers().iterator().next();

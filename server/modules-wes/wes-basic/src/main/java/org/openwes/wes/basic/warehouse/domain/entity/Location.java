@@ -36,9 +36,8 @@ public class Location extends UpdateUserDTO {
 
     private long version;
 
-
-    public void delete() {
-        if (occupied) {
+    public void canDelete() {
+        if (this.occupied) {
             throw WmsException.throwWmsException(BasicErrorDescEnum.LOCATION_CONTAINS_STOCK);
         }
     }

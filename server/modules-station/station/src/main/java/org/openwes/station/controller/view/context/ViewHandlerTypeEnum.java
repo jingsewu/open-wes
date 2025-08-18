@@ -23,6 +23,11 @@ public enum ViewHandlerTypeEnum {
      */
     STOCKTAKE_BASE_AREA,
     STOCKTAKE_SKU_AREA,
+
+    /**
+     * INBOUND
+     */
+    INBOUND_BASE_AREA,
     ;
 
 
@@ -34,8 +39,8 @@ public enum ViewHandlerTypeEnum {
         return Lists.newArrayList(OUTBOUND_BASE_AREA, OUTBOUND_SKU_AREA, PUT_WALL_AREA, OUTBOUND_CONTAINER_AREA, TIPS);
     }
 
-    public static List<ViewHandlerTypeEnum> replenishmentViewHandlerTypes() {
-        return Lists.newArrayList(ORDER_AREA, TIPS);
+    public static List<ViewHandlerTypeEnum> putAwayViewHandlerTypes() {
+        return Lists.newArrayList(INBOUND_BASE_AREA, CONTAINER_AREA, ORDER_AREA, TIPS);
     }
 
     public static List<ViewHandlerTypeEnum> stocktakeViewHandlerTypes() {
