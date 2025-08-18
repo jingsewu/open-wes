@@ -1,5 +1,6 @@
 package org.openwes.wes.api.basic.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.openwes.common.utils.validate.IValidate;
 import org.openwes.wes.api.basic.constants.ContainerTypeEnum;
 import jakarta.validation.constraints.Min;
@@ -8,13 +9,11 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
+@Schema(description = "批量创建容器")
 public class BatchCreateContainerDTO implements IValidate {
 
     @NotEmpty
     private String warehouseCode;
-
-    @NotNull
-    private ContainerTypeEnum containerType;
 
     @NotEmpty
     private String containerSpecCode;

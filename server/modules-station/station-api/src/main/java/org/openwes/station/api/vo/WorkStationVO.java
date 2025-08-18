@@ -35,9 +35,8 @@ public class WorkStationVO {
     private WorkStationModeEnum workStationMode;
     private ChooseAreaEnum chooseArea;
     private String scanCode;
-    private String processingType;
-    private String processingInboundOrderDetailId;
-    private Integer callContainerCount;
+
+    private List<String> callContainers;
 
     private List<Tip> tips;
 

@@ -38,6 +38,9 @@ public enum StationErrorDescEnum implements IBaseError {
     //work station rules error SAT05
     STATION_CANT_SUPPORT_THIS_TYPE("SAT050001", "work station {0} can not support this type", AppCodeEnum.WMS.name()),
 
+
+    //work station container err SAT07
+    CONTAINER_HAS_NOT_EMPTY_SLOT("SAT070001", "container {0} has no empty slots", AppCodeEnum.WMS.name()),
     ;
 
 
