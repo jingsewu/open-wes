@@ -24,7 +24,6 @@ public class StocktakeOperationTaskRefreshHandlerExtension implements OperationT
 
     private final StocktakeService stocktakeService;
     private final EquipmentService equipmentService;
-    private final WorkStationCacheRepository<StocktakeWorkStationCache> workStationRepository;
     private final ContainerService containerService;
 
     @Override
@@ -35,8 +34,6 @@ public class StocktakeOperationTaskRefreshHandlerExtension implements OperationT
         }
 
         Collection<ArrivedContainerCache> doneContainers = workStationCache.queryTasksAndReturnRemovedContainers(stocktakeService);
-        workStationRepository.save(workStationCache);
-
         if (CollectionUtils.isNotEmpty(doneContainers)) {
             containerService.unLockContainer(workStationCache.getWarehouseCode(),
                     doneContainers.stream().map(ArrivedContainerCache::getContainerCode).collect(Collectors.toSet()));

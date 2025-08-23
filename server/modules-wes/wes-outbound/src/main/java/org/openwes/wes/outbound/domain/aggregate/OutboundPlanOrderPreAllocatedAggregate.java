@@ -35,7 +35,7 @@ public class OutboundPlanOrderPreAllocatedAggregate {
             List<SkuBatchStockDTO> skuBatchStocks = preAllocateCache.matchSkuBatchStocks(detail.getSkuId(), detail.getOwnerCode(), detail.getBatchAttributes());
 
             skuBatchStocks = filterDetailWarehouseAreaIds(detail, skuBatchStocks);
-            planPreAllocatedRecords.addAll(preAllocate(detail, skuBatchStocks, detail.getOwnerCode()));
+            planPreAllocatedRecords.addAll(preAllocate(detail, skuBatchStocks));
         });
 
         boolean preAllocateResult = outboundPlanOrder.preAllocate(planPreAllocatedRecords);
@@ -65,7 +65,7 @@ public class OutboundPlanOrderPreAllocatedAggregate {
         return skuBatchStocks;
     }
 
-    private List<OutboundPreAllocatedRecord> preAllocate(OutboundPlanOrderDetail detail, List<SkuBatchStockDTO> skuBatchStocks, String ownerCode) {
+    private List<OutboundPreAllocatedRecord> preAllocate(OutboundPlanOrderDetail detail, List<SkuBatchStockDTO> skuBatchStocks) {
 
         List<OutboundPreAllocatedRecord> preAllocatedRecords = Lists.newArrayList();
 
@@ -79,7 +79,7 @@ public class OutboundPlanOrderPreAllocatedAggregate {
             skuBatchStockDTO.setAvailableQty(skuBatchStockDTO.getAvailableQty() - qtyRequired);
 
             OutboundPreAllocatedRecord preAllocatedRecord = new OutboundPreAllocatedRecord()
-                    .setOwnerCode(ownerCode)
+                    .setOwnerCode(detail.getOwnerCode())
                     .setSkuBatchStockId(skuBatchStockDTO.getId())
                     .setWarehouseAreaId(skuBatchStockDTO.getWarehouseAreaId())
                     .setSkuId(skuBatchStockDTO.getSkuId())

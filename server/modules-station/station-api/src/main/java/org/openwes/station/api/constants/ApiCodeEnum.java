@@ -13,6 +13,7 @@ public enum ApiCodeEnum {
     CALL_CONTAINER,
 
     CONTAINER_ARRIVED,
+    CONTAINER_LEAVE,
     CONTAINER_REFRESH,
     TAP_PTL,
     INPUT,
@@ -25,7 +26,6 @@ public enum ApiCodeEnum {
     EMPTY_CONTAINER_HANDLE,
 
     SCAN_BARCODE_RESET,
-
 
     /**
      * Outbound api codes

@@ -1,4 +1,4 @@
-import type {WorkStationEvent} from "@/pages/wms/station/event-loop/types"
+import {OperationType, WorkStationEvent} from "@/pages/wms/station/event-loop/types"
 import type {replenishProps} from "../type"
 import type {OperationProps} from "@/pages/wms/station/instances/types"
 import React, {useEffect, useState, useRef} from "react"
@@ -46,7 +46,6 @@ export const valueFilter = (
     if (!data) return {}
     return {
         robotArea: data.workLocationArea,
-        // operationId: data.operationId,
         operationType: data.operationType
     }
 }
@@ -54,7 +53,7 @@ export const valueFilter = (
 const RobotHandler = (props: any) => {
     const { t } = useTranslation();
 
-    const {value, onConfirm, focusValue, changeFocusValue, onScanSubmit} =
+    const {value, onConfirm, focusValue, changeFocusValue, onScanSubmit,operationType} =
         props
     const containerRef = useRef<InputRef>(null)
     const countRef = useRef<any>(null)
@@ -188,7 +187,7 @@ const RobotHandler = (props: any) => {
     }
 
     const handleOK = () => {
-        console.log("activeSlotrobot", activeSlot)
+        console.log("activeSlot", activeSlot)
         onConfirm({...containerSpec, containerCode, activeSlot, inputValue})
     }
 
@@ -220,6 +219,7 @@ const RobotHandler = (props: any) => {
                     ref={containerRef}
                     onChange={onContainerChange}
                     onPressEnter={onPressEnter}
+                    disabled={operationType === OperationType.SELECT_CONTAINER_PUT_AWAY}
                 />
             </div>
             <Divider style={{margin: "12px 0"}}/>

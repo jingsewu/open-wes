@@ -52,10 +52,14 @@ public class OutboundOperationTaskRefreshHandlerExtension
         }
 
         // for the async update container empty flag, sleep 300ms
+        // causing when picking complete, then update container stock and container empty flag async
+        // so we need to wait for async updating.
+        // TODO remove this sleep using more elegant way
         try {
             Thread.sleep(300);
         } catch (InterruptedException e) {
             log.error("work station: {} after picking thread sleep error:", workStationCache.getId(), e);
+            Thread.currentThread().interrupt();
         }
 
         ContainerDTO containerDTO = containerService.queryContainer(doneContainers.get(0).getContainerCode(),
@@ -63,6 +67,8 @@ public class OutboundOperationTaskRefreshHandlerExtension
 
         if (containerDTO.isEmptyContainer()) {
             addTip(workStationCache, containerDTO.getContainerCode());
+        } else {
+            equipmentService.containerLeave(doneContainers, ContainerOperationTypeEnum.LEAVE);
         }
     }
 
