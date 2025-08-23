@@ -8,10 +8,10 @@ import org.openwes.station.application.business.handler.event.inbound.CallContai
 import org.openwes.station.domain.entity.InboundWorkStationCache;
 import org.openwes.station.domain.repository.WorkStationCacheRepository;
 import org.openwes.station.infrastructure.remote.ContainerTaskService;
-import org.openwes.wes.api.basic.constants.WorkStationProcessingStatusEnum;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Component
@@ -25,9 +25,9 @@ public class CallContainerHandler implements IBusinessHandler<CallContainerEvent
     public void execute(CallContainerEvent callContainerEvent, Long workStationId) {
 
         InboundWorkStationCache workStationCache = workStationCacheRepository.findById(workStationId);
-        List<String> taskCodes = containerTaskService.createContainerTasks(callContainerEvent.getContainerCodes(), workStationCache);
+        Map<String,List<String>> containerTaskCodes = containerTaskService.createContainerTasks(callContainerEvent.getContainerCodes(), workStationCache);
 
-        workStationCache.saveCallContainers(callContainerEvent,taskCodes);
+        workStationCache.saveCallContainers(callContainerEvent,containerTaskCodes);
         workStationCacheRepository.save(workStationCache);
     }
 

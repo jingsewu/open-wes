@@ -4,10 +4,11 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.util.List;
+import java.util.Map;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class InboundWorkStationCachePO extends WorkStationCachePO {
     private List<String> callContainers;
-    private List<String> taskCodes;
+    private Map<String, List<String>> containerTaskCodes;
 }

@@ -34,7 +34,7 @@ public class AcceptRecordDTO implements IValidate, Serializable {
     @NotNull
     private Long skuId;
 
-    @Min(1)
+    @Min(0)
     private Integer qtyAbnormal;
 
     @NotNull

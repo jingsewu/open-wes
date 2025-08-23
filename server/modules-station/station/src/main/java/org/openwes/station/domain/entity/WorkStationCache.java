@@ -94,6 +94,11 @@ public class WorkStationCache {
     public List<ArrivedContainerCache> clearArrivedContainers(@NotEmpty Collection<String> containerCodes) {
         log.info("work station: {} code: {} clear arrived containers: {}", this.id, this.stationCode, containerCodes);
 
+        if (this.arrivedContainers == null) {
+            log.warn("work station: {} code: {} arrived containers is null", this.id, this.stationCode);
+            return Collections.emptyList();
+        }
+
         List<ArrivedContainerCache> removedArrivedContainers = this.arrivedContainers.stream()
                 .filter(v -> containerCodes.contains(v.getContainerCode()))
                 .toList();

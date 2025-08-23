@@ -6,7 +6,6 @@ import type { WorkStationConfig } from "@/pages/wms/station/instances/types"
 import type { FC } from "react"
 import React, { useContext, useState, useEffect, memo } from "react"
 import type { RouteComponentProps } from "react-router"
-import { Typography } from "antd"
 import { APIContext, Provider, WorkStationContext } from "./event-loop/provider"
 import Layout from "./layout"
 import WorkStationCard from "./WorkStationCard"
@@ -102,31 +101,6 @@ const WorkStation = (props: WorkStationProps) => {
             isConfigSationId={isConfigStationId}
             setIsConfigStationId={setIsConfigStationId}
         />
-        // <div className="w-full h-full d-flex flex-col justify-center items-center">
-        //     <Title level={4} className="mb-3">
-        //         请选择工作站
-        //     </Title>
-        //     <Select
-        //         // defaultValue="lucy"
-        //         style={{ width: 300 }}
-        //         value={stationId}
-        //         onChange={handleChange}
-        //         options={options}
-        //         fieldNames={{ label: "stationName", value: "id" }}
-        //     />
-        //     <Button
-        //         type="primary"
-        //         style={{
-        //             width: 300,
-        //             backgroundColor: "#23c560",
-        //             borderColor: "#23c560",
-        //             marginTop: 10
-        //         }}
-        //         onClick={handleClick}
-        //     >
-        //         确定
-        //     </Button>
-        // </div>
     )
 }
 

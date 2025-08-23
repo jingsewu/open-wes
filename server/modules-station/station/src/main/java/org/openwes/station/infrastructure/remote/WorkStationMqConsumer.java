@@ -10,7 +10,7 @@ import org.openwes.mq.redis.RedisListener;
 import org.openwes.station.api.constants.ApiCodeEnum;
 import org.openwes.station.application.PtlApiImpl;
 import org.openwes.station.application.executor.HandlerExecutor;
-import org.openwes.station.controller.websocket.cluster.SseMessageListenerUtils;
+import org.openwes.station.controller.websocket.cluster.WebsocketMessageListenerUtils;
 import org.openwes.station.controller.websocket.controller.StationWebSocketController;
 import org.openwes.station.domain.entity.WorkStationCache;
 import org.openwes.station.domain.repository.WorkStationCacheRepository;
@@ -34,7 +34,7 @@ public class WorkStationMqConsumer<T extends WorkStationCache> {
     private final WorkStationService<T> workStationService;
     private final WorkStationCacheRepository<T> workStationCacheRepository;
     private final PtlApiImpl ptlService;
-    private final SseMessageListenerUtils sseMessageListenerUtils;
+    private final WebsocketMessageListenerUtils sseMessageListenerUtils;
     private final HandlerExecutor handlerExecutor;
 
     @RedisListener(topic = RedisConstants.STATION_LISTEN_CONTAINER_ARRIVED, type = ContainerArrivedEvent.class)
