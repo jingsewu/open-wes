@@ -1,5 +1,9 @@
 package org.openwes.station.application.business.handler.common;
 
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.openwes.station.api.constants.ApiCodeEnum;
 import org.openwes.station.application.business.handler.IBusinessHandler;
 import org.openwes.station.application.business.handler.common.extension.ExtensionFactory;
@@ -8,10 +12,6 @@ import org.openwes.station.application.business.handler.event.OperationTaskRefre
 import org.openwes.station.domain.entity.ArrivedContainerCache;
 import org.openwes.station.domain.entity.WorkStationCache;
 import org.openwes.station.domain.service.WorkStationService;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -26,8 +26,6 @@ public class OperationTaskRefreshHandler<T extends WorkStationCache> implements 
 
     @Override
     public void execute(@Valid OperationTaskRefreshEvent event, Long workStationId) {
-
-        log.info("work station: {} refresh operation tasks event: {}", workStationId, event);
 
         T workStation = workStationService.getOrThrow(workStationId);
         if (CollectionUtils.isEmpty(workStation.getArrivedContainers())) {

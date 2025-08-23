@@ -1,7 +1,6 @@
 package org.openwes.station.infrastructure.remote;
 
 import com.google.common.collect.Lists;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -34,7 +33,7 @@ public class ContainerTaskService {
     @DubboReference
     private IContainerApi containerApi;
 
-    public List<String> createContainerTasks(List<String> containerCodes, InboundWorkStationCache workStationCache) {
+    public Map<String, List<String>> createContainerTasks(List<String> containerCodes, InboundWorkStationCache workStationCache) {
 
         Long customerTaskId = IdGenerator.generateId();
 
@@ -68,7 +67,8 @@ public class ContainerTaskService {
 
         List<ContainerTaskDTO> containerTasks = containerTaskApi.createContainerTasks(containerTaskDTOS);
 
-        return containerTasks.stream().map(ContainerTaskDTO::getTaskCode).toList();
+        return containerTasks.stream().collect(Collectors.groupingBy(ContainerTaskDTO::getContainerCode))
+                .entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, v -> v.getValue().stream().map(ContainerTaskDTO::getTaskCode).toList()));
     }
 
     public void cancel(List<String> taskCodes) {
