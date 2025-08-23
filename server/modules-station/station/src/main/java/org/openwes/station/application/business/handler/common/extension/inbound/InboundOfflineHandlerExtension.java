@@ -7,14 +7,15 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.openwes.station.application.business.handler.common.OfflineHandler;
 import org.openwes.station.domain.entity.ArrivedContainerCache;
 import org.openwes.station.domain.entity.InboundWorkStationCache;
-import org.openwes.station.domain.entity.StocktakeWorkStationCache;
 import org.openwes.station.infrastructure.remote.ContainerTaskService;
 import org.openwes.station.infrastructure.remote.EquipmentService;
 import org.openwes.wes.api.basic.constants.WorkStationModeEnum;
 import org.openwes.wes.api.ems.proxy.constants.ContainerOperationTypeEnum;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -32,8 +33,9 @@ public class InboundOfflineHandlerExtension implements OfflineHandler.Extension<
             equipmentService.containerLeave(workStationCache.getArrivedContainers(), ContainerOperationTypeEnum.LEAVE);
         }
 
-        if(ObjectUtils.isNotEmpty(workStationCache.getTaskCodes())){
-            containerTaskService.cancel(workStationCache.getTaskCodes());
+        if(ObjectUtils.isNotEmpty(workStationCache.getContainerTaskCodes())){
+            containerTaskService.cancel(workStationCache.getContainerTaskCodes().values().stream()
+                    .filter(Objects::nonNull).flatMap(Collection::stream).toList());
         }
     }
 

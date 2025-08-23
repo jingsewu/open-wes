@@ -40,7 +40,7 @@ public class ContainerArrivedHandler<T extends WorkStationCache> implements IBus
 
         T workStation = workStationService.getWorkStation(workStationId);
         if (workStation == null) {
-            log.info("work station: {} is not exist or offline and let container: {} go", workStationId, containerArrivedEvent);
+            log.warn("work station: {} is not exist or offline and let container: {} go", workStationId, containerArrivedEvent);
             equipmentService.containerLeave(containerArrivedEvent);
             return;
         }
@@ -65,7 +65,7 @@ public class ContainerArrivedHandler<T extends WorkStationCache> implements IBus
 
         // ignore repeat report
         if (CollectionUtils.isEmpty(arrivedContainers)) {
-            log.warn("work station: {} container arrived repeated report.", workStationId);
+            log.warn("work station: {} code: {} container arrived repeated report.", workStationId, workStation.getStationCode());
             return;
         }
 

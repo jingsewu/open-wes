@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class SseMessageListenerUtils {
+public class WebsocketMessageListenerUtils {
 
     private final MqClient mqClient;
 
