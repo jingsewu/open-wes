@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.openwes.wes.api.algo.IPickingOrderAlgoApi;
@@ -164,7 +165,9 @@ public class PickingOrderServiceImpl implements PickingOrderService {
 
         PickingOrderReallocateContext pickingOrderReallocateContext = new PickingOrderReallocateContext()
                 .setWarehouseCode(warehouseCode)
-                .setPickingOrder(pickingOrderTransfer.toDTO(pickingOrder));
+                .setPickingOrder(pickingOrderTransfer.toDTO(pickingOrder))
+                //TODO need to identity this warehouse area work type
+                .setWarehouseAreaWorkType(WarehouseAreaWorkTypeEnum.ROBOT);
 
         List<PickingOrderDetail> abnormalDetails = pickingOrder.getDetails().stream().filter(v -> v.getQtyAbnormal() > 0).toList();
         List<Long> skuBatchStockIds = abnormalDetails.stream().map(PickingOrderDetail::getSkuBatchStockId).toList();
@@ -176,18 +179,17 @@ public class PickingOrderServiceImpl implements PickingOrderService {
             return v.getAvailableQty() >= totalAbnormalQty;
         });
 
-        List<ContainerStockDTO> containerStockDTOS = stockApi.getContainerStockBySkuBatchStockIds(skuBatchStockIds);
-        List<PickingOrderReallocateContext.PickingOrderReallocateDetail> pickingOrderReallocateDetails = abnormalDetails
-                .stream().map(detail -> new PickingOrderReallocateContext.PickingOrderReallocateDetail()
-                        .setPickingOrderDetailId(detail.getId())
-                        .setSkuBatchStockId(detail.getSkuBatchStockId())
-                        .setSkuBatchStocks(skuBatchStocks.stream().filter(v -> Objects.equals(v.getId(), detail.getSkuBatchStockId())).toList())
-                        .setContainerStocks(containerStockDTOS.stream().filter(v -> Objects.equals(v.getSkuBatchStockId(), detail.getSkuBatchStockId())).toList())
-                ).toList();
-
-        pickingOrderReallocateContext.setPickingOrderReallocateDetails(pickingOrderReallocateDetails);
-
         if (allMatch) {
+            List<ContainerStockDTO> containerStockDTOS = stockApi.getContainerStockBySkuBatchStockIds(skuBatchStockIds);
+            List<PickingOrderReallocateContext.PickingOrderReallocateDetail> pickingOrderReallocateDetails = abnormalDetails
+                    .stream().map(detail -> new PickingOrderReallocateContext.PickingOrderReallocateDetail()
+                            .setPickingOrderDetailId(detail.getId())
+                            .setSkuBatchStockId(detail.getSkuBatchStockId())
+                            .setSkuBatchStocks(skuBatchStocks.stream().filter(v -> Objects.equals(v.getId(), detail.getSkuBatchStockId())).toList())
+                            .setContainerStocks(containerStockDTOS.stream().filter(v -> Objects.equals(v.getSkuBatchStockId(), detail.getSkuBatchStockId())).toList())
+                    ).toList();
+
+            pickingOrderReallocateContext.setPickingOrderReallocateDetails(pickingOrderReallocateDetails);
             return pickingOrderReallocateContext;
         }
         // match other batch attributes
@@ -195,8 +197,13 @@ public class PickingOrderServiceImpl implements PickingOrderService {
         List<String> ownerCodes = pickingOrder.getDetails().stream().map(PickingOrderDetail::getOwnerCode).distinct().toList();
         OutboundAllocateSkuBatchContext outboundAllocateSkuBatchContext = this.prepareAllocateCache(skuIds, warehouseCode, ownerCodes);
 
+        if (ObjectUtils.isEmpty(outboundAllocateSkuBatchContext.getSkuBatchStocks())) {
+            return pickingOrderReallocateContext;
+        }
+
         abnormalDetails.forEach(detail -> {
-            List<SkuBatchStockDTO> skuBatchStockDTOS = outboundAllocateSkuBatchContext.matchSkuBatchStocks(detail.getSkuId(), detail.getOwnerCode(), detail.getBatchAttributes()).stream().filter(v -> !Objects.equals(v.getId(), detail.getSkuBatchStockId())).toList();
+            List<SkuBatchStockDTO> skuBatchStockDTOS = outboundAllocateSkuBatchContext.matchSkuBatchStocks(detail.getSkuId(), detail.getOwnerCode(),
+                    detail.getBatchAttributes()).stream().filter(v -> !Objects.equals(v.getId(), detail.getSkuBatchStockId())).toList();
 
             if (CollectionUtils.isNotEmpty(detail.getRetargetingWarehouseAreaIds())) {
                 skuBatchStockDTOS = skuBatchStockDTOS.stream().filter(k -> detail.getRetargetingWarehouseAreaIds().contains(k.getWarehouseAreaId())).toList();
