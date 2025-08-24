@@ -200,7 +200,7 @@ public class WorkStationCache {
             return;
         }
 
-        if(ObjectUtils.isEmpty(this.getArrivedContainers())){
+        if (ObjectUtils.isEmpty(this.getArrivedContainers())) {
             log.info("work station: {} no arrived containers", this.id);
             throw WmsException.throwWmsException(STATION_NO_ARRIVED_CONTAINER);
         }
@@ -209,7 +209,7 @@ public class WorkStationCache {
         List<OperationTaskVO> processingTasks = this.operateTasks.stream()
                 .filter(vo -> skuCode.equals(vo.getSkuMainDataDTO().getSkuCode())
                         && Objects.equals(arrivedContainerCache.getContainerCode(), vo.getOperationTaskDTO().getSourceContainerCode())
-                        && Objects.equals(arrivedContainerCache.getForwardFace(), vo.getOperationTaskDTO().getSourceContainerFace()))
+                        && (arrivedContainerCache.getFace() == null || Objects.equals(arrivedContainerCache.getFace(), vo.getOperationTaskDTO().getSourceContainerFace())))
                 .toList();
 
         if (ObjectUtils.isEmpty(processingTasks)) {

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="remove_w_stock_abnormal_record_stock_abnormal_reason_name" author="Kinser">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="w_stock_abnormal_record"/>
+            </and>
+            <and>
+                <columnExists tableName="w_stock_abnormal_record" columnName="stock_abnormal_reason"/>
+            </and>
+        </preConditions>
+        <comment>change table column name</comment>
+        <sql>
+            ALTER TABLE w_stock_abnormal_record drop column stock_abnormal_reason;
+        </sql>
+    </changeSet>
+
+
+</databaseChangeLog>

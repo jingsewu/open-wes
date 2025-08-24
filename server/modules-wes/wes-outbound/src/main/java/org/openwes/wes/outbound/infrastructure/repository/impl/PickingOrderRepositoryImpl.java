@@ -148,6 +148,6 @@ public class PickingOrderRepositoryImpl implements PickingOrderRepository {
         List<PickingOrderDetailPO> pickingOrderDetailPOs = pickingOrderDetailPORepository.findAllById(pickingOrderDetailIds);
         Map<Long, List<PickingOrderDetailPO>> pickingOrderMap = pickingOrderDetailPOs.stream().collect(Collectors.groupingBy(PickingOrderDetailPO::getPickingOrderId));
         List<PickingOrderPO> pickingOrderPOs = pickingOrderPORepository.findAllById(pickingOrderMap.keySet());
-        return pickingOrderPOTransfer.toDOs(pickingOrderPOs);
+        return pickingOrderPOs.stream().map(v -> pickingOrderPOTransfer.toDO(v, pickingOrderMap.get(v.getId()))).toList();
     }
 }

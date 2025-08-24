@@ -1,5 +1,6 @@
 package org.openwes.wes.outbound.application;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.openwes.common.utils.constants.RedisConstants;
 import org.openwes.common.utils.utils.RedisUtils;
 import org.openwes.wes.api.algo.dto.PickingOrderReallocateContext;
@@ -91,6 +92,10 @@ public class PickingOrderApiImpl implements IPickingOrderApi {
         pickingOrders.forEach(pickingOrder -> {
             String warehouseCode = pickingOrder.getWarehouseCode();
             PickingOrderReallocateContext pickingOrderReallocateContext = pickingOrderService.prepareReallocateStockContext(warehouseCode, pickingOrder);
+
+            if (ObjectUtils.isEmpty(pickingOrderReallocateContext.getPickingOrderReallocateDetails())) {
+                return;
+            }
 
             // if the picking order is not allowed short outbound and the available stock is not enough, then we should not allocate stocks
             PickingOrderReallocatedResult pickingOrderReallocatedResult = pickingOrderService.reallocateStocks(pickingOrderReallocateContext);

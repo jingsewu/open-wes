@@ -43,13 +43,14 @@ public interface StockAllocationService {
 
     private static Stream<OperationTaskDTO> generateOperationTasks(PickingOrderDTO pickingOrder, Map<Long, Set<String>> stationAllocatedContainers,
                                                                    PickingOrderDTO.PickingOrderDetailDTO detail, List<ContainerStockDTO> containerStockDTOS) {
-        AtomicInteger qtyRequired = new AtomicInteger(detail.getQtyRequired());
+        AtomicInteger qtyRequired = new AtomicInteger(detail.getQtyAbnormal() > 0 ? detail.getQtyAbnormal() : detail.getQtyRequired() - detail.getQtyAllocation());
         return containerStockDTOS.stream().filter(v -> v.getAvailableQty() > 0).flatMap(containerStockDTO -> {
             if (qtyRequired.get() <= 0) {
                 return null;
             }
             int qtyPreAllocated = Math.min(qtyRequired.get(), containerStockDTO.getAvailableQty());
 
+            detail.addAllocation(qtyPreAllocated);
             qtyRequired.addAndGet(-qtyPreAllocated);
 
             containerStockDTO.setAvailableQty(containerStockDTO.getAvailableQty() - qtyPreAllocated);
