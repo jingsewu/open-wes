@@ -39,9 +39,6 @@ public class PickingOrderDTO implements Serializable {
     @Hidden
     private PickingOrderStatusEnum pickingOrderStatus;
 
-    @Hidden
-    private PickingOrderTaskTypeEnum pickingOrderTaskType;
-
     /**
      * one picking order can be assigned to multiple station slot
      * <p>

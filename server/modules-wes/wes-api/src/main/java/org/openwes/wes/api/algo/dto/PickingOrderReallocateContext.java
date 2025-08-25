@@ -1,12 +1,13 @@
 package org.openwes.wes.api.algo.dto;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+import lombok.experimental.Accessors;
 import org.openwes.wes.api.basic.constants.WarehouseAreaWorkTypeEnum;
 import org.openwes.wes.api.outbound.dto.PickingOrderDTO;
 import org.openwes.wes.api.stock.dto.ContainerStockDTO;
 import org.openwes.wes.api.stock.dto.SkuBatchStockDTO;
-import jakarta.validation.constraints.NotEmpty;
-import lombok.Data;
-import lombok.experimental.Accessors;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -18,11 +19,12 @@ public class PickingOrderReallocateContext {
     @NotEmpty
     private String warehouseCode;
 
-    @NotEmpty
+    @NotNull
     private PickingOrderDTO pickingOrder;
 
     private List<PickingOrderReallocateDetail> pickingOrderReallocateDetails;
 
+    @NotNull
     private WarehouseAreaWorkTypeEnum warehouseAreaWorkType;
 
     public void addPickingOrderReallocateDetail(Long detailId, List<ContainerStockDTO> containerStocks, List<SkuBatchStockDTO> skuBatchStockDTOS) {

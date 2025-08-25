@@ -38,6 +38,7 @@ import org.openwes.wes.outbound.domain.repository.PickingOrderRepository;
 import org.openwes.wes.outbound.domain.service.PickingOrderService;
 import org.openwes.wes.outbound.domain.transfer.PickingOrderTransfer;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.function.Function;
@@ -161,6 +162,7 @@ public class PickingOrderServiceImpl implements PickingOrderService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PickingOrderReallocateContext prepareReallocateStockContext(String warehouseCode, PickingOrder pickingOrder) {
 
         PickingOrderReallocateContext pickingOrderReallocateContext = new PickingOrderReallocateContext()
@@ -172,9 +174,12 @@ public class PickingOrderServiceImpl implements PickingOrderService {
         List<PickingOrderDetail> abnormalDetails = pickingOrder.getDetails().stream().filter(v -> v.getQtyAbnormal() > 0).toList();
         List<Long> skuBatchStockIds = abnormalDetails.stream().map(PickingOrderDetail::getSkuBatchStockId).toList();
 
+        //1. match current batch attributes stocks.
         List<SkuBatchStockDTO> skuBatchStocks = stockApi.getSkuBatchStocks(skuBatchStockIds);
         boolean allMatch = skuBatchStocks.stream().allMatch(v -> {
-            Integer totalAbnormalQty = abnormalDetails.stream().filter(a -> Objects.equals(a.getSkuBatchStockId(), v.getId())).map(PickingOrderDetail::getQtyAbnormal)
+            Integer totalAbnormalQty = abnormalDetails.stream()
+                    .filter(a -> Objects.equals(a.getSkuBatchStockId(), v.getId()))
+                    .map(PickingOrderDetail::getQtyAbnormal)
                     .reduce(Integer::sum).orElse(0);
             return v.getAvailableQty() >= totalAbnormalQty;
         });
@@ -192,7 +197,8 @@ public class PickingOrderServiceImpl implements PickingOrderService {
             pickingOrderReallocateContext.setPickingOrderReallocateDetails(pickingOrderReallocateDetails);
             return pickingOrderReallocateContext;
         }
-        // match other batch attributes
+
+        //2. match other batch attributes
         List<Long> skuIds = pickingOrder.getDetails().stream().map(PickingOrderDetail::getSkuId).toList();
         List<String> ownerCodes = pickingOrder.getDetails().stream().map(PickingOrderDetail::getOwnerCode).distinct().toList();
         OutboundAllocateSkuBatchContext outboundAllocateSkuBatchContext = this.prepareAllocateCache(skuIds, warehouseCode, ownerCodes);
@@ -218,6 +224,7 @@ public class PickingOrderServiceImpl implements PickingOrderService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public OutboundAllocateSkuBatchContext prepareAllocateCache(List<Long> skuIds, String warehouseCode, List<String> ownerCodes) {
         Map<Long, List<SkuBatchAttributeDTO>> skuBatchAttributeMap = skuBatchAttributeApi.getBySkuIds(skuIds)
                 .stream().collect(Collectors.groupingBy(SkuBatchAttributeDTO::getSkuId));
