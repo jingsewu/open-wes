@@ -140,22 +140,17 @@ public class PickingOrderHandleScheduler {
     @DistributedScheduled(cron = "0 0/5 * * * *", name = "PickingOrderHandleScheduler#handleAbnormalOrders")
     public void handleAbnormalOrders() {
 
-        List<Long> abnormalTaskIds = redisUtils.getList(RedisConstants.PICKING_ORDER_ABNORMAL_DETAIL_IDS);
-        if (CollectionUtils.isEmpty(abnormalTaskIds)) {
+        List<Long> pickingOrderDetailIds = redisUtils.getList(RedisConstants.PICKING_ORDER_ABNORMAL_DETAIL_IDS);
+        if (CollectionUtils.isEmpty(pickingOrderDetailIds)) {
             return;
         }
 
         CompletableFuture
                 .runAsync(Objects.requireNonNull(TtlRunnable.get(()
-                        -> this.reallocate(abnormalTaskIds))), pickingOrderReallocateExecutor)
+                        -> pickingOrderApi.reallocate(pickingOrderDetailIds))), pickingOrderReallocateExecutor)
                 .exceptionally(e -> {
                     log.error("reallocate failed", e);
                     return null;
                 });
     }
-
-    private void reallocate(List<Long> pickingOrderDetailIds) {
-        pickingOrderApi.reallocate(pickingOrderDetailIds);
-    }
-
 }

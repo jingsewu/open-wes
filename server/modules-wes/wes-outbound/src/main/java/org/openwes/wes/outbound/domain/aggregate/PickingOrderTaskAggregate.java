@@ -153,6 +153,8 @@ public class PickingOrderTaskAggregate {
                         .build()).toList();
         stockApi.lockContainerStock(lockDTOS);
 
+        containerTaskApiFacade.createContainerTasks(savedOperationTasks, ContainerTaskTypeEnum.OUTBOUND);
+
         return savedOperationTasks;
     }
 

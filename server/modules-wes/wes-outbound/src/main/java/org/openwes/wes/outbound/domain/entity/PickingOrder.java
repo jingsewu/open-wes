@@ -107,7 +107,8 @@ public class PickingOrder {
         log.info("picking order id: {}, orderNo: {}, detailId: {} report abnormal with abnormal qty: {}",
                 this.id, this.pickingOrderNo, detailId, abnormalQty);
 
-        this.details.stream().filter(v -> v.getId().equals(detailId)).forEach(detail -> detail.reportAbnormal(abnormalQty));
+        this.details.stream().filter(v -> v.getId().equals(detailId))
+                .forEach(detail -> detail.reportAbnormal(abnormalQty));
     }
 
     public void reallocateAbnormal(Integer allocatedQty, Long detailId) {
@@ -115,7 +116,8 @@ public class PickingOrder {
         log.info("picking order id: {}, orderNo: {}, detailId: {} reallocate abnormal with allocated qty: {}",
                 this.id, this.pickingOrderNo, detailId, allocatedQty);
 
-        this.details.stream().filter(v -> v.getId().equals(detailId)).forEach(detail -> detail.reallocateAbnormal(allocatedQty));
+        this.details.stream().filter(v -> v.getId().equals(detailId))
+                .forEach(detail -> detail.reallocateAbnormal(allocatedQty));
     }
 
     public void shortPicking(Integer shortQty, Long detailId) {
@@ -126,7 +128,8 @@ public class PickingOrder {
         if (!this.shortOutbound) {
             return;
         }
-        this.details.stream().filter(v -> v.getId().equals(detailId)).forEach(detail -> detail.shortPicking(shortQty));
+        this.details.stream().filter(v -> v.getId().equals(detailId))
+                .forEach(detail -> detail.shortPicking(shortQty));
         if (this.details.stream().allMatch(v -> v.getPickingOrderDetailStatus() == PickingOrderDetailStatusEnum.PICKED)) {
             this.pickingOrderStatus = PickingOrderStatusEnum.PICKED;
             DomainEventPublisher.sendAsyncDomainEvent(new PickingOrderCompleteEvent().setPickingOrderIds(Lists.newArrayList(this.id)));
