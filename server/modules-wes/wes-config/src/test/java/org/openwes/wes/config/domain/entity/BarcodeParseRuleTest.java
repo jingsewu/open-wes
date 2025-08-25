@@ -1,8 +1,5 @@
 package org.openwes.wes.config.domain.entity;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import com.google.common.collect.Lists;
 import org.openwes.wes.api.config.constants.BusinessFlowEnum;
 import org.openwes.wes.api.config.constants.ExecuteTimeEnum;
@@ -12,6 +9,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class BarcodeParseRuleTest {
 
