@@ -49,20 +49,20 @@ const columns = [
         name: "stocktakeUnitType",
         label: "table.creationType",
         type: "mapping",
-        source: "dictionary.StocktakeUnitType}",
+        source: "${dictionary.StocktakeUnitType}",
         searchable: {
             type: "select",
-            source: "dictionary.StocktakeUnitType}"
+            source: "${dictionary.StocktakeUnitType}"
         }
     },
     {
         name: "stocktakeOrderStatus",
         label: "table.status",
         type: "mapping",
-        source: "dictionary.StocktakeOrderStatus}",
+        source: "${dictionary.StocktakeOrderStatus}",
         searchable: {
             type: "select",
-            source: "dictionary.StocktakeOrderStatus}"
+            source: "${dictionary.StocktakeOrderStatus}"
         },
         classNameExpr:
             "${ stocktakeOrderStatus === 'STARTED' ? 'startStatus' : '' }"
