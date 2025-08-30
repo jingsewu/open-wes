@@ -2,7 +2,7 @@ package org.openwes.station.application.business.handler.common;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openwes.common.utils.exception.WmsException;
 import org.openwes.common.utils.exception.code_enum.OperationTaskErrorDescEnum;
@@ -15,14 +15,9 @@ import org.openwes.station.domain.service.WorkStationService;
 import org.openwes.station.infrastructure.remote.BarcodeService;
 import org.openwes.wes.api.config.constants.BusinessFlowEnum;
 import org.openwes.wes.api.config.constants.ExecuteTimeEnum;
-import org.openwes.wes.api.config.constants.ParserObjectEnum;
 import org.openwes.wes.api.config.dto.BarcodeParseRequestDTO;
 import org.openwes.wes.api.config.dto.BarcodeParseResult;
-import org.openwes.wes.api.main.data.dto.BarcodeDTO;
-import org.openwes.wes.api.main.data.dto.SkuMainDataDTO;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 import static org.openwes.station.api.constants.ApiCodeEnum.SCAN_BARCODE;
 
@@ -69,37 +64,19 @@ public class ScanBarcodeHandler<T extends WorkStationCache> implements IBusiness
             return ApiCodeEnum.SCAN_BARCODE;
         }
 
-        default String parseSkuCode(SkuMainDataDTO skuMainData, String barcode, BusinessFlowEnum businessFlowEnum,
+        default String parseSkuCode(String barcode, BusinessFlowEnum businessFlowEnum,
                                     BarcodeService barcodeService) {
             BarcodeParseRequestDTO requestDTO = new BarcodeParseRequestDTO();
             requestDTO.setBarcode(barcode);
             requestDTO.setBusinessFlow(businessFlowEnum);
             requestDTO.setExecuteTime(ExecuteTimeEnum.SCAN_SKU);
-            List<BarcodeParseResult> results = barcodeService.parse(requestDTO);
+            BarcodeParseResult result = barcodeService.parse(requestDTO);
 
-            if (results == null) {
-                return barcode;
+            if (ObjectUtils.isEmpty(result.getSkus())) {
+                throw WmsException.throwWmsException(OperationTaskErrorDescEnum.INCORRECT_BARCODE);
             }
 
-            for (BarcodeParseResult result : results) {
-                if (ParserObjectEnum.SKU_CODE.getValue().equals(result.getFieldName())) {
-                    String skuCode = String.valueOf(result.getFieldValue());
-                    if (skuMainData.getSkuCode().equals(skuCode)) {
-                        return skuCode;
-                    }
-                } else if (ParserObjectEnum.BAR_CODE.getValue().equals(result.getFieldName())) {
-                    BarcodeDTO skuBarcode = skuMainData.getSkuBarcode();
-
-                    if (skuBarcode != null
-                            && CollectionUtils.isNotEmpty(skuBarcode.getBarcodes())
-                            && skuBarcode.getBarcodes().contains(barcode)) {
-
-                        return skuMainData.getSkuCode();
-                    }
-                }
-            }
-
-            throw WmsException.throwWmsException(OperationTaskErrorDescEnum.INCORRECT_BARCODE);
+            return result.getSkus().iterator().next().getSkuCode();
         }
 
     }

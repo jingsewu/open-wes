@@ -6,9 +6,11 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import org.openwes.wes.api.stock.dto.SkuBatchAttributeDTO;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 @Data
@@ -92,4 +94,29 @@ public class InboundPlanOrderDetailDTO implements Serializable {
 
     @Schema(description = "扩展属性")
     private Map<String, Object> extendFields;
+
+    public static InboundPlanOrderDetailDTO build(ImportInboundPlanOrderBaseDTO importInboundPlanOrderDTO) {
+        InboundPlanOrderDetailDTO inboundPlanOrderDetailDTO = new InboundPlanOrderDetailDTO();
+        inboundPlanOrderDetailDTO.setSkuCode(importInboundPlanOrderDTO.getSkuCode());
+        inboundPlanOrderDetailDTO.setQtyRestocked(importInboundPlanOrderDTO.getQtyRestocked());
+        inboundPlanOrderDetailDTO.setOwnerCode(importInboundPlanOrderDTO.getOwnerCode());
+
+        Map<String, Object> batchAttributes = new HashMap<>();
+        batchAttributes.put(SkuBatchAttributeDTO.INBOUND_DATE, importInboundPlanOrderDTO.getInboundDate());
+        batchAttributes.put(SkuBatchAttributeDTO.PRODUCT_DATE, importInboundPlanOrderDTO.getProductDate());
+        batchAttributes.put(SkuBatchAttributeDTO.EXPIRED_DATE, importInboundPlanOrderDTO.getExpiredDate());
+        batchAttributes.put(SkuBatchAttributeDTO.BATCH_ATTRIBUTE_PREFIX + 1, importInboundPlanOrderDTO.getBatchAttribute1());
+        batchAttributes.put(SkuBatchAttributeDTO.BATCH_ATTRIBUTE_PREFIX + 2, importInboundPlanOrderDTO.getBatchAttribute2());
+        batchAttributes.put(SkuBatchAttributeDTO.BATCH_ATTRIBUTE_PREFIX + 3, importInboundPlanOrderDTO.getBatchAttribute3());
+        batchAttributes.put(SkuBatchAttributeDTO.BATCH_ATTRIBUTE_PREFIX + 4, importInboundPlanOrderDTO.getBatchAttribute4());
+        batchAttributes.put(SkuBatchAttributeDTO.BATCH_ATTRIBUTE_PREFIX + 5, importInboundPlanOrderDTO.getBatchAttribute5());
+        batchAttributes.put(SkuBatchAttributeDTO.BATCH_ATTRIBUTE_PREFIX + 6, importInboundPlanOrderDTO.getBatchAttribute6());
+        batchAttributes.put(SkuBatchAttributeDTO.BATCH_ATTRIBUTE_PREFIX + 7, importInboundPlanOrderDTO.getBatchAttribute7());
+        batchAttributes.put(SkuBatchAttributeDTO.BATCH_ATTRIBUTE_PREFIX + 8, importInboundPlanOrderDTO.getBatchAttribute8());
+        batchAttributes.put(SkuBatchAttributeDTO.BATCH_ATTRIBUTE_PREFIX + 9, importInboundPlanOrderDTO.getBatchAttribute9());
+        batchAttributes.put(SkuBatchAttributeDTO.BATCH_ATTRIBUTE_PREFIX + 10, importInboundPlanOrderDTO.getBatchAttribute10());
+        inboundPlanOrderDetailDTO.setBatchAttributes(batchAttributes);
+
+        return inboundPlanOrderDetailDTO;
+    }
 }

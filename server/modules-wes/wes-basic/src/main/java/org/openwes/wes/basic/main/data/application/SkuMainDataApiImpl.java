@@ -1,5 +1,7 @@
 package org.openwes.wes.basic.main.data.application;
 
+import lombok.RequiredArgsConstructor;
+import org.apache.dubbo.config.annotation.DubboService;
 import org.openwes.wes.api.main.data.ISkuMainDataApi;
 import org.openwes.wes.api.main.data.dto.SkuBarcodeDataDTO;
 import org.openwes.wes.api.main.data.dto.SkuMainDataDTO;
@@ -10,8 +12,6 @@ import org.openwes.wes.basic.main.data.domain.repository.SkuMainDataRepository;
 import org.openwes.wes.basic.main.data.domain.service.SkuMainDataService;
 import org.openwes.wes.basic.main.data.domain.transfer.SkuBarcodeDataTransfer;
 import org.openwes.wes.basic.main.data.domain.transfer.SkuMainDataTransfer;
-import lombok.RequiredArgsConstructor;
-import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -62,8 +62,8 @@ public class SkuMainDataApiImpl implements ISkuMainDataApi {
     }
 
     @Override
-    public List<SkuBarcodeDataDTO> querySkuBarcodeData(String barcode, String skuCode) {
-        return skuBarcodeDataTransfer.toDTOs(skuMainDataRepository.findAllSkuBarcodeByBarcodeOrSkuCode(barcode, skuCode));
+    public List<SkuMainDataDTO> querySkuBarcodeData(String barcode, String skuCode) {
+        return skuMainDataTransfer.toDTOs(skuMainDataRepository.findAllSkuByBarcodeOrSkuCode(barcode, skuCode));
     }
 
     @Override

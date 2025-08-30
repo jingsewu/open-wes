@@ -1,7 +1,7 @@
 package org.openwes.wes.api.stock.dto;
 
-import org.openwes.wes.api.config.dto.BatchAttributeConfigDTO;
 import lombok.Data;
+import org.openwes.wes.api.config.dto.BatchAttributeConfigDTO;
 
 import java.io.Serializable;
 import java.util.List;
@@ -24,8 +24,11 @@ public class SkuBatchAttributeDTO implements Serializable, Comparable<SkuBatchAt
      */
     private List<Long> skuBatchStockIds;
 
+    public static final String INBOUND_DATE = "INBOUND_DATE";
+    public static final String EXPIRED_DATE = "EXPIRED_DATE";
+    public static final String PRODUCT_DATE = "PRODUCT_DATE";
 
-    private static final String INBOUND_DATE = "inboundDate";
+    public static final String BATCH_ATTRIBUTE_PREFIX = "BATCH_ATTRIBUTE_";
 
     public boolean match(BatchAttributeConfigDTO batchAttributeConfigDTO, Map<String, Object> batchAttributes) {
 

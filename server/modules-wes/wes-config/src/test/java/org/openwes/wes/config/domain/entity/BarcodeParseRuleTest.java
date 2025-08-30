@@ -1,14 +1,14 @@
 package org.openwes.wes.config.domain.entity;
 
+
 import com.google.common.collect.Lists;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openwes.wes.api.config.constants.BusinessFlowEnum;
 import org.openwes.wes.api.config.constants.ExecuteTimeEnum;
 import org.openwes.wes.api.config.constants.UnionLocationEnum;
-import org.openwes.wes.api.config.dto.BarcodeParseResult;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
-import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -38,21 +38,20 @@ public class BarcodeParseRuleTest {
     @Test
     void testParse_ValidBarcode_ReturnsExpectedResults() {
         String barcode = "4545454545454";
-        List<BarcodeParseResult> results = barcodeParseRule.parse(barcode);
+        Map<String, String> results = barcodeParseRule.parse(barcode);
 
         assertEquals(2, results.size());
-        assertEquals("field1", results.get(0).getFieldName());
-        assertEquals("123454545454545", results.get(0).getFieldValue());
-        assertEquals("field2", results.get(1).getFieldName());
-        assertEquals("4", results.get(1).getFieldValue());
+        assertTrue(results.containsKey("field1"));
+        assertEquals("123454545454545", results.get("field1"));
+        assertTrue(results.containsKey("field2"));
+        assertEquals("4", results.get("field2"));
     }
 
     @Test
     void testParse_InvalidBarcode_ReturnsEmptyList() {
         barcodeParseRule.setRegularExpression("(\\w+)");
         String barcode = "4545454545454";
-        List<BarcodeParseResult> results = barcodeParseRule.parse(barcode);
-
+        Map<String, String> results = barcodeParseRule.parse(barcode);
         assertTrue(results.isEmpty());
     }
 
@@ -60,7 +59,7 @@ public class BarcodeParseRuleTest {
     void testParse_EmptyResultFields_ReturnsEmptyList() {
         barcodeParseRule.setResultFields(Lists.newArrayList());
         String barcode = "4545454545454";
-        List<BarcodeParseResult> results = barcodeParseRule.parse(barcode);
+        Map<String, String> results = barcodeParseRule.parse(barcode);
 
         assertTrue(results.isEmpty());
     }

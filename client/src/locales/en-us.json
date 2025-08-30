@@ -901,5 +901,34 @@
     "printRecord.createUser": "Create User",
     "printRecord.updateStatus": "Update Status",
     "printRecord.status": "Status",
-    "button.updateStatus": "Update Status"
+    "button.updateStatus": "Update Status",
+
+    "importExcel.label": "Import Excel",
+    "importExcel.dialogTitle": "Excel Data Import",
+    "importExcel.chooseAction": "Please choose an action:",
+    "importExcel.downloadTemplate": "Download Template",
+    "importExcel.ensureFormat": "Ensure using correct format",
+    "importExcel.templateDescription": "Download standard Excel template and fill data according to the format",
+    "importExcel.uploadFile": "Upload File",
+    "importExcel.supportedFormats": "Supports .xlsx and .xls formats",
+    "importExcel.uploadDescription": "Upload completed Excel file for data import",
+    "importExcel.selectFile": "Select File to Upload",
+    "importExcel.uploadDialogTitle": "Upload Excel File",
+    "importExcel.uploadSuccess": "File uploaded successfully! Data is being processed...",
+    "importExcel.uploadFailed": "File upload failed, please check file format or contact admin",
+    "importExcel.fileRequirements": "Please ensure correct file format, size not exceeding 10MB",
+    "importExcel.selectExcelFile": "Select Excel File",
+    "importExcel.fileRestrictions": "Supports .xls and .xlsx formats, file size not exceeding 10MB",
+    "importExcel.fileUploadCTA": "Click to select file or drag file here",
+    "importExcel.importantNotes": "Important Notes:\n",
+    "importExcel.notesList": [
+        "Use the latest version of template\n",
+        "File size must not exceed 10MB\n",
+        "Only .xlsx and .xls formats supported\n",
+        "Verify data format before uploading\n",
+        "Large data imports may take several minutes\n"
+    ],
+    "common.cancel": "Cancel",
+    "common.upload": "Start Upload",
+    "common.close": "Close"
 }

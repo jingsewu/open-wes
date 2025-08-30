@@ -2,9 +2,16 @@ package org.openwes.wes.config.application;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.dubbo.config.annotation.DubboService;
 import org.openwes.common.utils.exception.WmsException;
 import org.openwes.distribute.lock.DistributeLock;
 import org.openwes.wes.api.config.IBarcodeParseRuleApi;
+import org.openwes.wes.api.config.constants.ExecuteTimeEnum;
+import org.openwes.wes.api.config.constants.ParserObjectEnum;
 import org.openwes.wes.api.config.dto.BarcodeParseRequestDTO;
 import org.openwes.wes.api.config.dto.BarcodeParseResult;
 import org.openwes.wes.api.config.dto.BarcodeParseRuleDTO;
@@ -13,20 +20,16 @@ import org.openwes.wes.api.main.data.dto.SkuMainDataDTO;
 import org.openwes.wes.config.domain.entity.BarcodeParseRule;
 import org.openwes.wes.config.domain.repository.BarcodeParseRuleRepository;
 import org.openwes.wes.config.domain.transfer.BarcodeParseRuleTransfer;
-import lombok.RequiredArgsConstructor;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
 import static org.openwes.common.utils.constants.RedisConstants.BARCODE_PARSE_RULE_ADD_LOCK;
-import static org.openwes.common.utils.exception.code_enum.BasicErrorDescEnum.BARCODE_PARSE_RULE_REPEAT;
-import static org.openwes.common.utils.exception.code_enum.BasicErrorDescEnum.CODE_MUST_NOT_UPDATE;
+import static org.openwes.common.utils.exception.code_enum.BasicErrorDescEnum.*;
 
 @Validated
 @Service
@@ -75,21 +78,53 @@ public class BarcodeParseRuleApiImpl implements IBarcodeParseRuleApi {
     }
 
     @Override
-    public List<BarcodeParseResult> parse(BarcodeParseRequestDTO barcodeParseRequestDTO) {
+    public BarcodeParseResult parse(BarcodeParseRequestDTO barcodeParseRequestDTO) {
 
         List<BarcodeParseRule> barcodeParseRules = queryParseRules(barcodeParseRequestDTO);
         if (CollectionUtils.isEmpty(barcodeParseRules)) {
-            // null is ok, means no rule
-            return null;
+            return convertToObject(barcodeParseRequestDTO);
         }
 
         for (BarcodeParseRule parseRule : barcodeParseRules) {
-            List<BarcodeParseResult> results = parseRule.parse(barcodeParseRequestDTO.getBarcode());
-            if (CollectionUtils.isNotEmpty(results)) {
-                return results;
+            Map<String, String> map = parseRule.parse(barcodeParseRequestDTO.getBarcode());
+            if (MapUtils.isNotEmpty(map)) {
+                return convertToObject(map);
             }
         }
-        return Lists.newArrayList();
+
+        throw WmsException.throwWmsException(BARCODE_PARSE_ERROR, barcodeParseRequestDTO.getBarcode());
+    }
+
+    private BarcodeParseResult convertToObject(BarcodeParseRequestDTO barcodeParseRequestDTO) {
+
+        BarcodeParseResult.BarcodeParseResultBuilder result = BarcodeParseResult.builder();
+        if (barcodeParseRequestDTO.getExecuteTime() == ExecuteTimeEnum.SCAN_SKU) {
+            List<SkuMainDataDTO> skuBarcodeDataDTOs = skuMainDataApi.querySkuBarcodeData(barcodeParseRequestDTO.getBarcode(), barcodeParseRequestDTO.getBarcode());
+            result.skus(skuBarcodeDataDTOs);
+        } else {
+            result.containerCode(barcodeParseRequestDTO.getBarcode());
+        }
+
+        return result.build();
+    }
+
+    private BarcodeParseResult convertToObject(Map<String, String> map) {
+
+        String skuCode = map.get(ParserObjectEnum.SKU_CODE.name());
+        String barcode = map.get(ParserObjectEnum.BAR_CODE.name());
+
+        BarcodeParseResult.BarcodeParseResultBuilder result = BarcodeParseResult.builder()
+                .amount(map.getOrDefault(ParserObjectEnum.AMOUNT.name(), "1"))
+                .containerCode(map.getOrDefault(ParserObjectEnum.CONTAINER_CODE.name(), ""))
+                .containerFace(map.getOrDefault(ParserObjectEnum.CONTAINER_FACE.name(), ""))
+                .attributes(map);
+
+        if (skuCode != null || barcode != null) {
+            List<SkuMainDataDTO> skuBarcodeDataDTOs = skuMainDataApi.querySkuBarcodeData(barcode, skuCode);
+            result.skus(skuBarcodeDataDTOs);
+        }
+
+        return result.build();
     }
 
     private List<BarcodeParseRule> queryParseRules(BarcodeParseRequestDTO barcodeParseRequestDTO) {

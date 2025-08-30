@@ -1,7 +1,7 @@
-import axios, { AxiosRequestConfig } from "axios"
-import { makeTranslator, toast } from "amis"
-import { attachmentAdpator } from "amis-core"
-import { ApiObject } from "amis-core/lib/types"
+import axios, {AxiosRequestConfig} from "axios"
+import {makeTranslator, toast} from "amis"
+import {attachmentAdpator} from "amis-core"
+import {ApiObject} from "amis-core/lib/types"
 import store from "@/stores"
 
 /**
@@ -33,6 +33,23 @@ export default function request(config: AxiosRequestConfig) {
     return new Promise((resolve, reject) => {
         let onSuccess = async (res: any) => {
             console.log("onSuccess", res)
+
+            const contentDisposition = res.headers['content-disposition'];
+            const responseType = config.responseType
+            if (responseType === 'blob' && contentDisposition) {
+                const filename = contentDisposition.split('filename=')[1];
+
+                const downloadUrl = window.URL.createObjectURL(new Blob([res.data]));
+                const link = document.createElement('a');
+                link.href = downloadUrl;
+                link.setAttribute('download', filename); // 设置下载的文件名
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(downloadUrl);
+                return; // 不进行 Amis 渲染，直接返回
+            }
+
             if (res.data === null) {
                 console.log("reject data")
                 reject(res)
@@ -46,7 +63,7 @@ export default function request(config: AxiosRequestConfig) {
             } else if (!res.data.status || res?.data?.status === "SAT010001") {
                 resolve(res)
             } else {
-                toast.error(res.data.description, { title: res.data.msg })
+                toast.error(res.data.description, {title: res.data.msg})
                 resolve(res)
             }
         }
