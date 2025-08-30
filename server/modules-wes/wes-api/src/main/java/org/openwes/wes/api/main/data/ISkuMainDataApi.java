@@ -14,7 +14,7 @@ public interface ISkuMainDataApi {
 
     void createOrUpdateBatch(@Valid List<SkuMainDataDTO> skuMainDataDTOs);
 
-    List<SkuBarcodeDataDTO> querySkuBarcodeData(String barcode, String skuCode);
+    List<SkuMainDataDTO> querySkuBarcodeData(String barcode, String skuCode);
 
     List<SkuBarcodeDataDTO> querySkuByBarcode(String barcode);
 

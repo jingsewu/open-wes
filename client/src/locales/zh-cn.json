@@ -901,6 +901,35 @@
     "printRecord.createUser": "创建人",
     "printRecord.updateStatus": "更新状态",
     "printRecord.status": "状态",
-    "button.updateStatus": "更新状态"
+    "button.updateStatus": "更新状态",
+
+    "importExcel.label": "导入Excel",
+    "importExcel.dialogTitle": "Excel数据导入",
+    "importExcel.chooseAction": "请选择以下操作：",
+    "importExcel.downloadTemplate": "下载模板",
+    "importExcel.ensureFormat": "确保使用正确的格式",
+    "importExcel.templateDescription": "下载标准Excel模板文件，按照模板格式填写数据",
+    "importExcel.uploadFile": "上传文件",
+    "importExcel.supportedFormats": "支持.xlsx和.xls格式",
+    "importExcel.uploadDescription": "上传已填写好的Excel文件进行数据导入",
+    "importExcel.selectFile": "选择文件上传",
+    "importExcel.uploadDialogTitle": "上传Excel文件",
+    "importExcel.uploadSuccess": "文件上传成功！数据正在处理中...",
+    "importExcel.uploadFailed": "文件上传失败，请检查文件格式或联系管理员",
+    "importExcel.fileRequirements": "请确保文件格式正确，大小不超过10MB",
+    "importExcel.selectExcelFile": "选择Excel文件",
+    "importExcel.fileRestrictions": "支持.xls和.xlsx格式，文件大小不超过10MB",
+    "importExcel.fileUploadCTA": "点击选择文件或拖拽文件到此",
+    "importExcel.importantNotes": "注意事项：\n",
+    "importExcel.notesList": [
+        "请确保使用最新版本的模板文件\n",
+        "文件大小不得超过10MB\n",
+        "仅支持.xlsx和.xls格式\n",
+        "上传前请检查数据格式是否正确\n",
+        "大量数据导入可能需要几分钟处理时间\n"
+    ],
+    "common.cancel": "取消",
+    "common.upload": "开始上传",
+    "common.close": "关闭"
 
 }

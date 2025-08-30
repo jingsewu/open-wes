@@ -1,5 +1,7 @@
 package org.openwes.station.application.business.handler.common.extension.outbound;
 
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
 import org.openwes.common.utils.exception.WmsException;
 import org.openwes.common.utils.exception.code_enum.OperationTaskErrorDescEnum;
 import org.openwes.station.application.business.handler.common.ScanBarcodeHandler;
@@ -12,9 +14,6 @@ import org.openwes.wes.api.basic.constants.PutWallSlotStatusEnum;
 import org.openwes.wes.api.basic.constants.WorkStationModeEnum;
 import org.openwes.wes.api.basic.dto.PutWallSlotDTO;
 import org.openwes.wes.api.config.constants.BusinessFlowEnum;
-import org.openwes.wes.api.task.dto.OperationTaskVO;
-import lombok.RequiredArgsConstructor;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,12 +32,8 @@ public class OutboundScanBarcodeHandlerExtension implements ScanBarcodeHandler.E
 
     @Override
     public void doScanBarcode(OutboundWorkStationCache workStationCache) {
-        OperationTaskVO firstOperationTaskVO = workStationCache.getFirstOperationTaskVO();
-        if (firstOperationTaskVO == null) {
-            throw WmsException.throwWmsException(OperationTaskErrorDescEnum.CANNOT_FIND_OPERATION_TASK);
-        }
 
-        String skuCode = parseSkuCode(firstOperationTaskVO.getSkuMainDataDTO(), workStationCache.getScannedBarcode(), BusinessFlowEnum.OUTBOUND, barcodeService);
+        String skuCode = parseSkuCode(workStationCache.getScannedBarcode(), BusinessFlowEnum.OUTBOUND, barcodeService);
 
         List<String> putWallSlotCodes = workStationCache.getProcessingOperationTasks()
                 .stream().map(v -> v.getOperationTaskDTO().getTargetLocationCode()).toList();

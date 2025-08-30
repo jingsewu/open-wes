@@ -9062,9 +9062,9 @@ const mockData = {
                     id: 575678483603263500,
                     skuId: 571798421208454660,
                     skuAttributes: {
-                        expiredDate: "",
-                        inboundDate: "",
-                        productDate: ""
+                        EXPIRED_DATE: "",
+                        INBOUND_DATE: "",
+                        PRODUCT_DATE: ""
                     },
                     batchNo: "5dfa55be46ad7974bea79f254e02fd56",
                     skuBatchStockIds: null

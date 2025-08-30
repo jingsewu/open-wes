@@ -1,19 +1,20 @@
 package org.openwes.wes.config.domain.entity;
 
 import com.google.common.collect.Lists;
-import org.openwes.wes.api.config.constants.BusinessFlowEnum;
-import org.openwes.wes.api.config.constants.ExecuteTimeEnum;
-import org.openwes.wes.api.config.constants.UnionLocationEnum;
-import org.openwes.wes.api.config.dto.BarcodeParseResult;
-import org.openwes.common.utils.base.UpdateUserDTO;
+import com.google.common.collect.Maps;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.openwes.common.utils.base.UpdateUserDTO;
+import org.openwes.wes.api.config.constants.BusinessFlowEnum;
+import org.openwes.wes.api.config.constants.ExecuteTimeEnum;
+import org.openwes.wes.api.config.constants.ParserObjectEnum;
+import org.openwes.wes.api.config.constants.UnionLocationEnum;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,11 +42,16 @@ public class BarcodeParseRule extends UpdateUserDTO {
 
     private String regularExpression;
 
+    /**
+     * these field values are from ParserObjectEnum
+     *
+     * @see ParserObjectEnum
+     */
     private List<String> resultFields;
 
     private Long version;
 
-    public List<BarcodeParseResult> parse(String barcode) {
+    public Map<String, String> parse(String barcode) {
         String unionBarcode = union(barcode);
         List<String> compileResult = compile(unionBarcode);
         return buildResult(compileResult);
@@ -69,27 +75,28 @@ public class BarcodeParseRule extends UpdateUserDTO {
                     result.add(matcher.group(i));
                 }
             } catch (Exception e) {
-                log.error("barcode rule parse error,regex={},parameter={}size={}", regularExpression, unionBarcode, resultFields.size(), e);
+                log.error("barcode rule parse error,regex: {},parameter: {}, size: {}", regularExpression, unionBarcode,
+                        resultFields.size(), e);
             }
         }
         return result;
     }
 
-    private List<BarcodeParseResult> buildResult(List<String> compileResult) {
+    private Map<String, String> buildResult(List<String> compileResult) {
         if (CollectionUtils.isEmpty(compileResult)) {
-            return Collections.emptyList();
+            return Maps.newHashMap();
         }
         if (compileResult.size() != resultFields.size()) {
-            return Collections.emptyList();
+            return Maps.newHashMap();
         }
 
-        List<BarcodeParseResult> barcodeParseResults = Lists.newArrayListWithCapacity(resultFields.size());
+        Map<String, String> map = Maps.newHashMap();
         for (int i = 0; i < resultFields.size(); i++) {
             String field = resultFields.get(i);
             String result = compileResult.get(i);
-            barcodeParseResults.add(BarcodeParseResult.builder().fieldName(field).fieldValue(result).build());
+            map.put(field, result);
         }
-        return barcodeParseResults;
+        return map;
     }
 
     public void enable() {
@@ -108,16 +115,15 @@ public class BarcodeParseRule extends UpdateUserDTO {
      * when choose * ,it means all
      *
      * @param ownerCode
-     *
      * @return
      */
     public boolean matchOwner(String ownerCode) {
         return StringUtils.equals(this.ownerCode, "*") || StringUtils.equals(ownerCode, "*")
-            || StringUtils.equals(this.ownerCode, ownerCode);
+                || StringUtils.equals(this.ownerCode, ownerCode);
     }
 
     public boolean matchBrand(String brand) {
         return StringUtils.equals(this.brand, "*") || StringUtils.equals(brand, "*") ||
-            StringUtils.equals(this.brand, brand);
+                StringUtils.equals(this.brand, brand);
     }
 }

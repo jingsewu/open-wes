@@ -34,7 +34,7 @@ public interface SkuMainDataRepository {
 
     List<SkuBarcodeData> findBarcodeBySkuIds(List<Long> updatedSkuMainDataIds);
 
-    List<SkuBarcodeData> findAllSkuBarcodeByBarcodeOrSkuCode(String barcode, String skuCode);
+    List<SkuMainData> findAllSkuByBarcodeOrSkuCode(String barcode, String skuCode);
 
     List<SkuBarcodeData> findAllSkuBarcodeByBarcode(String barcode);
 }

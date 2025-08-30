@@ -14,6 +14,9 @@ import RobotHandler from "./operations/RobotHandler"
 import OrderHandler from "./operations/orderHandler"
 
 import {StationOperationType} from "./type"
+import CallContainer from "@/pages/wms/station/instances/receive/custom-actions/CallContainer";
+import {OperationType} from "@/pages/wms/station/event-loop/types";
+import Abnormal from "@/pages/wms/station/instances/receive/custom-actions/Abnormal";
 
 export const OPERATION_MAP = {
     [StationOperationType.robotArea]: RobotHandler,
@@ -43,7 +46,17 @@ const config: WorkStationConfig<string> = {
             name: "信息录入"
         }
     ],
-    actions: [TaskDetail, TabActionType.EXIT],
+    actions: (info, workStationEvent) => {
+        if (workStationEvent?.operationType === OperationType.SELECT_CONTAINER_PUT_AWAY) {
+            return [
+                TaskDetail,
+                Abnormal,
+                CallContainer,
+                TabActionType.EXIT,
+            ];
+        }
+        return [TaskDetail, Abnormal, TabActionType.EXIT];
+    },
     operationMap: OPERATION_MAP,
     layout: InstanceLayout,
     debugType: DebugType.STATIC,

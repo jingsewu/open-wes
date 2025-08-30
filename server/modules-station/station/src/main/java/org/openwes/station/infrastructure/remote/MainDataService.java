@@ -24,10 +24,6 @@ public class MainDataService {
         return skuMainDataApi.getSkuMainData(skuCode, ownerCode);
     }
 
-    public List<SkuBarcodeDataDTO> querySkuCodeByBarcodeOrSkuCode(String barCode, String skuCode) {
-        return skuMainDataApi.querySkuBarcodeData(barCode, skuCode);
-    }
-
     public List<SkuBarcodeDataDTO> querySkuByBarcode(String barCode) {
         return skuMainDataApi.querySkuByBarcode(barCode);
     }
