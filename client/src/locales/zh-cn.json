@@ -184,6 +184,8 @@
     "orderArea.received": "已收",
     "orderArea.scanLpnNo": "请扫描LPN号",
     "menu.inboundOrder": "入库单",
+    "confirm.close": "确定要关闭入库单?",
+
     "menu.emptyContainerInboundOrder": "空箱入库单",
     "menu.emptyContainerOutboundOrder": "空箱出库单",
     "button.emptyContainerOutbound.execute": "执行空箱出库单",

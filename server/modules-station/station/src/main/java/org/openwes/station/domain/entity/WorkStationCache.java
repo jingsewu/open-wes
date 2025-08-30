@@ -209,15 +209,17 @@ public class WorkStationCache {
         this.chooseArea = null;
         this.scannedBarcode = skuCode;
 
-        if (CollectionUtils.isEmpty(this.operateTasks)) {
-            return;
-        }
-
-        if (ObjectUtils.isEmpty(this.getArrivedContainers())) {
+        if (ObjectUtils.isEmpty(this.arrivedContainers)) {
             log.info("work station: {} code: {} no arrived containers", this.id, this.stationCode);
             throw WmsException.throwWmsException(STATION_NO_ARRIVED_CONTAINER);
         }
-        ArrivedContainerCache arrivedContainerCache = this.getArrivedContainers().iterator().next();
+
+        if (CollectionUtils.isEmpty(this.operateTasks)) {
+            log.info("work station: {} code: {} don't contains any operation tasks. maybe something error", this.id, this.stationCode);
+            return;
+        }
+
+        ArrivedContainerCache arrivedContainerCache = this.arrivedContainers.iterator().next();
 
         List<OperationTaskVO> processingTasks = this.operateTasks.stream()
                 .filter(vo -> skuCode.equals(vo.getSkuMainDataDTO().getSkuCode())
