@@ -184,6 +184,8 @@
     "orderArea.received": "Received",
     "orderArea.scanLpnNo": "Please scan the LPN number",
     "menu.inboundOrder": "Inbound order",
+    "confirm.close": "Are you sure to close inbound plan orders?",
+
     "menu.emptyContainerInboundOrder": "Empty container inbound order",
     "menu.emptyContainerOutboundOrder": "Empty container outbound order",
     "button.emptyContainerOutbound.execute": "Execute empty container outbound order",

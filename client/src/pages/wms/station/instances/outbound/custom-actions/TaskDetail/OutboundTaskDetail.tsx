@@ -19,9 +19,15 @@ const columns = [
     },
     {
         name: "customerOrderType",
-        dbField: "opo.customer_order_type",
         label: "table.orderType",
-        searchable: true
+        dbField: "opo.customer_order_type",
+
+        type: "mapping",
+        source: "${dictionary.CustomerOrderType}",
+        searchable: {
+            type: "select",
+            source: "${dictionary.CustomerOrderType}"
+        }
     },
     {
         name: "skuCode",
@@ -72,40 +78,11 @@ const columns = [
     //     dbField: "ot.source_container_face",
     //     label: "来源容器面"
     // },
-    // {
-    //     name: "boxNo",
-    //     dbField: "ot.box_no",
-    //     label: "箱号"
-    // },
-    {
-        name: "targetContainerCode",
-        dbField: "ot.target_container_code",
-        label: "table.targetContainerNumber",
-        searchable: true
-    },
-    {
-        name: "targetContainerSlotCode",
-        dbField: "ot.target_container_slot_code",
-        label: "table.targetContainerLattice"
-    },
-
-    {
-        name: "targetLocationCode",
-        dbField: "ot.target_location_code",
-        label: "table.seedingWallLattices",
-        searchable: true
-    },
     {
         name: "taskStatus",
         dbField: "ot.task_status",
         label: "table.taskStatus"
     },
-    // {
-    //     name: "taskType",
-    //     dbField: "ot.task_type",
-    //     label: "任务类型"
-    // },
-
     {
         name: "skuAttributes",
         dbField: "sba.sku_attributes",
@@ -134,8 +111,21 @@ const schema = {
                 searchIdentity: searchIdentity,
                 showColumns: showColumns,
                 searchObject: {
-                    tables: "w_operation_task ot, w_picking_order po, w_picking_order_detail pod, w_outbound_plan_order opo, w_sku_batch_attribute sba, m_sku_main_data smd, w_warehouse_area swa",
-                    where: "ot.order_id = po.id and ot.detail_id = pod.id and pod.outbound_order_plan_id = opo.id and ot.sku_batch_attribute_id = sba.id and ot.sku_id = smd.id and po.warehouse_area_id = swa.id and ot.required_qty > 0 and swa.warehouse_area_work_type = 'ROBOT'",
+                    tables: "w_operation_task ot, " +
+                        "w_picking_order po, " +
+                        "w_picking_order_detail pod, " +
+                        "w_outbound_plan_order opo, " +
+                        "w_sku_batch_attribute sba, " +
+                        "m_sku_main_data smd, " +
+                        "w_warehouse_area swa",
+                    where: "ot.order_id = po.id " +
+                        "and ot.detail_id = pod.id " +
+                        "and pod.outbound_order_plan_id = opo.id " +
+                        "and ot.sku_batch_attribute_id = sba.id " +
+                        "and ot.sku_id = smd.id " +
+                        "and po.warehouse_area_id = swa.id " +
+                        "and ot.required_qty > 0 " +
+                        "and swa.warehouse_area_work_type = 'ROBOT'",
                     orderBy: "ot.update_time desc"
                 }
             },
