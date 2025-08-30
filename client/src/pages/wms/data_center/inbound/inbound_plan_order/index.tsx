@@ -101,14 +101,14 @@ const columns = [
 ]
 
 const close = {
-    type: "button",
     label: "button.close",
-    method: "POST",
+    actionType: "ajax",
     api: {
-        method: "POST",
+        method: "post",
         url: api_inbound_plan_order_close,
         data: "${ARRAYMAP(selectedItems, item => item.id)}"
-    }
+    },
+    confirmText: "confirm.close"
 }
 
 const import_excel = {
@@ -328,6 +328,7 @@ const schema = {
                 columnsNum: 3,
                 showBtnToolbar: true
             },
+            multiple: true,
             headerToolbar: [
                 "reload",
                 import_excel,
@@ -342,6 +343,9 @@ const schema = {
                         showColumns: showColumns
                     }
                 },
+                "bulkActions"
+            ],
+            bulkActions: [
                 close
             ],
             footerToolbar: ["switch-per-page", "statistics", "pagination"],

@@ -9,6 +9,7 @@ import {
     api_crud_search_by_warehouseCode_total
 } from "@/pages/constantApi"
 import { detailDialog, detailColumns, searchDetailIdentity } from "./detail"
+import { add } from "./add"
 
 const columns = [
     {
@@ -141,8 +142,9 @@ const headerToolbar = [
         },
         filename: "outbound_plan_order_details",
         exportColumns: JSON.parse(JSON.stringify(detailColumns))
-    }
+    },
     // add
+    add
 ]
 
 const searchIdentity = "WOutboundPlanOrder"
