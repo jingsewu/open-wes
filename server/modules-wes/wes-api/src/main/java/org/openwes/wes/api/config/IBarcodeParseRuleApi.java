@@ -1,12 +1,10 @@
 package org.openwes.wes.api.config;
 
 import org.openwes.wes.api.config.dto.BarcodeParseRequestDTO;
-import org.openwes.wes.api.config.dto.BarcodeParseResult;
 import org.openwes.wes.api.config.dto.BarcodeParseRuleDTO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-
-import java.util.List;
+import org.openwes.wes.api.config.dto.BarcodeParseResult;
 
 public interface IBarcodeParseRuleApi {
 
@@ -14,7 +12,7 @@ public interface IBarcodeParseRuleApi {
 
     void update(@Valid BarcodeParseRuleDTO barcodeParseRuleDTO);
 
-    List<BarcodeParseResult> parse(@Valid BarcodeParseRequestDTO barcodeParseRequestDTO);
+    BarcodeParseResult parse(@Valid BarcodeParseRequestDTO barcodeParseRequestDTO);
 
     void enable(@NotNull Long barcodeParseRuleId);
 

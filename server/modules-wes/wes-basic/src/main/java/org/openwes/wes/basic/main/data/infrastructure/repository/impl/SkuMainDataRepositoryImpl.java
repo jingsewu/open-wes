@@ -1,5 +1,9 @@
 package org.openwes.wes.basic.main.data.infrastructure.repository.impl;
 
+import com.google.common.collect.Lists;
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.openwes.common.utils.constants.RedisConstants;
 import org.openwes.wes.api.main.data.dto.BarcodeDTO;
 import org.openwes.wes.basic.main.data.domain.entity.SkuBarcodeData;
@@ -11,9 +15,6 @@ import org.openwes.wes.basic.main.data.infrastructure.persistence.po.SkuBarCodeD
 import org.openwes.wes.basic.main.data.infrastructure.persistence.po.SkuMainDataPO;
 import org.openwes.wes.basic.main.data.infrastructure.persistence.transfer.SkuBarcodeDataPOTransfer;
 import org.openwes.wes.basic.main.data.infrastructure.persistence.transfer.SkuMainDataPOTransfer;
-import lombok.RequiredArgsConstructor;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -56,8 +57,21 @@ public class SkuMainDataRepositoryImpl implements SkuMainDataRepository {
     }
 
     @Override
-    public List<SkuBarcodeData> findAllSkuBarcodeByBarcodeOrSkuCode(String barcode, String skuCode) {
-        return skuBarcodeDataPOTransfer.toDOs(skuBarCodeDataPORepository.findAllByBarCodeOrSkuCode(barcode, skuCode));
+    public List<SkuMainData> findAllSkuByBarcodeOrSkuCode(String barcode, String skuCode) {
+        List<SkuMainDataPO> skuMainDataList = Lists.newArrayList();
+        if (ObjectUtils.isNotEmpty(skuCode)) {
+            skuMainDataList.addAll(skuMainDataPORepository.findAllBySkuCode(skuCode));
+        }
+
+        if (ObjectUtils.isNotEmpty(barcode)) {
+            List<SkuBarCodeDataPO> skuBarCodeDataPOs = skuBarCodeDataPORepository.findAllByBarCode(barcode);
+            if (ObjectUtils.isNotEmpty(skuBarCodeDataPOs)) {
+                List<Long> skuIds = skuBarCodeDataPOs.stream().map(SkuBarCodeDataPO::getSkuId).toList();
+                skuMainDataList.addAll(skuMainDataPORepository.findAllById(skuIds));
+            }
+        }
+
+        return skuMainDataPOTransfer.toDOS(skuMainDataList);
     }
 
     @Override

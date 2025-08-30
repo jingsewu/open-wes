@@ -16,11 +16,6 @@ import type {OperationProps} from "@/pages/wms/station/instances/types"
 import ComponentWrapper from "../../component-wrapper"
 import {OPERATION_MAP} from "./config"
 import style from "./index.module.scss"
-import {
-    valueFilter as defaultFilter,
-    taskStatusText
-} from "./operations/defaultPage"
-import {valueFilter as pickFilter} from "./operations/pickingHandler"
 import {valueFilter as robotFilter} from "./operations/RobotHandler"
 import {valueFilter as scanInfoFilter} from "./operations/tips"
 import {StationOperationType} from "./type"
@@ -144,6 +139,7 @@ const Layout = (props: ReplenishLayoutProps) => {
                             onConfirm={onConfirm}
                             changeFocusValue={changeFocusValue}
                             onScanSubmit={onScanSubmit}
+                            stationData={workStationEvent}
                         />
                     </Col>
                 </Row>

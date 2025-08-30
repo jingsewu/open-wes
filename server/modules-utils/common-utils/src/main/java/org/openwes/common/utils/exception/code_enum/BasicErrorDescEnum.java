@@ -56,6 +56,7 @@ public enum BasicErrorDescEnum implements IBaseError {
 
     BARCODE_PARSER_RESULT_CONFIG_NOT_MATCH("MD005001", "barcode parse result field size & config field size not match", AppCodeEnum.WMS.name()),
     BARCODE_PARSE_RULE_REPEAT("MD005002", "barcode parse rule repeated", AppCodeEnum.WMS.name()),
+    BARCODE_PARSE_ERROR("MD005003", "barcode {0} parse error", AppCodeEnum.WMS.name()),
 
     BATCH_ATTRIBUTE_CONFIG_REPEAT("MD006001", "batch attribute config repeated", AppCodeEnum.WMS.name()),
     BATCH_ATTRIBUTE_NOT_EXISTS("MD006002", "batchAttribute {0} not exist", AppCodeEnum.WMS.name()),

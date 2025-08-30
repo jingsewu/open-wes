@@ -24,6 +24,7 @@ import org.openwes.wes.inbound.domain.repository.InboundPlanOrderRepository;
 import org.openwes.wes.inbound.domain.service.InboundPlanOrderService;
 import org.openwes.wes.inbound.domain.transfer.InboundPlanOrderTransfer;
 import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.*;
@@ -33,6 +34,7 @@ import java.util.stream.Collectors;
 @Validated
 @RequiredArgsConstructor
 @DubboService
+@Service
 public class InboundPlanOrderApiImpl implements IInboundPlanOrderApi {
 
     private final InboundPlanOrderService inboundPlanOrderService;

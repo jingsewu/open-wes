@@ -51,9 +51,9 @@ export const valueFilter = (
 }
 
 const RobotHandler = (props: any) => {
-    const { t } = useTranslation();
+    const {t} = useTranslation();
 
-    const {value, onConfirm, focusValue, changeFocusValue, onScanSubmit,operationType} =
+    const {workStationEvent, onConfirm, focusValue, changeFocusValue, onScanSubmit} =
         props
     const containerRef = useRef<InputRef>(null)
     const countRef = useRef<any>(null)
@@ -117,7 +117,15 @@ const RobotHandler = (props: any) => {
 
     useEffect(() => {
         setInputValue("")
-    }, [value])
+        const containerCode = workStationEvent?.workLocationArea?.workLocationViews?.length > 0
+        && workStationEvent.workLocationArea.workLocationViews[0].workLocationSlots?.length > 0
+            ? workStationEvent.workLocationArea.workLocationViews[0].workLocationSlots[0].arrangedContainer?.containerCode
+            : undefined;
+
+        if (containerCode) {
+            setContainerCode(containerCode);
+        }
+    }, [workStationEvent])
 
     useEffect(() => {
         if (focusValue === "container") {
@@ -205,7 +213,21 @@ const RobotHandler = (props: any) => {
                 setInputValue("")
                 changeFocusValue("sku")
                 onScanSubmit()
+
+                if(workStationEvent?.operationType === OperationType.SELECT_CONTAINER_PUT_AWAY){
+                    containerLeave(containerCode);
+                }
             }
+        })
+    }
+
+    const containerLeave = (containerCode: string) => {
+        request({
+            method: "post",
+            url: "station/api?apiCode=CONTAINER_LEAVE",
+            data: containerCode
+        }).then((res: any) => {
+            console.log("containerLeave", res)
         })
     }
 
@@ -219,7 +241,7 @@ const RobotHandler = (props: any) => {
                     ref={containerRef}
                     onChange={onContainerChange}
                     onPressEnter={onPressEnter}
-                    disabled={operationType === OperationType.SELECT_CONTAINER_PUT_AWAY}
+                    disabled={workStationEvent.operationType === OperationType.SELECT_CONTAINER_PUT_AWAY}
                 />
             </div>
             <Divider style={{margin: "12px 0"}}/>

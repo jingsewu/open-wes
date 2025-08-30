@@ -18,6 +18,7 @@ dependencies {
     annotationProcessor 'org.mapstruct:mapstruct-processor'
     implementation 'org.projectlombok:lombok-mapstruct-binding'
 
+    implementation 'cn.afterturn:easypoi-web'
 }
 
 test {

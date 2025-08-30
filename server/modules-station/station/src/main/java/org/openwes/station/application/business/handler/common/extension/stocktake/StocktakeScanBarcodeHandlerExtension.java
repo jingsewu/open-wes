@@ -34,11 +34,7 @@ public class StocktakeScanBarcodeHandlerExtension implements ScanBarcodeHandler.
             throw WmsException.throwWmsException(StocktakeErrorDescEnum.STOCKTAKE_NO_OPERATION_TASK);
         }
 
-        OperationTaskVO operationTaskVO = workStationCache.getFirstOperationTaskVO();
-        if (operationTaskVO == null) {
-            throw WmsException.throwWmsException(StocktakeErrorDescEnum.STOCKTAKE_NO_OPERATION_TASK);
-        }
-        String skuCode = parseSkuCode(operationTaskVO.getSkuMainDataDTO(), workStationCache.getScannedBarcode(), BusinessFlowEnum.STOCK_TAKE, barcodeService);
+        String skuCode = parseSkuCode(workStationCache.getScannedBarcode(), BusinessFlowEnum.STOCK_TAKE, barcodeService);
         if (StringUtils.isEmpty(skuCode)) {
             throw WmsException.throwWmsException(StocktakeErrorDescEnum.STOCKTAKE_BAR_CODE_PARSING_ERROR);
         }
