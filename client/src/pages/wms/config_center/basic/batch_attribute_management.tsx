@@ -59,15 +59,15 @@ const form = [
         showFooterAddBtn: false,
         value: [
             {
-                fieldCode: "inboundDate",
+                fieldCode: "INBOUND_DATE",
                 fieldName: "table.inboundDate"
             },
             {
-                fieldCode: "productDate",
+                fieldCode: "PRODUCT_DATE",
                 fieldName: "table.dateOfManufacture"
             },
             {
-                fieldCode: "expiredDate",
+                fieldCode: "EXPIRED_DATE",
                 fieldName: "table.ExpirationDate"
             }
         ],

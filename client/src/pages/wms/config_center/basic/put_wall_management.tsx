@@ -81,9 +81,7 @@ const formApi = {
                         ...slot,
                         workStationId: api.data.workStationId,
                         putWallCode: api.data.putWallCode,
-                        putWallSlotCode: slot.putWallSlotCode
-                            ? slot.putWallSlotCode
-                            : slot.containerSlotSpecCode,
+                        putWallSlotCode: slot.putWallSlotCode ?? slot.containerSlotSpecCode,
                         putWallSlotStatus: "IDLE"
                     }
                 })

@@ -127,7 +127,8 @@ subprojects {
             dependency group: 'org.apache.skywalking', name: 'apm-toolkit-logback-1.x', version: '8.14.0'
             dependency group: 'org.freemarker', name: 'freemarker', version: '2.3.31'
 
-            dependency group: 'cn.afterturn', name: 'easypoi-web', version: '3.2.0'
+            dependency group: 'cn.afterturn', name: 'easypoi-web', version: '4.5.0'
+            dependency group: 'cn.afterturn', name: 'easypoi-annotation', version: '4.5.0'
 
             dependency group: 'org.apache.shardingsphere', name: 'shardingsphere-jdbc-core-spring-boot-starter', version: '5.2.1'
             dependency group: 'org.lazyluke', name: 'log4jdbc-remix', version: '0.2.7'

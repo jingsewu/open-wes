@@ -11,7 +11,7 @@ import StationCard from "@/pages/wms/station/widgets/StationCard"
 export const WORK_STATION_PATH_PREFIX = "/wms/workStation"
 
 export enum StationTypes {
-    SELECT_CONTAINER_PUT_AWAY = `replenish`,
+    SELECT_CONTAINER_PUT_AWAY = `select_container_put_away`,
     WITHOUT_ORDER_PUT_AWAY = `without_order_replenish`,
     PICKING = `outbound`,
     STOCKTAKE = `stocktake`,
@@ -24,6 +24,16 @@ const cardOptions = [
         value: "RECEIVE",
         description: (
             <Translation>{(t) => t("receiving.cardDescription")}</Translation>
+        ),
+        avatar: images.spsh,
+        rightIcon: images.spshbg,
+        backgroundColor: "#f8f3ff"
+    },
+    {
+        title: <Translation>{(t) => t("select_container_put_away.title")}</Translation>,
+        value: "SELECT_CONTAINER_PUT_AWAY",
+        description: (
+            <Translation>{(t) => t("select_container_put_away.cardDescription")}</Translation>
         ),
         avatar: images.spsh,
         rightIcon: images.spshbg,

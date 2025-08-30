@@ -1,10 +1,5 @@
 package org.openwes.wes.api.inbound.dto;
 
-import org.openwes.common.utils.base.UpdateUserDTO;
-import org.openwes.common.utils.utils.JsonUtils;
-import org.openwes.common.utils.utils.ObjectUtils;
-import org.openwes.wes.api.inbound.constants.InboundPlanOrderStatusEnum;
-import org.openwes.wes.api.inbound.constants.StorageTypeEnum;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
@@ -12,6 +7,10 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.openwes.common.utils.base.UpdateUserDTO;
+import org.openwes.wes.api.inbound.constants.InboundPlanOrderStatusEnum;
+import org.openwes.wes.api.inbound.constants.StorageTypeEnum;
+import org.springframework.beans.BeanUtils;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -101,4 +100,9 @@ public class InboundPlanOrderDTO extends UpdateUserDTO implements Serializable {
     @Schema(description = "入库计划单明细列表", requiredMode = Schema.RequiredMode.REQUIRED)
     private List<InboundPlanOrderDetailDTO> details;
 
+    public static InboundPlanOrderDTO build(ImportInboundPlanOrderBaseDTO importInboundPlanOrderDTO) {
+        InboundPlanOrderDTO inboundPlanOrderDTO = new InboundPlanOrderDTO();
+        BeanUtils.copyProperties(importInboundPlanOrderDTO, inboundPlanOrderDTO);
+        return inboundPlanOrderDTO;
+    }
 }

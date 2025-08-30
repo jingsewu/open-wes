@@ -541,6 +541,15 @@ const menuRouter = [
         }
     },
     {
+        path: "/wms/workStation/select_container_put_away",
+        name: "选容器上架",
+        component: (props: any) => <WorkStation {...props} type="select_container_put_away"/>,
+        meta: {
+            ...meta,
+            cache: false
+        }
+    },
+    {
         path: "/wms/workStation/outbound",
         name: "出库",
         component: (props: any) => <WorkStation {...props} type="outbound"/>,

@@ -1,4 +1,8 @@
 // data center - outbound - outbound plan order module
+export const api_inbound_plan_order_close = "/wms/inbound/plan/close"
+
+
+// data center - outbound - outbound plan order module
 export const api_outbound_plan_order_add = "/wms/outbound/order/create"
 
 export const api_empty_container_inbound_add =
