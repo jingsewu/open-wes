@@ -20,15 +20,19 @@ public class WorkStationPutWallAggregate {
 
     @Transactional(rollbackFor = Exception.class)
     public void online(List<PutWall> putWalls, WorkStation workStation) {
-        putWalls.forEach(PutWall::occupy);
-        putWallRepository.saveAll(putWalls, workStation.getId());
+        if (workStation.getWorkStationMode() == WorkStationModeEnum.PICKING || workStation.getWorkStationMode() == WorkStationModeEnum.TWO_STEP_RELOCATION) {
+            putWalls.forEach(PutWall::occupy);
+            putWallRepository.saveAll(putWalls, workStation.getId());
+        }
         workStationRepository.save(workStation);
     }
 
     @Transactional(rollbackFor = Exception.class)
     public void offline(List<PutWall> putWalls, WorkStation workStation) {
-        putWalls.forEach(PutWall::release);
-        putWallRepository.saveAll(putWalls, workStation.getId());
+        if (workStation.getWorkStationMode() == WorkStationModeEnum.PICKING || workStation.getWorkStationMode() == WorkStationModeEnum.TWO_STEP_RELOCATION) {
+            putWalls.forEach(PutWall::release);
+            putWallRepository.saveAll(putWalls, workStation.getId());
+        }
         workStationRepository.save(workStation);
     }
 }
