@@ -3,6 +3,7 @@ package org.openwes.domain.event.scheduler;
 import com.google.common.eventbus.EventBus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.openwes.common.utils.utils.JsonUtils;
 import org.openwes.distribute.scheduler.annotation.DistributedScheduled;
@@ -13,7 +14,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
@@ -45,14 +48,35 @@ public class DomainEventScheduler {
         Long endTime = System.currentTimeMillis() - DELAY_TIME_IN_MILLIS;
 
         List<DomainEventPO> failedEvents = domainEventPORepository.findByStatusAndCreateTimeBetween(DomainEventStatusEnum.NEW, startTime, endTime, Pageable.ofSize(MAX_SIZE_PER_TIME));
+
+        if(ObjectUtils.isEmpty(failedEvents)){
+            return;
+        }
+
+        // Track processed event signatures (type + content hash)
+        Set<String> processedEventSignatures = new HashSet<>();
+
         failedEvents.forEach(e -> {
-            String eventType = e.getEventType();
             try {
-                Object object = JsonUtils.string2Object(e.getEvent(), Class.forName(eventType));
-                assert object != null;
-                asyncEventBus.post(object);
+                // Create a unique signature for this event (type + content hash)
+                String eventSignature = e.getEventType() + ":" + e.getEvent().hashCode();
+
+                // Check if we've already processed an identical event
+                if (processedEventSignatures.contains(eventSignature)) {
+                    log.warn("Skipping duplicate event {} with signature {}", e.getId(), eventSignature);
+                    e.succeed(); // Mark as success without processing
+                    domainEventPORepository.save(e);
+                    return;
+                }
+
+                // Process the event
+                Object object = JsonUtils.string2Object(e.getEvent(), Class.forName(e.getEventType()));
+                if (object != null) {
+                    asyncEventBus.post(object);
+                    processedEventSignatures.add(eventSignature); // Remember we processed this
+                }
             } catch (ClassNotFoundException ex) {
-                log.error("retry fail event failed, event : {}", e);
+                log.error("Retry failed - unknown event type: {}, event: {}", e.getEventType(), e);
             }
         });
     }
