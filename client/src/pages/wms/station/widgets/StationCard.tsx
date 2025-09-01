@@ -1,8 +1,9 @@
-import React, { memo } from "react"
-import { Card, Avatar, Col, Row, Image } from "antd"
-import { useDebounceFn } from "ahooks"
-import { DEBOUNCE_TIME } from "@/pages/wms/station/constant"
-const { Meta } = Card
+import React, {memo} from "react"
+import {Avatar, Card} from "antd"
+import {useDebounceFn} from "ahooks"
+import {DEBOUNCE_TIME} from "@/pages/wms/station/constants/constant"
+
+const {Meta} = Card
 
 interface Iprops {
     title: any
@@ -15,11 +16,10 @@ interface Iprops {
 }
 
 const StationCard = (props: Iprops) => {
-    const { handleCardClick, rightIcon, value, avatar, title, description } =
+    const {handleCardClick, rightIcon, value, avatar, title, description} =
         props
     return (
         <Card
-            // onClick={() => handleCardClick(item)}
             onClick={
                 useDebounceFn(handleCardClick, {
                     wait: DEBOUNCE_TIME,

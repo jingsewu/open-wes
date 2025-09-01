@@ -9,25 +9,18 @@ import Tips from "./operations/tips"
 import TaskDetail from "./custom-actions/TaskDetail"
 import InstanceLayout from "./layout"
 import mockData from "./mock-events"
-import PickingHandler from "./operations/pickingHandler"
-import RobotHandler from "./operations/RobotHandler"
+import SkuHandler from "./operations/skuHandler"
+import ContainerHandler from "./operations/containerHandler"
 import OrderHandler from "./operations/orderHandler"
 
 import {StationOperationType} from "./type"
-import CallContainer from "@/pages/wms/station/instances/receive/custom-actions/CallContainer";
-import {OperationType} from "@/pages/wms/station/event-loop/types";
-import Abnormal from "@/pages/wms/station/instances/receive/custom-actions/Abnormal";
 
 export const OPERATION_MAP = {
-    [StationOperationType.robotArea]: RobotHandler,
-    [StationOperationType.selectDetailArea]: PickingHandler,
+    [StationOperationType.robotArea]: ContainerHandler,
+    [StationOperationType.selectDetailArea]: SkuHandler,
     [StationOperationType.orderArea]: OrderHandler,
     [StationOperationType.tips]: Tips
 }
-
-/**
- * 工作站物理设备类型
- */
 
 const config: WorkStationConfig<string> = {
     type: "receive",
@@ -46,17 +39,7 @@ const config: WorkStationConfig<string> = {
             name: "信息录入"
         }
     ],
-    actions: (info, workStationEvent) => {
-        if (workStationEvent?.operationType === OperationType.SELECT_CONTAINER_PUT_AWAY) {
-            return [
-                TaskDetail,
-                Abnormal,
-                CallContainer,
-                TabActionType.EXIT,
-            ];
-        }
-        return [TaskDetail, Abnormal, TabActionType.EXIT];
-    },
+    actions: [TaskDetail, TabActionType.EXIT],
     operationMap: OPERATION_MAP,
     layout: InstanceLayout,
     debugType: DebugType.STATIC,

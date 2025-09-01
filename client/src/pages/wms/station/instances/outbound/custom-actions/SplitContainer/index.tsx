@@ -34,7 +34,7 @@ const taskConfig: TabAction = {
         if (current.inputStatus === "error") {
             return false
         }
-        const {code, msg} = await current.onCustomActionDispatch({
+        const {code, msg} = await current.onActionDispatch({
             eventCode: CustomActionType.SPLIT_TASKS,
             data: {
                 operatedQty: current.pickedNumber,

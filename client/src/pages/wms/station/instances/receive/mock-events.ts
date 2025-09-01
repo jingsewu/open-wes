@@ -5,7 +5,7 @@ const mockData = {
     stationCode: "4",
     stationName: "Robot Area-4",
     workStationStatus: "ONLINE",
-    operationType: "SELECT_CONTAINER_PUT_AWAY",
+    workStationMode: "SELECT_CONTAINER_PUT_AWAY",
     chooseArea: null,
     scanCode: "210589",
     processingType: null,

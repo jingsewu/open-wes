@@ -15,7 +15,7 @@ const MaterialHandler = (
 
     return (
         <MaterialRack
-            // onCustomActionDispatch={onCustomActionDispatch}
+            // onActionDispatch={onActionDispatch}
             arrivedContainer={arrivedContainer}
         />
     )

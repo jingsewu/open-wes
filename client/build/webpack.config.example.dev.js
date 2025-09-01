@@ -87,7 +87,7 @@ webpackConfig = {
     devServer: {
         hot: true,
         host: "localhost",
-        port: 4001,
+        port: 4000,
         historyApiFallback: true,
         open: true,
         // compress: false,

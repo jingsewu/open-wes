@@ -76,7 +76,7 @@ export interface PutWallSlotDesc {
 export interface Iprops {
     value: PutWallViews[]
     isShelves?: boolean
-    onCustomActionDispatch?: (value: any) => Promise<void>
+    onActionDispatch?: (value: any) => Promise<void>
 }
 
 const WallTitle = (props: {

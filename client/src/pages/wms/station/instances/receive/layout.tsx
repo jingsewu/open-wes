@@ -1,38 +1,29 @@
 /**
  * 当前工作站实例的布局
  */
-import {Col, Row, Input, Button, message} from "antd"
+import {Button, Col, Input, message, Row} from "antd"
 import classNames from "classnames/bind"
 import React, {useState} from "react"
 import request from "@/utils/requestInterceptor"
 
-import type {
-    WorkStationEvent,
-    WorkStationInfo
-} from "@/pages/wms/station/event-loop/types"
+import type {WorkStationView} from "@/pages/wms/station/event-loop/types"
 
 import type {OperationProps} from "@/pages/wms/station/instances/types"
 
 import ComponentWrapper from "../../component-wrapper"
 import {OPERATION_MAP} from "./config"
 import style from "./index.module.scss"
-import {valueFilter as robotFilter} from "./operations/RobotHandler"
+import ContainerHandler from "./operations/containerHandler"
 import {valueFilter as scanInfoFilter} from "./operations/tips"
 import {StationOperationType} from "./type"
-import PickingHandler from "./operations/pickingHandler"
-import RobotHandler from "./operations/RobotHandler"
+import SkuHandler from "./operations/skuHandler"
 import OrderHandler from "./operations/orderHandler"
 import {useTranslation} from "react-i18next";
 
 let warehouseCode = localStorage.getItem("warehouseCode")
 
 interface ReplenishLayoutProps extends OperationProps<any, any> {
-    workStationEvent: WorkStationEvent<any>
-    workStationInfo: WorkStationInfo
-}
-
-const filterMap = {
-    robotArea: robotFilter
+    workStationEvent: WorkStationView<any>
 }
 
 const cx = classNames.bind(style)
@@ -50,7 +41,6 @@ const Layout = (props: ReplenishLayoutProps) => {
     const [focusValue, setFocusValue] = useState("")
 
     const onScanSubmit = () => {
-        // console.log("orderNo",orderNo)
         request({
             method: "post",
             url: `/wms/inbound/plan/query/${orderNo}/` + warehouseCode
@@ -97,18 +87,16 @@ const Layout = (props: ReplenishLayoutProps) => {
             headers: {
                 "Content-Type": "application/json"
             }
+        }).then((res: any) => {
+            console.log("confirm", res)
+            if (res.status === 200) {
+                onScanSubmit()
+                setCurrentSkuInfo({})
+                changeFocusValue("sku")
+            }
+        }).catch((error) => {
+            console.log("error", error)
         })
-            .then((res: any) => {
-                console.log("confirm", res)
-                if (res.status === 200) {
-                    onScanSubmit()
-                    setCurrentSkuInfo({})
-                    changeFocusValue("sku")
-                }
-            })
-            .catch((error) => {
-                console.log("error", error)
-            })
     }
 
     const changeFocusValue = (value: string) => {
@@ -125,7 +113,7 @@ const Layout = (props: ReplenishLayoutProps) => {
                         <OrderHandler value={orderInfo}/>
                     </Col>
                     <Col span={12} className="pt-4">
-                        <PickingHandler
+                        <SkuHandler
                             details={orderInfo.details}
                             currentSkuInfo={currentSkuInfo}
                             focusValue={focusValue}
@@ -133,13 +121,13 @@ const Layout = (props: ReplenishLayoutProps) => {
                         />
                     </Col>
                     <Col span={12} className="pt-4">
-                        <RobotHandler
+                        <ContainerHandler
                             value={orderInfo}
                             focusValue={focusValue}
                             onConfirm={onConfirm}
                             changeFocusValue={changeFocusValue}
                             onScanSubmit={onScanSubmit}
-                            stationData={workStationEvent}
+                            workStationEvent={workStationEvent}
                         />
                     </Col>
                 </Row>

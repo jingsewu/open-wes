@@ -932,5 +932,7 @@
     ],
     "common.cancel": "Cancel",
     "common.upload": "Start Upload",
-    "common.close": "Close"
+    "common.close": "Close",
+
+    "select_container_put_away.station.title": "Select Container Put away"
 }

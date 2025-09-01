@@ -7,7 +7,7 @@ const Shelf = ({
     activeSlotCodes,
     disabledSlotCodes,
     recommendSlotCodes,
-    onCustomActionDispatch,
+    onActionDispatch,
     type
 }: any) => {
     return (
@@ -36,8 +36,8 @@ const Shelf = ({
                             className="relative d-flex flex-col justify-between w-full p-1 text-white rounded-md"
                             onClick={(e) =>
                                 !isDisabledSlot &&
-                                onCustomActionDispatch &&
-                                onCustomActionDispatch(cell)
+                                onActionDispatch &&
+                                onActionDispatch(cell)
                             }
                             style={{
                                 height: 100 + "%",

@@ -50,8 +50,8 @@ const config: WorkStationConfig<any> = {
             key: TabActionType.START_TASK,
             permissions: [10702],
             emitter: async (props) => {
-                const { onCustomActionDispatch, message } = props
-                const { code, msg } = await onCustomActionDispatch({
+                const { onActionDispatch, message } = props
+                const { code, msg } = await onActionDispatch({
                     eventCode: CustomActionType.RESUME
                 })
             }
@@ -60,8 +60,8 @@ const config: WorkStationConfig<any> = {
             key: TabActionType.STOP_TASK,
             permissions: [10702],
             emitter: async (props) => {
-                const { onCustomActionDispatch, message } = props
-                const { code, msg } = await onCustomActionDispatch({
+                const { onActionDispatch, message } = props
+                const { code, msg } = await onActionDispatch({
                     eventCode: CustomActionType.PAUSE
                 })
 

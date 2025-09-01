@@ -1,11 +1,8 @@
-import type {
-    WorkStationEvent,
-    WorkStationInfo
-} from "@/pages/wms/station/event-loop/types"
-import type { TabActionType } from "@/pages/wms/station/tab-actions/constant"
-import type { TabAction } from "@/pages/wms/station/tab-actions/types"
-import type { MessageProps } from "@/pages/wms/station/widgets/message"
-import type { FunctionComponent, ReactNode, Ref } from "react"
+import type {WorkStationView} from "@/pages/wms/station/event-loop/types"
+import type {TabActionType} from "@/pages/wms/station/tab-actions/constant"
+import type {TabAction} from "@/pages/wms/station/tab-actions/types"
+import type {MessageProps} from "@/pages/wms/station/widgets/message"
+import type {FunctionComponent, ReactNode, Ref} from "react"
 
 export type ToastFn = (props: MessageProps) => void
 
@@ -13,16 +10,6 @@ export enum DebugType {
     NONE = "none",
     STATIC = "static",
     DYNAMIC = "dynamic"
-}
-
-export enum ContainerCarrier {
-    conveyor = "CONVEYOR",
-    mini_kiva = "MINI_KIVA",
-    // large_kiva = "LARGE_KIVA",
-    large_kiva = "BUFFER_SHELVING",
-    DEFAULT = "DEFAULT",
-    kubo = "KUBO",
-    shelf = "SHELF"
 }
 
 export const PutWallDialogWidth = 1400
@@ -37,8 +24,7 @@ export interface DebuggerConfig {
 }
 
 type TitleInfo = (
-    workStationInfo: WorkStationInfo,
-    workStationEvent: WorkStationEvent<any> | undefined
+    workStationEvent: WorkStationView<any> | undefined
 ) => string | number | ReactNode
 
 export interface WorkStationConfig<
@@ -56,8 +42,7 @@ export interface WorkStationConfig<
     actions:
         | (TabActionType | Partial<TabAction>)[]
         | ((
-              workStationInfo: WorkStationInfo,
-              workStationEvent: WorkStationEvent<any> | undefined
+              workStationEvent: WorkStationView<any> | undefined
           ) => (TabActionType | Partial<TabAction>)[])
     /** 工作站操作配置 */
     operationMap?: Record<OperationEnum, FunctionComponent<any>>
@@ -82,14 +67,10 @@ export interface CustomActionResponse {
 }
 
 export interface OperationProps<ExtraData, ConfirmData> {
-    /** 当前工作站状态信息 */
-    workStationInfo?: WorkStationInfo
     /** 操作组件接收到的value */
     value?: ExtraData
-    /** 操作确认接口 */
-    onConfirm?: (value: ConfirmData) => Promise<CustomActionResponse>
     /** 自定义动作接口 */
-    onCustomActionDispatch: (value: any) => Promise<CustomActionResponse>
+    onActionDispatch: (value: any) => Promise<CustomActionResponse>
     /** 提示语接口 */
     message?: ToastFn
     /** 组件ref */
@@ -113,19 +94,3 @@ export interface WorkStationCommonProps<T> {
     /** 选中区域 */
     chooseArea: string
 }
-
-// 按照蓓蕾的图当前kiva上面需要写死一个背篓不能带层级， 所以不能用后端返回的数据， 所以写死一个展示仅做展示
-export const defaultData = [
-    {
-        active: true,
-        bay: 1,
-        level: 1,
-        subContainerBay: "1",
-        subContainerLevel: "1",
-        enable: true,
-        subContainerCode: "",
-        subContainerName: ""
-    }
-]
-
-export const skuInfoMaxLength = 20 // 播种墙展示问题skucodename最多展示20位

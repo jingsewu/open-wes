@@ -337,7 +337,7 @@ const schema = {
                             delete params.options
                             delete params.file
                             // return true
-                            const { code } = await props.onCustomActionDispatch(
+                            const { code } = await props.onActionDispatch(
                                 {
                                     eventCode:
                                         CustomActionType.STOCKTAKE_CREATE_ORDER,

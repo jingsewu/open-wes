@@ -1,8 +1,8 @@
 import React, { useImperativeHandle } from "react"
 import { Translation } from "react-i18next"
 import {
-    WorkStationEvent,
-    putWallSlotsItem,
+    WorkStationView,
+    PutWallSlotsItem,
     PutWallSlotStatus
 } from "@/pages/wms/station/event-loop/types"
 import type { OutboundProps } from "@/pages/wms/station/instances/outbound/type"
@@ -25,7 +25,7 @@ type PutWallHandlerProps = Pick<
 >
 
 export const valueFilter = (
-    data: WorkStationEvent<OutboundProps> | undefined
+    data: WorkStationView<OutboundProps> | undefined
 ): any => {
     if (!data) return {}
     return {
@@ -39,7 +39,7 @@ export const valueFilter = (
 const PutWallHandler = (props: OperationProps<PutWallHandlerProps, any>) => {
     const {
         value = {},
-        onCustomActionDispatch,
+        onActionDispatch,
         message,
         isActive,
         refs
@@ -49,7 +49,7 @@ const PutWallHandler = (props: OperationProps<PutWallHandlerProps, any>) => {
         return value
     })
 
-    const handleSlotClick = async (item: putWallSlotsItem) => {
+    const handleSlotClick = async (item: PutWallSlotsItem) => {
         if (
             ![
                 PutWallSlotStatus.WAITING_SEAL,
@@ -60,7 +60,7 @@ const PutWallHandler = (props: OperationProps<PutWallHandlerProps, any>) => {
             return
         }
 
-        const { code, msg } = await onCustomActionDispatch({
+        const { code, msg } = await onActionDispatch({
             eventCode: "TAP_PUT_WALL_SLOT",
             data: {
                 putWallSlotCode: item.putWallSlotCode

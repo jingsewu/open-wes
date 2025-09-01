@@ -1,20 +1,20 @@
 import type { ReactNode } from "react"
 import type {
     PutWallDisplayStyle,
-    putWallViewsItem,
-    putWallSlotsItem,
+    PutWallViewsItem,
+    PutWallSlotsItem,
     Location,
     PutWallTagConfigDTO
 } from "@/pages/wms/station/event-loop/types"
 
 export interface PutWallProps {
     putWallDisplayStyle?: PutWallDisplayStyle
-    putWallViews?: putWallViewsItem[]
+    putWallViews?: PutWallViewsItem[]
     putWallTagConfigDTO?: PutWallTagConfigDTO
     putWallStatusTextMap?: { [key: string]: any }
     isActive?: boolean
     onPressEnter?: (value: string) => Promise<void>
-    onSlotClick?: (item: putWallSlotsItem) => void
+    onSlotClick?: (item: PutWallSlotsItem) => void
     /** 格口最大显示字段数量 用于定制写死 */
     maxSlotFieldsCount?: number
     /** 面切换事件 */

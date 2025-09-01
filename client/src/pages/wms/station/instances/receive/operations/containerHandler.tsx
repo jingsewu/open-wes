@@ -1,56 +1,21 @@
-import {OperationType, WorkStationEvent} from "@/pages/wms/station/event-loop/types"
-import type {replenishProps} from "../type"
-import type {OperationProps} from "@/pages/wms/station/instances/types"
-import React, {useEffect, useState, useRef} from "react"
-import {Row, Col, Input, Divider, Button, InputNumber, Radio, message} from "antd"
+import {WorkStationMode} from "@/pages/wms/station/event-loop/types"
+import React, {useEffect, useRef, useState} from "react"
+import type {InputRef, RadioChangeEvent} from "antd"
+import {Button, Col, Divider, Input, InputNumber, message, Radio, Row} from "antd"
 import {MinusOutlined, PlusOutlined} from "@ant-design/icons"
-import type {RadioChangeEvent} from "antd"
-import type {InputRef} from "antd"
 import request from "@/utils/requestInterceptor"
 import ShelfModel from "@/pages/wms/station/widgets/common/Shelf/ShelfModel"
 import {useTranslation} from "react-i18next";
+import {request_select_container_spec} from "@/pages/wms/constants/select_search_api_contant";
 
 let warehouseCode = localStorage.getItem("warehouseCode")
-
-export interface ContainerHandlerConfirmProps {
-    operationType: string
-    operationId: string
-    operationConfirmInfo: OperationConfirmInfo
-}
-
-interface OperationConfirmInfo {
-    subContainerCode?: string
-    containerCode?: string
-}
 
 export interface RobotHandlerProps {
     robotArea: any
     operationType: string
 }
 
-interface NumericInputProps {
-    style: React.CSSProperties
-    value: string
-    onChange: (value: string) => void
-}
-
-/**
- * @Description: 对event中的数据进行filter处理
- * @param data
- */
-export const valueFilter = (
-    data: WorkStationEvent<replenishProps> | undefined
-):
-    | OperationProps<RobotHandlerProps, ContainerHandlerConfirmProps>["value"]
-    | Record<string, any> => {
-    if (!data) return {}
-    return {
-        robotArea: data.workLocationArea,
-        operationType: data.operationType
-    }
-}
-
-const RobotHandler = (props: any) => {
+const ContainerHandler = (props: any) => {
     const {t} = useTranslation();
 
     const {workStationEvent, onConfirm, focusValue, changeFocusValue, onScanSubmit} =
@@ -65,61 +30,28 @@ const RobotHandler = (props: any) => {
     const [containerCode, setContainerCode] = useState<string>("")
 
     useEffect(() => {
-        request({
-            method: "post",
-            url:
-                "/search/search/searchSelectResult?perPage=1000&activePage=1&warehouseCode-op=eq&warehouseCode=" +
-                warehouseCode +
-                "&containerType-op=eq&containerType=CONTAINER",
-            data: {
-                searchIdentity: "SearchContainerSpecCode3",
-                searchObject: {
-                    tables: "w_container_spec"
-                },
-                showColumns: [
-                    {
-                        dbField: "warehouse_code",
-                        name: "warehouseCode",
-                        javaType: "java.lang.String"
-                    },
-                    {
-                        dbField: "container_type",
-                        name: "containerType",
-                        javaType: "java.lang.String"
-                    },
-                    {
-                        dbField: "container_spec_code",
-                        name: "value",
-                        javaType: "java.lang.String"
-                    },
-                    {
-                        dbField: "container_spec_name",
-                        name: "label",
-                        javaType: "java.lang.String"
-                    },
-                    {
-                        dbField: "container_slot_specs",
-                        name: "containerSlotSpecs",
-                        javaType: "java.lang.String"
-                    }
-                ]
-            }
-        }).then((res: any) => {
-            console.log("res", res?.data?.options)
-            setSpecOptions(res?.data?.options || [])
-            setContainerSpec({
-                containerSpecCode: res?.data?.options[0]?.value
+        if (!warehouseCode) {
+            message.error(t("warehouse.code.missing"));
+            return;
+        }
+
+        request_select_container_spec(warehouseCode, "CONTAINER")
+            .then((res: any) => {
+                console.log("res", res?.data?.options)
+                setSpecOptions(res?.data?.options || [])
+                setContainerSpec({
+                    containerSpecCode: res?.data?.options[0]?.value
+                })
+                const slotSpec = res?.data?.options[0]?.containerSlotSpecs
+                setContainerSlotSpec(JSON.parse(slotSpec || "[]"))
             })
-            const slotSpec = res?.data?.options[0]?.containerSlotSpecs
-            setContainerSlotSpec(JSON.parse(slotSpec || "[]"))
-        })
     }, [])
 
     useEffect(() => {
         setInputValue("")
         const containerCode = workStationEvent?.workLocationArea?.workLocationViews?.length > 0
         && workStationEvent.workLocationArea.workLocationViews[0].workLocationSlots?.length > 0
-            ? workStationEvent.workLocationArea.workLocationViews[0].workLocationSlots[0].arrangedContainer?.containerCode
+            ? workStationEvent.workLocationArea.workLocationViews[0].workLocationSlots[0].arrivedContainer?.containerCode
             : undefined;
 
         if (containerCode) {
@@ -214,7 +146,7 @@ const RobotHandler = (props: any) => {
                 changeFocusValue("sku")
                 onScanSubmit()
 
-                if(workStationEvent?.operationType === OperationType.SELECT_CONTAINER_PUT_AWAY){
+                if (workStationEvent?.workStationMode === WorkStationMode.SELECT_CONTAINER_PUT_AWAY) {
                     containerLeave(containerCode);
                 }
             }
@@ -241,7 +173,7 @@ const RobotHandler = (props: any) => {
                     ref={containerRef}
                     onChange={onContainerChange}
                     onPressEnter={onPressEnter}
-                    disabled={workStationEvent.operationType === OperationType.SELECT_CONTAINER_PUT_AWAY}
+                    disabled={workStationEvent.workStationMode === WorkStationMode.SELECT_CONTAINER_PUT_AWAY}
                 />
             </div>
             <Divider style={{margin: "12px 0"}}/>
@@ -309,7 +241,7 @@ const RobotHandler = (props: any) => {
                                 activeSlotCodes={activeSlot}
                                 showAllSlots={true}
                                 showLevel={false}
-                                onCustomActionDispatch={(cell: any) =>
+                                onActionDispatch={(cell: any) =>
                                     onSlotChange(cell)
                                 }
                             />
@@ -341,4 +273,4 @@ const RobotHandler = (props: any) => {
     )
 }
 
-export default RobotHandler
+export default ContainerHandler
