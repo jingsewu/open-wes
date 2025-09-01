@@ -6,12 +6,12 @@ import { CustomActionType } from "@/pages/wms/station/instances/outbound/customA
 import { APIContext } from "@/pages/wms/station/event-loop/provider"
 
 const Scan = (props: any, ref: any) => {
-    const { onCustomActionDispatch } = useContext(APIContext)
+    const { onActionDispatch } = useContext(APIContext)
 
     const [scanValue, setScanValue] = useState("")
 
     const handlePressEnter = async (e: any) => {
-        await onCustomActionDispatch({
+        await onActionDispatch({
             eventCode: CustomActionType.INPUT,
             data: e.target.value
         })

@@ -1,11 +1,11 @@
-import { ScanOutlined } from "@ant-design/icons"
-import { useDebounceFn } from "ahooks"
-import type { InputRef } from "antd"
-import { Input } from "antd"
+import {ScanOutlined} from "@ant-design/icons"
+import {useDebounceFn} from "ahooks"
+import type {InputRef} from "antd"
+import {Input} from "antd"
 import classNames from "classnames/bind"
-import React, { useEffect, useRef, useState, useMemo } from "react"
-import { DEBOUNCE_TIME } from "@/pages/wms/station/constant"
-import { returnButton } from "@/pages/wms/station/event-loop/utils"
+import React, {useEffect, useMemo, useRef, useState} from "react"
+import {DEBOUNCE_TIME} from "@/pages/wms/station/constants/constant"
+import {returnButton} from "@/pages/wms/station/event-loop/utils"
 
 import style from "./index.module.scss"
 import {useTranslation} from "react-i18next";
@@ -27,29 +27,29 @@ interface Iprops {
     isActive?: boolean
 }
 
-const ScanIcon = ({ showInput, handleClick }: any) => {
+const ScanIcon = ({showInput, handleClick}: any) => {
     return (
         <div
-            className={cx("scan-icon", { active: showInput })}
+            className={cx("scan-icon", {active: showInput})}
             onClick={handleClick}
         >
-            <ScanOutlined className={cx("scan-svg")} />
+            <ScanOutlined className={cx("scan-svg")}/>
         </div>
     )
 }
 
 const ScanContainer = ({
-    containerCode,
-    isDefaultPage = false,
-    conveyorMultiplePickingPositions,
-    handleShowInput,
-    onChange,
-    isActive
-}: Iprops) => {
+                           containerCode,
+                           isDefaultPage = false,
+                           conveyorMultiplePickingPositions,
+                           handleShowInput,
+                           onChange,
+                           isActive
+                       }: Iprops) => {
     const [showInput, setShowInput] = useState(false)
     const [scanCode, setScanCode] = useState<string>()
 
-    const { t } = useTranslation();
+    const {t} = useTranslation();
 
     const inputRef = useRef<InputRef>(null)
 
@@ -71,7 +71,7 @@ const ScanContainer = ({
         () => {
             onChange && onChange(scanCode)
         },
-        { wait: DEBOUNCE_TIME }
+        {wait: DEBOUNCE_TIME}
     ).run
 
     const handleClick = useDebounceFn(
@@ -82,7 +82,7 @@ const ScanContainer = ({
             setShowInput(!showInput)
             scanCode && setScanCode("")
         },
-        { wait: DEBOUNCE_TIME }
+        {wait: DEBOUNCE_TIME}
     ).run
 
     const scanPermissions = useMemo(() => {
@@ -90,18 +90,18 @@ const ScanContainer = ({
     }, [])
 
     return isDefaultPage && !showInput ? (
-        <ScanIcon showInput={showInput} handleClick={handleClick} />
+        <ScanIcon showInput={showInput} handleClick={handleClick}/>
     ) : (
         <div className={cx("container-code-box")}>
-            <div className={cx("container-code", { codecolor: containerCode })}>
+            <div className={cx("container-code", {codecolor: containerCode})}>
                 {showInput ? (
                     <Input
-                        placeholder= {t("table.containerCode")}
+                        placeholder={t("table.containerCode")}
                         size="large"
                         value={scanCode}
                         onChange={handleChange}
                         onPressEnter={handleFinishScan}
-                        style={{ borderRadius: 4 }}
+                        style={{borderRadius: 4}}
                         ref={inputRef}
                     />
                 ) : (
@@ -109,7 +109,7 @@ const ScanContainer = ({
                 )}
             </div>
             {scanPermissions && (
-                <ScanIcon showInput={showInput} handleClick={handleClick} />
+                <ScanIcon showInput={showInput} handleClick={handleClick}/>
             )}
         </div>
     )

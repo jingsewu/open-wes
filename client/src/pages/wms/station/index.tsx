@@ -1,21 +1,17 @@
-import type {
-    WorkStationAPIContextProps,
-    WorkStationContextProps
-} from "@/pages/wms/station/event-loop/types"
-import type { WorkStationConfig } from "@/pages/wms/station/instances/types"
-import type { FC } from "react"
-import React, { useContext, useState, useEffect, memo } from "react"
-import type { RouteComponentProps } from "react-router"
-import { APIContext, Provider, WorkStationContext } from "./event-loop/provider"
+import type {WorkStationAPIContextProps, WorkStationContextProps} from "@/pages/wms/station/event-loop/types"
+import type {WorkStationConfig} from "@/pages/wms/station/instances/types"
+import type {FC} from "react"
+import React, {memo, useContext, useEffect, useState} from "react"
+import type {RouteComponentProps} from "react-router"
+import {APIContext, Provider, WorkStationContext} from "./event-loop/provider"
 import Layout from "./layout"
 import WorkStationCard from "./WorkStationCard"
-import request from "@/utils/requestInterceptor"
 import SelectStation from "./SelectStation"
+import {request_work_station_view} from "@/pages/wms/station/constants/constant";
 
 type WorkStationProps = RouteComponentProps & {
     /** TODO: 此处应该修改为由hook获取 */
     code: string
-    station: string
     /** 工作站类型 用于调用initStation接口，后期推动后台直接改用station字段 */
     type: string
 }
@@ -30,14 +26,14 @@ const initWorkStationFactor = (): void => {
     // @ts-ignore
     const res = require.context("./instances", true, /config\.(ts|tsx)$/)
     res.keys().forEach((key: any) => {
-        const { default: WorkStation } = res(key)
+        const {default: WorkStation} = res(key)
         WorkStationFactor[WorkStation.type] = WorkStation
     })
 }
 initWorkStationFactor()
 
 const WorkStation = (props: WorkStationProps) => {
-    const { code, type } = props
+    const {code, type} = props
     const workStationConfig = WorkStationFactor[type] || {}
 
     const {
@@ -61,10 +57,7 @@ const WorkStation = (props: WorkStationProps) => {
     }, [])
 
     const getStationId = async () => {
-        const res: any = await request({
-            method: "get",
-            url: "/station/api"
-        })
+        const res: any = await request_work_station_view()
         if (res?.data?.status === "SAT010001") {
             setIsConfigStationId(false)
         } else {
@@ -81,7 +74,7 @@ const WorkStation = (props: WorkStationProps) => {
         >
             {type === "card" ? (
                 <InstanceLayoutWrapper>
-                    <WorkStationCard />
+                    <WorkStationCard/>
                 </InstanceLayoutWrapper>
             ) : (
                 <Layout
@@ -91,7 +84,7 @@ const WorkStation = (props: WorkStationProps) => {
                     stepsDescribe={stepsDescribe}
                 >
                     <InstanceLayoutWrapper>
-                        <InstanceLayout />
+                        <InstanceLayout/>
                     </InstanceLayoutWrapper>
                 </Layout>
             )}
@@ -105,10 +98,10 @@ const WorkStation = (props: WorkStationProps) => {
 }
 
 const InstanceLayoutWrapper: FC<any> = (props) => {
-    const { children } = props
-    const { workStationEvent, workStationInfo } =
+    const {children} = props
+    const {workStationEvent} =
         useContext<WorkStationContextProps>(WorkStationContext)
-    const { onCustomActionDispatch, message } =
+    const {onActionDispatch, message} =
         useContext<WorkStationAPIContextProps>(APIContext)
 
     const childrenWithProps = React.Children.map(children, (child) => {
@@ -116,15 +109,14 @@ const InstanceLayoutWrapper: FC<any> = (props) => {
             return React.cloneElement(child, {
                 // @ts-ignore
                 workStationEvent,
-                workStationInfo,
-                onCustomActionDispatch,
+                onActionDispatch,
                 message
             })
         }
         return child
     })
 
-    return <div style={{ height: "100%" }}>{childrenWithProps}</div>
+    return <div style={{height: "100%"}}>{childrenWithProps}</div>
 }
 
 export default memo(WorkStation)

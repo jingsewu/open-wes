@@ -4,13 +4,13 @@ import React from "react"
 
 export default function ErrorRemindHandler(props: any) {
     const { value } = props
-    const { errorInfos = [], onCustomActionDispatch, buttonText } = value
+    const { errorInfos = [], onActionDispatch, buttonText } = value
 
     const title = errorInfos.find((item: any) => item.bold).errorDesc
     const subTitle = errorInfos.find((item: any) => !item.bold).errorDesc
 
     const handleConfirm = () => {
-        onCustomActionDispatch({
+        onActionDispatch({
             eventCode: "CLOSE_TIP",
             data: {
                 tipType: TipType.SCAN_ERROR_REMIND_TIP

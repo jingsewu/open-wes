@@ -1,20 +1,23 @@
-import type { WorkStationEvent } from "@/pages/wms/station/event-loop/types"
-import type { replenishProps } from "@/pages/wms/station/instances/receive/type"
-import type { OperationProps } from "@/pages/wms/station/instances/types"
+import type {WorkStationView} from "@/pages/wms/station/event-loop/types"
+import type {replenishProps} from "@/pages/wms/station/instances/receive/type"
+import type {OperationProps} from "@/pages/wms/station/instances/types"
 import MaterialRack from "@/pages/wms/station/widgets/common/Shelf"
 import React from "react"
-import { Typography } from "antd"
-const { Title } = Typography
+import {Typography} from "antd"
+
+const {Title} = Typography
 
 export interface ContainerHandlerConfirmProps {
     operationType: string
     operationId: string
     operationConfirmInfo: OperationConfirmInfo
 }
+
 interface OperationConfirmInfo {
     subContainerCode?: string
     containerCode?: string
 }
+
 export interface RobotHandlerProps {
     robotArea: any
     operationType: string
@@ -25,24 +28,23 @@ export interface RobotHandlerProps {
  * @param data
  */
 export const valueFilter = (
-    data: WorkStationEvent<replenishProps> | undefined
+    data: WorkStationView<replenishProps> | undefined
 ):
     | OperationProps<RobotHandlerProps, ContainerHandlerConfirmProps>["value"]
     | Record<string, any> => {
     if (!data) return {}
     return {
         robotArea: data.workLocationArea,
-        // operationId: data.operationId,
-        operationType: data.operationType
+        operationType: data.workStationMode
     }
 }
 
 const RobotHandler = (
     props: OperationProps<RobotHandlerProps, ContainerHandlerConfirmProps>
 ) => {
-    const { value } = props
+    const {value} = props
 
-    const { robotArea } = value || {}
+    const {robotArea} = value || {}
     const arrivedContainer =
         robotArea?.workLocationViews?.[0].workLocationSlots?.[0]
             ?.arrivedContainer

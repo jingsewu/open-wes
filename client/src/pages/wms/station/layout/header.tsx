@@ -1,12 +1,13 @@
-import React, { useContext } from "react"
-import { useHistory } from "react-router"
-import { useTranslation } from "react-i18next"
+import React, {useContext} from "react"
+import {useHistory} from "react-router"
+import {useTranslation} from "react-i18next"
 import classNames from "classnames/bind"
-import { WorkStationContext } from "../event-loop/provider"
+import {WorkStationContext} from "../event-loop/provider"
 import style from "./styles.module.scss"
-import { WorkStationStatus } from "@/pages/wms/station/event-loop/types"
-import { STATION_MENU_PATH } from "@/pages/wms/station/constant"
-import type { WorkStationConfig } from "@/pages/wms/station/instances/types"
+import {WorkStationStatus} from "@/pages/wms/station/event-loop/types"
+import {STATION_MENU_PATH} from "@/pages/wms/station/constants/constant"
+import type {WorkStationConfig} from "@/pages/wms/station/instances/types"
+
 const cx = classNames.bind(style)
 
 type HeaderProps = Pick<
@@ -16,10 +17,10 @@ type HeaderProps = Pick<
 
 const WorkStationLayoutHeader = (props: HeaderProps) => {
     const history = useHistory()
-    const { t } = useTranslation()
+    const {t} = useTranslation()
     // @ts-ignore
-    const { title, extraTitleInfo } = props
-    const { workStationEvent, workStationInfo } = useContext(WorkStationContext)
+    const {title, extraTitleInfo} = props
+    const {workStationEvent} = useContext(WorkStationContext)
 
     if (workStationEvent?.workStationStatus === WorkStationStatus.OFFLINE) {
         console.log(
@@ -32,32 +33,28 @@ const WorkStationLayoutHeader = (props: HeaderProps) => {
 
     const formatTitle =
         typeof title === "function"
-            ? title(workStationInfo, workStationEvent)
+            ? title(workStationEvent)
             : title
     const extraInfo =
         typeof extraTitleInfo === "function"
-            ? extraTitleInfo?.(workStationInfo, workStationEvent)
+            ? extraTitleInfo?.(workStationEvent)
             : extraTitleInfo
 
     return (
         <div
             className="d-flex content-center justify-between pb-3"
-            style={{ borderBottom: "1px solid #E4E4E4" }}
-            // className={cx("header")}
+            style={{borderBottom: "1px solid #E4E4E4"}}
         >
             <span
                 className="font-bold text-xl"
-                // className={cx("title")}
             >
                 <span className="mr-5">
                     {t("station.operatingStation")}&nbsp;
-                    {/* <IntlMessages id="basicInfo.printConfig.column.workstation" /> */}
                     {workStationEvent?.stationCode}
                 </span>
                 <span>{formatTitle}</span>
                 <span
                     className="d-flex mr-4 text-md	font-bold text-current"
-                    // className={cx("extra-title-info")}
                 >
                     {extraInfo}
                 </span>

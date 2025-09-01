@@ -1,41 +1,16 @@
-import React, { useEffect, useState, useRef } from "react"
+import React, {useEffect, useRef, useState} from "react"
 
-import { WorkStationEvent } from "@/pages/wms/station/event-loop/types"
-
-import { Input, Divider, message } from "antd"
-import type { InputRef } from "antd"
+import type {InputRef} from "antd"
+import {Divider, Input, message} from "antd"
 import SkuInfo from "@/pages/wms/station/widgets/common/SkuInfo"
 import {useTranslation} from "react-i18next";
 
-export interface SKUHandlerConfirmProps {
-    operationId: string
-}
-
-/**
- * @Description: 对event中的数据进行filter处理
- * @param data
- */
-export const valueFilter = (data: WorkStationEvent<any>) => {
-    if (!data) return {}
-    return {
-        operationType: data.operationType,
-        orderArea: data.orderArea,
-        skuArea: data.skuArea,
-        workLocationArea: data.workLocationArea,
-        warehouseCode: data.warehouseCode,
-        scanedCode: data.scanCode,
-        processingType: data.processingType,
-        callContainerCount: data.callContainerCount,
-        processingInboundOrderDetailId: data.processingInboundOrderDetailId
-    }
-}
-
-const PickAreaHandler = (props: any) => {
-    const { details, currentSkuInfo, focusValue, onSkuChange } = props
+const SkuAreaHandler = (props: any) => {
+    const {details, currentSkuInfo, focusValue, onSkuChange} = props
     const inputRef = useRef<InputRef>(null)
 
     const [skuCode, setSkuCode] = useState<string>("")
-    const { t } = useTranslation();
+    const {t} = useTranslation();
 
     useEffect(() => {
         if (focusValue !== "sku") return
@@ -68,7 +43,7 @@ const PickAreaHandler = (props: any) => {
                     onPressEnter={onPressEnter}
                 />
             </div>
-            <Divider style={{ margin: "12px 0" }} />
+            <Divider style={{margin: "12px 0"}}/>
             <div className="bg-gray-100 py-4 pl-6 d-flex">
                 <div>
                     <div>{t("receive.station.skuArea.receivedQty")}</div>
@@ -82,7 +57,6 @@ const PickAreaHandler = (props: any) => {
             <div className="bg-gray-100 mt-4 p-3">
                 <div>{t("receive.station.skuArea.skuInfo")}</div>
                 <SkuInfo
-                    // {...scannedSkuInfo}
                     imgWidth={160}
                     detailHeight={130}
                     skuAttributes={currentSkuInfo.batchAttributes}
@@ -94,4 +68,4 @@ const PickAreaHandler = (props: any) => {
     )
 }
 
-export default PickAreaHandler
+export default SkuAreaHandler
