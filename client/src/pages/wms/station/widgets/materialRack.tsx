@@ -1,4 +1,4 @@
-import type { WorkStationEvent } from "@/pages/wms/station/event-loop/types"
+import type { WorkStationView } from "@/pages/wms/station/event-loop/types"
 import type {
     CustomActionResponse,
     OperationProps
@@ -9,7 +9,7 @@ import React from "react"
 import style from "./styles.module.scss"
 const cx = classNames.bind(style)
 export interface MaterialProps {
-    onCustomActionDispatch: (value: any) => Promise<CustomActionResponse>
+    onActionDispatch: (value: any) => Promise<CustomActionResponse>
     arrivedContainer: subContainerInterface
     allowContainer?: boolean
     level: number
@@ -40,7 +40,7 @@ export interface MaterialConfirmProps {
 }
 const MaterialRack = (props: MaterialProps) => {
     const {
-        onCustomActionDispatch,
+        onActionDispatch,
         arrivedContainer,
         allowContainer = true,
         level
@@ -140,8 +140,8 @@ const MaterialRack = (props: MaterialProps) => {
                                                 key={i}
                                                 className="relative d-flex flex-col justify-between w-full p-1 text-white border-4 border-gray-200	"
                                                 onClick={(e) =>
-                                                    onCustomActionDispatch &&
-                                                    onCustomActionDispatch(cell)
+                                                    onActionDispatch &&
+                                                    onActionDispatch(cell)
                                                 }
                                                 style={{
                                                     height: 100 + "%",

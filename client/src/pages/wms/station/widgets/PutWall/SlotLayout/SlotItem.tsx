@@ -1,15 +1,15 @@
 import React from "react"
 import { SlotColor } from "../types"
 import {
-    putWallSlotsItem,
+    PutWallSlotsItem,
     PutWallTagConfigDTO,
     PutWallSlotStatusEnum
 } from "@/pages/wms/station/event-loop/types"
 
 interface Props {
-    data: putWallSlotsItem
+    data: PutWallSlotsItem
     putWallTagConfigDTO: PutWallTagConfigDTO
-    onSlotClick?: (data: putWallSlotsItem) => void
+    onSlotClick?: (data: PutWallSlotsItem) => void
 }
 
 const SlotItem: React.FC<Props> = (props) => {

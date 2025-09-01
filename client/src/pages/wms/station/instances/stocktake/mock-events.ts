@@ -5,7 +5,7 @@ const mockData = {
     stationCode: "1",
     stationName: "Robot Area-1",
     workStationStatus: "ONLINE",
-    operationType: "STOCKTAKE",
+    workStationMode: "STOCKTAKE",
     chooseArea: "SKU_AREA",
     scanCode: null,
     processingType: null,

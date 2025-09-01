@@ -60,30 +60,30 @@ const cardOptions = [
 ]
 
 const Station = (props: any) => {
-    const { history, location, workStationEvent } = props
-    const { workStationStatus, operationType, workStationMode } =
-        workStationEvent || {}
-    const { onCustomActionDispatch } = useContext(APIContext)
+    const {history, workStationEvent} = props
+    const {workStationStatus, workStationMode} =
+    workStationEvent || {}
+    const {onActionDispatch} = useContext(APIContext)
 
     useEffect(() => {
         const path =
             workStationStatus !== "OFFLINE" && workStationMode
                 ? `${WORK_STATION_PATH_PREFIX}/${
-                      StationTypes[workStationMode as keyof typeof StationTypes]
-                  }`
+                    StationTypes[workStationMode as keyof typeof StationTypes]
+                }`
                 : WORK_STATION_PATH_PREFIX
         history.replace(path)
     }, [workStationMode, workStationStatus])
 
     const handleCardClick = (data: string) => {
-        onCustomActionDispatch({
+        onActionDispatch({
             eventCode: CustomActionType.ONLINE,
             data
         })
     }
     return (
         <div className="site-card-wrapper px-4 pt-4">
-            <Row gutter={[24, { xs: 8, sm: 16, md: 24 }]}>
+            <Row gutter={[24, {xs: 8, sm: 16, md: 24}]}>
                 {cardOptions.map((item) => {
                     return (
                         <Col md={24} lg={12} key={item.value}>

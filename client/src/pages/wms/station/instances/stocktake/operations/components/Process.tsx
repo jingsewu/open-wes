@@ -1,9 +1,8 @@
 import schema2component from "@/utils/schema2component"
-import React from "react"
-import { debounce } from "lodash"
-import { DEBOUNCE_TIME } from "@/pages/wms/station/constant"
-import { CustomActionType } from "@/pages/wms/station/instances/stocktake/customActionType"
-import { api_crud_search_by_warehouseCode } from "@/pages/constantApi"
+import {debounce} from "lodash"
+import {DEBOUNCE_TIME} from "@/pages/wms/station/constants/constant"
+import {CustomActionType} from "@/pages/wms/station/instances/stocktake/customActionType"
+import {api_crud_search_by_warehouseCode} from "@/pages/constantApi"
 
 const columns = [
     {
@@ -146,8 +145,8 @@ const schema = {
                 close: true,
                 onClick: debounce(
                     async (e: any, props: any) => {
-                        const { onCustomActionDispatch } = props
-                        const { code } = await onCustomActionDispatch({
+                        const {onActionDispatch} = props
+                        const {code} = await onActionDispatch({
                             eventCode: CustomActionType.STOCKTAKE_EXECUTE_TASK,
                             data: {
                                 taskIds: props.data.ids.split(",")
@@ -155,7 +154,7 @@ const schema = {
                         })
                     },
                     DEBOUNCE_TIME,
-                    { leading: false }
+                    {leading: false}
                 ),
                 className: "batchTakeOrders"
             }

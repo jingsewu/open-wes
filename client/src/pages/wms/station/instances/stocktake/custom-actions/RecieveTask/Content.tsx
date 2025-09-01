@@ -1,8 +1,8 @@
 import schema2component from "@/utils/schema2component"
-import { debounce } from "lodash"
-import { DEBOUNCE_TIME } from "@/pages/wms/station/constant"
+import {debounce} from "lodash"
+import {DEBOUNCE_TIME} from "@/pages/wms/station/constants/constant"
 import request from "@/utils/requestInterceptor"
-import { api_crud_search_by_warehouseCode } from "@/pages/constantApi"
+import {api_crud_search_by_warehouseCode} from "@/pages/constantApi"
 
 const columns = [
     {
@@ -142,7 +142,7 @@ const schema = {
                                 data: {
                                     stocktakeTaskIds: props.data.ids.split(","),
                                     workStationId:
-                                        props.workStationEvent.workStationId
+                                    props.workStationEvent.workStationId
                                 }
                             })
                                 .then((res: any) => {
@@ -155,7 +155,7 @@ const schema = {
                                 })
                         },
                         DEBOUNCE_TIME,
-                        { leading: false }
+                        {leading: false}
                     )
                 }
             ],

@@ -1,32 +1,19 @@
 import Icon from "@ant-design/icons"
-import { message as Message, Button } from "antd"
-import { debounce } from "lodash"
-import { useDebounceFn } from "ahooks"
+import {message as Message} from "antd"
+import {debounce} from "lodash"
 import history from "history/browser"
 import classNames from "classnames/bind"
-// import { ReactComponent as TaskTaskSvg } from "@/icon/fontIcons/tasktask.svg" // path to your '*.svg' file.
-// import TaskTaskSvg from "@/icon/fontIcons/tasktask.svg" // path to your '*.svg' file.
-
-import type { FunctionComponent } from "react"
-import React, { createElement, memo, useContext, useRef, useState } from "react"
-// import { useHistory } from "react-router-dom"
-
-import { DEBOUNCE_TIME } from "@/pages/wms/station/constant"
-import { WorkStationContext } from "@/pages/wms/station/event-loop/provider"
-import { returnActions } from "@/pages/wms/station/event-loop/utils"
-import type {
-    ToastFn,
-    WorkStationConfig
-} from "@/pages/wms/station/instances/types"
+import type {FunctionComponent} from "react"
+import React, {createElement, memo, useContext, useRef, useState} from "react"
+import {DEBOUNCE_TIME} from "@/pages/wms/station/constants/constant"
+import {WorkStationContext} from "@/pages/wms/station/event-loop/provider"
+import type {ToastFn, WorkStationConfig} from "@/pages/wms/station/instances/types"
 import ActionHandler from "@/pages/wms/station/tab-actions"
-import type {
-    EmitterPayload,
-    TabAction
-} from "@/pages/wms/station/tab-actions/types"
-import { TabActionModalType } from "@/pages/wms/station/tab-actions/types"
+import type {EmitterPayload, TabAction} from "@/pages/wms/station/tab-actions/types"
+import {TabActionModalType} from "@/pages/wms/station/tab-actions/types"
 
-import { APIContext, OperationsContext } from "../event-loop/provider"
-import Modal, { useWorkStationModal } from "../widgets/modal"
+import {APIContext, OperationsContext} from "../event-loop/provider"
+import Modal, {useWorkStationModal} from "../widgets/modal"
 import styles from "./styles.module.scss"
 
 const cx = classNames.bind(styles)
@@ -39,7 +26,7 @@ const actionHandler = new ActionHandler()
 
 const WorkStationLayoutToolbar = (props: FooterProps) => {
     // const history = props
-    const { workStationEvent, workStationInfo } = useContext(WorkStationContext)
+    const {workStationEvent} = useContext(WorkStationContext)
     const [isModalFullScreen, setIsModalFullScreen] = useState(false)
     const [isModalVisible, setModalVisible] = useState(false)
     const [confirmLoading, setConfirmLoading] = useState(false)
@@ -48,18 +35,18 @@ const WorkStationLayoutToolbar = (props: FooterProps) => {
     >(undefined)
     const [modalConfig, setModalConfig] = useState<TabAction["modalConfig"]>({})
     const contentRef = useRef()
-    const { confirm, contextHolder } = useWorkStationModal()
+    const {confirm, contextHolder} = useWorkStationModal()
     const [api, msgContextHolder] = Message.useMessage()
     const message: ToastFn = (props) => {
-        const { type, content, duration = 3 } = props
+        const {type, content, duration = 3} = props
         api[type](content, duration)
     }
-    const { onCustomActionDispatch } = useContext(APIContext)
-    const { operationsMap } = useContext(OperationsContext)
-    const { actions } = props
+    const {onActionDispatch} = useContext(APIContext)
+    const {operationsMap} = useContext(OperationsContext)
+    const {actions} = props
     const actionsList =
         typeof actions === "function"
-            ? actions(workStationInfo, workStationEvent)
+            ? actions(workStationEvent)
             : actions
     // const currentActions =  returnActions(actionsList)
     const currentActions = actionsList
@@ -84,20 +71,18 @@ const WorkStationLayoutToolbar = (props: FooterProps) => {
                     createElement(modalContent, {
                         resetModal,
                         operationsMap,
-                        onCustomActionDispatch,
+                        onActionDispatch,
                         history,
                         message,
                         refs: contentRef,
                         setModalVisible,
                         setConfirmLoading,
                         loading: confirmLoading,
-                        workStationEvent,
-                        workStationInfo
+                        workStationEvent
                     })}
             </Modal>
             <div
                 className="w-full h-16  pt-2.5 gap-x-2"
-                // className={styles["footer"]}
             >
                 {currentActions?.map((action) => {
                     let tabConfig
@@ -112,7 +97,7 @@ const WorkStationLayoutToolbar = (props: FooterProps) => {
                                 action.key as string
                             )
                         }
-                        tabConfig = { ...originTabConfig, ...action }
+                        tabConfig = {...originTabConfig, ...action}
                     }
                     if (!tabConfig) return null
 
@@ -134,7 +119,7 @@ const WorkStationLayoutToolbar = (props: FooterProps) => {
                     const isDisabled = (): boolean => {
                         if (!disabled) return false
                         if (typeof disabled === "function") {
-                            return disabled(workStationEvent, workStationInfo)
+                            return disabled(workStationEvent)
                         }
                         return disabled
                     }
@@ -157,7 +142,7 @@ const WorkStationLayoutToolbar = (props: FooterProps) => {
                                 onSubmit &&
                                 (await onSubmit(contentRef, {
                                     history,
-                                    onCustomActionDispatch,
+                                    onActionDispatch,
                                     operationsMap,
                                     message,
                                     setModalVisible,
@@ -168,7 +153,7 @@ const WorkStationLayoutToolbar = (props: FooterProps) => {
                             }
                         },
                         DEBOUNCE_TIME,
-                        { leading: false }
+                        {leading: false}
                     )
 
                     const handleClick = debounce(
@@ -178,15 +163,14 @@ const WorkStationLayoutToolbar = (props: FooterProps) => {
                                 case TabActionModalType.NONE:
                                     resetModal()
                                     emitter &&
-                                        emitter({
-                                            history,
-                                            onCustomActionDispatch,
-                                            operationsMap,
-                                            message,
-                                            setModalVisible,
-                                            workStationEvent,
-                                            workStationInfo
-                                        })
+                                    emitter({
+                                        history,
+                                        onActionDispatch,
+                                        operationsMap,
+                                        message,
+                                        setModalVisible,
+                                        workStationEvent
+                                    })
                                     break
                                 case TabActionModalType.CONFIRM:
                                     resetModal()
@@ -195,15 +179,14 @@ const WorkStationLayoutToolbar = (props: FooterProps) => {
                                         // <IntlMessages id="inventoryManagement.confirm.submit" />
                                         onOk() {
                                             emitter &&
-                                                emitter({
-                                                    history,
-                                                    onCustomActionDispatch,
-                                                    operationsMap,
-                                                    message,
-                                                    setModalVisible,
-                                                    workStationEvent,
-                                                    workStationInfo
-                                                })
+                                            emitter({
+                                                history,
+                                                onActionDispatch,
+                                                operationsMap,
+                                                message,
+                                                setModalVisible,
+                                                workStationEvent
+                                            })
                                         },
                                         ...modalConfig
                                     })
@@ -218,15 +201,14 @@ const WorkStationLayoutToolbar = (props: FooterProps) => {
                                         onOk: handleSubmit
                                     })
                                     emitter &&
-                                        emitter({
-                                            history,
-                                            onCustomActionDispatch,
-                                            operationsMap,
-                                            message,
-                                            setModalVisible,
-                                            workStationEvent,
-                                            workStationInfo
-                                        })
+                                    emitter({
+                                        history,
+                                        onActionDispatch,
+                                        operationsMap,
+                                        message,
+                                        setModalVisible,
+                                        workStationEvent,
+                                    })
                                     break
                                 case TabActionModalType.NORMAL:
                                     resetModal()
@@ -237,22 +219,21 @@ const WorkStationLayoutToolbar = (props: FooterProps) => {
                                         onOk: handleSubmit
                                     })
                                     emitter &&
-                                        emitter({
-                                            history,
-                                            onCustomActionDispatch,
-                                            operationsMap,
-                                            message,
-                                            setModalVisible,
-                                            workStationEvent,
-                                            workStationInfo
-                                        })
+                                    emitter({
+                                        history,
+                                        onActionDispatch,
+                                        operationsMap,
+                                        message,
+                                        setModalVisible,
+                                        workStationEvent
+                                    })
                                     break
                                 default:
                                     break
                             }
                         },
                         DEBOUNCE_TIME,
-                        { leading: false }
+                        {leading: false}
                     )
 
                     return !isHide() ? (
@@ -266,8 +247,8 @@ const WorkStationLayoutToolbar = (props: FooterProps) => {
                             key={key}
                             data-testid={testid}
                         >
-                            <span style={{ marginRight: 4 }}>
-                                <Icon component={() => icon} />
+                            <span style={{marginRight: 4}}>
+                                <Icon component={() => icon}/>
                             </span>
                             {name}
                         </div>

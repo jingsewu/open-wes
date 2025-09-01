@@ -1,22 +1,14 @@
-import { Col, Row, AutoComplete, Select, Table } from "antd"
-import type { RefObject } from "react"
-import React, { useMemo, useImperativeHandle, useState, useEffect } from "react"
-import { useDebounce } from "react-use"
-import { useTranslation } from "react-i18next"
-import { DEBOUNCE_TIME } from "@/pages/wms/station/constant"
-import request from "@/utils/requestInterceptor"
+import {Col, Row, Select, Table} from "antd"
+import type {RefObject} from "react"
+import React, {useImperativeHandle, useMemo, useState} from "react"
+import {useDebounce} from "react-use"
+import {useTranslation} from "react-i18next"
+import {DEBOUNCE_TIME} from "@/pages/wms/station/constants/constant"
 
-import type {
-    CustomActionResponse,
-    ToastFn
-} from "@/pages/wms/station/instances/types"
+import type {CustomActionResponse, ToastFn} from "@/pages/wms/station/instances/types"
 import Counter from "@/pages/wms/station/widgets/common/Count"
-import { TipType } from "@/pages/wms/station/instances/outbound/operations/tips/type"
-import {
-    OperationTaskDTOS,
-    ArrivedContainer,
-    SkuMainDataDTO
-} from "@/pages/wms/station/event-loop/types"
+import {TipType} from "@/pages/wms/station/instances/outbound/operations/tips/type"
+import {ArrivedContainer, OperationTaskDTOS, SkuMainDataDTO} from "@/pages/wms/station/event-loop/types"
 
 const dictionary = JSON.parse(localStorage.getItem("dictionary") || "{}")
 
@@ -31,14 +23,14 @@ interface AbnormalInfo {
         shortPickingViews: any[]
         totalToBeRequiredQty: number
         /** 自定义动作接口 */
-        onCustomActionDispatch: (value: any) => Promise<CustomActionResponse>
+        onActionDispatch: (value: any) => Promise<CustomActionResponse>
         /** 提示语接口 */
         message: ToastFn
     }
 }
 
 const AbnormalReportReasonSelector = (props: any) => {
-    const { options = [], value, onChange } = props
+    const {options = [], value, onChange} = props
 
     const handleChange = (val: string) => {
         onChange(val)
@@ -57,7 +49,7 @@ const AbnormalReportReasonSelector = (props: any) => {
         <Select
             showSearch
             value={value}
-            style={{ width: "100%" }}
+            style={{width: "100%"}}
             bordered={false}
             disabled
             defaultActiveFirstOption={true}
@@ -73,13 +65,13 @@ const AbnormalReportReasonSelector = (props: any) => {
 }
 
 const Abnormal = (props: AbnormalInfo) => {
-    const { value, refs } = props
-    const { t } = useTranslation()
+    const {value, refs} = props
+    const {t} = useTranslation()
     const {
         operationTaskDTOS,
         skuMainDataDTOS,
         totalToBeRequiredQty,
-        onCustomActionDispatch
+        onActionDispatch
     } = value
 
     const [abnormalReportReason, setAbnormalReportReason] = useState<string>(
@@ -126,7 +118,7 @@ const Abnormal = (props: AbnormalInfo) => {
     )
 
     const updateDistributionInformation = async () => {
-        const { code, msg } = await onCustomActionDispatch({
+        const {code, msg} = await onActionDispatch({
             eventCode: TipType.REPORT_ABNORMAL_TIP,
             data: pickNum || "0"
         })
@@ -178,7 +170,7 @@ const Abnormal = (props: AbnormalInfo) => {
                         <div className="d-flex py-1 mb-6 text-md font-bold">
                             <div
                                 className="w-1 h-6 mr-4 rounded-r"
-                                style={{ background: "#004caa" }}
+                                style={{background: "#004caa"}}
                             />
                             {t("skuArea.productInfo")}
                         </div>
@@ -186,7 +178,7 @@ const Abnormal = (props: AbnormalInfo) => {
                         <div className="d-flex flex-col my-6 w-160">
                             <div
                                 className="d-flex p-2 mt-2 text-md font-bold"
-                                style={{ background: "#fafafa", color: "#333" }}
+                                style={{background: "#fafafa", color: "#333"}}
                             >
                                 {t("skuArea.productName")}：
                                 <div className="w-80">
@@ -195,7 +187,7 @@ const Abnormal = (props: AbnormalInfo) => {
                             </div>
                             <div
                                 className="d-flex p-2 mt-2 text-md font-bold"
-                                style={{ background: "#fafafa", color: "#333" }}
+                                style={{background: "#fafafa", color: "#333"}}
                             >
                                 {t("skuArea.barcode")}：
                                 <div className="w-80">
@@ -204,7 +196,7 @@ const Abnormal = (props: AbnormalInfo) => {
                             </div>
                             <div
                                 className="d-flex p-2 mt-2 text-md font-bold items-center"
-                                style={{ background: "#fafafa", color: "#333" }}
+                                style={{background: "#fafafa", color: "#333"}}
                             >
                                 {t("skuArea.abnormalCause")}:
                                 <div className="w-80">
@@ -264,7 +256,7 @@ const Abnormal = (props: AbnormalInfo) => {
                     <div className="d-flex py-1 mb-6 text-md font-bold">
                         <div
                             className="w-1 h-6 mr-4 rounded-r"
-                            style={{ background: "#004caa" }}
+                            style={{background: "#004caa"}}
                         />
                         {overPickIntlMessagesID}
                     </div>

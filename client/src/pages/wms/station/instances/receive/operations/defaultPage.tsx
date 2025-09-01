@@ -1,11 +1,8 @@
-import type {
-    WorkStationEvent,
-    StationProcessingStatus
-} from "@/pages/wms/station/event-loop/types"
-import type { OperationProps } from "@/pages/wms/station/instances/types"
+import type {StationProcessingStatus, WorkStationView} from "@/pages/wms/station/event-loop/types"
+import type {OperationProps} from "@/pages/wms/station/instances/types"
 import classNames from "classnames/bind"
 import React from "react"
-import { Translation } from "react-i18next"
+import {Translation} from "react-i18next"
 
 import style from "../index.module.scss"
 import noTaskImg from "@/icon/station/no_task.png"
@@ -15,35 +12,26 @@ const cx = classNames.bind(style)
 
 export interface DefaultProps {
     containerViews: any
-    workStationInfo?: SworkStationInfoInterface
+    workStationInfo?: WorkStationInfoInterface
 }
-interface SworkStationInfoInterface {
+
+interface WorkStationInfoInterface {
     stationStatus: string
 }
+
 export interface SKUHandlerConfirmProps {
     skuCode: string
 }
 
 export const valueFilter = (
-    data: WorkStationEvent<any> | undefined
+    data: WorkStationView<any> | undefined
 ):
     | OperationProps<StationProcessingStatus, SKUHandlerConfirmProps>["value"]
     | Record<string, any> => {
     if (!data) return {}
     return data.stationProcessingStatus
 }
-// const taskStatusText = {
-//     NO_TASK: <IntlMessages id="workstaion.common.tip.pleaseCollectCallRobot" />,
-//     WAIT_ROBOT: (
-//         <IntlMessages id="workstaion.manualWarehousing.prompt.patient" />
-//     ),
-//     WAIT_CONTAINER: (
-//         <IntlMessages id="workstaion.manualWarehousing.prompt.patient" />
-//     ),
-//     WAIT_CALL_CONTAINER: (
-//         <IntlMessages id="workstaion.manualWarehousing.prompt.waitCallContainer" />
-//     )
-// }
+
 export const taskStatusText = {
     NO_TASK: <Translation>{(t) => t("station.NO_TASK")}</Translation>,
     WAIT_ROBOT: <Translation>{(t) => t("station.WAITING_ROBOT")}</Translation>,
@@ -65,17 +53,16 @@ const taskStatusImage = {
 const DefaultPage = (
     props: OperationProps<StationProcessingStatus, SKUHandlerConfirmProps>
 ) => {
-    const { value } = props
+    const {value} = props
     return (
         <div
             className="d-flex flex-col items-center justify-center h-full text-xl font-bold"
-            // className={cx("default-box")}
         >
             <img
                 src={taskStatusImage[value as StationProcessingStatus]}
                 alt=""
             />
-            <div style={{ padding: "24px 0" }} data-testid="taskStatusText">
+            <div style={{padding: "24px 0"}} data-testid="taskStatusText">
                 {taskStatusText[value as StationProcessingStatus] ||
                     taskStatusText.NO_TASK}
             </div>

@@ -2,7 +2,7 @@ import type {FC, RefObject} from "react"
 import React from "react"
 import {useTranslation} from "react-i18next"
 
-import type {WorkStationEvent} from "@/pages/wms/station/event-loop/types"
+import type {WorkStationView} from "@/pages/wms/station/event-loop/types"
 import ExceptionLog from "@/pages/wms/station/instances/outbound/operations/tips/Abnormal"
 import CloseContainer from "@/pages/wms/station/instances/outbound/operations/tips/close-container"
 import EmptyContainerHandler from "@/pages/wms/station/instances/outbound/operations/tips/empty-container-handler"
@@ -36,9 +36,9 @@ interface TipConfig {
 
 export const valueFilter = (
     data:
-        | WorkStationEvent<{
-              tips: TipsHandlerProps<any>[]
-          }>
+        | WorkStationView<{
+        tips: TipsHandlerProps<any>[]
+    }>
         | undefined
 ): TipsHandlerProps<any>[] => {
     if (!data) return []
@@ -47,10 +47,10 @@ export const valueFilter = (
 }
 
 const ChoosePickingTaskTipWrapper = (props: OperationProps<any, any>) => {
-    const { value } = props
-    const { choosePickingTasks = [], onCustomActionDispatch, message } = value
+    const {value} = props
+    const {choosePickingTasks = [], onActionDispatch, message} = value
     const handleConfirm = async (record: any) => {
-        const { code, msg } = await onCustomActionDispatch({
+        const {code, msg} = await onActionDispatch({
             eventCode: TipType.CHOOSE_PICKING_TASK_TIP,
             data: record
         })
@@ -73,8 +73,8 @@ const ChoosePickingTaskTipWrapper = (props: OperationProps<any, any>) => {
 }
 
 const TipsHandler = (props: OperationProps<TipsHandlerProps<any>[], any>) => {
-    const { t } = useTranslation()
-    const { value = [], onCustomActionDispatch, message } = props
+    const {t} = useTranslation()
+    const {value = [], onActionDispatch, message} = props
     const currentTip = value?.[0]
     const TipConfig: Record<TipType, TipConfig> = {
         [TipType.CHOOSE_PICKING_TASK_TIP]: {
@@ -114,7 +114,7 @@ const TipsHandler = (props: OperationProps<TipsHandlerProps<any>[], any>) => {
                     toBeOperatedQty: item.toBeOperatedQty
                 }))
 
-                await onCustomActionDispatch({
+                await onActionDispatch({
                     eventCode: CustomActionType.REPORT_ABNORMAL,
                     data: {
                         abnormalReason: abnormalReportReason,
@@ -129,18 +129,21 @@ const TipsHandler = (props: OperationProps<TipsHandlerProps<any>[], any>) => {
         },
         [TipType.EMPTY_CONTAINER_HANDLE_TIP]: {
             component: EmptyContainerHandler,
-            handleSubmit: async () => {},
+            handleSubmit: async () => {
+            },
             modalType: TabActionModalType.NORMAL,
             modalConfig: {
                 title: t("outbound.station.emptyContainer.handler.title"),
                 footer: null,
                 closable: false
             },
-            handleClose: () => {}
+            handleClose: () => {
+            }
         },
         [TipType.SEAL_CONTAINER_TIP]: {
             component: CloseContainer,
-            handleSubmit: async () => {},
+            handleSubmit: async () => {
+            },
             modalType: TabActionModalType.NORMAL,
             modalConfig: {
                 title: t("outbound.station.sealContainer.remainder.title"),
@@ -150,7 +153,8 @@ const TipsHandler = (props: OperationProps<TipsHandlerProps<any>[], any>) => {
         [TipType.SCAN_ERROR_REMIND_TIP]: {
             component: ScanErrorRemind,
 
-            handleSubmit: async () => {},
+            handleSubmit: async () => {
+            },
             modalType: TabActionModalType.NORMAL,
             modalConfig: {
                 title: "",
@@ -160,7 +164,8 @@ const TipsHandler = (props: OperationProps<TipsHandlerProps<any>[], any>) => {
         },
         [TipType.FULL_CONTAINER_AUTO_OUTBOUND_TIP]: {
             component: MessageRemind,
-            handleSubmit: async () => {},
+            handleSubmit: async () => {
+            },
             modalType: TabActionModalType.NORMAL,
             modalConfig: {}
         },
@@ -172,14 +177,14 @@ const TipsHandler = (props: OperationProps<TipsHandlerProps<any>[], any>) => {
     }
 
     const handleClose = async () => {
-        await onCustomActionDispatch({
+        await onActionDispatch({
             eventCode: "CLOSE_TIP",
             data: currentTip.tipCode
         })
     }
 
     const handleVoiceClose = async (result?: string) => {
-        await onCustomActionDispatch({
+        await onActionDispatch({
             eventCode: "PICKING_VOICE_TIP",
             data: {
                 tipType: currentTip?.tipType,
@@ -199,7 +204,7 @@ const TipsHandler = (props: OperationProps<TipsHandlerProps<any>[], any>) => {
         duration: currentTip?.duration || 3000,
         tipType: currentTip?.tipType,
         tipCode: currentTip?.tipCode,
-        onCustomActionDispatch,
+        onActionDispatch: onActionDispatch,
         message
     }
 

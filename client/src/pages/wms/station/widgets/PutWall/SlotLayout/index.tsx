@@ -2,16 +2,16 @@ import React, { useMemo } from "react"
 
 import SlotItem from "./SlotItem"
 import {
-    putWallSlotsItem,
+    PutWallSlotsItem,
     PutWallTagConfigDTO
 } from "@/pages/wms/station/event-loop/types"
 
 interface Props {
-    putWallSlotView: putWallSlotsItem[]
+    putWallSlotView: PutWallSlotsItem[]
     width?: number
     rowReverse?: boolean
     putWallTagConfigDTO: PutWallTagConfigDTO
-    onSlotClick?: (data: putWallSlotsItem) => void
+    onSlotClick?: (data: PutWallSlotsItem) => void
 }
 
 const MAX_SLOT_LEVEL = 7
@@ -27,7 +27,7 @@ const SlotLayout: React.FC<Props> = (props) => {
 
     // 把数据转化成二维数组并进行排序，再flex布局生成播种墙视图
     const matrixList = useMemo(() => {
-        return (Array.from({ length: MAX_SLOT_LEVEL }) as putWallSlotsItem[][])
+        return (Array.from({ length: MAX_SLOT_LEVEL }) as PutWallSlotsItem[][])
             .reduce((prev, curr, index) => {
                 const row = putWallSlotView.filter(
                     (item) => item.locLevel === index + 1
@@ -36,7 +36,7 @@ const SlotLayout: React.FC<Props> = (props) => {
                     prev.push(row.sort((a, b) => a.locBay - b.locBay))
                 }
                 return prev
-            }, [] as putWallSlotsItem[][])
+            }, [] as PutWallSlotsItem[][])
             .sort((a, b) => b[0].locLevel - a[0].locLevel)
     }, [putWallSlotView])
 

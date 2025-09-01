@@ -1,17 +1,18 @@
-import { useDebounceFn } from "ahooks"
-import { Col, Row } from "antd"
+import {useDebounceFn} from "ahooks"
+import {Col, Row} from "antd"
 import classNames from "classnames/bind"
 import React from "react"
 
-import { DEBOUNCE_TIME } from "@/pages/wms/station/constant"
+import {DEBOUNCE_TIME} from "@/pages/wms/station/constants/constant"
 import type {
     ContainerDesc,
     SubContainer
 } from "@/pages/wms/station/instances/outbound/type"
-import { ShelvesStatus } from "@/pages/wms/station/widgets/seedingWall"
-import { BusinessType } from "@/pages/wms/station/widgets/types"
+import {ShelvesStatus} from "@/pages/wms/station/widgets/seedingWall"
+import {BusinessType} from "@/pages/wms/station/widgets/types"
 
 import style from "../styles/container.module.scss"
+
 const cx = classNames.bind(style)
 
 export type Angle = 0 | 90 | 180 | 270
@@ -31,13 +32,13 @@ interface ContainerProps {
 
 // 根据料箱旋转角度渲染料箱格口
 const useRotationAngle = ({
-    rotationAngle,
-    level,
-    bay,
-    subContainers = [],
-    width,
-    height
-}: Partial<ContainerDesc & ContainerProps>) => {
+                              rotationAngle,
+                              level,
+                              bay,
+                              subContainers = [],
+                              width,
+                              height
+                          }: Partial<ContainerDesc & ContainerProps>) => {
     const isVertical = rotationAngle === 90 || rotationAngle === 270
 
     const verticalAttr = {
@@ -76,7 +77,7 @@ const useRotationAngle = ({
                     (c[renderAttr.level as keyof SubContainer] ||
                         c[
                             renderAttr.subContainerLevel as keyof SubContainer
-                        ]) === row
+                            ]) === row
             )
             .sort((c, c1) => {
                 const bayC1 =
@@ -127,7 +128,7 @@ const Container = (props: Partial<ContainerDesc & ContainerProps>) => {
         (subContainerCode, subContainerName) => {
             onClick && onClick(subContainerCode, subContainerName)
         },
-        { wait: DEBOUNCE_TIME, leading: true }
+        {wait: DEBOUNCE_TIME, leading: true}
     ).run
 
     return (
@@ -140,7 +141,7 @@ const Container = (props: Partial<ContainerDesc & ContainerProps>) => {
         >
             {containerSlotsList.map((row, idx) => {
                 return (
-                    <Row key={idx} style={{ height: `${100 / rowsNum}%` }}>
+                    <Row key={idx} style={{height: `${100 / rowsNum}%`}}>
                         {row.map((item) => {
                             return (
                                 <Col key={item.subContainerCode} flex="auto">
@@ -149,16 +150,16 @@ const Container = (props: Partial<ContainerDesc & ContainerProps>) => {
                                             optionslot: isOptional,
                                             active: value
                                                 ? value ===
-                                                  item.subContainerCode
+                                                item.subContainerCode
                                                 : item.active,
                                             "active-source":
                                                 item.active &&
                                                 item.businessType ===
-                                                    BusinessType.SOURCE,
+                                                BusinessType.SOURCE,
                                             "active-target":
                                                 item.active &&
                                                 item.businessType ===
-                                                    BusinessType.TARGET
+                                                BusinessType.TARGET
                                         })}
                                         onClick={() =>
                                             handleClick(
@@ -169,26 +170,26 @@ const Container = (props: Partial<ContainerDesc & ContainerProps>) => {
                                         style={{
                                             backgroundColor: item.slotStatus
                                                 ? ShelvesStatus[
-                                                      item.slotStatus as keyof typeof ShelvesStatus
-                                                  ].bgColor
+                                                    item.slotStatus as keyof typeof ShelvesStatus
+                                                    ].bgColor
                                                 : "",
                                             border: `2px solid ${
                                                 item.slotStatus
                                                     ? ShelvesStatus[
-                                                          item.slotStatus as keyof typeof ShelvesStatus
-                                                      ].borderColor
+                                                        item.slotStatus as keyof typeof ShelvesStatus
+                                                        ].borderColor
                                                     : ""
                                             }`,
                                             color: item.slotStatus
                                                 ? ShelvesStatus[
-                                                      item.slotStatus as keyof typeof ShelvesStatus
-                                                  ].color
+                                                    item.slotStatus as keyof typeof ShelvesStatus
+                                                    ].color
                                                 : ""
                                         }}
                                     >
                                         {isOptional || item.active
                                             ? item.subContainerName ||
-                                              item.subContainerCode
+                                            item.subContainerCode
                                             : null}
                                     </div>
                                 </Col>

@@ -1,35 +1,8 @@
-import { Select, Form, Input, InputNumber } from "antd"
-// import type { RefObject } from "react"
-import React, { useImperativeHandle, useState } from "react"
-import { useTranslation, Translation } from "react-i18next"
-// import type {
-//     CustomActionResponse,
-//     ToastFn
-// } from "@/pages/wms/station/instances/types"
-// import {
-//     OperationTaskDTOS,
-//     ArrivedContainer,
-//     SkuMainDataDTO
-// } from "@/pages/wms/station/event-loop/types"
+import {Form, Input, InputNumber, Select} from "antd"
+import React, {useImperativeHandle, useState} from "react"
+import {Translation, useTranslation} from "react-i18next"
 
 const dictionary = JSON.parse(localStorage.getItem("dictionary") || "{}")
-
-// interface AbnormalInfo {
-//     /** 组件ref */
-//     refs: RefObject<any>
-//     value: {
-//         /** sku信息 */
-//         arrivedContainer: ArrivedContainer
-//         operationTaskDTOS: OperationTaskDTOS[]
-//         skuMainDataDTOS: SkuMainDataDTO[]
-//         shortPickingViews: any[]
-//         totalToBeRequiredQty: number
-//         /** 自定义动作接口 */
-//         onCustomActionDispatch: (value: any) => Promise<CustomActionResponse>
-//         /** 提示语接口 */
-//         message: ToastFn
-//     }
-// }
 
 export const AbnormalReportReason = [
     {
@@ -43,9 +16,9 @@ export const AbnormalReportReason = [
 ]
 
 const Abnormal = (props: any) => {
-    const { value, refs } = props
-    const { t } = useTranslation()
-    const { data, inboundPlanOrderDetailId, onCustomActionDispatch } = value
+    const {value, refs} = props
+    const {t} = useTranslation()
+    const {data, inboundPlanOrderDetailId, onActionDispatch} = value
     const formData = JSON.parse(data)
 
     const [abnormalReason, setAbnormalReason] = useState<string>("")
@@ -77,27 +50,27 @@ const Abnormal = (props: any) => {
         return {
             abnormalReason,
             qtyAbnormal,
-            inboundPlanOrderDetailId,
             inboundOrderId: formData.inboundOrderId
         }
     })
 
-    const onSave = () => {}
+    const onSave = () => {
+    }
 
     return (
         <div className="w-full">
             <Form
                 name="complex-form"
                 onFinish={onSave}
-                labelCol={{ span: 8 }}
-                wrapperCol={{ span: 16 }}
+                labelCol={{span: 8}}
+                wrapperCol={{span: 16}}
             >
                 <Form.Item label={t("table.customerOrderNo")}>
                     <Form.Item name="customerOrderNo" noStyle>
                         <Input
                             defaultValue={formData.customerOrderNo}
                             disabled
-                            style={{ width: 200 }}
+                            style={{width: 200}}
                         />
                     </Form.Item>
                 </Form.Item>
@@ -106,7 +79,7 @@ const Abnormal = (props: any) => {
                         <Input
                             defaultValue={formData.skuCode}
                             disabled
-                            style={{ width: 200 }}
+                            style={{width: 200}}
                         />
                     </Form.Item>
                 </Form.Item>
@@ -119,7 +92,7 @@ const Abnormal = (props: any) => {
                                         formData.batchAttributes[field]
                                     }
                                     disabled
-                                    style={{ width: "60%" }}
+                                    style={{width: "60%"}}
                                 />
                             </Form.Item>
                         </Form.Item>
@@ -139,7 +112,7 @@ const Abnormal = (props: any) => {
                     >
                         <Select
                             defaultValue={abnormalReason}
-                            style={{ width: 200 }}
+                            style={{width: 200}}
                             options={dictionary.InboundAbnormalReason || []}
                             onChange={handleAbnormalReasonChange}
                             getPopupContainer={(e) => e.parentNode}
@@ -161,7 +134,7 @@ const Abnormal = (props: any) => {
                             value={qtyAbnormal}
                             onChange={handleQtyChange}
                             min={1}
-                            style={{ width: 200 }}
+                            style={{width: 200}}
                         />
                     </Form.Item>
                 </Form.Item>
@@ -171,7 +144,7 @@ const Abnormal = (props: any) => {
                         <Input
                             defaultValue={formData.lpnCode}
                             disabled
-                            style={{ width: 200 }}
+                            style={{width: 200}}
                         />
                     </Form.Item>
                 </Form.Item>

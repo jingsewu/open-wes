@@ -1,9 +1,9 @@
-import type { putWallViewsItem } from "@/pages/wms/station/event-loop/types"
+import type { PutWallViewsItem } from "@/pages/wms/station/event-loop/types"
 /**
  * 当前播种墙数据适配函数
  * @param putWallViews
  */
-export const viewsDataAdaptor = (putWallViews: putWallViewsItem[]) => {
+export const viewsDataAdaptor = (putWallViews: PutWallViewsItem[]) => {
     return putWallViews.map((item) => {
         return {
             ...item,
@@ -37,7 +37,7 @@ export const viewsDataAdaptor = (putWallViews: putWallViewsItem[]) => {
  * 解绑适配函数
  * @param initState
  */
-export const submitAdaptor = (initState: putWallViewsItem[]) => {
+export const submitAdaptor = (initState: PutWallViewsItem[]) => {
     let params: any = []
     initState.forEach((item) => {
         item.putWallSlots.forEach((slot: any) => {
@@ -55,10 +55,10 @@ export const submitAdaptor = (initState: putWallViewsItem[]) => {
  * @param target
  */
 export const changeStateAdaptor = (
-    viewsData: putWallViewsItem[],
+    viewsData: PutWallViewsItem[],
     target: any
 ) => {
-   
+
     return viewsData.map((item) => {
         if (item.active) {
             // 当前激活的页面

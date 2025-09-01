@@ -1,26 +1,22 @@
-import { Col, Row } from "antd"
-import React, { useEffect } from "react"
+import {Col, Row} from "antd"
+import React, {useEffect} from "react"
 
-import type {
-    WorkStationEvent,
-    WorkStationInfo
-} from "@/pages/wms/station/event-loop/types"
-import type { OperationProps } from "@/pages/wms/station/instances/types"
+import type {WorkStationView} from "@/pages/wms/station/event-loop/types"
+import type {OperationProps} from "@/pages/wms/station/instances/types"
 
 import ComponentWrapper from "../../component-wrapper"
-import { OPERATION_MAP } from "./config"
-import { valueFilter as orderFilter } from "./operations/OrderHandler"
-import { valueFilter as shelfFilter } from "./operations/ShelfHandler"
-import { valueFilter as stocktakeFilter } from "./operations/StocktakeHandler"
-import { StationOperationType } from "./type"
+import {OPERATION_MAP} from "./config"
+import {valueFilter as orderFilter} from "./operations/OrderHandler"
+import {valueFilter as shelfFilter} from "./operations/ShelfHandler"
+import {valueFilter as stocktakeFilter} from "./operations/StocktakeHandler"
+import {StationOperationType} from "./type"
 import {
     taskStatusText,
     valueFilter as defaultFilter
 } from "@/pages/wms/station/instances/receive/operations/defaultPage"
 
 interface StocktakeLayoutProps extends OperationProps<any, any> {
-    workStationEvent: WorkStationEvent<any>
-    workStationInfo: WorkStationInfo
+    workStationEvent: WorkStationView<any>
 }
 
 const Layout = (props: StocktakeLayoutProps) => {

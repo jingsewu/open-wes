@@ -9,7 +9,7 @@ const { Title, Text } = Typography
 
 const QTYFILL = (props: any) => {
     const { requiredQty, detailId } = props
-    const { onCustomActionDispatch } = useContext(APIContext)
+    const { onActionDispatch } = useContext(APIContext)
     const { t } = useTranslation()
 
     const [inputQty, setInputQty] = useState<number>(requiredQty)
@@ -47,7 +47,7 @@ const QTYFILL = (props: any) => {
     }
 
     const stockTakeSubmit = async () => {
-        const { code, msg } = await onCustomActionDispatch({
+        const { code, msg } = await onActionDispatch({
             eventCode: CustomActionType.STOCKTAKE_SUBMIT,
             data: {
                 detailId,

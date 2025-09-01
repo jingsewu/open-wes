@@ -1,9 +1,11 @@
+import request from "@/utils/requestInterceptor";
+
 const baseApi = {
     method: "post",
     url: "/search/search/searchSelectResult?perPage=1000&activePage=1"
 }
 
-const baseApi_warehouseCode = {
+export const baseApi_warehouseCode = {
     method: "post",
     url: "/search/search/searchSelectResult?perPage=1000&activePage=1&warehouseCode-op=eq&warehouseCode=${ls:warehouseCode}"
 }
@@ -836,4 +838,46 @@ export const select_print_rule_code = {
             }
         ]
     }
+}
+
+export function request_select_container_spec(warehouseCode: string, containerType: string) {
+    return request({
+        method: "post",
+        url: containerType
+            ? `/search/search/searchSelectResult?perPage=1000&activePage=1&warehouseCode-op=eq&warehouseCode=${warehouseCode}&containerType-op=eq&containerType=${containerType}`
+            : `/search/search/searchSelectResult?perPage=1000&activePage=1&warehouseCode-op=eq&warehouseCode=${warehouseCode}`,
+        data: {
+            searchIdentity: "SearchContainerSpecCode",
+            searchObject: {
+                tables: "w_container_spec"
+            },
+            showColumns: [
+                {
+                    dbField: "warehouse_code",
+                    name: "warehouseCode",
+                    javaType: "java.lang.String"
+                },
+                {
+                    dbField: "container_type",
+                    name: "containerType",
+                    javaType: "java.lang.String"
+                },
+                {
+                    dbField: "container_spec_code",
+                    name: "value",
+                    javaType: "java.lang.String"
+                },
+                {
+                    dbField: "container_spec_name",
+                    name: "label",
+                    javaType: "java.lang.String"
+                },
+                {
+                    dbField: "container_slot_specs",
+                    name: "containerSlotSpecs",
+                    javaType: "java.lang.String"
+                }
+            ]
+        }
+    })
 }

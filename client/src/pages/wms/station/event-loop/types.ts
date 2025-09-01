@@ -1,17 +1,9 @@
-import type { ReactChild, ReactChildren } from "react"
+import type {ReactChild, ReactChildren} from "react"
 
 import type {
     DebuggerConfig,
     OperationProps
 } from "@/pages/wms/station/instances/types"
-
-export interface InfoModel {
-    id: number
-}
-
-export interface ActionModel {
-    id: number
-}
 
 export enum ChooseArea {
     workLocationArea = "CONTAINER_AREA",
@@ -20,7 +12,7 @@ export enum ChooseArea {
     tips = "TIPS"
 }
 
-export enum OperationType {
+export enum WorkStationMode {
     RECEIVE = "RECEIVE" /** 收货 */,
     PUT_AWAY = "PUT_AWAY" /** 上架 */,
     PICKING = "PICKING" /** 拣货 */,
@@ -85,14 +77,14 @@ export interface SkuMainDataDTO {
     skuBarcode: { barcodes: string[] }
 }
 
-export interface pickingViewItem {
+export interface PickingViewItem {
     operationTaskDTOS: OperationTaskDTOS[]
     skuBatchAttributeDTO: SkuBatchAttributeDTO
     skuMainDataDTO: SkuMainDataDTO
 }
 
 export interface SkuArea {
-    pickingViews: pickingViewItem[]
+    pickingViews: PickingViewItem[]
     withoutOrderSkuInfos?: any[]
 }
 
@@ -129,7 +121,7 @@ export enum PutWallSlotStatusEnum {
     SELECTED = "selected"
 }
 
-export interface putWallSlotsItem {
+export interface PutWallSlotsItem {
     /** 是否禁用 */
     enable: boolean
     /** 列编码 */
@@ -168,10 +160,10 @@ export enum DisplayOrder {
     LEFT_TO_RIGHT = "LEFT_TO_RIGHT"
 }
 
-export interface putWallViewsItem {
+export interface PutWallViewsItem {
     /** 播种墙位置 */
     location: Location
-    putWallSlots: putWallSlotsItem[]
+    putWallSlots: PutWallSlotsItem[]
     active?: boolean
     showHasTask?: boolean
     displayOrder?: DisplayOrder
@@ -187,18 +179,18 @@ export enum PutWallDisplayStyle {
     split = "split"
 }
 
-export interface putWallArea {
+export interface PutWallArea {
     /** 播种墙展示样式  合并|分开 */
     putWallDisplayStyle: PutWallDisplayStyle
-    putWallViews: putWallViewsItem[]
+    putWallViews: PutWallViewsItem[]
     putWallTagConfigDTO: PutWallTagConfigDTO
 }
 
 export interface PutWallTagConfigDTO {
-    [key: string]: putWallSlotColor
+    [key: string]: PutWallSlotColor
 }
 
-export interface putWallSlotColor {
+export interface PutWallSlotColor {
     /** 播种墙槽位背景色 */
     color: string
     /** 播种墙颜色闪烁/常亮 */
@@ -212,17 +204,6 @@ export type StationProcessingStatus =
     | "WAIT_ROBOT"
     | "WAIT_CALL_CONTAINER"
 
-export interface OrderList {
-    active: boolean
-    customerOrderNo: string
-    lpnCode: string
-    orderId: string
-    orderNo: string
-    qtyNeed: number
-    qtyReceived: number
-    receivedSkuTypes: number
-}
-
 export interface OrderArea {
     currentStocktakeOrder: StocktakeOrder
 }
@@ -234,9 +215,9 @@ export interface StocktakeOrder {
     stocktakeType: string
 }
 
-export interface WorkStationEvent<T> {
+export interface WorkStationView<T> {
     /** 操作台类型 */
-    operationType: OperationType
+    workStationMode: WorkStationMode
     /** 工作站编码 */
     stationCode: string
     /** 工作站是否上线 */
@@ -246,9 +227,7 @@ export interface WorkStationEvent<T> {
     /** 商品区域信息 */
     skuArea: SkuArea
     /** 播种墙区域信息 */
-    putWallArea: putWallArea
-    /** 客户订单区域信息 */
-    orderArea: OrderList[]
+    putWallArea: PutWallArea
     operationOrderArea: OrderArea
     /** 工作位容器信息 */
     workLocationArea: WorkLocationArea
@@ -261,7 +240,6 @@ export interface WorkStationEvent<T> {
     scanCode?: string
     /** 仓库编码 */
     warehouseCode?: string
-    processingType?: "WHOLE_BOX" | "NO_ORDER" | "NORMAL"
     /** 一品多批选中的明细id */
     processingInboundOrderDetailId: string
     /** 已呼叫容器数 */
@@ -331,52 +309,6 @@ export interface WorkLocationViews {
 export interface WorkLocationArea {
     workLocationViews: WorkLocationViews[]
 }
-interface SworkStationInfoInterface<T> {
-    stationStatus: string
-    extendsInfo: {
-        chooseArea: string
-    } & T
-}
-
-export interface WorkStationEventLoopConfig {
-    /** 轮询事件url */
-    queryURL: string
-    /** 操作确认url */
-    confirmURL: string
-    /** 轮询间隔时间 */
-    pollingInterval: number
-    /** 工作站编码 */
-    stationCode: string
-    /** 发送事件url */
-    sendEventURL: string
-    /** 获取工作站信息url */
-    getWorkStationInfoURL: string
-}
-
-type GetCurrentOperationResponse<BusinessData> = BusinessData & {
-    operationId: string // 操作ID
-    operationType: string // 操作类型
-}
-
-export type GetCurrentOperation<T> = (
-    stationCode: string
-) => Promise<GetCurrentOperationResponse<T>>
-
-type OperationConfirmPayload<BusinessData> = BusinessData & {
-    stationCode: string
-    operationId: string
-    operationType: string
-}
-
-interface OperationConfirmResponse {
-    code: number
-    msg: string
-    data?: Record<string, any>
-}
-
-export type OperationConfirm<T> = (
-    payload: OperationConfirmPayload<T>
-) => Promise<OperationConfirmResponse>
 
 export interface WorkStationProviderProps extends DebuggerConfig {
     stationCode: string
@@ -385,17 +317,17 @@ export interface WorkStationProviderProps extends DebuggerConfig {
 }
 
 export interface WorkStationContextProps {
-    workStationEvent: WorkStationEvent<any> | undefined
-    workStationInfo: WorkStationInfo
+    workStationEvent: WorkStationView<any> | undefined
 }
 
 export type WorkStationAPIContextProps = Pick<
     OperationProps<any, any>,
-    "onConfirm" | "onCustomActionDispatch" | "message"
+    "onActionDispatch" | "message"
 >
 
 export interface SendEventPayload {
     eventCode: string
+
     [key: string]: any
 }
 
@@ -418,15 +350,6 @@ export enum WorkStationStatus {
     DO_OPERATION = "DO_OPERATION"
 }
 
-export enum CurrentOperationType {
-    /** 未设置 */
-    NONE = "NONE",
-    /** 推荐 */
-    RECOMMEND = "RECOMMEND",
-    /** 手动 */
-    MANUAL = "MANUAL"
-}
-
 export enum DevicePhysicalType {
     /** 人机 */
     ROBOT = "ROBOT",
@@ -434,38 +357,3 @@ export enum DevicePhysicalType {
     DEFAULT = "DEFAULT"
 }
 
-const enum emptyContainerOutboundEnum {
-    // 当前没有任务
-    NO_TASK = "NO_TASK",
-    // 等待机器人到来
-    WAIT_ROBOT = "WAIT_ROBOT",
-    // 当前正在操作
-    DO_OPERATION = "DO_OPERATION"
-}
-interface ExtendsRunningInfoFace {
-    emptyContainerOutboundWorkStatus?: emptyContainerOutboundEnum
-    outboundCommonConfig?: Record<string, any>
-    runningConfig?: Record<string, any>
-}
-export interface WorkStationInfo {
-    /** 工作站编码 */
-    stationCode: string
-    /** 工作站状态uuid 以识别工作站信息变化 */
-    runningStatusUUID: string
-    /** 工作站状态 */
-    stationStatus: WorkStationStatus
-    /** 执行中的任务编码集合 */
-    executingTaskCodes: number[]
-    /** 呼叫机器人数量 */
-    callRobotNum: number
-    /** 所有容器编码集合 */
-    allContainerCodeList: string[]
-    /** 在途容器编码集合 */
-    inTransitContainerCodeList: string[]
-    /** 当前操作类型 */
-    currentOperationType: CurrentOperationType
-    /** 拥有的物理设备类型集合 */
-    devicePhysicalTypeList: DevicePhysicalType[]
-    // 空箱出庫扩展需要
-    extendsRunningInfo?: ExtendsRunningInfoFace
-}

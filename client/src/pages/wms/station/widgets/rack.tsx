@@ -12,13 +12,13 @@ interface ContainerSlotSpec {
 }
 
 export interface RackProps {
-    onCustomActionDispatch: (value: any) => Promise<CustomActionResponse>
+    onActionDispatch: (value: any) => Promise<CustomActionResponse>
     containerSlotList: ContainerSlotSpec[][]
     activeSlotCodes: string[]
 }
 
 const Rack = (props: RackProps) => {
-    const { containerSlotList, activeSlotCodes, onCustomActionDispatch } = props
+    const { containerSlotList, activeSlotCodes, onActionDispatch } = props
     return (
         <div className="d-flex flex-col-reverse flex-1 justify-around w-full overflow-hidden">
             {containerSlotList.map((item, index) => {
@@ -71,8 +71,8 @@ const Rack = (props: RackProps) => {
                                             // className={cx("seeding-item")}
                                             className="relative d-flex flex-col justify-between w-full p-1 text-white border-4 border-gray-200	"
                                             onClick={(e) =>
-                                                onCustomActionDispatch &&
-                                                onCustomActionDispatch(cell)
+                                                onActionDispatch &&
+                                                onActionDispatch(cell)
                                             }
                                             style={{
                                                 height: 100 + "%",

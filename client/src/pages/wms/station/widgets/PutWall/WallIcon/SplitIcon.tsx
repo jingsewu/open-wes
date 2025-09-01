@@ -5,7 +5,7 @@ import React, { useContext } from "react"
 import { APIContext } from "@/pages/wms/station/event-loop/provider"
 
 import Icon from "@ant-design/icons"
-import { putWallViewsItem } from "@/pages/wms/station/event-loop/types"
+import { PutWallViewsItem } from "@/pages/wms/station/event-loop/types"
 import WallLeftSvg from "@/icon/wall/wall_left.svg"
 import WallRightSvg from "@/icon/wall/wall_right.svg"
 
@@ -14,12 +14,12 @@ const locationEnum = {
     RIGHT: <WallRightSvg />
 }
 
-const MergeIcon = (props: { putWallViews: putWallViewsItem[] }) => {
+const MergeIcon = (props: { putWallViews: PutWallViewsItem[] }) => {
     const { putWallViews = [] } = props
-    const { onCustomActionDispatch } = useContext(APIContext)
+    const { onActionDispatch } = useContext(APIContext)
 
     const onLocationChange = async (params: "LEFT" | "RIGHT") => {
-        await onCustomActionDispatch({
+        await onActionDispatch({
             eventCode: CustomActionType.CHOOSE_PUT_WALL,
             data: params
         })
