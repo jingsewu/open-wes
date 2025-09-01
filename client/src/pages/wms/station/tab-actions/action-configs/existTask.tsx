@@ -25,13 +25,13 @@ const taskConfig: TabAction = {
     testid: "exit",
     disabled: (workStationEvent: any) => {
         return (
-            disabledOperationType.includes(workStationEvent?.operationType) &&
+            disabledOperationType.includes(workStationEvent?.workStationMode) &&
             !!workStationEvent?.scanCode
         )
     },
     emitter: async (props) => {
-        const { history, message, onCustomActionDispatch } = props
-        const { code, msg } = await onCustomActionDispatch({
+        const { history, message, onActionDispatch } = props
+        const { code, msg } = await onActionDispatch({
             eventCode: CustomActionType.OFFLINE
         })
         if (code === "-1") {

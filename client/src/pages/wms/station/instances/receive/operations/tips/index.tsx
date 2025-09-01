@@ -1,25 +1,23 @@
-import type { OperationProps } from "@/pages/wms/station/instances/types"
-import { TabActionModalType } from "@/pages/wms/station/tab-actions/types"
+import type {OperationProps} from "@/pages/wms/station/instances/types"
+import {TabActionModalType} from "@/pages/wms/station/tab-actions/types"
 import ChoosePickingTaskTip from "@/pages/wms/station/widgets/ChoosePickingTaskTip"
 import ChooseSkuCode from "@/pages/wms/station/widgets/ChooseSkuCode"
-// import type { Config } from "@/pages/wms/station/widgets/config-controlled-modal"
 import ConfigControlledModal from "@/pages/wms/station/widgets/config-controlled-modal"
 import React from "react"
-import { CustomActionType } from "@/pages/wms/station/instances/receive/customActionType"
-import { WorkStationEvent } from "@/pages/wms/station/event-loop/types"
-import type { ModalType } from "@/pages/wms/station/instances/outbound/operations/tips/type"
+import {CustomActionType} from "@/pages/wms/station/instances/receive/customActionType"
+import {WorkStationView} from "@/pages/wms/station/event-loop/types"
+import type {ModalType} from "@/pages/wms/station/instances/outbound/operations/tips/type"
 import Abnormal from "./Abnormal"
-import { useTranslation } from "react-i18next"
+import {useTranslation} from "react-i18next"
 
 /**
  * @Description: 对event中的数据进行filter处理
  * @param data
  */
-export const valueFilter = (data: WorkStationEvent<any>) => {
+export const valueFilter = (data: WorkStationView<any>) => {
     if (!data) return {}
     return {
         tips: data.tips,
-        processingInboundOrderDetailId: data.processingInboundOrderDetailId
     }
 }
 
@@ -42,7 +40,6 @@ interface TipsHandlerProps {
 
 interface TipProps {
     tips: TipsHandlerProps[]
-    processingInboundOrderDetailId: string
 }
 
 interface TipData {
@@ -73,11 +70,11 @@ interface TipData {
 }
 
 function Tips(props: OperationProps<TipProps, any>) {
-    const { t } = useTranslation()
-    const { value, onCustomActionDispatch, message } = props
+    const {t} = useTranslation()
+    const {value, onActionDispatch, message} = props
     const currentTip = value?.tips?.[0] as TipsHandlerProps
 
-    const { data } = currentTip || {}
+    const {data} = currentTip || {}
     const dataSource = JSON.parse(data || "[]")
 
     const TipConfig: Record<TipType, any> = {
@@ -86,7 +83,7 @@ function Tips(props: OperationProps<TipProps, any>) {
             handleSubmit: async (contentRef: any) => {
                 // @ts-ignore
 
-                await onCustomActionDispatch({
+                await onActionDispatch({
                     eventCode: CustomActionType.INBOUND_ABNORMAL_CONFIRM,
                     data: contentRef.current
                 })
@@ -129,7 +126,7 @@ function Tips(props: OperationProps<TipProps, any>) {
     }
 
     const handleConfirm = async (value: TipData) => {
-        await onCustomActionDispatch?.({
+        await onActionDispatch?.({
             eventCode: CustomActionType.INBOUND_SCAN_BARCODE_2_MANY_SKU_CODE,
             data: value
         })
@@ -137,14 +134,14 @@ function Tips(props: OperationProps<TipProps, any>) {
     }
 
     const handleSkuConfirm = async (value: any) => {
-        await onCustomActionDispatch?.({
+        await onActionDispatch?.({
             eventCode: CustomActionType.INBOUND_SCAN_BARCODE_2_MANY_SKU_CODE,
             data: value
         })
     }
 
     const handleClose = async () => {
-        await onCustomActionDispatch({
+        await onActionDispatch({
             eventCode: "CLOSE_TIP",
             data: currentTip?.tipCode
         })
@@ -157,12 +154,11 @@ function Tips(props: OperationProps<TipProps, any>) {
     const contentValue = {
         // ...(currentTip?.data || {}),
         data: currentTip?.data,
-        inboundPlanOrderDetailId: value?.processingInboundOrderDetailId,
         type: currentTip?.type,
         duration: currentTip?.duration || 3000,
         tipType: currentTip?.tipType,
         tipCode: currentTip?.tipCode,
-        onCustomActionDispatch,
+        onActionDispatch: onActionDispatch,
         message
     }
 
@@ -173,7 +169,6 @@ function Tips(props: OperationProps<TipProps, any>) {
             }}
             handleClose={closeFn}
             visible={!!currentTip}
-            // handleClose={handleCancel}
             contentValue={contentValue}
         />
     )

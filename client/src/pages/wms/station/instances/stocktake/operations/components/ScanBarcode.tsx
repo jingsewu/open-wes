@@ -5,7 +5,7 @@ import { APIContext } from "@/pages/wms/station/event-loop/provider"
 import { CustomActionType } from "../../customActionType"
 
 const ScanBarcode = () => {
-    const { onCustomActionDispatch } = useContext(APIContext)
+    const { onActionDispatch } = useContext(APIContext)
 
     const [barcode, setBarcode] = useState<string>("")
 
@@ -14,7 +14,7 @@ const ScanBarcode = () => {
     }
 
     const handleFinishScan = () => {
-        onCustomActionDispatch({
+        onActionDispatch({
             eventCode: CustomActionType.SCAN_BARCODE,
             data: barcode
         })

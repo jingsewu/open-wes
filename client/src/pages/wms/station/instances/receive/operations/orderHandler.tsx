@@ -4,7 +4,7 @@ import {useTranslation} from "react-i18next";
 
 const { Title } = Typography
 const OrderHandler = (props: any) => {
-    const { value, onCustomActionDispatch } = props
+    const { value} = props
     const { t } = useTranslation();
     const { customerOrderNo, storageType, skuKindNum, totalQty } = value
     return (

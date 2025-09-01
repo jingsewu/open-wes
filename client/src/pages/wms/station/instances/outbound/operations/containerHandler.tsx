@@ -1,15 +1,11 @@
 import React from "react"
 
-import {
-    WorkStationEvent,
-    WorkLocationArea,
-    DevicePhysicalType
-} from "@/pages/wms/station/event-loop/types"
-import { CustomActionType } from "@/pages/wms/station/instances/outbound/customActionType"
+import {DevicePhysicalType, WorkLocationArea, WorkStationView} from "@/pages/wms/station/event-loop/types"
+import {CustomActionType} from "@/pages/wms/station/instances/outbound/customActionType"
 import EmptyImage from "@/pages/wms/station/instances/outbound/operations/components/EmptyImage"
 import MaterialHandler from "@/pages/wms/station/instances/outbound/operations/components/MaterialHandler"
-import type { OutboundProps } from "@/pages/wms/station/instances/outbound/type"
-import type { OperationProps } from "@/pages/wms/station/instances/types"
+import type {OutboundProps} from "@/pages/wms/station/instances/outbound/type"
+import type {OperationProps} from "@/pages/wms/station/instances/types"
 
 export interface ContainerHandlerProps {
     workLocationArea: WorkLocationArea
@@ -24,12 +20,12 @@ export interface ContainerHandlerConfirmProps {
  * @param data
  */
 export const valueFilter = (
-    data: WorkStationEvent<OutboundProps> | undefined
+    data: WorkStationView<OutboundProps> | undefined
 ):
     | OperationProps<
-          ContainerHandlerProps,
-          ContainerHandlerConfirmProps
-      >["value"]
+    ContainerHandlerProps,
+    ContainerHandlerConfirmProps
+>["value"]
     | Record<string, any> => {
     if (!data) return {}
     return data.workLocationArea
@@ -38,13 +34,12 @@ export const valueFilter = (
 const ContainerHandler = (
     props: OperationProps<WorkLocationArea, ContainerHandlerConfirmProps>
 ) => {
-    const { value, onCustomActionDispatch, message, isActive } = props
+    const {value, onActionDispatch, message, isActive} = props
 
-    const workStationInfo = props.workStationInfo
     const containerViews = value?.workLocationViews?.[0]
     const workLocationType = containerViews?.workLocationType || "DEFAULT"
     const handleScanContainer = async (containerCode: string) => {
-        const { code, msg } = await onCustomActionDispatch({
+        const {code, msg} = await onActionDispatch({
             eventCode: CustomActionType.CONTAINER_ARRIVED,
             data: containerCode
         })
@@ -59,12 +54,8 @@ const ContainerHandler = (
 
     const handleShowInput = async () => {
         // 是否开启多拣选位
-        if (
-            workStationInfo?.extendsRunningInfo?.outboundCommonConfig
-                ?.conveyorMultiplePickingPositions === "TRUE" &&
-            !value?.workLocationViews
-        ) {
-            const { code, msg } = await onCustomActionDispatch({
+        if (false) {
+            const {code, msg} = await onActionDispatch({
                 eventCode: CustomActionType.CLICK_SCAN_CODE_BOX
             })
             // if (code !== "0") {
@@ -81,18 +72,17 @@ const ContainerHandler = (
         ROBOT: (
             <MaterialHandler
                 value={containerViews}
-                onCustomActionDispatch={onCustomActionDispatch}
+                onActionDispatch={onActionDispatch}
             />
         ),
         BUFFER_SHELVING: (
             <MaterialHandler
                 value={containerViews}
-                onCustomActionDispatch={onCustomActionDispatch}
+                onActionDispatch={onActionDispatch}
             />
         ),
         DEFAULT: (
             <EmptyImage
-                workStationInfo={workStationInfo}
                 handleShowInput={handleShowInput}
                 onChange={handleScanContainer}
             />

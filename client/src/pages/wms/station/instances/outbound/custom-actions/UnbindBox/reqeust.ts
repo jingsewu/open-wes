@@ -1,8 +1,7 @@
 import _ from "lodash"
-import { CustomActionType } from "@/pages/wms/station/instances/outbound/customActionType"
-import { submitAdaptor } from "@/pages/wms/station/instances/outbound/custom-actions/UnbindBox/utils"
-import { MessageType } from "@/pages/wms/station/widgets/message"
-import type { putWallViewsItem } from "@/pages/wms/station/event-loop/types"
+import {CustomActionType} from "@/pages/wms/station/instances/outbound/customActionType"
+import {submitAdaptor} from "@/pages/wms/station/instances/outbound/custom-actions/UnbindBox/utils"
+import type {PutWallViewsItem} from "@/pages/wms/station/event-loop/types"
 
 /**
  * 请求保存当前的数据到服务端
@@ -10,7 +9,7 @@ import type { putWallViewsItem } from "@/pages/wms/station/event-loop/types"
  * @param context
  */
 export const onSaveRequest = async (
-    viewsData: putWallViewsItem[],
+    viewsData: PutWallViewsItem[],
     context: any
 ) => {
     let putWallSlotCodes = submitAdaptor(viewsData)
@@ -18,7 +17,7 @@ export const onSaveRequest = async (
     if (_.isEmpty(putWallSlotCodes)) {
         return true
     }
-    const { code, msg } = await context.onCustomActionDispatch({
+    const {code, msg} = await context.onActionDispatch({
         eventCode: CustomActionType.UNBIND,
         data: {
             putWallSlotCodes

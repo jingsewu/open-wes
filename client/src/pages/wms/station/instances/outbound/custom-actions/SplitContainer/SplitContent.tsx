@@ -16,10 +16,10 @@ import {BreathingLampClassName} from "@/pages/wms/station/widgets/PutWall/types"
 import {
     ChooseArea,
     PutWallSlotStatus,
-    putWallSlotsItem
+    PutWallSlotsItem
 } from "@/pages/wms/station/event-loop/types"
 import style from "./split.module.scss"
-//
+
 const cx = classNames.bind(style)
 
 export const putWallStatusTextMap = {
@@ -31,7 +31,7 @@ export const putWallStatusTextMap = {
 const SplitContent = (props: any) => {
     const {t} = useTranslation()
 
-    const {operationsMap, refs, onCustomActionDispatch} = props
+    const {operationsMap, refs, onActionDispatch} = props
     const putWallArea = operationsMap.get(ChooseArea.putWallArea)
     const skuArea = operationsMap.get(ChooseArea.skuArea)
     const pickingViews = skuArea?.pickingViews || []
@@ -40,11 +40,11 @@ const SplitContent = (props: any) => {
         putWallArea
     const currentSkuInfo = pickingViews[0]
     const [actualPickingNum, setActualPickingNum] = useState<number>(0)
-    const [selectedSLot, setSelectedSLot] = useState<Partial<putWallSlotsItem>>(
+    const [selectedSLot, setSelectedSLot] = useState<Partial<PutWallSlotsItem>>(
         {}
     )
     const [inputStatus, setInputStatus] = useState<
-        putWallSlotsItem["putWallSlotStatus"] | null
+        PutWallSlotsItem["putWallSlotStatus"] | null
     >()
     const [location, setLocation] = useState("")
     //
@@ -170,7 +170,7 @@ const SplitContent = (props: any) => {
     }
 
     useImperativeHandle(refs, () => ({
-        onCustomActionDispatch,
+        onActionDispatch,
         pickedNumber: actualPickingNum,
         putWallSlotCode: selectedSLot.putWallSlotCode,
         inputStatus

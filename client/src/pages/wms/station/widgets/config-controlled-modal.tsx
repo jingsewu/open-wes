@@ -1,14 +1,13 @@
-import type { FC, ReactNode, RefObject } from "react"
-import React, { useRef, useEffect, useCallback } from "react"
-import { debounce } from "lodash"
+import type {FC, ReactNode, RefObject} from "react"
+import React, {useCallback, useEffect, useRef} from "react"
+import {debounce} from "lodash"
 
-import { ModalType } from "@/pages/wms/station/instances/outbound/operations/tips/type"
-import type { TabAction } from "@/pages/wms/station/tab-actions/types"
-import { TabActionModalType } from "@/pages/wms/station/tab-actions/types"
-import message, { MessageType } from "@/pages/wms/station/widgets/message"
+import {ModalType} from "@/pages/wms/station/instances/outbound/operations/tips/type"
+import type {TabAction} from "@/pages/wms/station/tab-actions/types"
+import {TabActionModalType} from "@/pages/wms/station/tab-actions/types"
 import Modal from "@/pages/wms/station/widgets/modal"
-import { speak } from "../utils"
-import { DEBOUNCE_TIME } from "@/pages/wms/station/constant"
+import {speak} from "../utils"
+import {DEBOUNCE_TIME} from "@/pages/wms/station/constants/constant"
 
 export interface Config {
     component: FC<any> | ReactNode
@@ -36,31 +35,31 @@ const ConfigControlledModal = (props: ConfigControlledModalProps) => {
         visible,
         byCloseStatus = false
     } = props
-    const { voiceInfo, tipType, tipCode } = contentValue
+    const {voiceInfo, tipType, tipCode} = contentValue
     const contentRef = useRef(null)
     const Content = config.component
 
     useEffect(() => {
         if (voiceInfo) {
-            const result = speak({ text: voiceInfo })
+            const result = speak({text: voiceInfo})
             handleVoiceClose && handleVoiceClose(result)
         }
     }, [tipType, tipCode, voiceInfo])
 
     const handleSubmit = debounce(
         async () => {
-            const { handleSubmit } = config
+            const {handleSubmit} = config
             handleSubmit && (await handleSubmit(contentRef))
         },
         DEBOUNCE_TIME,
-        { leading: false }
+        {leading: false}
     )
     const modalConfig = config?.modalConfig || {}
     const isFullScreen = config?.modalType === TabActionModalType.FULL_SCREEN
 
     const showContent = Content ? (
         typeof Content === "function" ? (
-            <Content value={contentValue} refs={contentRef} />
+            <Content value={contentValue} refs={contentRef}/>
         ) : (
             React.cloneElement(Content as any, {
                 value: contentValue,
@@ -110,7 +109,7 @@ const ConfigControlledModal = (props: ConfigControlledModalProps) => {
     return (
         chooseModal[
             (contentValue.type || ModalType.CONFIRM) as keyof typeof chooseModal
-        ] || null
+            ] || null
     )
 }
 

@@ -5,7 +5,7 @@ import type { Ref } from "react"
 import React, { memo } from "react"
 import type { CommonDescription } from "@/pages/wms/station/widgets/types"
 // import IntlMessages from "@/util/IntlMessages"
-import type { pickingViewItem } from "@/pages/wms/station/event-loop/types"
+import type { PickingViewItem } from "@/pages/wms/station/event-loop/types"
 
 const { Text } = Typography
 // 占位图片
@@ -70,7 +70,7 @@ export interface SkuInfoProps {
     url: string
 }
 
-const SkuInfo = (props: Partial<pickingViewItem> & Partial<SkuInfoProps>) => {
+const SkuInfo = (props: Partial<PickingViewItem> & Partial<SkuInfoProps>) => {
     const {
         imgWidth = 204,
         detailHeight = 204,

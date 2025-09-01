@@ -2,22 +2,14 @@
  * @Description: 用于包装组件，注入组件需要的通用方法，并对event中的数据进行filter处理
  */
 import classNames from "classnames/bind"
-import { debounce } from "lodash"
-import type { FunctionComponent, ReactNode } from "react"
-import React, { useContext, useEffect, useRef } from "react"
+import {debounce} from "lodash"
+import type {FunctionComponent, ReactNode} from "react"
+import React, {useContext, useEffect, useRef} from "react"
 
-import { DEBOUNCE_TIME } from "@/pages/wms/station/constant"
-import {
-    APIContext,
-    OperationsContext,
-    WorkStationContext
-} from "@/pages/wms/station/event-loop/provider"
-import {
-    WorkStationContextProps,
-    WorkStationEvent,
-    ChooseArea
-} from "@/pages/wms/station/event-loop/types"
-import type { OperationProps } from "@/pages/wms/station/instances/types"
+import {DEBOUNCE_TIME} from "@/pages/wms/station/constants/constant"
+import {APIContext, OperationsContext, WorkStationContext} from "@/pages/wms/station/event-loop/provider"
+import {WorkStationContextProps, WorkStationView} from "@/pages/wms/station/event-loop/types"
+import type {OperationProps} from "@/pages/wms/station/instances/types"
 
 import styles from "./layout/styles.module.scss"
 
@@ -30,7 +22,7 @@ const cx = classNames.bind(styles)
 function Wrapper(props: {
     type: string
     Component: FunctionComponent<OperationProps<any, any>>
-    valueFilter: (data: WorkStationEvent<any> | undefined) => any
+    valueFilter: (data: WorkStationView<any> | undefined) => any
     changeAreaHandler?: () => Promise<void>
     withWrapper?: boolean
     style?: React.CSSProperties
@@ -46,12 +38,11 @@ function Wrapper(props: {
 
     const ref = useRef<ReactNode>(null)
 
-    const { workStationEvent, workStationInfo } =
-        useContext<WorkStationContextProps>(WorkStationContext)
+    const {workStationEvent} = useContext<WorkStationContextProps>(WorkStationContext)
 
-    const { operationsMap, setOperationsMap } = useContext(OperationsContext)
+    const {operationsMap, setOperationsMap} = useContext(OperationsContext)
 
-    const { onCustomActionDispatch, message } = useContext(APIContext)
+    const {onActionDispatch, message} = useContext(APIContext)
 
     useEffect(() => {
         /**
@@ -68,16 +59,15 @@ function Wrapper(props: {
             changeAreaHandler && (await changeAreaHandler())
         },
         DEBOUNCE_TIME,
-        { leading: true }
+        {leading: true}
     )
 
     const comp = (
         <Component
             refs={ref}
-            onCustomActionDispatch={onCustomActionDispatch}
+            onActionDispatch={onActionDispatch}
             value={valueFilter(workStationEvent)}
             message={message}
-            workStationInfo={workStationInfo}
             isActive={workStationEvent && type === workStationEvent?.chooseArea}
         />
     )
@@ -89,7 +79,7 @@ function Wrapper(props: {
                 highlight: workStationEvent?.chooseArea === type
             })}
             onClick={evenChangeHandler}
-            style={{ ...style, backgroundColor: "#fff" }}
+            style={{...style, backgroundColor: "#fff"}}
         >
             {comp}
         </div>

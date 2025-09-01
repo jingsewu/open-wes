@@ -2,13 +2,13 @@ import type { TipsHandlerProps } from "@/pages/wms/station/instances/outbound/op
 import type { Angle } from "@/pages/wms/station/widgets/common/Container"
 import type { ContainerHandlerProps } from "./operations/containerHandler"
 import type { PickerArea } from "./operations/pickingHandler"
-import type { putWallArea } from "@/pages/wms/station/event-loop/types"
+import type { PutWallArea } from "@/pages/wms/station/event-loop/types"
 import { ChooseArea } from "@/pages/wms/station/event-loop/types"
 
 export interface OutboundProps {
     [ChooseArea.workLocationArea]: ContainerHandlerProps
     [ChooseArea.skuArea]: PickerArea
-    [ChooseArea.putWallArea]: putWallArea
+    [ChooseArea.putWallArea]: PutWallArea
     [ChooseArea.tips]: TipsHandlerProps<any>
 }
 

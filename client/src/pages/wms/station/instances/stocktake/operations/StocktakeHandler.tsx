@@ -1,6 +1,6 @@
 import { Typography } from "antd"
 import React from "react"
-import { WorkStationEvent } from "@/pages/wms/station/event-loop/types"
+import { WorkStationView } from "@/pages/wms/station/event-loop/types"
 import type { OperationProps } from "@/pages/wms/station/instances/types"
 
 import Operation from "./components/Operation"
@@ -16,7 +16,7 @@ type StocktakeAreaProps = {
  * @Description: 对event中的数据进行filter处理
  * @param data
  */
-export const valueFilter = (data?: WorkStationEvent<any>) => {
+export const valueFilter = (data?: WorkStationView<any>) => {
     if (!data) return {}
     return {
         activeTask: data.skuArea?.pickingViews?.[0],

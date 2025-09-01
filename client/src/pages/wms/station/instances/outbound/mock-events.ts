@@ -5,7 +5,7 @@ const mockData = {
     stationCode: "1",
     stationName: "Robot Area-1",
     workStationStatus: "PAUSED",
-    operationType: "PICKING",
+    workStationMode: "PICKING",
     chooseArea: "PUT_WALL_AREA",
     scanCode: null,
     processingType: null,

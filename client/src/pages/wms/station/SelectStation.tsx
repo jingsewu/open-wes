@@ -1,12 +1,12 @@
-import React, { useState, useEffect, memo } from "react"
-import { Select, Typography, Button, message } from "antd"
+import React, {memo, useEffect, useState} from "react"
+import {Button, message, Select, Typography} from "antd"
 import store from "@/stores"
-import request from "@/utils/requestInterceptor"
 import {useTranslation} from "react-i18next";
+import {request_work_station} from "@/pages/wms/station/constants/constant";
 
-const { Title } = Typography
+const {Title} = Typography
 
-const SelectStation = ({ isConfigSationId, setIsConfigStationId }: any) => {
+const SelectStation = ({isConfigSationId, setIsConfigStationId}: any) => {
     const [stationId, setStationId] = useState("")
     const [options, setOptions] = useState<any[]>([])
     const [error, setError] = useState("")
@@ -16,57 +16,8 @@ const SelectStation = ({ isConfigSationId, setIsConfigStationId }: any) => {
         getStationOptions()
     }, [store.warehouse.code, isConfigSationId])
 
-    const getStationId = async () => {
-        const res: any = await request({
-            method: "get",
-            url: "/station/api"
-        })
-        if (res?.data?.status === "SAT010001") {
-            setIsConfigStationId(false)
-        } else {
-            setIsConfigStationId(true)
-        }
-    }
-
     const getStationOptions = () => {
-        request({
-            method: "post",
-            url:
-                "/search/search?page=1&perPage=1000&warehouseCode-op=eq&warehouseCode=" +
-                store.warehouse.code,
-            data: {
-                searchIdentity: "WWorkStation",
-                searchObject: {
-                    orderBy: "update_time desc"
-                },
-                showColumns: [
-                    {
-                        name: "id",
-                        label: "ID",
-                        hidden: true
-                    },
-                    {
-                        name: "version",
-                        label: "Version",
-                        hidden: true
-                    },
-                    {
-                        name: "warehouseCode",
-                        label: "table.warehouseCode",
-                        hidden: true
-                    },
-                    {
-                        name: "stationCode",
-                        label: "table.workstationCoding",
-                        searchable: true
-                    },
-                    {
-                        name: "stationName",
-                        label: "table.workstationName"
-                    }
-                ]
-            }
-        }).then((res: any) => {
+        request_work_station(store.warehouse.code).then((res: any) => {
             setOptions(res.data.items)
         })
     }
@@ -86,7 +37,7 @@ const SelectStation = ({ isConfigSationId, setIsConfigStationId }: any) => {
         localStorage.setItem("stationId", stationId)
     }
 
-    const { t } = useTranslation();
+    const {t} = useTranslation();
 
     return (
         <div className="w-full h-full d-flex flex-col justify-center items-center">
@@ -94,12 +45,11 @@ const SelectStation = ({ isConfigSationId, setIsConfigStationId }: any) => {
                 {t("station.home.div.selectStation")}
             </Title>
             <Select
-                // defaultValue="lucy"
-                style={{ width: 300 }}
+                style={{width: 300}}
                 value={stationId}
                 onChange={handleChange}
                 options={options}
-                fieldNames={{ label: "stationName", value: "id" }}
+                fieldNames={{label: "stationName", value: "id"}}
                 status={error ? "error" : ""}
             />
             <Button

@@ -7,14 +7,14 @@ const dictionary = JSON.parse(localStorage.getItem("dictionary") || "{}")
 export default function EmptyContainerHandler(props: any) {
     const {value} = props
     const {
-        onCustomActionDispatch,
+        onActionDispatch,
         containerCode
     } = value
 
     const containerOperationTypeEnums = dictionary.ContainerOperationType
 
     const handleConfirm = (type: string) => {
-        onCustomActionDispatch({
+        onActionDispatch({
             eventCode: "EMPTY_CONTAINER_HANDLE",
             data: {
                 containerCode,

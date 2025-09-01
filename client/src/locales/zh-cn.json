@@ -932,6 +932,8 @@
     ],
     "common.cancel": "取消",
     "common.upload": "开始上传",
-    "common.close": "关闭"
+    "common.close": "关闭",
+
+    "select_container_put_away.station.title": "选容器上架"
 
 }

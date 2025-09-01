@@ -37,6 +37,7 @@ bean-searcher:
   params:
     pagination:
       maxAllowedSize: 100000
+      maxAllowedOffset: 100000
       start: 1
       size: perPage
 

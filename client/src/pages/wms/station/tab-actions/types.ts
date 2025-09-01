@@ -1,16 +1,8 @@
-import type { ModalProps } from "antd"
-import type { FunctionComponent, ReactNode, RefObject } from "react"
-import type { RouteChildrenProps } from "react-router"
+import type {ModalProps} from "antd"
+import type {FunctionComponent, ReactNode, RefObject} from "react"
 
-import type {
-    SendEventPayload,
-    WorkStationEvent,
-    WorkStationInfo
-} from "@/pages/wms/station/event-loop/types"
-import type {
-    CustomActionResponse,
-    ToastFn
-} from "@/pages/wms/station/instances/types"
+import type {SendEventPayload, WorkStationView} from "@/pages/wms/station/event-loop/types"
+import type {CustomActionResponse, ToastFn} from "@/pages/wms/station/instances/types"
 
 export enum TabActionModalType {
     /** 常规模态框 */
@@ -25,7 +17,7 @@ export enum TabActionModalType {
 
 export interface EmitterPayload {
     /** 自定义事件触发方法 */
-    onCustomActionDispatch: (
+    onActionDispatch: (
         action: SendEventPayload
     ) => Promise<CustomActionResponse>
     /** 各个Operation中的ref对象 */
@@ -45,8 +37,7 @@ export interface EmitterPayload {
     /** 确定按钮loading状态 */
     loading?: boolean
     /** 工作站信息 */
-    workStationEvent?: WorkStationEvent<any> | undefined
-    workStationInfo?: WorkStationInfo | undefined
+    workStationEvent?: WorkStationView<any> | undefined
 }
 
 export interface TabAction {
@@ -74,11 +65,9 @@ export interface TabAction {
     disabled?:
         | boolean
         | ((
-              payload: WorkStationEvent<any> | undefined,
-              info?: WorkStationInfo
-          ) => boolean)
+        payload: WorkStationView<any> | undefined) => boolean)
     /** 是否隐藏 */
-    hide?: boolean | ((payload: WorkStationEvent<any> | undefined) => boolean)
+    hide?: boolean | ((payload: WorkStationView<any> | undefined) => boolean)
     testid?: string
 }
 

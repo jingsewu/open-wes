@@ -1,17 +1,16 @@
-import { useTranslation } from "react-i18next"
+import {useTranslation} from "react-i18next"
 
 import PutWall from "@/pages/wms/station/widgets/PutWall"
-import React, { useImperativeHandle, useState } from "react"
-import classNames from "classnames/bind"
-import { onSaveRequest } from "./reqeust"
-import type { putWallViewsItem } from "@/pages/wms/station/event-loop/types"
-import { viewsDataAdaptor, changeStateAdaptor } from "./utils"
-import { ChooseArea } from "@/pages/wms/station/event-loop/types"
+import React, {useImperativeHandle, useState} from "react"
+import {onSaveRequest} from "./reqeust"
+import type {PutWallViewsItem} from "@/pages/wms/station/event-loop/types"
+import {ChooseArea} from "@/pages/wms/station/event-loop/types"
+import {changeStateAdaptor, viewsDataAdaptor} from "./utils"
 import warning from "@/icon/warning.png"
-import { putWallStatusTextMap } from "@/pages/wms/station/instances/outbound/custom-actions/SplitContainer/SplitContent"
+import {putWallStatusTextMap} from "@/pages/wms/station/instances/outbound/custom-actions/SplitContainer/SplitContent"
 
 const BatchMultiPutWall = (props: any) => {
-    const { operationsMap, onCustomActionDispatch, message, refs } = props
+    const { operationsMap, onActionDispatch, message, refs } = props
     const { t } = useTranslation()
     const putWallArea = operationsMap.get(ChooseArea.putWallArea)
 
@@ -34,7 +33,7 @@ const BatchMultiPutWall = (props: any) => {
     const onSlotClick = (current: any) => {
         if (current.putWallSlotStatus === "DISABLE") return
         let result = changeStateAdaptor(
-            viewsData as putWallViewsItem[],
+            viewsData as PutWallViewsItem[],
             current
         )
         setViewsData(result) // 更新本地state
@@ -59,8 +58,8 @@ const BatchMultiPutWall = (props: any) => {
      * 点击保存，保存数据到server
      */
     const onSave = async () => {
-        return await onSaveRequest(viewsData as putWallViewsItem[], {
-            onCustomActionDispatch,
+        return await onSaveRequest(viewsData as PutWallViewsItem[], {
+            onActionDispatch,
             message
         })
     }
@@ -77,7 +76,7 @@ const BatchMultiPutWall = (props: any) => {
             <PutWall
                 onSlotClick={onSlotClick}
                 putWallDisplayStyle={putWallDisplayStyle}
-                putWallViews={viewsData as putWallViewsItem[]}
+                putWallViews={viewsData as PutWallViewsItem[]}
                 onLocationChange={onLocationChange}
                 putWallStatusTextMap={putWallStatusTextMap}
                 putWallTagConfigDTO={putWallTagConfigDTO}

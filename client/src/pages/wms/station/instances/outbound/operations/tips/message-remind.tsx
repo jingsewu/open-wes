@@ -4,7 +4,7 @@ import { MessageType } from "@/pages/wms/station/widgets/message"
 
 export default function MessageRemindHandler(props: any) {
     const { value } = props
-    const { message, msg, duration, onCustomActionDispatch, tipType } = value
+    const { message, msg, duration, onActionDispatch, tipType } = value
 
     useEffect(() => {
         if (!msg) return
@@ -15,8 +15,8 @@ export default function MessageRemindHandler(props: any) {
             duration: duration / 1000
         })
 
-        onCustomActionDispatch &&
-            onCustomActionDispatch({
+        onActionDispatch &&
+            onActionDispatch({
                 eventCode: "CLOSE_TIP",
                 data: {
                     tipType

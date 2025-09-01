@@ -17,8 +17,8 @@ const taskConfig: TabAction = {
         return !workStationEvent?.toolbar?.enableReportAbnormal
     },
     emitter: async (props) => {
-        const { onCustomActionDispatch, message } = props
-        const { code, msg } = await onCustomActionDispatch({
+        const { onActionDispatch, message } = props
+        const { code, msg } = await onActionDispatch({
             eventCode: TipType.REPORT_ABNORMAL_TIP,
             data: "0"
         })

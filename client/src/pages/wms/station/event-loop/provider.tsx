@@ -4,40 +4,23 @@ import {useWindowFocus} from "@/pages/wms/station/event-loop/hooks/use-window-fo
 import type {
     WorkStationAPIContextProps,
     WorkStationContextProps,
-    WorkStationEvent,
-    WorkStationInfo,
-    WorkStationProviderProps
+    WorkStationProviderProps,
+    WorkStationView
 } from "@/pages/wms/station/event-loop/types"
 import Message from "@/pages/wms/station/widgets/message"
 import type {FC, ReactNode} from "react"
 import React, {useEffect, useState} from "react"
-import config from "./config"
-import WorkStationEventLoop, {DEFAULT_WORKSTATION_INFO} from "./index"
+import WorkStationEventLoop from "./index"
 
-const workStationEventLoop = new WorkStationEventLoop(config)
+const workStationEventLoop = new WorkStationEventLoop()
 
-/**
- * @Description: 工作站当前事件Context
- * @usage: 获取当前事件
- */
 const WorkStationContext = React.createContext<WorkStationContextProps>({
-    workStationEvent: workStationEventLoop.getCurrentEvent(),
-    workStationInfo: DEFAULT_WORKSTATION_INFO
+    workStationEvent: workStationEventLoop.getCurrentEvent()
 })
 
-/**
- * @Description: 工作站APIContext
- * @usage: 获取当前事件循环所需API
- */
 const WorkStationAPIContext = React.createContext<WorkStationAPIContextProps>({
     message: Message,
-    onConfirm: async () => {
-        return {
-            code: "0",
-            msg: ""
-        }
-    },
-    onCustomActionDispatch: async () => {
+    onActionDispatch: async () => {
         return {
             code: "0",
             msg: ""
@@ -45,10 +28,6 @@ const WorkStationAPIContext = React.createContext<WorkStationAPIContextProps>({
     }
 })
 
-/**
- * @Description: 工作站Operation注册表 Context
- * @usage: 获取当前工作站注册的所有Operation实例
- */
 const WorkStationOperationsContext = React.createContext<{
     operationsMap: Map<string, any>
     setOperationsMap: (operationsMap: Map<string, any>) => void
@@ -58,34 +37,24 @@ const WorkStationOperationsContext = React.createContext<{
     }
 })
 
-function WorkStationValueProvider(props: WorkStationProviderProps) {
+function WorkStationValueProvider(props: Readonly<WorkStationProviderProps>) {
     const {
         children,
-        stationCode,
         type,
         debugType = false,
         mockData = {}
     } = props
     const history = useHistory()
 
-    const [workStationInfo, setWorkStationInfo] = useState<WorkStationInfo>(
-        DEFAULT_WORKSTATION_INFO
-    )
-    const [workStationEvent, setWorkStationEvent] = useState<
-        WorkStationEvent<any> | undefined
-    >(workStationEventLoop.getCurrentEvent())
-    /** 用于页面重新聚焦时，重新渲染页面 */
+    const [workStationEvent, setWorkStationEvent] = useState<WorkStationView<any> | undefined>(workStationEventLoop.getCurrentEvent())
+
     useWindowFocus(setWorkStationEvent)
 
     useEffect(() => {
-        workStationEventLoop.setStationCode(stationCode)
         workStationEventLoop.setDebuggerConfig(debugType, mockData as any[])
         workStationEventLoop.initListener({
             eventListener: (workStationEvent) => {
                 setWorkStationEvent(workStationEvent)
-            },
-            infoListener: (workStationInfo) => {
-                setWorkStationInfo(workStationInfo)
             }
         })
         if (type === "card" && !workStationEventLoop.getCurrentEvent()) {
@@ -104,8 +73,7 @@ function WorkStationValueProvider(props: WorkStationProviderProps) {
     return (
         <WorkStationContext.Provider
             value={{
-                workStationEvent,
-                workStationInfo
+                workStationEvent
             }}
         >
             {children}
@@ -120,9 +88,8 @@ const WorkStationAPIProvider: FC<ReactNode> = (props) => {
         <WorkStationAPIContext.Provider
             value={{
                 message: Message,
-                onConfirm: workStationEventLoop.actionConfirm,
-                onCustomActionDispatch:
-                workStationEventLoop.customActionDispatch
+                onActionDispatch:
+                workStationEventLoop.actionDispatch
             }}
         >
             {children}
