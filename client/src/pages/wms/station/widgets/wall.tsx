@@ -1,13 +1,12 @@
 import Icon from "@ant-design/icons"
-import type { InputRef } from "antd"
-import { Button, Input, Space } from "antd"
+import type {InputRef} from "antd"
+import {Button, Input, Space} from "antd"
 import classNames from "classnames/bind"
-import React, { useEffect, useRef, useState } from "react"
+import React, {useEffect, useRef, useState} from "react"
 
-import { ReactComponent as WallAllSvg } from "@/icon/wall/wall_all.svg"
-import { ReactComponent as WallLeftSvg } from "@/icon/wall/wall_left.svg"
-import { ReactComponent as WallRightSvg } from "@/icon/wall/wall_right.svg"
-// import IntlMessages from "@/util/IntlMessages"
+import {ReactComponent as WallAllSvg} from "@/icon/wall/wall_all.svg"
+import {ReactComponent as WallLeftSvg} from "@/icon/wall/wall_left.svg"
+import {ReactComponent as WallRightSvg} from "@/icon/wall/wall_right.svg"
 
 import SeedingWall from "./seedingWall"
 import style from "./styles.module.scss"
@@ -19,6 +18,7 @@ const wall = {
     RIGHT: "播种墙（右）"
     // <IntlMessages id="workstaion.outbound.text.seedingWall(right)" /> // '播种墙(右)'
 }
+
 export interface SeedingProps {
     skuInfo: string
     isShelves: boolean // 是缓存货架 or 播种墙
@@ -36,6 +36,7 @@ export interface PutWallViews {
     putWallCode: string
     putWallSlots: PutWallSlotView[]
 }
+
 export interface PutWallSlotView {
     address: string
     slotStatus: any
@@ -65,6 +66,7 @@ export interface PutWallSlotView {
 export interface interfaceDesc {
     containerCode: string
 }
+
 export interface PutWallSlotDesc {
     textSize: number
     bold: string
@@ -101,7 +103,7 @@ const WallTitle = (props: {
                 onTitleClick &&
                 onTitleClick(location)
             }
-            style={{ color: active ? "#004CAA" : "#666" }}
+            style={{color: active ? "#004CAA" : "#666"}}
         >
             {showHasTask && (
                 <span
@@ -136,7 +138,7 @@ const Wall = (props: any) => {
         statusColorList,
         getClickStatus
     } = props
-    const { putWallViews = [], putWallDisplayStyle, noStatusText } = value
+    const {putWallViews = [], putWallDisplayStyle, noStatusText} = value
     const [locationType, setLocaltion] = useState("ALL")
     const [putWallViewsList, setPutWallViewsList] = useState(
         locationType === "ALL"
@@ -151,8 +153,8 @@ const Wall = (props: any) => {
                 locationType === "ALL"
                     ? putWallViews
                     : putWallViews.filter(
-                          (item: any) => item.location === locationType
-                      )
+                        (item: any) => item.location === locationType
+                    )
             )
         }
     }, [putWallViews, locationType])
@@ -191,7 +193,7 @@ const Wall = (props: any) => {
     }
     return (
         <>
-            <div style={{ position: "absolute" }}>
+            <div style={{position: "absolute"}}>
                 <Input
                     ref={inputRef}
                     {...sharedProps}
@@ -249,7 +251,7 @@ const Wall = (props: any) => {
                                         className={cx(item.breathingLamp)}
                                         style={{
                                             backgroundColor:
-                                                item?.color?.backgroundColor,
+                                            item?.color?.backgroundColor,
                                             border: `1px solid ${item?.color?.borderColor}`
                                         }}
                                     />
@@ -282,23 +284,23 @@ const Wall = (props: any) => {
                                 {putWallDisplayStyle === "SPLIT" &&
                                 item.containerCarrier !== "SHELF"
                                     ? putWallViews.map((k: any) => {
-                                          return (
-                                              <WallTitle
-                                                  key={k.location}
-                                                  showHasTask={k.showHasTask}
-                                                  containerCarrier={
-                                                      item.containerCarrier
-                                                  }
-                                                  location={
-                                                      k.containerCode ||
-                                                      k.location ||
-                                                      k.groupCode
-                                                  }
-                                                  active={k.active}
-                                                  onTitleClick={onTitleClick}
-                                              />
-                                          )
-                                      })
+                                        return (
+                                            <WallTitle
+                                                key={k.location}
+                                                showHasTask={k.showHasTask}
+                                                containerCarrier={
+                                                    item.containerCarrier
+                                                }
+                                                location={
+                                                    k.containerCode ||
+                                                    k.location ||
+                                                    k.groupCode
+                                                }
+                                                active={k.active}
+                                                onTitleClick={onTitleClick}
+                                            />
+                                        )
+                                    })
                                     : null}
                                 {item.containerCarrier === "SHELF" &&
                                     (item.containerCode ||

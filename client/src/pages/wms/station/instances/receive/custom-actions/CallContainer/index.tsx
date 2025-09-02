@@ -6,8 +6,8 @@ import Content from "./Content"
 import {Translation} from "react-i18next";
 
 const CallContainer: TabAction = {
-    name: <Translation>{(t) => t("receive.detail.title")}</Translation>,
-    key: "TaskDetail",
+    name: <Translation>{(t) => t("receive.callContainer.title")}</Translation>,
+    key: "CallContainer",
     position: "left",
     modalType: TabActionModalType.FULL_SCREEN,
     icon: "",
@@ -16,7 +16,7 @@ const CallContainer: TabAction = {
         return <Content {...props} />
     },
     modalConfig: {
-        title: <Translation>{(t) => t("receive.detail.title")}</Translation>,
+        title: <Translation>{(t) => t("receive.callContainer.title")}</Translation>,
         okText: "",
         footer: null
     },
