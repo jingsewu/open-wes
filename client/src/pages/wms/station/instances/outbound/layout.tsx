@@ -35,7 +35,6 @@ const OutBoundLayout = (props: OutBoundLayoutProps) => {
                 type: MessageType.ERROR,
                 content: msg
             })
-            return
         }
     }
 

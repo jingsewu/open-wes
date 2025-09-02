@@ -1,19 +1,17 @@
-import type { WorkStationView } from "@/pages/wms/station/event-loop/types"
-import type {
-    CustomActionResponse,
-    OperationProps
-} from "@/pages/wms/station/instances/types"
+import type {CustomActionResponse,} from "@/pages/wms/station/instances/types"
 import classNames from "classnames/bind"
-// import { pick } from "lodash-es"
 import React from "react"
 import style from "./styles.module.scss"
+
 const cx = classNames.bind(style)
+
 export interface MaterialProps {
     onActionDispatch: (value: any) => Promise<CustomActionResponse>
     arrivedContainer: subContainerInterface
     allowContainer?: boolean
     level: number
 }
+
 interface subContainerInterface {
     containerSlotSpecCode?: string
     face?: string
@@ -27,6 +25,7 @@ interface subContainerInterface {
 interface ContainerSpec {
     containerSlotSpecs: SubContainerListFace[]
 }
+
 interface SubContainerListFace {
     bay: string
     level: string
@@ -38,6 +37,7 @@ interface SubContainerListFace {
 export interface MaterialConfirmProps {
     skuCode: string
 }
+
 const MaterialRack = (props: MaterialProps) => {
     const {
         onActionDispatch,
@@ -64,7 +64,7 @@ const MaterialRack = (props: MaterialProps) => {
             <div className="w-full mb-3">
                 <div
                     className="d-flex py-2 w-full mb-0.5"
-                    style={{ backgroundColor: "#F8F8F8" }}
+                    style={{backgroundColor: "#F8F8F8"}}
                 >
                     <div className="w-1/4 text-center">容器</div>
                     <div className="border-left w-1/4 text-center">面</div>
@@ -75,7 +75,7 @@ const MaterialRack = (props: MaterialProps) => {
                 </div>
                 <div
                     className="d-flex py-2 w-full"
-                    style={{ backgroundColor: "#F8F8F8" }}
+                    style={{backgroundColor: "#F8F8F8"}}
                 >
                     <div className="w-1/4 text-center">
                         {containerCode || 0}
@@ -93,7 +93,7 @@ const MaterialRack = (props: MaterialProps) => {
             </div>
             <div
                 className="d-flex flex-1 justify-around	w-full overflow-hidden"
-                style={{ flexDirection: "column-reverse" }}
+                style={{flexDirection: "column-reverse"}}
             >
                 {shelfLit.map((item, index) => {
                     const selectArr = item?.filter((val) =>
@@ -103,7 +103,7 @@ const MaterialRack = (props: MaterialProps) => {
                         <div
                             className="d-flex"
                             key={index}
-                            style={{ height: 100 / shelfLit.length + "%" }}
+                            style={{height: 100 / shelfLit.length + "%"}}
                         >
                             <div
                                 className="d-flex items-center justify-center w-40 text-xl	font-bold border-2 border-solid	border-r-0	rounded-l border-light"
@@ -175,7 +175,7 @@ const MaterialRack = (props: MaterialProps) => {
                                                         )
                                                             ? cell.containerSlotSpecCode
                                                             : //  i + 1
-                                                              ""
+                                                            ""
                                                     }
                                                     &nbsp;
                                                 </span>

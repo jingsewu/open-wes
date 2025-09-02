@@ -22,13 +22,6 @@ const taskConfig: TabAction = {
             eventCode: TipType.REPORT_ABNORMAL_TIP,
             data: "0"
         })
-        // if (code !== "0") {
-        //     message?.({
-        //         type: MessageType.ERROR,
-        //         content: msg
-        //     })
-        //     return
-        // }
     }
 }
 

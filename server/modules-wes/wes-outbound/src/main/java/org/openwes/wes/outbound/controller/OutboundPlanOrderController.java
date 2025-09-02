@@ -1,6 +1,5 @@
 package org.openwes.wes.outbound.controller;
 
-import com.google.common.collect.Lists;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/outbound")
 @RequiredArgsConstructor
@@ -22,8 +23,8 @@ public class OutboundPlanOrderController {
 
     @PostMapping("/order/create")
     @Operation(summary = "创建出库单")
-    public void createOutboundPlanOrder(@Valid @RequestBody OutboundPlanOrderDTO outboundPlanOrderDTO) {
-        outboundPlanOrderApi.createOutboundPlanOrder(Lists.newArrayList(outboundPlanOrderDTO));
+    public void createOutboundPlanOrder(@Valid @RequestBody List<OutboundPlanOrderDTO> outboundPlanOrderDTOs) {
+        outboundPlanOrderApi.createOutboundPlanOrder(outboundPlanOrderDTOs);
     }
 
 }

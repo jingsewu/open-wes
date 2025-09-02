@@ -30,11 +30,10 @@ const taskConfig: TabAction = {
     },
     onSubmit: async (refs, payload) => {
         const {current} = refs
-        const {message} = payload
         if (current.inputStatus === "error") {
             return false
         }
-        const {code, msg} = await current.onActionDispatch({
+        const {code} = await current.onActionDispatch({
             eventCode: CustomActionType.SPLIT_TASKS,
             data: {
                 operatedQty: current.pickedNumber,
