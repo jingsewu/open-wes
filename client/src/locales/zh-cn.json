@@ -225,6 +225,7 @@
     "batchChangeWarehouseArea.title": "修改逻辑区",
     "picking.detail.title": "拣货任务详情",
     "receive.detail.title": "收货明细",
+    "receive.callContainer.title": "呼叫容器",
 
     "table.index": "序号",
     "table.customerOrderNo": "客户单号",
@@ -934,6 +935,31 @@
     "common.upload": "开始上传",
     "common.close": "关闭",
 
-    "select_container_put_away.station.title": "选容器上架"
+    "select_container_put_away.station.title": "选容器上架",
+
+    "dashboard.title": "仓库执行系统仪表盘",
+    "dashboard.outboundProgress": "今日出库进度",
+    "dashboard.inboundProgress": "今日入库进度",
+    "dashboard.flowTitle": "今日出入库流量 (SKU数量/小时)",
+    "dashboard.operatorRanking": "员工作业排行榜",
+    "dashboard.workstationDetails": "今日工作站详情",
+    "dashboard.statusNew": "新建",
+    "dashboard.statusProcessing": "处理中",
+    "dashboard.statusCompleted": "已完成",
+    "dashboard.statusChecking": "验收中",
+    "dashboard.statusShelved": "已上架",
+    "dashboard.statusException": "异常",
+    "dashboard.inbound": "入库",
+    "dashboard.outbound": "出库",
+    "dashboard.operator": "操作员",
+    "dashboard.totalQty": "操作总量",
+    "dashboard.acceptQty": "验收数量",
+    "dashboard.pickingQty": "拣货数量",
+    "dashboard.stationCode": "工作站编码",
+    "dashboard.taskType": "任务类型",
+    "dashboard.taskCount": "任务数量",
+    "dashboard.status": "状态",
+    "dashboard.outboundStatus": "出库状态",
+    "dashboard.inboundStatus": "入库状态"
 
 }

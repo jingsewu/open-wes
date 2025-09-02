@@ -36,16 +36,6 @@ const AbnormalReportReasonSelector = (props: any) => {
         onChange(val)
     }
     return (
-        // <Select
-        //     defaultValue={value}
-        //     value={value}
-        //     style={{ width: "100%" }}
-        //     disabled={true}
-        //     bordered={false}
-        //     options={options}
-        //     onChange={handleChange}
-        //     getPopupContainer={(e) => e.parentNode}
-        // />
         <Select
             showSearch
             value={value}
@@ -77,29 +67,14 @@ const Abnormal = (props: AbnormalInfo) => {
     const [abnormalReportReason, setAbnormalReportReason] = useState<string>(
         dictionary.StockAbnormalReason?.[0]?.value || ""
     )
-    // const [abnormalReportReasonOptions, setAbnormalReportReasonOptions] =
-    //     useState<any>(dictionary.StockAbnormalReason || [])
 
     const [pickNum, setPickNum] = useState<number>(0)
     const [isError, setIsError] = useState<boolean>(false) // count组件输入是否存在错误
     const [dataSource, setDataSource] = useState(operationTaskDTOS || [])
 
-    // useEffect(() => {
-    //     getContainerSpecOptions()
-    // }, [])
-
     useMemo(() => {
         setDataSource(operationTaskDTOS ? [...operationTaskDTOS] : [])
     }, [operationTaskDTOS])
-
-    // const getContainerSpecOptions = async () => {
-    //     const res: any = await request({
-    //         method: "post",
-    //         url: `/mdm/config/dictionary/getAll`
-    //     })
-    //     setAbnormalReportReasonOptions(res?.data?.StockAbnormalReason || [])
-    //     setAbnormalReportReason(res?.data?.StockAbnormalReason?.[0].value)
-    // }
 
     const handleAbnormalReportReason = (value: string) => {
         setAbnormalReportReason(value)
@@ -239,14 +214,6 @@ const Abnormal = (props: AbnormalInfo) => {
                                         value={pickNum}
                                         precision={0}
                                     />
-                                    {/* <InputNumber
-                                        size="large"
-                                        min={0}
-                                        max={totalToBeRequiredQty}
-                                        precision={0}
-                                        onChange={handleActualPickNumChange}
-                                        style={{ width: "100%" }}
-                                    /> */}
                                 </div>
                             </div>
                         </div>

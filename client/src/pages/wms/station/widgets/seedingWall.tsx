@@ -1,12 +1,8 @@
-// import type { Property } from "@antv/x6/lib/types/csstype"
 import classNames from "classnames/bind"
 import React from "react"
 
-import { BusinessType } from "@/pages/wms/station/widgets/types"
-import type {
-    PutWallSlotView,
-    PutWallViews
-} from "@/pages/wms/station/widgets/wall"
+import {BusinessType} from "@/pages/wms/station/widgets/types"
+import type {PutWallSlotView, PutWallViews} from "@/pages/wms/station/widgets/wall"
 
 import style from "./styles.module.scss"
 
@@ -53,6 +49,7 @@ export const ShelvesStatus = {
     }
 }
 let scaleSize = 1
+
 export interface SeedingConfirmProps {
     skuCode: string
 }
@@ -149,21 +146,21 @@ const SeedingWall = (
                                 const statusObj =
                                     cell.active === undefined
                                         ? ShelvesStatus[
-                                              (cell.slotStatus ||
-                                                  "UNAVAILABLE") as keyof typeof ShelvesStatus
-                                          ]
+                                            (cell.slotStatus ||
+                                                "UNAVAILABLE") as keyof typeof ShelvesStatus
+                                            ]
                                         : null
                                 const defaultBg = cell.active
                                     ? "#1890FF"
                                     : cell.active === undefined
-                                    ? statusObj?.bgColor
-                                    : "#FAFAFA"
+                                        ? statusObj?.bgColor
+                                        : "#FAFAFA"
                                 const defaultBorder = `2px solid ${
                                     cell.active
                                         ? "#004CAA"
                                         : cell.active === undefined
-                                        ? statusObj?.borderColor
-                                        : "#E8E8E8"
+                                            ? statusObj?.borderColor
+                                            : "#E8E8E8"
                                 }`
                                 return isShelves ? (
                                     <div
@@ -174,15 +171,15 @@ const SeedingWall = (
                                             "seeding-item__default",
                                             {
                                                 "seeding-item__active":
-                                                    cell.active,
+                                                cell.active,
                                                 "seeding-item__sourceContainer":
                                                     cell.active &&
                                                     cell.businessType ===
-                                                        BusinessType.SOURCE,
+                                                    BusinessType.SOURCE,
                                                 "seeding-item__targetContainer":
                                                     cell.active &&
                                                     cell.businessType ===
-                                                        BusinessType.TARGET
+                                                    BusinessType.TARGET
                                             }
                                         )}
                                         onClick={(e) => shelvesChange(cell)}
@@ -191,18 +188,18 @@ const SeedingWall = (
                                             background:
                                                 cell.active &&
                                                 cell.businessType ===
-                                                    BusinessType.TARGET
+                                                BusinessType.TARGET
                                                     ? "#1bb55c"
                                                     : defaultBg,
                                             color: cell.active
                                                 ? "#FFFFFF"
                                                 : cell.active === undefined
-                                                ? statusObj?.color
-                                                : "#999999",
+                                                    ? statusObj?.color
+                                                    : "#999999",
                                             border:
                                                 cell.active &&
                                                 cell.businessType ===
-                                                    BusinessType.TARGET
+                                                BusinessType.TARGET
                                                     ? "2px solid #0e8f48"
                                                     : defaultBorder
                                         }}
@@ -216,7 +213,7 @@ const SeedingWall = (
                                             {isStockTake && cell.active
                                                 ? cell.address
                                                 : cell?.containerDesc
-                                                      ?.containerCode}
+                                                    ?.containerCode}
                                         </span>
                                         {cell.active === undefined && (
                                             <span
@@ -318,10 +315,10 @@ const SeedingWall = (
                                                                             "ellipsis",
                                                                         lineHeight: `${
                                                                             16 *
-                                                                                scaleSize >
+                                                                            scaleSize >
                                                                             12
                                                                                 ? 16 *
-                                                                                  scaleSize
+                                                                                scaleSize
                                                                                 : 12
                                                                         }px`,
                                                                         width: "100%"
@@ -335,7 +332,7 @@ const SeedingWall = (
                                                     )}
                                                     {cell.putWallSlotDesc
                                                         .length >= 2 ? null : (
-                                                        <div />
+                                                        <div/>
                                                     )}
                                                 </div>
                                             )}

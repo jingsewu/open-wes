@@ -148,11 +148,6 @@ const dialog = {
                             columnRatio: 6,
                             value: true
                         },
-                        // {
-                        //     label: "table.shortOut",
-                        //     type: "switch",
-                        //     name: "shortWaiting"
-                        // },
                         {
                             label: "modal.oneLineOneOrder",
                             type: "switch",
@@ -277,10 +272,8 @@ const dialog = {
                             extractValue: false,
                             selectMode: "table",
                             affixHeader: true,
-                            // resultListModeFollowSelect: true,
                             id: "transferTable",
-                            virtualThreshold: 10,
-                            // valueTpl: "${ownerCode} - ${skuCode}, qty: <input name='qty' value='${qty}'>",
+                            virtualThreshold: 20,
                             valueTpl: {
                                 type: "group",
                                 body: [
@@ -296,18 +289,15 @@ const dialog = {
                                         max: "${totalQty}",
                                         value: 1,
                                         name: "qtyRequired",
-                                        columnRatio: 2
+                                        columnRatio: 10
                                     }
                                 ]
                             },
-                            // searchable: true,
-                            // searchPlaceholder: "请扫描商品条码",
                             "en-US": {
                                 searchPlaceholder:
                                     "Please scan the product bar code"
                             },
                             source: "${options}",
-                            // source: "${transferOptions}",
                             pagination: {
                                 enable: false,
                                 layout: ["pager", "perpage", "total"]
