@@ -225,6 +225,7 @@
     "batchChangeWarehouseArea.title": "Change logic area",
     "picking.detail.title": "Picking task details",
     "receive.detail.title": "Receipt details",
+    "receive.callContainer.title": "Call container ",
 
     "table.index": "Index",
     "table.customerOrderNo": "Customer order number",
@@ -934,5 +935,31 @@
     "common.upload": "Start Upload",
     "common.close": "Close",
 
-    "select_container_put_away.station.title": "Select Container Put away"
+    "select_container_put_away.station.title": "Select Container Put away",
+
+    "dashboard.title": "Warehouse Execution System Dashboard",
+    "dashboard.outboundProgress": "Today's Outbound Progress",
+    "dashboard.inboundProgress": "Today's Inbound Progress",
+    "dashboard.flowTitle": "Today's Inbound/Outbound Flow (SKU Count/Hour)",
+    "dashboard.operatorRanking": "Operator Performance Ranking",
+    "dashboard.workstationDetails": "Today's Workstation Details",
+    "dashboard.statusNew": "New",
+    "dashboard.statusProcessing": "Processing",
+    "dashboard.statusCompleted": "Completed",
+    "dashboard.statusChecking": "Checking",
+    "dashboard.statusShelved": "Shelved",
+    "dashboard.statusException": "Exception",
+    "dashboard.inbound": "Inbound",
+    "dashboard.outbound": "Outbound",
+    "dashboard.operator": "Operator",
+    "dashboard.totalQty": "Total Quantity",
+    "dashboard.acceptQty": "Accepted Qty",
+    "dashboard.pickingQty": "Picked Qty",
+    "dashboard.stationCode": "Station Code",
+    "dashboard.taskType": "Task Type",
+    "dashboard.taskCount": "Task Count",
+    "dashboard.status": "Status",
+    "dashboard.outboundStatus": "Outbound Status",
+    "dashboard.inboundStatus": "Inbound Status"
+
 }
