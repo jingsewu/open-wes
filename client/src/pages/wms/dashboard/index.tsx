@@ -17,7 +17,7 @@ const schema = {
                         "api": {
                             "method": "get",
                             "url": "/wms/api/dashboard/outbound-progress",
-                            "adaptor": function(payload) {
+                            "adaptor": function(payload: { code: string; data: any[]; msg: any; }) {
                                 if (payload.code === "0") {
                                     return {
                                         status: 0,
@@ -77,7 +77,7 @@ const schema = {
                         "api": {
                             "method": "get",
                             "url": "/wms/api/dashboard/inbound-progress",
-                            "adaptor": function(payload) {
+                            "adaptor": function(payload: { code: string; data: any[]; msg: any; }) {
                                 if (payload.code === "0") {
                                     return {
                                         status: 0,
@@ -210,7 +210,8 @@ const schema = {
                             {"name": "stationCode", "label": "dashboard.stationCode", "sortable": true},
                             {"name": "taskType", "label": "dashboard.taskType", "sortable": true},
                             {"name": "taskCount", "label": "dashboard.taskCount", "sortable": true},
-                            {"name": "status", "label": "dashboard.status", "sortable": true}
+                            {"name": "requiredQty", "label": "dashboard.requiredQty", "sortable": true},
+                            {"name": "operatedQty", "label": "dashboard.pickingQty", "sortable": true}
                         ]
                     }
                 }

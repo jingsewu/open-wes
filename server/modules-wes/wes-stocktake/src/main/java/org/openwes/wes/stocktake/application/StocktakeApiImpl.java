@@ -10,8 +10,10 @@ import org.openwes.common.utils.exception.WmsException;
 import org.openwes.common.utils.exception.code_enum.StocktakeErrorDescEnum;
 import org.openwes.wes.api.main.data.ISkuMainDataApi;
 import org.openwes.wes.api.main.data.dto.SkuMainDataDTO;
+import org.openwes.wes.api.stock.IStockAbnormalRecordApi;
 import org.openwes.wes.api.stock.IStockApi;
 import org.openwes.wes.api.stock.dto.ContainerStockDTO;
+import org.openwes.wes.api.stock.dto.StockAbnormalRecordDTO;
 import org.openwes.wes.api.stocktake.IStocktakeApi;
 import org.openwes.wes.api.stocktake.constants.StocktakeOrderStatusEnum;
 import org.openwes.wes.api.stocktake.constants.StocktakeRecordStatusEnum;
@@ -52,6 +54,7 @@ public class StocktakeApiImpl implements IStocktakeApi {
     private final StocktakeRecordTransfer stocktakeRecordTransfer;
     private final IStockApi stockApi;
     private final ISkuMainDataApi skuMainDataApi;
+    private final IStockAbnormalRecordApi stockAbnormalRecordApi;
 
     @Override
     public void createStocktakeOrder(StocktakeOrderCreateDTO stocktakeOrderCreateDTO) {
@@ -109,11 +112,13 @@ public class StocktakeApiImpl implements IStocktakeApi {
     @Override
     public void submitStocktakeRecord(StocktakeRecordSubmitDTO submitDTO) {
         StocktakeRecord stocktakeRecord = stocktakeRecordRepository.findById(submitDTO.getRecordId());
-        stocktakeOrderService.validateSubmit(stocktakeRecord);
+        List<StockAbnormalRecordDTO> stockAbnormalRecordDTOs = stockAbnormalRecordApi.getByStockId(stocktakeRecord.getStockId());
+        stocktakeOrderService.validateSubmit(submitDTO, stocktakeRecord, stockAbnormalRecordDTOs);
 
         StocktakeTask stocktakeTask = stocktakeTaskRepository.findById(stocktakeRecord.getStocktakeTaskId());
         SkuMainDataDTO skuMainDataDTO = skuMainDataApi.getById(stocktakeRecord.getSkuId());
-        stocktakeAggregate.submitStocktakeRecord(stocktakeRecord, stocktakeTask, skuMainDataDTO, submitDTO);
+
+        stocktakeAggregate.submitStocktakeRecord(stocktakeRecord, stocktakeTask, skuMainDataDTO, submitDTO, stockAbnormalRecordDTOs);
     }
 
     @Override

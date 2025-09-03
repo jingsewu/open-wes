@@ -87,4 +87,16 @@ public class StockAbnormalRecordApiImpl implements IStockAbnormalRecordApi {
         return stockAbnormalRecordTransfer.toDTOs(stockAbnormalRecords);
     }
 
+    @Override
+    public List<StockAbnormalRecordDTO> getByStockId(Long stockId) {
+        List<StockAbnormalRecord> stockAbnormalRecords = stockAbnormalRecordRepository.findAllByContainerStockId(stockId);
+        return stockAbnormalRecordTransfer.toDTOs(stockAbnormalRecords);
+    }
+
+    @Override
+    public void recheckClose(List<StockAbnormalRecordDTO> stockAbnormalRecordDTOs, String taskNo) {
+        List<StockAbnormalRecord> stockAbnormalRecords = stockAbnormalRecordTransfer.toDOs(stockAbnormalRecordDTOs);
+        stockAbnormalAggregate.recheckClose(stockAbnormalRecords, taskNo);
+    }
+
 }
