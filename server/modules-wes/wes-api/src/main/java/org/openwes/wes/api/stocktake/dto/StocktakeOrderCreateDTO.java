@@ -50,9 +50,6 @@ public class StocktakeOrderCreateDTO implements Serializable, IValidate {
     @Schema(title = "货架列表", description = "要盘点的货架列表")
     private List<String> shelfCodes;
 
-    @Schema(title = "货架面列表", description = "要盘点的货架面列表")
-    private List<String> shelfCodeFacePairs;
-
     @Schema(title = "容器列表", description = "要盘点的容器列表")
     private List<String> containerCodes;
 

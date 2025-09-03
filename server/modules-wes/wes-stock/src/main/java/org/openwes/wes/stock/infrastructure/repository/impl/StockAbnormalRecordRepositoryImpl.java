@@ -1,12 +1,12 @@
 package org.openwes.wes.stock.infrastructure.repository.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.openwes.wes.api.stock.constants.StockAbnormalStatusEnum;
 import org.openwes.wes.stock.domain.entity.StockAbnormalRecord;
 import org.openwes.wes.stock.domain.repository.StockAbnormalRecordRepository;
 import org.openwes.wes.stock.infrastructure.persistence.mapper.StockAbnormalRecordPORepository;
 import org.openwes.wes.stock.infrastructure.persistence.po.StockAbnormalRecordPO;
 import org.openwes.wes.stock.infrastructure.persistence.transfer.StockAbnormalRecordPOTransfer;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -41,6 +41,12 @@ public class StockAbnormalRecordRepositoryImpl implements StockAbnormalRecordRep
     public StockAbnormalRecord findByOrderNo(String orderNo) {
         StockAbnormalRecordPO stockAbnormalRecordPO = stockAbnormalRecordPORepository.findByOrderNo(orderNo);
         return stockAbnormalRecordPOTransfer.toDO(stockAbnormalRecordPO);
+    }
+
+    @Override
+    public List<StockAbnormalRecord> findAllByContainerStockId(Long stockId) {
+        List<StockAbnormalRecordPO> stockAbnormalRecordPOs = stockAbnormalRecordPORepository.findAllByContainerStockId(stockId);
+        return stockAbnormalRecordPOTransfer.toDOs(stockAbnormalRecordPOs);
     }
 
 }

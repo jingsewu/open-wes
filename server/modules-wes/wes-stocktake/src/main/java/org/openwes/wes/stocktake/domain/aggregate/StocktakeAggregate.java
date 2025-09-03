@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openwes.wes.api.basic.IContainerApi;
 import org.openwes.wes.api.ems.proxy.dto.CreateContainerTaskDTO;
@@ -13,6 +14,7 @@ import org.openwes.wes.api.stock.constants.StockAbnormalTypeEnum;
 import org.openwes.wes.api.stock.dto.StockAbnormalRecordDTO;
 import org.openwes.wes.api.stocktake.constants.StocktakeRecordStatusEnum;
 import org.openwes.wes.api.stocktake.constants.StocktakeTaskDetailStatusEnum;
+import org.openwes.wes.api.stocktake.constants.StocktakeTypeEnum;
 import org.openwes.wes.api.stocktake.dto.StocktakeRecordSubmitDTO;
 import org.openwes.wes.common.facade.ContainerTaskApiFacade;
 import org.openwes.wes.stocktake.domain.entity.StocktakeOrder;
@@ -60,11 +62,19 @@ public class StocktakeAggregate {
 
     @Transactional(rollbackFor = Exception.class)
     public void submitStocktakeRecord(StocktakeRecord stocktakeRecord, StocktakeTask stocktakeTask,
-                                      SkuMainDataDTO skuMainDataDTO, StocktakeRecordSubmitDTO submitDTO) {
+                                      SkuMainDataDTO skuMainDataDTO, StocktakeRecordSubmitDTO submitDTO,
+                                      List<StockAbnormalRecordDTO> stockAbnormalRecordDTOs) {
+
         stocktakeRecord.submit(submitDTO);
         stocktakeRecordRepository.save(stocktakeRecord);
 
+        if (ObjectUtils.isNotEmpty(stockAbnormalRecordDTOs)
+                && (stocktakeTask.getStocktakeType() == StocktakeTypeEnum.DISCREPANCY_REVIEW || stocktakeRecord.getQtyAbnormal() != 0)) {
+            stockAbnormalRecordApi.recheckClose(stockAbnormalRecordDTOs, stocktakeTask.getTaskNo());
+        }
+
         if (stocktakeRecord.getQtyAbnormal() != 0) {
+
             StockAbnormalRecordDTO stockAbnormalRecordDTO = new StockAbnormalRecordDTO()
                     .setOrderNo(stocktakeTask.getTaskNo())
                     .setWarehouseCode(stocktakeTask.getWarehouseCode())
