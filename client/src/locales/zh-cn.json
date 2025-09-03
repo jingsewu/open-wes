@@ -960,6 +960,7 @@
     "dashboard.taskCount": "任务数量",
     "dashboard.status": "状态",
     "dashboard.outboundStatus": "出库状态",
-    "dashboard.inboundStatus": "入库状态"
+    "dashboard.inboundStatus": "入库状态",
+    "dashboard.requiredQty": "需求数量"
 
 }

@@ -29,4 +29,7 @@ public interface IStockAbnormalRecordApi {
 
     List<StockAbnormalRecordDTO> getAllByContainerStockIdsAndStatues(Set<Long> longs, ArrayList<StockAbnormalStatusEnum> stockAbnormalStatusEnums);
 
+    List<StockAbnormalRecordDTO> getByStockId(Long stockId);
+
+    void recheckClose(List<StockAbnormalRecordDTO> stockAbnormalRecordDTOs, String taskNo);
 }

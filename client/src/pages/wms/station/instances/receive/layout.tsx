@@ -6,7 +6,7 @@ import classNames from "classnames/bind"
 import React, {useState} from "react"
 import request from "@/utils/requestInterceptor"
 
-import type {WorkStationView} from "@/pages/wms/station/event-loop/types"
+import {WorkStationMode, WorkStationView} from "@/pages/wms/station/event-loop/types"
 
 import type {OperationProps} from "@/pages/wms/station/instances/types"
 

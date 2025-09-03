@@ -12,4 +12,6 @@ public interface StockAbnormalRecordPORepository extends JpaRepository<StockAbno
     List<StockAbnormalRecordPO> findAllByContainerStockIdInAndStockAbnormalStatusIn(Collection<Long> containerStockIds, Collection<StockAbnormalStatusEnum> statuses);
 
     StockAbnormalRecordPO findByOrderNo(String orderNo);
+
+    List<StockAbnormalRecordPO> findAllByContainerStockId(Long stockId);
 }

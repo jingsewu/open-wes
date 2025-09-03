@@ -9,7 +9,10 @@ import org.openwes.wes.api.basic.IContainerApi;
 import org.openwes.wes.api.basic.dto.ContainerDTO;
 import org.openwes.wes.api.stock.IStockApi;
 import org.openwes.wes.api.stock.dto.ContainerStockDTO;
+import org.openwes.wes.api.stock.dto.SkuBatchStockDTO;
+import org.openwes.wes.api.stock.dto.StockAbnormalRecordDTO;
 import org.openwes.wes.api.stocktake.constants.StocktakeUnitTypeEnum;
+import org.openwes.wes.api.stocktake.dto.StocktakeRecordSubmitDTO;
 import org.openwes.wes.stocktake.domain.entity.StocktakeOrder;
 import org.openwes.wes.stocktake.domain.entity.StocktakeRecord;
 import org.openwes.wes.stocktake.domain.entity.StocktakeTask;
@@ -75,8 +78,9 @@ public class StocktakeOrderServiceImpl implements StocktakeOrderService {
     }
 
     @Override
-    public void validateSubmit(StocktakeRecord stocktakeRecord) {
-        if (stocktakeRecord.getQtyAbnormal() <= 0) {
+    public void validateSubmit(StocktakeRecordSubmitDTO submitDTO, StocktakeRecord stocktakeRecord,
+                               List<StockAbnormalRecordDTO> stockAbnormalRecordDTOs) {
+        if (Objects.equals(stocktakeRecord.getQtyOriginal(), submitDTO.getStocktakeQty())) {
             return;
         }
 
@@ -84,11 +88,16 @@ public class StocktakeOrderServiceImpl implements StocktakeOrderService {
         if (containerStocks.isEmpty()) {
             throw new IllegalStateException("container stock not found");
         }
-
         ContainerStockDTO containerStockDTO = containerStocks.get(0);
-        if (containerStockDTO.getAvailableQty() < stocktakeRecord.getQtyAbnormal()) {
-            throw WmsException.throwWmsException(STOCKTAKE_EXCEEDING_THE_MIN_STOCKTAKE_LOSS_QTY,
-                    containerStockDTO.getOutboundLockedQty(), containerStockDTO.getNoOutboundLockedQty(), containerStockDTO.getAvailableQty());
+        SkuBatchStockDTO skuBatchStock = stockApi.getSkuBatchStock(containerStockDTO.getSkuBatchStockId());
+
+        int availableQty = Math.min(skuBatchStock.getAvailableQty(), containerStockDTO.getAvailableQty());
+
+        Integer totalQtyAbnormal = stockAbnormalRecordDTOs.stream().map(StockAbnormalRecordDTO::getQtyAbnormal)
+                .reduce(Integer::sum).orElse(0);
+
+        if (availableQty + totalQtyAbnormal < stocktakeRecord.getQtyOriginal() - submitDTO.getStocktakeQty()) {
+            throw WmsException.throwWmsException(STOCKTAKE_EXCEEDING_THE_MIN_STOCKTAKE_LOSS_QTY, stocktakeRecord.getQtyOriginal() - availableQty - totalQtyAbnormal);
         }
 
     }

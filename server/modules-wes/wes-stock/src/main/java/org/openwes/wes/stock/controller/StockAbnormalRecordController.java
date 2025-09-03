@@ -31,8 +31,8 @@ public class StockAbnormalRecordController {
         stockAbnormalRecordApi.manualClose(ids);
     }
 
-    @PostMapping("createRecheckOrder")
-    public void createRecheckOrder(@RequestBody @Valid List<Long> ids) {
-        stockAbnormalRecordApi.createRecheckOrder(ids);
-    }
+//    @PostMapping("createRecheckOrder")
+//    public void createRecheckOrder(@RequestBody @Valid List<Long> ids) {
+//        stockAbnormalRecordApi.createRecheckOrder(ids);
+//    }
 }

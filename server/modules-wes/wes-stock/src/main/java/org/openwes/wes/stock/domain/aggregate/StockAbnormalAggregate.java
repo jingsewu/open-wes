@@ -4,15 +4,10 @@ import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.openwes.api.platform.api.constants.CallbackApiTypeEnum;
-import org.openwes.wes.api.config.ISystemConfigApi;
 import org.openwes.wes.api.stock.IStockApi;
 import org.openwes.wes.api.stock.constants.StockLockTypeEnum;
 import org.openwes.wes.api.stock.dto.ContainerStockLockDTO;
 import org.openwes.wes.api.stock.dto.SkuBatchStockLockDTO;
-import org.openwes.wes.common.facade.CallbackApiFacade;
 import org.openwes.wes.stock.domain.entity.StockAbnormalRecord;
 import org.openwes.wes.stock.domain.entity.StockAdjustmentDetail;
 import org.openwes.wes.stock.domain.entity.StockAdjustmentOrder;
@@ -24,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -68,10 +62,8 @@ public class StockAbnormalAggregate {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void recheckClose(List<StockAbnormalRecord> stockAbnormalRecords, Map<Long, String> idReplayNoMap) {
+    public void recheckClose(List<StockAbnormalRecord> stockAbnormalRecords, String replayNo) {
         stockAbnormalRecords.forEach(v -> {
-            if (MapUtils.isEmpty(idReplayNoMap)) return;
-            String replayNo = Optional.ofNullable(idReplayNoMap.get(v.getId())).orElse(StringUtils.EMPTY);
             v.recheckClose(replayNo);
         });
         stockAbnormalRecordRepository.saveAll(stockAbnormalRecords);
@@ -171,7 +163,6 @@ public class StockAbnormalAggregate {
         Map<String, List<StockAbnormalRecord>> warehouseAbnormalRecordMap = stockAbnormalRecords.stream()
                 .collect(Collectors.groupingBy(StockAbnormalRecord::getWarehouseCode));
 
-        //TODO implement this function;
 //        warehouseAbnormalRecordMap.forEach((warehouseCode, records) ->
 //                DomainEventPublisher.directSendSyncEvent(
 //                        StocktakeDiscrepancyReviewEvent.builder()
