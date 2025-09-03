@@ -960,6 +960,5 @@
     "dashboard.taskCount": "Task Count",
     "dashboard.status": "Status",
     "dashboard.outboundStatus": "Outbound Status",
-    "dashboard.inboundStatus": "Inbound Status"
-
+    "dashboard.requiredQty": "Required Quantity"
 }

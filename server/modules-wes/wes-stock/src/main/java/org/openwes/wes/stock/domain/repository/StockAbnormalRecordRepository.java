@@ -15,4 +15,6 @@ public interface StockAbnormalRecordRepository {
     List<StockAbnormalRecord> findAllByContainerStockIdsAndStatues(Collection<Long> containerStockIds, List<StockAbnormalStatusEnum> stockAbnormalStatusEnums);
 
     StockAbnormalRecord findByOrderNo(@NotEmpty String orderNo);
+
+    List<StockAbnormalRecord> findAllByContainerStockId(Long stockId);
 }

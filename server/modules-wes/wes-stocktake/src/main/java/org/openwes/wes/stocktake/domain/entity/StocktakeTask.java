@@ -49,7 +49,6 @@ public class StocktakeTask {
     ) {
 
         Assert.notNull(stocktakeOrder, "stocktake order must not be null");
-        Assert.notNull(containerFaceMap, "container face map must not be null");
         Assert.notEmpty(containerFaceMap, "container face map must not be empty");
 
         List<StocktakeTaskDetail> stocktakeTaskDetails = subContainerCodes.stream().flatMap(containerCode ->

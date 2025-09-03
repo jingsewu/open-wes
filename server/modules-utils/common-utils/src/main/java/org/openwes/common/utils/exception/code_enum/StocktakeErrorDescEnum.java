@@ -28,7 +28,7 @@ public enum StocktakeErrorDescEnum implements IBaseError {
     STOCKTAKE_CONTAINER_STOCK_NOT_FOUND("ST004001", "Container stock not found"),
     STOCKTAKE_CONTAINER_STOCK_QTY_HAS_CHANGED("ST004002", "The quantity of inventory has changed"),
     STOCKTAKE_RECORD_NOT_FOUND("ST002003", "Stocktake records not found"),
-    STOCKTAKE_EXCEEDING_THE_MIN_STOCKTAKE_LOSS_QTY("ST004004", "It is not allowed to operate the inventory occupied by outbound(quantity: {0}) and the inventory occupied by inventory adjustment(quantity: {1}). Minimum inventory counting quantity: {2}"),
+    STOCKTAKE_EXCEEDING_THE_MIN_STOCKTAKE_LOSS_QTY("ST004004", "Some qty is occupied by outbound. Minimum inventory counting quantity: {0}"),
     STOCKTAKE_SURPLUS_SKU_BATCH_ATTRIBUTE_NOT_FOUNT("ST004005", "Sku batch attribute not found"),
     STOCKTAKE_SURPLUS_SKU_NOT_FOUNT("ST004006", "Please enter the product information into the system first"),
     STOCKTAKE_SURPLUS_STOCK_ALREADY_EXIST("ST004007", "The inventory has been recorded in the system"),
