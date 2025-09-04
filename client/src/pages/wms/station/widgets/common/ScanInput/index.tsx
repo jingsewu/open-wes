@@ -1,11 +1,11 @@
-import { DEBOUNCE_TIME } from "@/pages/wms/station/constants/contant"
-import { useDebounceFn } from "ahooks"
-import { Input } from "antd"
+import {DEBOUNCE_TIME} from "@/pages/wms/station/constants/constant"
+import {useDebounceFn} from "ahooks"
+import {Input} from "antd"
 import classNames from "classnames/bind"
 import * as React from "react"
-import { useEffect, useState } from "react"
-import type { RefObject } from "react"
-import { useTranslation } from "react-i18next"
+import {useEffect, useState} from "react"
+import type {RefObject} from "react"
+import {useTranslation} from "react-i18next"
 //
 import style from "./index.module.scss"
 
@@ -23,7 +23,7 @@ interface ComProps {
 }
 
 const Index = (props: ComProps, ref: RefObject<any>) => {
-    const { t } = useTranslation()
+    const {t} = useTranslation()
     const {
         placeholder = t("skuArea.scanOrEnterBarcode"),
         // intl.formatMessage({
@@ -71,7 +71,7 @@ const Index = (props: ComProps, ref: RefObject<any>) => {
             }
             onPressEnter && onPressEnter(scanCode)
         },
-        { wait: DEBOUNCE_TIME }
+        {wait: DEBOUNCE_TIME}
     ).run
 
     return (
