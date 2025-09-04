@@ -4,8 +4,12 @@ const { CleanWebpackPlugin } = require("clean-webpack-plugin")
 const TerserPlugin = require("terser-webpack-plugin")
 const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin")
+const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin
+const SpeedMeasurePlugin = require("speed-measure-webpack-plugin")
 
-module.exports = {
+const smp = new SpeedMeasurePlugin()
+
+module.exports = smp.wrap({
     mode: "production",
     context: path.resolve(__dirname, "../"),
     entry: {
@@ -100,9 +104,8 @@ module.exports = {
                         drop_debugger: true
                     }
                 }
-            })
-            // 暂时禁用CSS压缩，避免与某些CSS文件冲突
-            // new CssMinimizerPlugin()
+            }),
+            new CssMinimizerPlugin()
         ],
         splitChunks: {
             chunks: "all",
@@ -156,6 +159,11 @@ module.exports = {
                 minifyCSS: true,
                 minifyURLs: true
             }
+        }),
+        new BundleAnalyzerPlugin({
+            analyzerMode: "static",
+            openAnalyzer: false,
+            reportFilename: "bundle-report.html"
         })
     ],
     output: {
@@ -165,4 +173,4 @@ module.exports = {
         publicPath: "/",
         clean: true
     }
-}
+})
