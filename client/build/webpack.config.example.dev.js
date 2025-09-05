@@ -3,6 +3,8 @@ const HtmlWebpackPlugin = require("html-webpack-plugin")
 const { CleanWebpackPlugin } = require("clean-webpack-plugin")
 const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin")
 const ReactRefreshTypeScript = require("react-refresh-typescript").default
+const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin")
+const SpeedMeasurePlugin = require("speed-measure-webpack-plugin")
 
 webpackConfig = {
     mode: "development",
@@ -33,7 +35,14 @@ webpackConfig = {
                                     Boolean
                                 )
                             }),
-                            transpileOnly: true
+                            transpileOnly: true,
+                            happyPackMode: true,
+                            // 优化TypeScript编译
+                            experimentalWatchApi: true,
+                            configFile: path.resolve(
+                                __dirname,
+                                "../tsconfig.json"
+                            )
                         }
                     }
                 ],
@@ -69,7 +78,10 @@ webpackConfig = {
             },
             {
                 test: /\.(png|jpg|gif|woff|woff2|eot|ttf|otf)$/,
-                use: ["file-loader"]
+                type: "asset/resource",
+                generator: {
+                    filename: "assets/[name].[hash:8][ext]"
+                }
             },
             {
                 test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
@@ -83,17 +95,40 @@ webpackConfig = {
             "@": path.resolve(__dirname, "..", "src")
         }
     },
-    devtool: "inline-source-map",
+    devtool: "eval-cheap-module-source-map",
+    // 优化开发环境性能
+    optimization: {
+        removeAvailableModules: false,
+        removeEmptyChunks: false,
+        splitChunks: false
+    },
     devServer: {
         hot: true,
         host: "localhost",
-        port: 4000,
+        port: 3000,
         historyApiFallback: true,
         open: true,
-        // compress: false,
+        compress: true,
+        // 优化开发服务器性能
+        client: {
+            overlay: {
+                errors: true,
+                warnings: false
+            }
+        },
+        static: {
+            directory: path.join(__dirname, "../dist")
+        },
+        // 优化文件监听
+        watchFiles: {
+            paths: ["src/**/*"],
+            options: {
+                usePolling: false
+            }
+        },
         proxy: {
             "/gw": {
-                target: "http://localhost:8090",
+                target: "http://117.50.245.4:8090",
                 changeOrigin: true,
                 ws: true,
                 logLevel: "debug",
@@ -103,9 +138,35 @@ webpackConfig = {
             }
         }
     },
+    cache: {
+        type: "filesystem",
+        buildDependencies: {
+            config: [__filename]
+        },
+        // 优化缓存配置
+        cacheDirectory: path.resolve(
+            __dirname,
+            "../node_modules/.cache/webpack"
+        ),
+        compression: "gzip",
+        maxAge: 1000 * 60 * 60 * 24 * 7 // 7天
+    },
     plugins: [
         new CleanWebpackPlugin(),
-        new ReactRefreshWebpackPlugin(),
+        new ReactRefreshWebpackPlugin({
+            overlay: false
+        }),
+        new ForkTsCheckerWebpackPlugin({
+            async: true,
+            typescript: {
+                configFile: path.resolve(__dirname, "../tsconfig.json"),
+                // 优化TypeScript检查
+                build: false,
+                mode: "write-references"
+            },
+            // 减少检查频率
+            devServer: false
+        }),
         new HtmlWebpackPlugin({
             template: "./src/index.html",
             chunks: ["app"]
@@ -118,4 +179,7 @@ webpackConfig = {
     }
 }
 
-module.exports = webpackConfig
+// 使用SpeedMeasurePlugin来测量构建时间（可选）
+const smp = new SpeedMeasurePlugin()
+
+module.exports = smp.wrap(webpackConfig)
