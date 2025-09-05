@@ -1,4 +1,4 @@
-import { DEBOUNCE_TIME } from "@/pages/wms/station/constants/contant"
+import { DEBOUNCE_TIME } from "@/pages/wms/station/constants/constant"
 import { useDebounceFn } from "ahooks"
 import { Input } from "antd"
 import classNames from "classnames/bind"
