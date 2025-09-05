@@ -2,7 +2,6 @@
 /node_modules
 /package-lock.json
 build/webpack.config.dev.js
-build/webpack.config.dev.example.js
 /mock/chart.json
 /gh-pages
 /dist
