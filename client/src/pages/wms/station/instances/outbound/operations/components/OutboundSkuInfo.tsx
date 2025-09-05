@@ -1,13 +1,14 @@
-import type {InputRef} from "antd"
-import {Input} from "antd"
-import {debounce} from "lodash"
-import React, {useRef, useState} from "react"
-import {useTranslation} from "react-i18next"
-import {ProcessStatusEnum} from "@/pages/wms/station/event-loop/types"
+import type { InputRef } from "antd"
+import { Input } from "antd"
+import { debounce } from "lodash"
+import React, { useRef, useState } from "react"
+import { useTranslation } from "react-i18next"
+import { ProcessStatusEnum } from "@/pages/wms/station/event-loop/types"
 
-import {DEBOUNCE_TIME} from "@/pages/wms/station/constants/constant"
-import type {PickerArea} from "@/pages/wms/station/instances/outbound/operations/pickingHandler"
+import { DEBOUNCE_TIME } from "@/pages/wms/station/constants/constant"
+import type { PickerArea } from "@/pages/wms/station/instances/outbound/operations/pickingHandler"
 import SkuInfo from "@/pages/wms/station/widgets/common/SkuInfo"
+import { useBarcodeScanner } from "@/pages/wms/station/event-loop/hooks/useBarcodeScanner"
 
 interface OutboundSkuInfoProps {
     isActive?: boolean
@@ -16,10 +17,10 @@ interface OutboundSkuInfoProps {
 }
 
 const OutboundSkuInfo = (props: OutboundSkuInfoProps) => {
-    const {isActive, value, onChange} = props
-    const {t} = useTranslation()
+    const { isActive, value, onChange } = props
+    const { t } = useTranslation()
 
-    const {pickingViews = []} = value || {}
+    const { pickingViews = [] } = value || {}
 
     const scannedSkuInfo =
         pickingViews?.find(
@@ -59,17 +60,25 @@ const OutboundSkuInfo = (props: OutboundSkuInfoProps) => {
 
     const inputRef = useRef<InputRef>(null)
     const [state, setState] = useState("")
-    const handleChange = debounce(async (e) => {
-        onChange(state)
+    const handleChange = debounce(async (value?: string) => {
+        onChange(state || value)
         setState("") // 清空输入框
     }, DEBOUNCE_TIME)
+
+    const onScanComplete = (value: string) => {
+        // setState(value);
+        if (!isActive) return
+        handleChange(value)
+    }
+
+    useBarcodeScanner(onScanComplete)
 
     if (inputRef) {
         isActive && inputRef.current?.focus()
     }
     return (
         <div className="w-full h-full d-flex flex-col ">
-            <div className="d-flex pb-2" style={{color: "#292B3E"}}>
+            <div className="d-flex pb-2" style={{ color: "#292B3E" }}>
                 <span className="text-xl white-space-nowrap">
                     {t("skuArea.scanBarcode")}：
                 </span>
@@ -83,17 +92,17 @@ const OutboundSkuInfo = (props: OutboundSkuInfoProps) => {
                         inputRef.current!.focus()
                     }}
                     ref={inputRef}
-                    onPressEnter={handleChange}
+                    onPressEnter={() => handleChange()}
                 />
             </div>
             <div className="d-flex w-full ">
                 <div
                     className="d-flex flex-3 flex-col px-6 py-3 overflow-hidden"
-                    style={{backgroundColor: "#F8F8F8", flex: 7}}
+                    style={{ backgroundColor: "#F8F8F8", flex: 7 }}
                 >
                     <div
                         className="font-medium	text-lg pb-2 font-medium"
-                        style={{color: "#292B3E"}}
+                        style={{ color: "#292B3E" }}
                     >
                         {t("skuArea.productDetails")}
                     </div>
@@ -118,14 +127,14 @@ const OutboundSkuInfo = (props: OutboundSkuInfoProps) => {
                 </div>
                 <div
                     className="d-flex flex-1 flex-col items-center	justify-center text-current px-4 py-8 ml-4"
-                    style={{background: "#F8F8F8", flex: 3}}
+                    style={{ background: "#F8F8F8", flex: 3 }}
                 >
                     <div className="text-lg pb-3">
                         {t("skuArea.numberOfPicking")}
                     </div>
                     <div
                         className="text-4xl bg-white w-full text-6xl d-flex justify-center items-center"
-                        style={{color: "#292B3E", flex: 1}}
+                        style={{ color: "#292B3E", flex: 1 }}
                     >
                         {toBeOperatedQty || 0}
                     </div>
