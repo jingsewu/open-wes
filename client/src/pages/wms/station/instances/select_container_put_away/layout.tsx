@@ -1,6 +1,9 @@
+/**
+ * 当前工作站实例的布局
+ */
 import {Button, Col, Input, message, Row} from "antd"
 import classNames from "classnames/bind"
-import React, {useState} from "react"
+import React, {useEffect, useState} from "react"
 import request from "@/utils/requestInterceptor"
 
 import {WorkStationView} from "@/pages/wms/station/event-loop/types"
@@ -10,11 +13,11 @@ import type {OperationProps} from "@/pages/wms/station/instances/types"
 import ComponentWrapper from "../../component-wrapper"
 import {OPERATION_MAP} from "./config"
 import style from "./index.module.scss"
-import ContainerHandler from "./operations/containerHandler"
-import {valueFilter as scanInfoFilter} from "./operations/tips"
-import {StationOperationType} from "./type"
-import SkuHandler from "./operations/skuHandler"
-import OrderHandler from "./operations/orderHandler"
+import ContainerHandler from "../receive/operations/containerHandler"
+import {valueFilter as scanInfoFilter} from "../receive/operations/tips"
+import {StationOperationType} from "../receive/type"
+import SkuHandler from "../receive/operations/skuHandler"
+import OrderHandler from "../receive/operations/orderHandler"
 import {useTranslation} from "react-i18next";
 
 let warehouseCode = localStorage.getItem("warehouseCode")
@@ -36,6 +39,20 @@ const Layout = (props: ReplenishLayoutProps) => {
     const [orderInfo, setOrderInfo] = useState<any>()
     const [currentSkuInfo, setCurrentSkuInfo] = useState<any>({})
     const [focusValue, setFocusValue] = useState("")
+
+    const useContainerCode = (workStationEvent: WorkStationView<any>) => {
+        const [containerCode, setContainerCode] = useState<string>("");
+
+        useEffect(() => {
+            const firstSlot = workStationEvent?.workLocationArea?.workLocationViews?.[0]?.workLocationSlots?.[0];
+            const code = firstSlot?.arrivedContainer?.containerCode ?? "";
+            setContainerCode(code);
+        }, [workStationEvent]);
+
+        return containerCode;
+    };
+
+    const containerCode = useContainerCode(workStationEvent);
 
     const onScanSubmit = () => {
         request({
@@ -124,6 +141,9 @@ const Layout = (props: ReplenishLayoutProps) => {
                             onConfirm={onConfirm}
                             changeFocusValue={changeFocusValue}
                             onScanSubmit={onScanSubmit}
+                            containerCode={containerCode}
+                            disable={true}
+                            isContainerLeave={true}
                         />
                     </Col>
                 </Row>

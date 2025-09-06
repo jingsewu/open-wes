@@ -22,8 +22,6 @@ const Abnormal = (props: any) => {
     const formData = JSON.parse(data)
 
     const [abnormalReason, setAbnormalReason] = useState<string>("")
-    // const [abnormalReportReasonOptions, setAbnormalReportReasonOptions] =
-    //     useState<any>([])
     const [qtyAbnormal, setQtyAbnormal] = useState<number>()
 
     const handleAbnormalReasonChange = (value: string) => {
@@ -33,18 +31,6 @@ const Abnormal = (props: any) => {
     const handleQtyChange = (val: number) => {
         setQtyAbnormal(val)
     }
-
-    // const getContainerSpecOptions = async () => {
-    //     const res: any = await request({
-    //         method: "post",
-    //         url: `/mdm/config/dictionary/getAll`
-    //     })
-    //     setAbnormalReportReasonOptions(res?.data?.InboundAbnormalReason || [])
-    // }
-
-    // useEffect(() => {
-    //     getContainerSpecOptions()
-    // }, [])
 
     useImperativeHandle(refs, () => {
         return {

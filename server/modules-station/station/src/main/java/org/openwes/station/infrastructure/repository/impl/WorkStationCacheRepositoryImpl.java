@@ -1,11 +1,11 @@
 package org.openwes.station.infrastructure.repository.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.openwes.station.domain.entity.WorkStationCache;
 import org.openwes.station.domain.repository.WorkStationCacheRepository;
 import org.openwes.station.domain.transfer.WorkStationCacheTransfer;
 import org.openwes.station.infrastructure.persistence.mapper.WorkStationCachePORepository;
 import org.openwes.station.infrastructure.persistence.po.WorkStationCachePO;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -42,5 +42,10 @@ public class WorkStationCacheRepositoryImpl<T extends WorkStationCache, S extend
     public List<T> findAllById(Collection<Long> workStationIds) {
         Iterable<S> ss = workStationCachePORepository.findAllById(workStationIds);
         return workStationCacheTransfer.toGenericDOs(ss);
+    }
+
+    @Override
+    public void deleteById(Long workStationId) {
+        workStationCachePORepository.deleteById(workStationId);
     }
 }
