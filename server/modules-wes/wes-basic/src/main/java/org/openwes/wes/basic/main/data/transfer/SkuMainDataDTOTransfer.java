@@ -1,10 +1,12 @@
 package org.openwes.wes.basic.main.data.transfer;
 
-import org.openwes.wes.api.main.data.dto.SkuMainDataDTO;
-import org.openwes.wes.basic.main.data.domain.entity.SkuMainData;
 import org.mapstruct.Mapper;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
+import org.openwes.wes.api.main.data.dto.SkuMainDataDTO;
+import org.openwes.wes.basic.main.data.domain.entity.SkuMainData;
+
+import java.util.List;
 
 import static org.mapstruct.NullValueCheckStrategy.ALWAYS;
 import static org.mapstruct.NullValueMappingStrategy.RETURN_NULL;
@@ -17,4 +19,6 @@ import static org.mapstruct.NullValueMappingStrategy.RETURN_NULL;
 public interface SkuMainDataDTOTransfer {
 
     SkuMainDataDTO toDTO(SkuMainData skuMainData);
+
+    List<SkuMainDataDTO> toDTOs(List<SkuMainData> skus);
 }

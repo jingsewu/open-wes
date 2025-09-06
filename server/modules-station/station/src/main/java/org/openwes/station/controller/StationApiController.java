@@ -33,8 +33,8 @@ import org.springframework.web.bind.annotation.*;
 public class StationApiController {
 
     private final HandlerExecutor handlerExecutor;
-    private final ViewHelper viewHelper;
-    private final WorkStationCacheRepository workStationCacheRepository;
+    private final ViewHelper<? extends WorkStationCache> viewHelper;
+    private final WorkStationCacheRepository<? extends WorkStationCache> workStationCacheRepository;
 
     @PutMapping
     public void execute(@RequestParam @Parameter(explode = Explode.TRUE) ApiCodeEnum apiCode,
@@ -69,8 +69,6 @@ public class StationApiController {
 
     @DeleteMapping
     public void clearWorkStationCache() {
-        Long workStationId = HttpStationContext.getWorkStationId();
-        WorkStationCache workStationCache = workStationCacheRepository.findById(workStationId);
-        workStationCacheRepository.delete(workStationCache);
+        workStationCacheRepository.deleteById(HttpStationContext.getWorkStationId());
     }
 }

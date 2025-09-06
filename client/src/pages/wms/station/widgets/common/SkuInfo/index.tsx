@@ -119,7 +119,6 @@ const SkuInfo = (props: Partial<PickingViewItem> & Partial<SkuInfoProps>) => {
                     style={{ color: "#292B3E", minWidth: 0 }}
                     data-testid="skuCode"
                 >
-                    {/* {skuBarcode?.barcodes.join(" | ")} */}
                     {barCode}
                 </div>
                 <div

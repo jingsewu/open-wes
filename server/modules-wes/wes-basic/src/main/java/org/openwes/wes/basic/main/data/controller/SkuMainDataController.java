@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("basic/sku")
 @RequiredArgsConstructor
@@ -30,9 +32,15 @@ public class SkuMainDataController {
         return Response.success();
     }
 
-    @PostMapping("{id}")
+    @PostMapping("getById/{id}")
     public Object getById(@PathVariable Long id) {
         SkuMainData ownerData = skuMainDataRepository.findById(id);
         return skuMainDataDTOTransfer.toDTO(ownerData);
+    }
+
+    @PostMapping("getBySkuCode")
+    public Object getBySkuCode(@RequestParam("skuCode") String skuCode) {
+        List<SkuMainData> skus = skuMainDataRepository.findAllBySkuCode(skuCode);
+        return skuMainDataDTOTransfer.toDTOs(skus);
     }
 }

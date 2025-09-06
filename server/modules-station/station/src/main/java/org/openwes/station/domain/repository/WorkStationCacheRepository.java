@@ -14,4 +14,6 @@ public interface WorkStationCacheRepository<T extends WorkStationCache> {
     void delete(T workStationCache);
 
     List<T> findAllById(Collection<Long> workStationIds);
+
+    void deleteById(Long workStationId);
 }

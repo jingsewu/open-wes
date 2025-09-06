@@ -4,6 +4,11 @@
     "login.password": "Password",
 
     "station.operatingStation": "Operating station",
+    "categories.receiving": "receiving",
+    "categories.put_away": "put away",
+    "categories.picking": "picking",
+    "categories.stocktake": "stocktake",
+
     "station.NO_TASK": "No task",
     "station.TAKE_TASK": "Please click the 'Take Order' button to take a task",
     "station.WAITING_CONTAINER": "Waiting for container",
@@ -15,6 +20,9 @@
     "noOrdersReplenish.cardDescription": "Shelving processing for goods without orders",
     "receiving.title": "Goods receiving",
     "receiving.cardDescription": "Processing of goods to be warehoused",
+    "receiving.unplanned.title": "No planned order receiving",
+    "receiving.unplanned.cardDescription": "Processing of goods to be warehoused without planned order",
+
     "picking.title": "Picking",
     "picking.cardDescription": "Picking and sorting related goods",
     "inventory.title": "Inventory",

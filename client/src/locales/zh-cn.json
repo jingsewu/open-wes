@@ -2,6 +2,12 @@
     "login.submitText": "登录",
     "login.username": "用户名",
     "login.password": "密码",
+
+    "categories.receiving": "收货",
+    "categories.put_away": "上架",
+    "categories.picking": "拣选",
+    "categories.stocktake": "盘点",
+
     "station.operatingStation": "操作台",
     "station.NO_TASK": "无任务",
     "station.TAKE_TASK": "请先点击'领用单据'按钮进行任务领用",
@@ -12,8 +18,10 @@
     "replenish.cardDescription": "手动选择容器进行上架处理",
     "noOrdersReplenish.title": "无单上架",
     "noOrdersReplenish.cardDescription": "无订单商品进行上架处理",
-    "receiving.title": "商品收货",
+    "receiving.title": "有单收货",
     "receiving.cardDescription": "对待入库的商品进行收货处理",
+    "receiving.unplanned.title": "无单收货",
+    "receiving.unplanned.cardDescription": "对没有入库单的商品进行收货处理",
 
     "picking.title": "拣货",
     "picking.cardDescription": "拣选分类相关货物",

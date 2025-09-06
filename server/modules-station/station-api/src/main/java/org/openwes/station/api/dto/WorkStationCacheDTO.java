@@ -1,16 +1,16 @@
 package org.openwes.station.api.dto;
 
-import org.openwes.station.api.constants.ApiCodeEnum;
-import org.openwes.station.api.vo.WorkStationVO;
-import org.openwes.wes.api.basic.constants.WorkStationProcessingStatusEnum;
-import org.openwes.wes.api.basic.dto.PutWallSlotDTO;
-import org.openwes.wes.api.basic.dto.WorkStationConfigDTO;
-import org.openwes.wes.api.task.constants.OperationTaskTypeEnum;
-import org.openwes.wes.api.task.dto.OperationTaskVO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.openwes.station.api.constants.ApiCodeEnum;
+import org.openwes.station.api.vo.WorkStationVO;
+import org.openwes.wes.api.basic.constants.WorkStationModeEnum;
+import org.openwes.wes.api.basic.constants.WorkStationProcessingStatusEnum;
+import org.openwes.wes.api.basic.dto.PutWallSlotDTO;
+import org.openwes.wes.api.basic.dto.WorkStationConfigDTO;
+import org.openwes.wes.api.task.dto.OperationTaskVO;
 import org.springframework.data.annotation.Id;
 
 import java.util.List;
@@ -33,7 +33,8 @@ public class WorkStationCacheDTO {
     protected String warehouseCode;
     protected Long warehouseAreaId;
     protected String stationCode;
-    protected OperationTaskTypeEnum operationType;
+
+    protected WorkStationModeEnum workStationMode;
 
     protected List<OperationTaskVO> operateTasks;
 

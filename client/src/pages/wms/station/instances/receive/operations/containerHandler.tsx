@@ -15,10 +15,28 @@ export interface RobotHandlerProps {
     operationType: string
 }
 
-const ContainerHandler = (props: any) => {
+interface ContainerHandlerProps {
+    focusValue: string
+    onConfirm: any
+    changeFocusValue: any
+    onScanSubmit?: any
+    containerCode?: string
+    disable?: boolean
+    isContainerLeave?: boolean
+}
+
+const ContainerHandler = (props: ContainerHandlerProps) => {
     const {t} = useTranslation();
 
-    const {workStationEvent, onConfirm, focusValue, changeFocusValue, onScanSubmit} =
+    const {
+        disable,
+        containerCode: propContainerCode,
+        isContainerLeave,
+        onConfirm,
+        focusValue,
+        changeFocusValue,
+        onScanSubmit
+    } =
         props
     const containerRef = useRef<InputRef>(null)
     const countRef = useRef<any>(null)
@@ -28,6 +46,12 @@ const ContainerHandler = (props: any) => {
     const [containerSlotSpec, setContainerSlotSpec] = useState<string>("")
     const [activeSlot, setActiveSlot] = useState<string[]>([])
     const [containerCode, setContainerCode] = useState<string>("")
+
+    useEffect(() => {
+        if (propContainerCode) {
+            setContainerCode(propContainerCode);
+        }
+    }, [propContainerCode]);
 
     useEffect(() => {
         if (!warehouseCode) {
@@ -49,15 +73,7 @@ const ContainerHandler = (props: any) => {
 
     useEffect(() => {
         setInputValue("")
-        const containerCode = workStationEvent?.workLocationArea?.workLocationViews?.length > 0
-        && workStationEvent.workLocationArea.workLocationViews[0].workLocationSlots?.length > 0
-            ? workStationEvent.workLocationArea.workLocationViews[0].workLocationSlots[0].arrivedContainer?.containerCode
-            : undefined;
-
-        if (containerCode) {
-            setContainerCode(containerCode);
-        }
-    }, [workStationEvent])
+    }, [])
 
     useEffect(() => {
         if (focusValue === "container") {
@@ -144,9 +160,12 @@ const ContainerHandler = (props: any) => {
                 setActiveSlot([])
                 setInputValue("")
                 changeFocusValue("sku")
-                onScanSubmit()
 
-                if (workStationEvent?.workStationMode === WorkStationMode.SELECT_CONTAINER_PUT_AWAY) {
+                if (onScanSubmit) {
+                    onScanSubmit()
+                }
+
+                if (isContainerLeave) {
                     containerLeave(containerCode);
                 }
             }
@@ -173,7 +192,7 @@ const ContainerHandler = (props: any) => {
                     ref={containerRef}
                     onChange={onContainerChange}
                     onPressEnter={onPressEnter}
-                    disabled={workStationEvent.workStationMode === WorkStationMode.SELECT_CONTAINER_PUT_AWAY}
+                    disabled={disable}
                 />
             </div>
             <Divider style={{margin: "12px 0"}}/>
@@ -206,7 +225,6 @@ const ContainerHandler = (props: any) => {
                                 icon={<PlusOutlined/>}
                                 type="text"
                                 onClick={handlePlus}
-                                // size={size}
                                 style={{borderLeft: "1px solid #ccc"}}
                             />
                         </div>
