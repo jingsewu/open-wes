@@ -12,7 +12,7 @@ import type {OperationProps} from "@/pages/wms/station/instances/types"
 
 import ComponentWrapper from "../../component-wrapper"
 import {OPERATION_MAP} from "./config"
-import style from "./index.module.scss"
+import style from "../receive/index.module.scss"
 import ContainerHandler from "../receive/operations/containerHandler"
 import {valueFilter as scanInfoFilter} from "../receive/operations/tips"
 import {StationOperationType} from "../receive/type"
@@ -44,8 +44,19 @@ const Layout = (props: ReplenishLayoutProps) => {
         const [containerCode, setContainerCode] = useState<string>("");
 
         useEffect(() => {
-            const firstSlot = workStationEvent?.workLocationArea?.workLocationViews?.[0]?.workLocationSlots?.[0];
-            const code = firstSlot?.arrivedContainer?.containerCode ?? "";
+            let code = "";
+            const workLocationViews = workStationEvent?.workLocationArea?.workLocationViews;
+
+            if (workLocationViews) {
+                for (let i = 0; i < workLocationViews.length; i++) {
+                    if (workLocationViews[i].enable) {
+                        const firstSlot = workLocationViews[i].workLocationSlots?.[0];
+                        code = firstSlot?.arrivedContainer?.containerCode ?? "";
+                        break;
+                    }
+                }
+            }
+
             setContainerCode(code);
         }, [workStationEvent]);
 
@@ -72,7 +83,6 @@ const Layout = (props: ReplenishLayoutProps) => {
 
     const onSkuChange = (detail: any) => {
         setCurrentSkuInfo(detail)
-        changeFocusValue("container")
     }
 
     const onConfirm = ({

@@ -1,6 +1,5 @@
 package org.openwes.wes.inbound.infrastructure.persistence.po;
 
-import org.openwes.common.utils.base.UpdateUserPO;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -9,6 +8,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+import org.openwes.common.utils.base.UpdateUserPO;
 import org.openwes.common.utils.id.IdGenerator;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -52,13 +52,13 @@ public class AcceptOrderDetailPO extends UpdateUserPO {
     @Column(nullable = false)
     @Comment("Inbound Plan Order ID - Links to w_inbound_plan_order table. References the planned inbound order. " +
             "Used for matching actual receipts against planned deliveries")
-    private Long inboundPlanOrderId;
+    private Long inboundPlanOrderId = 0L;
 
     @Column(nullable = false)
     @Comment("Inbound Plan Order Detail ID - Links to w_inbound_plan_order_detail." +
             "References the specific line item in the inbound plan. " +
             "Used for detailed receipt vs plan reconciliation")
-    private Long inboundPlanOrderDetailId;
+    private Long inboundPlanOrderDetailId = 0L;
 
     @Column(nullable = false, length = 64)
     @Comment("Box Number - Original box identifier for BOX_CONTENT acceptance method. " +

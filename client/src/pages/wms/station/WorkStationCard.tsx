@@ -64,11 +64,11 @@ const cardOptions: CardOption[] = [
 
     // PUT AWAY Operations
     {
-        title: <Translation>{(t) => t("select_container_put_away.title")}</Translation>,
+        title: <Translation>{(t) => t("select_container_put_away.station.title")}</Translation>,
         value: "SELECT_CONTAINER_PUT_AWAY",
         category: WorkflowCategory.PUT_AWAY,
         description: (
-            <Translation>{(t) => t("select_container_put_away.cardDescription")}</Translation>
+            <Translation>{(t) => t("select_container_put_away.station.cardDescription")}</Translation>
         ),
         avatar: images.spsh,
         rightIcon: images.spshbg,

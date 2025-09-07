@@ -68,7 +68,9 @@ public class ContainerTaskService {
         List<ContainerTaskDTO> containerTasks = containerTaskApi.createContainerTasks(containerTaskDTOS);
 
         return containerTasks.stream().collect(Collectors.groupingBy(ContainerTaskDTO::getContainerCode))
-                .entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, v -> v.getValue().stream().map(ContainerTaskDTO::getTaskCode).toList()));
+                .entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey,
+                        v -> v.getValue().stream().map(ContainerTaskDTO::getTaskCode)
+                                .collect(Collectors.toList())));
     }
 
     public void cancel(List<String> taskCodes) {

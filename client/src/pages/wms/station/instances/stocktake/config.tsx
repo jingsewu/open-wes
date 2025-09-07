@@ -3,7 +3,7 @@ import { DebugType } from "@/pages/wms/station/instances/types"
 import { TabActionType } from "@/pages/wms/station/tab-actions/constant"
 import { Translation } from "react-i18next"
 import React from "react"
-import RecieveTask from "./custom-actions/RecieveTask"
+import ReceiveTask from "./custom-actions/RecieveTask"
 import CreateCountTask from "./custom-actions/CreateCountTask"
 import InstanceLayout from "./layout"
 import mockData from "./mock-events"
@@ -24,7 +24,7 @@ const config: WorkStationConfig<string> = {
     type: "stocktake",
     title: <Translation>{(t) => t("inventory.title")}</Translation>,
     stepsDescribe: [],
-    actions: [RecieveTask, CreateCountTask, TabActionType.EXIT],
+    actions: [ReceiveTask, CreateCountTask, TabActionType.EXIT],
     operationMap: OPERATION_MAP,
     layout: InstanceLayout,
     debugType: DebugType.NONE,

@@ -944,6 +944,7 @@
     "common.close": "关闭",
 
     "select_container_put_away.station.title": "选容器上架",
+    "select_container_put_away.station.cardDescription": "呼叫容器到工作站，进行上架操作",
 
     "dashboard.title": "仓库执行系统仪表盘",
     "dashboard.outboundProgress": "今日出库进度",
@@ -969,6 +970,7 @@
     "dashboard.status": "状态",
     "dashboard.outboundStatus": "出库状态",
     "dashboard.inboundStatus": "入库状态",
-    "dashboard.requiredQty": "需求数量"
+    "dashboard.requiredQty": "需求数量",
 
+    "confirm.callContainer": "确认呼叫容器？"
 }

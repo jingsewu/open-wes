@@ -65,7 +65,7 @@ const columns = [
     }
 ]
 
-const searchIdentity = "WReceiveDTaskDetail"
+const searchIdentity = "WReceivedTaskDetail"
 const schema = {
     type: "page",
     toolbar: [],

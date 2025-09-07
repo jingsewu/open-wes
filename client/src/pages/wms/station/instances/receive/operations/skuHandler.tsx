@@ -67,10 +67,10 @@ const SkuAreaHandler = (props: any) => {
                     onPressEnter={onPressEnter}
                 />
             </div>
-            <Divider style={{margin: "12px 0"}}/>):
+            <Divider style={{margin: "12px 0"}}/>
             {
-                displayQty ?
-                    (<div className="bg-gray-100 py-4 pl-6 d-flex">
+                displayQty ? (
+                    <div className="bg-gray-100 py-4 pl-6 d-flex">
                         <div>
                             <div>{t("receive.station.skuArea.receivedQty")}</div>
                             <div>/{t("receive.station.skuArea.totalQty")}</div>
@@ -79,8 +79,9 @@ const SkuAreaHandler = (props: any) => {
                         <div className="text-2xl">
                             {currentSkuInfo.qtyAccepted}/{currentSkuInfo.qtyRestocked}
                         </div>
-                    </div>)
-                    : ""
+                    </div>
+                    )
+                    : null
             }
 
             <div className="bg-gray-100 mt-4 p-3">

@@ -1,5 +1,7 @@
 package org.openwes.station.domain.entity;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
@@ -18,13 +20,13 @@ public class InboundWorkStationCache extends WorkStationCache {
 
     public void saveCallContainers(CallContainerEvent callContainerEvent, Map<String, List<String>> containerTaskCodes) {
         if (this.callContainers == null) {
-            this.callContainers = callContainerEvent.getContainerCodes();
+            this.callContainers = Lists.newArrayList(callContainerEvent.getContainerCodes());
         } else {
             this.callContainers.addAll(callContainerEvent.getContainerCodes());
         }
 
         if (this.containerTaskCodes == null) {
-            this.containerTaskCodes = containerTaskCodes;
+            this.containerTaskCodes = Maps.newHashMap(containerTaskCodes);
         } else {
             this.containerTaskCodes.putAll(containerTaskCodes);
         }

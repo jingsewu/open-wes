@@ -94,17 +94,17 @@ const columns = [
 
 const call_container = {
     type: "button",
-    label: "containerManagement.callContainer",
+    label: "button.callContainer",
     actionType: "ajax",
     api: {
-        url: "station/api?apiCode=CALL_CONTAINER",
-        method: "post",
+        url: "/station/api?apiCode=CALL_CONTAINER",
+        method: "put",
         data: {
             containerCodes: "${ARRAYMAP(selectedItems, item => item.containerCode)}",
             warehouseCode: warehouseCode
         }
     },
-    confirmText: "containerManagement.callContainer.tip",
+    confirmText: "confirm.callContainer",
     disabledOn: "!selectedItems || selectedItems.length === 0"
 }
 
@@ -138,6 +138,10 @@ const schema = {
                 "reload",
                 call_container
             ],
+            multiple: true,
+            selectable: true,
+            keepItemSelectionOnPageChange: false,
+            primaryField: "id",
             footerToolbar: ["switch-per-page", "statistics", "pagination"],
             columns: [
                 ...columns

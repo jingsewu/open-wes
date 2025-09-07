@@ -18,4 +18,4 @@ spring:
     web-application-type: reactive
 
 server:
-  port: 8090
+  port: 8091

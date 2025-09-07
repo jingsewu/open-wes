@@ -1,6 +1,7 @@
 package org.openwes.wes.outbound.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.openwes.wes.api.outbound.IOutboundPlanOrderApi;
@@ -17,6 +18,7 @@ import java.util.List;
 @RequestMapping("/outbound")
 @RequiredArgsConstructor
 @Validated
+@Tag(name = "Wms Module Api")
 public class OutboundPlanOrderController {
 
     private final IOutboundPlanOrderApi outboundPlanOrderApi;
