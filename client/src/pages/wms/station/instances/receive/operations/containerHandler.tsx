@@ -48,12 +48,7 @@ const ContainerHandler = (props: ContainerHandlerProps) => {
     const [containerCode, setContainerCode] = useState<string>("")
 
     useEffect(() => {
-        if (propContainerCode) {
-            setContainerCode(propContainerCode);
-        }
-    }, [propContainerCode]);
 
-    useEffect(() => {
         if (!warehouseCode) {
             message.error(t("warehouse.code.missing"));
             return;
@@ -68,8 +63,17 @@ const ContainerHandler = (props: ContainerHandlerProps) => {
                 })
                 const slotSpec = res?.data?.options[0]?.containerSlotSpecs
                 setContainerSlotSpec(JSON.parse(slotSpec || "[]"))
+
+                if (propContainerCode && propContainerCode !== containerCode) {
+                    setContainerCode(propContainerCode);
+                    // Delay the execution to ensure state is updated
+                    setTimeout(() => {
+                        onPressEnterLocal(propContainerCode, res?.data?.options || []);
+                    }, 0);
+                }
             })
-    }, [])
+
+    }, [propContainerCode, containerCode]);
 
     useEffect(() => {
         setInputValue("")
@@ -119,10 +123,10 @@ const ContainerHandler = (props: ContainerHandlerProps) => {
         setContainerCode(e.target.value)
     }
 
-    const onPressEnter = () => {
+    const onPressEnterLocal = (code: string, specOptions: any) => {
         request({
             method: "post",
-            url: `/wms/basic/container/get?containerCode=${containerCode}&warehouseCode=${warehouseCode}`
+            url: `/wms/basic/container/get?containerCode=${code}&warehouseCode=${warehouseCode}`
         }).then((res: any) => {
             console.log("containerCode", res)
             if (res.data?.containerCode) {
@@ -131,8 +135,9 @@ const ContainerHandler = (props: ContainerHandlerProps) => {
                     containerSpecCode: data.containerSpecCode,
                     containerId: data.id
                 })
+                debugger
                 const slotSpec = specOptions.find(
-                    (item) => item.value === data.containerSpecCode
+                    (item: any) => item.value === data.containerSpecCode
                 )?.containerSlotSpecs
                 setContainerSlotSpec(JSON.parse(slotSpec))
                 changeFocusValue("count")
@@ -140,6 +145,10 @@ const ContainerHandler = (props: ContainerHandlerProps) => {
                 message.error("Container is not exits")
             }
         })
+    }
+
+    const onPressEnter = () => {
+        onPressEnterLocal(containerCode, specOptions);
     }
 
     const handleOK = () => {
@@ -174,8 +183,8 @@ const ContainerHandler = (props: ContainerHandlerProps) => {
 
     const containerLeave = (containerCode: string) => {
         request({
-            method: "post",
-            url: "station/api?apiCode=CONTAINER_LEAVE",
+            method: "put",
+            url: "/station/api?apiCode=CONTAINER_LEAVE",
             data: containerCode
         }).then((res: any) => {
             console.log("containerLeave", res)

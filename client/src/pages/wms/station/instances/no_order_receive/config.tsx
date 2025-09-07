@@ -24,7 +24,7 @@ export const OPERATION_MAP = {
 
 const config: WorkStationConfig<string> = {
     type: "no_order_receive",
-    title: <Translation>{(t) => t("no_order_receive.title")}</Translation>,
+    title: <Translation>{(t) => t("no_order_receive。station.title")}</Translation>,
     stepsDescribe: [
         {
             type: "infoInput",

@@ -7,7 +7,7 @@ import {TabActionType} from "@/pages/wms/station/tab-actions/constant"
 
 import Tips from "../receive/operations/tips"
 import TaskDetail from "../receive/custom-actions/TaskDetail"
-import InstanceLayout from "../receive/layout"
+import InstanceLayout from "./layout"
 import mockData from "../receive/mock-events"
 import SkuHandler from "../receive/operations/skuHandler"
 import ContainerHandler from "../receive/operations/containerHandler"

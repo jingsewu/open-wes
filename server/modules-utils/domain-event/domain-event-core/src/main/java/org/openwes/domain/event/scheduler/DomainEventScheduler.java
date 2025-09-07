@@ -13,10 +13,7 @@ import org.openwes.domain.event.domain.repository.DomainEventPORepository;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
@@ -59,7 +56,7 @@ public class DomainEventScheduler {
         failedEvents.forEach(e -> {
             try {
                 // Create a unique signature for this event (type + content hash)
-                String eventSignature = e.getEventType() + ":" + e.getEvent().hashCode();
+                String eventSignature = e.getEventType() + ":" + generateEventHash(e.getEvent());
 
                 // Check if we've already processed an identical event
                 if (processedEventSignatures.contains(eventSignature)) {
@@ -89,6 +86,23 @@ public class DomainEventScheduler {
             domainEventPORepository.deleteAllByCreateTimeLessThanAndStatus(startTime, DomainEventStatusEnum.SUCCESS);
         } catch (Exception e) {
             log.error("remove history domain event failed, startTime : {}", startTime);
+        }
+    }
+
+
+    private int generateEventHash(String event) {
+        try {
+            // Convert string event to Map
+            Map<String, Object> eventMap = JsonUtils.string2MapObject(event);
+
+            // Create a copy without the eventId field
+            Map<String, Object> copy = new HashMap<>(eventMap);
+            copy.remove("eventId");
+
+            return copy.hashCode();
+        } catch (Exception e) {
+            log.warn("Failed to generate event hash, using raw event string: {}", e.getMessage());
+            return event.hashCode();
         }
     }
 }

@@ -11,7 +11,6 @@ import org.openwes.domain.event.AggregatorRoot;
 import org.openwes.wes.api.inbound.constants.InboundPlanOrderStatusEnum;
 import org.openwes.wes.api.inbound.constants.StorageTypeEnum;
 import org.openwes.wes.api.inbound.dto.AcceptRecordDTO;
-import org.openwes.wes.api.inbound.event.AcceptEvent;
 import org.openwes.wes.api.inbound.event.InboundOrderCompletionEvent;
 import org.openwes.wes.api.main.data.dto.SkuMainDataDTO;
 

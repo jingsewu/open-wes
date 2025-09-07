@@ -5,6 +5,18 @@ const detailColumns = [
         hidden: true
     },
     {
+        name: "skuCode",
+        label: "table.skuCode"
+    },
+    {
+        name: "skuName",
+        label: "table.skuName"
+    },
+    {
+        name: "ownerCode",
+        label: "table.productOwner"
+    },
+    {
         name: "batchAttributes",
         label: "table.batchAttributes"
     },
@@ -21,6 +33,14 @@ const detailColumns = [
         label: "table.color"
     },
     {
+        name: "size",
+        label: "table.size"
+    },
+    {
+        name: "style",
+        label: "table.style"
+    },
+    {
         name: "qtyAbnormal",
         label: "skuArea.qtyAbnormal"
     },
@@ -33,32 +53,8 @@ const detailColumns = [
         label: "table.plannedQuantity"
     },
     {
-        name: "qtyUnreceived",
-        label: "table.unreceivedQuantity"
-    },
-    {
         name: "responsibleParty",
         label: "table.responsibleParty"
-    },
-    {
-        name: "size",
-        label: "table.size"
-    },
-    {
-        name: "skuCode",
-        label: "table.skuCode"
-    },
-    {
-        name: "skuName",
-        label: "table.skuName"
-    },
-    {
-        name: "ownerCode",
-        label: "table.productOwner"
-    },
-    {
-        name: "style",
-        label: "table.style"
     }
 ]
 

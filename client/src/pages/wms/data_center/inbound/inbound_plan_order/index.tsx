@@ -213,7 +213,7 @@ const import_excel = {
                                                         api: {
                                                             method: "post",
                                                             url: "/wms/inbound/plan/import",
-                                                            data: { file: "${file}" },
+                                                            data: {file: "${file}"},
                                                             messages: {
                                                                 success: "importExcel.uploadSuccess",
                                                                 failed: "importExcel.uploadFailed"
@@ -320,7 +320,7 @@ const schema = {
                 searchIdentity: searchIdentity,
                 showColumns: showColumns,
                 searchObject: {
-                    orderBy: "inbound_plan_order_status, update_time desc"
+                    orderBy: "id ,inbound_plan_order_status desc"
                 }
             },
             autoFillHeight: true,
