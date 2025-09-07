@@ -15,7 +15,7 @@ export enum StationTypes {
 
     SELECT_CONTAINER_PUT_AWAY = `select_container_put_away`,
 
-    PICKING = "picking",
+    PICKING = "outbound",
 
     STOCKTAKE = "stocktake",
 }
