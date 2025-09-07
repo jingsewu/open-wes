@@ -2,10 +2,10 @@ import React from "react"
 
 import {DevicePhysicalType, WorkLocationArea, WorkStationView} from "@/pages/wms/station/event-loop/types"
 import {CustomActionType} from "@/pages/wms/station/instances/outbound/customActionType"
-import EmptyImage from "@/pages/wms/station/instances/outbound/operations/components/EmptyImage"
 import MaterialHandler from "@/pages/wms/station/instances/outbound/operations/components/MaterialHandler"
 import type {OutboundProps} from "@/pages/wms/station/instances/outbound/type"
 import type {OperationProps} from "@/pages/wms/station/instances/types"
+import EmptyImage from "@/pages/wms/station/instances/outbound/operations/components/EmptyImage";
 
 export interface ContainerHandlerProps {
     workLocationArea: WorkLocationArea
@@ -36,7 +36,9 @@ const ContainerHandler = (
 ) => {
     const {value, onActionDispatch, message, isActive} = props
 
-    const containerViews = value?.workLocationViews?.[0]
+    const containerViews = value?.workLocationViews?.find((item) => {
+        item.enable
+    });
     const workLocationType = containerViews?.workLocationType || "DEFAULT"
     const handleScanContainer = async (containerCode: string) => {
         const {code, msg} = await onActionDispatch({
@@ -83,6 +85,7 @@ const ContainerHandler = (
         ),
         DEFAULT: (
             <EmptyImage
+                workStationEvent={value}
                 handleShowInput={handleShowInput}
                 onChange={handleScanContainer}
             />
