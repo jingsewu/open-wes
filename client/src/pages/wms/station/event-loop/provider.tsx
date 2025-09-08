@@ -1,6 +1,5 @@
 import {useHistory} from "react-router"
 
-import {useWindowFocus} from "@/pages/wms/station/event-loop/hooks/use-window-focus"
 import type {
     WorkStationAPIContextProps,
     WorkStationContextProps,
@@ -47,8 +46,6 @@ function WorkStationValueProvider(props: Readonly<WorkStationProviderProps>) {
     const history = useHistory()
 
     const [workStationEvent, setWorkStationEvent] = useState<WorkStationView<any> | undefined>(workStationEventLoop.getCurrentEvent())
-
-    useWindowFocus(setWorkStationEvent)
 
     useEffect(() => {
         workStationEventLoop.setDebuggerConfig(debugType, mockData as any[])

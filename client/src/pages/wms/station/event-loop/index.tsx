@@ -7,6 +7,7 @@ import {
     request_work_station_view,
     STATION_WEBSOCKET_URL
 } from "@/pages/wms/station/constants/constant";
+import WebSocketManager from "./websocketManager";
 
 type EventListener = (event: WorkStationView<any> | undefined) => void
 
@@ -19,7 +20,7 @@ export default class WorkStationEventLoop {
     private debugType: DebugType | boolean = false
     /** mock数据 */
     private mockData: any
-    private websocket: WebSocket | null = null
+    private websocketManager: WebSocketManager | null = null
     private stationId: string | null = null
 
     public resetCurrentEvent() {
@@ -59,7 +60,8 @@ export default class WorkStationEventLoop {
 
     public stop: () => Promise<void> = async () => {
         console.log("%c =====> event loop stop", "color:red;font-size:20px;")
-        this.websocket?.close()
+        this.websocketManager?.disconnect()
+        this.websocketManager = null
         return Promise.resolve()
     }
 
@@ -101,42 +103,34 @@ export default class WorkStationEventLoop {
 
     private readonly getWebsocketData: () => Promise<void> =
         async () => {
-            let that = this
-            this.websocket = new WebSocket(STATION_WEBSOCKET_URL + `?stationCode=${that.stationId}&Authorization=`
+            const wsUrl = STATION_WEBSOCKET_URL + `?stationCode=${this.stationId}&Authorization=`
                 + encodeURIComponent(localStorage.getItem("ws_token") as string)
-            )
 
-            this.websocket.onopen = () => {
-                console.log(`websocket connect successfully and the session id is: ${this.websocket?.url}`)
-            }
-            // 监听消息事件
-            this.websocket.addEventListener("message", (event) => {
-                if (!event.data) return
-                console.log("websocket receive data: ", event.data)
-                const message = JSON.parse(event.data);
-                if (message.type === "DATA_CHANGED") {
-                    that.getApiData()
-                } else if (message.type === "PRINT") {
-                    qzPrinter.printAndUpdateRecord(message as PrintData);
+            this.websocketManager = new WebSocketManager({
+                url: wsUrl,
+                maxReconnectAttempts: 5,
+                reconnectDelay: 1000,
+                heartbeatInterval: 30000,
+                onMessage: (message) => {
+                    console.log("websocket receive data: ", message)
+                    if (message.type === "DATA_CHANGED") {
+                        this.getApiData()
+                    } else if (message.type === "PRINT") {
+                        qzPrinter.printAndUpdateRecord(message as PrintData);
+                    }
+                },
+                onConnect: () => {
+                    console.log(`websocket connect successfully and the session id is: ${wsUrl}`)
+                },
+                onDisconnect: () => {
+                    console.log("WebSocket disconnected")
+                },
+                onError: (error) => {
+                    console.error(`websocket connect failed:`, error)
                 }
-
             })
-            this.websocket.onerror = () => {
-                console.error(`websocket connect failed, the status is: ${this.websocket?.readyState}`)
-                clearInterval(heartbeatInterval);
-            }
 
-            this.websocket.onclose = () => {
-                console.log("WebSocket closed");
-                clearInterval(heartbeatInterval);
-            };
-
-            const heartbeatInterval = setInterval(() => {
-                if (this.websocket?.readyState === WebSocket.OPEN) {
-                    this.websocket.send("ping");
-                }
-            }, 10000);
-
+            await this.websocketManager.connect()
             // Initialize QZ Tray
             await this.initPrinter();
         }
@@ -150,9 +144,14 @@ export default class WorkStationEventLoop {
     }
 
     private readonly getApiData: () => Promise<void> = async () => {
-        const res: any = await request_work_station_view();
-        this.stationId = res.data.workStationId
-        this.handleEventChange(res.data)
+        try {
+            const res: any = await request_work_station_view();
+            this.stationId = res.data.workStationId
+            this.handleEventChange(res.data)
+        } catch (error) {
+            console.error('获取工作站数据失败:', error);
+            toast.error('获取工作站数据失败，请检查网络连接');
+        }
     }
 
     private readonly getMockEventData: () => Promise<WorkStationView<any> | undefined> =
