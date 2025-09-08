@@ -32,6 +32,12 @@ import static org.openwes.common.utils.exception.code_enum.StationErrorDescEnum.
  * <p>
  * a base work station Entity , only contains the basic information of work station. if you need to add more information,
  * please add it to the subclasses. such as InboundWorkStationCache and OutboundWorkStationCache.
+ *
+ * <p>
+ * attention: any class that extend of WorkStationCache should not add Map type with List generic in the subclass.
+ * for example: Map<String,List<String>> is not allowed.
+ * it will cause error: Unable to make field transient java.lang.Object[] java.util.ArrayList.elementData accessible: module java.base does not "opens java.util" to unnamed module.
+ * </p>
  */
 @Data
 @NoArgsConstructor

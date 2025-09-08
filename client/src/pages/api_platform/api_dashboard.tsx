@@ -3,6 +3,10 @@ import schema2component from '@/utils/schema2component';
 const schema = {
     type: 'page',
     title: 'API Analytics Dashboard',
+    data: {
+        apiUrl: '/wms/api/analytics/dashboard'
+    },
+    initApi: '$apiUrl',
     body: [
         {
             type: 'grid',
@@ -12,37 +16,28 @@ const schema = {
                     className: 'stats-card',
                     body: {
                         type: 'tpl',
-                        tpl: '<div class="stat-card"><div class="stat-title">Total Requests</div><div class="stat-value">23.5K</div><div class="stat-desc">↗︎ 12% from last month</div></div>',
+                        tpl: '<div class="stat-card"><div class="stat-title">Total Requests</div><div class="stat-value">${stats.totalRequests | number}</div>',
                     },
-                    md: 3,
+                    md: 4,
                 },
                 {
                     type: 'card',
                     className: 'stats-card',
                     body: {
                         type: 'tpl',
-                        tpl: '<div class="stat-card"><div class="stat-title">Error Rate</div><div class="stat-value">1.2%</div><div class="stat-desc">↘︎ 0.3% from last month</div></div>',
+                        tpl: '<div class="stat-card"><div class="stat-title">Error Rate</div><div class="stat-value">${stats.errorRate | number: 2}%</div></div>',
                     },
-                    md: 3,
+                    md: 4,
                 },
                 {
                     type: 'card',
                     className: 'stats-card',
                     body: {
                         type: 'tpl',
-                        tpl: '<div class="stat-card"><div class="stat-title">Avg Response Time</div><div class="stat-value">156ms</div><div class="stat-desc">↗︎ 50ms from last month</div></div>',
+                        tpl: '<div class="stat-card"><div class="stat-title">Avg Response Time</div><div class="stat-value">${stats.avgResponseTime | number: 0}ms</div></div>',
                     },
-                    md: 3,
-                },
-                {
-                    type: 'card',
-                    className: 'stats-card',
-                    body: {
-                        type: 'tpl',
-                        tpl: '<div class="stat-card"><div class="stat-title">Active Users</div><div class="stat-value">1,234</div><div class="stat-desc">↗︎ 8% from last month</div></div>',
-                    },
-                    md: 3,
-                },
+                    md: 4,
+                }
             ],
         },
         {
@@ -54,10 +49,15 @@ const schema = {
                     body: {
                         type: 'chart',
                         height: 300,
+                        data: {
+                            timeSlots: "${timeSeriesData.map(item => item.timeSlot)}",
+                            responseTimes: "${timeSeriesData.map(item => item.avgResponseTime)}",
+                            requestCounts: "${timeSeriesData.map(item => item.requestCount)}"
+                        },
                         config: {
                             xAxis: {
                                 type: 'category',
-                                data: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
+                                data: '${timeSlots}'
                             },
                             yAxis: [
                                 {
@@ -74,13 +74,13 @@ const schema = {
                                 {
                                     name: 'Response Time',
                                     type: 'line',
-                                    data: [120, 150, 180, 200, 160, 140],
+                                    data: '${responseTimes}',
                                     yAxisIndex: 0,
                                 },
                                 {
                                     name: 'Requests',
                                     type: 'line',
-                                    data: [1500, 1200, 2500, 3000, 2800, 2000],
+                                    data: '${requestCounts}',
                                     yAxisIndex: 1,
                                 },
                             ],
@@ -97,10 +97,14 @@ const schema = {
                     body: {
                         type: 'chart',
                         height: 300,
+                        data: {
+                            endpoints: "${topEndpoints.map(item => item.apiCode)}",
+                            counts: "${topEndpoints.map(item => item.requestCount)}"
+                        },
                         config: {
                             xAxis: {
                                 type: 'category',
-                                data: ['/users', '/products', '/orders', '/auth', '/search'],
+                                data: '${endpoints}'
                             },
                             yAxis: {
                                 type: 'value',
@@ -108,7 +112,7 @@ const schema = {
                             series: [
                                 {
                                     type: 'bar',
-                                    data: [45000, 38000, 32000, 28000, 25000],
+                                    data: '${counts}'
                                 },
                             ],
                             tooltip: {
@@ -129,16 +133,15 @@ const schema = {
                     body: {
                         type: 'chart',
                         height: 300,
+                        data: {
+                            errorData: "${errorDistribution.map(item => ({value: item.count, name: item.errorType}))}"
+                        },
                         config: {
                             series: [
                                 {
                                     type: 'pie',
                                     radius: '60%',
-                                    data: [
-                                        {value: 60, name: '4xx Errors'},
-                                        {value: 30, name: '5xx Errors'},
-                                        {value: 10, name: 'Network Errors'},
-                                    ],
+                                    data: '${errorData}'
                                 },
                             ],
                         },
@@ -150,7 +153,7 @@ const schema = {
                     title: 'Recent API Calls',
                     body: {
                         type: 'table',
-                        source: '$api_calls',
+                        source: '${recentApiCalls}',
                         columns: [
                             {
                                 name: 'endpoint',
@@ -165,12 +168,13 @@ const schema = {
                                 label: 'Status',
                             },
                             {
-                                name: 'response_time',
+                                name: 'responseTime',
                                 label: 'Response Time',
                             },
                             {
                                 name: 'timestamp',
                                 label: 'Timestamp',
+                                type: 'datetime'
                             },
                         ],
                     },

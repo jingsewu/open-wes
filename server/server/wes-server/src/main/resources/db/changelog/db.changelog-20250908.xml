@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="add_menu_api_dashboard" author="Kinser">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="u_menu"/>
+            </and>
+        </preConditions>
+        <comment>add menu</comment>
+        <sql>
+            INSERT INTO `u_menu`(`id`, `create_time`, `create_user`, `update_time`, `update_user`, `description`, `enable`, `icon`, `iframe_show`, `order_num`, `parent_id`, `path`, `permissions`, `system_code`, `title`, `type`) VALUES (505023538114203649, 1698214994370, '12345', 1698214994370, '12345', NULL, 1, NULL, NULL, 1, 505022420554485760, '/api-platform/api-dashboard', '/api-platform/api-dashboard', 'api-platform', 'Dashboard', 2);
+        </sql>
+    </changeSet>
+
+
+</databaseChangeLog>

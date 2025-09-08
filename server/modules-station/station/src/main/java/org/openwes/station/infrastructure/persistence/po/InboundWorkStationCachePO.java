@@ -1,14 +1,18 @@
 package org.openwes.station.infrastructure.persistence.po;
 
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.openwes.station.domain.entity.InboundWorkStationCache;
 
 import java.util.List;
-import java.util.Map;
 
 @EqualsAndHashCode(callSuper = true)
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
 public class InboundWorkStationCachePO extends WorkStationCachePO {
     private List<String> callContainers;
-    private Map<String, List<String>> containerTaskCodes;
+    private List<InboundWorkStationCache.ContainerTaskCache> containerTasks;
 }

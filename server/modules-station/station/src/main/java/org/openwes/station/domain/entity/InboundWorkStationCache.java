@@ -2,10 +2,11 @@ package org.openwes.station.domain.entity;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.openwes.station.application.business.handler.event.inbound.CallContainerEvent;
+import org.openwes.wes.api.ems.proxy.dto.ContainerTaskDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -16,20 +17,26 @@ import java.util.Map;
 public class InboundWorkStationCache extends WorkStationCache {
 
     private List<String> callContainers;
-    private Map<String, List<String>> containerTaskCodes;
+    private List<ContainerTaskCache> containerTasks;
 
-    public void saveCallContainers(CallContainerEvent callContainerEvent, Map<String, List<String>> containerTaskCodes) {
+    public void saveCallContainers(CallContainerEvent callContainerEvent, List<ContainerTaskDTO> containerTaskDTOS) {
         if (this.callContainers == null) {
             this.callContainers = Lists.newArrayList(callContainerEvent.getContainerCodes());
         } else {
             this.callContainers.addAll(callContainerEvent.getContainerCodes());
         }
 
-        if (this.containerTaskCodes == null) {
-            this.containerTaskCodes = Maps.newHashMap(containerTaskCodes);
+        List<ContainerTaskCache> containerTaskCaches = containerTaskDTOS.stream()
+                .map(containerTaskDTO ->
+                        ContainerTaskCache.builder().containerCode(containerTaskDTO.getContainerCode())
+                                .taskCode(containerTaskDTO.getTaskCode()).build()).toList();
+
+        if (this.containerTasks == null) {
+            this.containerTasks = Lists.newArrayList(containerTaskCaches);
         } else {
-            this.containerTaskCodes.putAll(containerTaskCodes);
+            this.containerTasks.addAll(containerTaskCaches);
         }
+
     }
 
     public void completeTasks(String containerCode) {
@@ -44,8 +51,17 @@ public class InboundWorkStationCache extends WorkStationCache {
         if (this.callContainers != null) {
             this.callContainers.remove(containerCode);
         }
-        if (this.containerTaskCodes != null) {
-            this.containerTaskCodes.remove(containerCode);
+        if (this.containerTasks != null) {
+            this.containerTasks.removeIf(v -> StringUtils.equals(v.getContainerCode(), containerCode));
         }
+    }
+
+
+    @Getter
+    @Setter
+    @Builder
+    public static class ContainerTaskCache {
+        private String containerCode;
+        private String taskCode;
     }
 }
