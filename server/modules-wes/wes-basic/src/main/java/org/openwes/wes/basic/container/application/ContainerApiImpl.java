@@ -1,11 +1,11 @@
 package org.openwes.wes.basic.container.application;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.openwes.common.utils.exception.WmsException;
+import org.openwes.common.utils.exception.code_enum.BasicErrorDescEnum;
 import org.openwes.wes.api.basic.IContainerApi;
 import org.openwes.wes.api.basic.dto.*;
 import org.openwes.wes.basic.container.domain.aggregate.ContainerLocationAggregate;
@@ -97,8 +97,14 @@ public class ContainerApiImpl implements IContainerApi {
     @Override
     public ContainerSpecDTO queryContainerLayout(String containerCode, String warehouseCode, String face) {
         Container container = containerRepository.findByContainerCode(containerCode, warehouseCode);
+        if (container == null) {
+            throw WmsException.throwWmsException(BasicErrorDescEnum.CONTAINER_NOT_EXIST, containerCode);
+        }
         ContainerSpec containerSpec = containerSpecRepository
                 .findByContainerSpecCode(container.getContainerSpecCode(), container.getWarehouseCode());
+        if (containerSpec == null) {
+            throw WmsException.throwWmsException(CONTAINER_SPECIFIC_NOT_EXIST, container.getContainerSpecCode());
+        }
         List<ContainerSpecDTO.ContainerSlotSpec> containerSlotSpecs = containerSpec.getContainerSlotSpecsByFace(face);
         containerSpec.setContainerSlotSpecs(containerSlotSpecs);
         return containerSpecTransfer.toDTO(containerSpec);

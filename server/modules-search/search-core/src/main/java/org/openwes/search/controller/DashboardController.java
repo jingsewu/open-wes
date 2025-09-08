@@ -5,6 +5,7 @@ import com.openwes.search.api.vo.dashboard.InboundProgress;
 import com.openwes.search.api.vo.dashboard.OperatorRanking;
 import com.openwes.search.api.vo.dashboard.OutboundProgress;
 import com.openwes.search.api.vo.dashboard.WorkstationTask;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.openwes.common.utils.http.Response;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -24,6 +25,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/dashboard")
 @RequiredArgsConstructor
+@Tag(name = "Search Module Api")
 public class DashboardController {
 
     private final MapSearcher mapSearcher;
