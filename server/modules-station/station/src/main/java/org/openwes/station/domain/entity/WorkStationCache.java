@@ -14,8 +14,8 @@ import org.openwes.common.utils.exception.WmsException;
 import org.openwes.station.api.constants.ApiCodeEnum;
 import org.openwes.station.api.constants.ProcessStatusEnum;
 import org.openwes.station.api.vo.WorkStationVO;
+import org.openwes.station.application.business.handler.event.OnlineEvent;
 import org.openwes.wes.api.basic.constants.WorkStationModeEnum;
-import org.openwes.wes.api.basic.constants.WorkStationProcessingStatusEnum;
 import org.openwes.wes.api.basic.dto.PutWallSlotDTO;
 import org.openwes.wes.api.basic.dto.WorkStationConfigDTO;
 import org.openwes.wes.api.task.constants.OperationTaskStatusEnum;
@@ -68,8 +68,11 @@ public class WorkStationCache {
 
     protected String scannedBarcode;
 
-    public void online(WorkStationModeEnum workStationMode) {
+    protected boolean hasOrder;
+
+    public void online(WorkStationModeEnum workStationMode, OnlineEvent onlineEvent) {
         this.workStationMode = workStationMode;
+        this.hasOrder = onlineEvent.isHasOrder();
     }
 
     public WorkStationConfigDTO getWorkStationConfig() {

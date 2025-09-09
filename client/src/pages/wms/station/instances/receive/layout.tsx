@@ -26,16 +26,18 @@ interface ReplenishLayoutProps extends OperationProps<any, any> {
 const cx = classNames.bind(style)
 
 const Layout = (props: ReplenishLayoutProps) => {
-    //TODO by Evelyn 这里可能是undefined,导致后面确定收货提交的时候 workStationEvent.workStationId就会报错
-    if (props === undefined) {
-        return <div>加载中</div>
-    }
-
+    const {t} = useTranslation();
     const {workStationEvent} = props
+
+    //TODO by Evelyn 这里可能是undefined,导致后面确定收货提交的时候 workStationEvent.workStationId就会报错
+    if (workStationEvent === undefined) {
+        return <div>{t("common.loading")}</div>
+    }
     const [orderNo, setOrderNo] = useState("")
     const [orderInfo, setOrderInfo] = useState<any>()
     const [currentSkuInfo, setCurrentSkuInfo] = useState<any>({})
     const [focusValue, setFocusValue] = useState("")
+    const hasOrder = workStationEvent?.hasOrder ?? ""
 
     const onScanSubmit = () => {
         request({
@@ -100,18 +102,19 @@ const Layout = (props: ReplenishLayoutProps) => {
         setFocusValue(value)
     }
 
-    const {t} = useTranslation();
-
     return (
         <>
-            {orderInfo ? (
+
+            {(hasOrder === false || orderInfo) ? (
                 <Row className="h-full" justify="space-between" gutter={16}>
-                    <Col span={24}>
-                        <OrderHandler value={orderInfo}/>
-                    </Col>
+                    {hasOrder && orderInfo && (
+                        <Col span={24}>
+                            <OrderHandler value={orderInfo}/>
+                        </Col>
+                    )}
                     <Col span={12} className="pt-4">
                         <SkuHandler
-                            details={orderInfo.details}
+                            details={orderInfo?.details}
                             currentSkuInfo={currentSkuInfo}
                             focusValue={focusValue}
                             onSkuChange={onSkuChange}

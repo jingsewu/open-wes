@@ -944,7 +944,9 @@
     "common.close": "Close",
 
     "select_container_put_away.station.title": "Select Container Put away",
-    "select_container_put_away.station.cardDescription": "Please select a container to put away",
+    "select_container_put_away.station.cardDescription": "Please select containers to put away",
+    "no_order_select_container_put_away.station.title": "Select Container Put away(No Order)",
+    "no_order_select_container_put_away.station.cardDescription": "Please select containers to put away",
 
     "dashboard.title": "Warehouse Execution System Dashboard",
     "dashboard.outboundProgress": "Today's Outbound Progress",
@@ -971,6 +973,7 @@
     "dashboard.outboundStatus": "Outbound Status",
     "dashboard.requiredQty": "Required Quantity",
 
-    "confirm.callContainer": "Are you sure to call container?"
+    "confirm.callContainer": "Are you sure to call container?",
 
+    "common.loading": "loading..."
 }

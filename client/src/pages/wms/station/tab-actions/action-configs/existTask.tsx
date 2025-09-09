@@ -9,8 +9,7 @@ import { MessageType } from "@/pages/wms/station/widgets/message"
 import { CustomActionType } from "@/pages/wms/station/instances/outbound/customActionType"
 
 const disabledOperationType = [
-    "SELECT_CONTAINER_PUT_AWAY",
-    "WITHOUT_ORDER_PUT_AWAY"
+    "SELECT_CONTAINER_PUT_AWAY"
 ]
 
 const taskConfig: TabAction = {

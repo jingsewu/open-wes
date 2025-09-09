@@ -1,9 +1,6 @@
 import type {ReactChild, ReactChildren} from "react"
 
-import type {
-    DebuggerConfig,
-    OperationProps
-} from "@/pages/wms/station/instances/types"
+import type {DebuggerConfig, OperationProps} from "@/pages/wms/station/instances/types"
 
 export enum ChooseArea {
     workLocationArea = "CONTAINER_AREA",
@@ -14,16 +11,8 @@ export enum ChooseArea {
 
 export enum WorkStationMode {
     RECEIVE = "RECEIVE" /** 收货 */,
-    PUT_AWAY = "PUT_AWAY" /** 上架 */,
     PICKING = "PICKING" /** 拣货 */,
-    SORTING = "SORTING",
-    ONE_STEP_RELOCATION = "ONE_STEP_RELOCATION" /** 一步式理库 */,
-    RECOMMEND_REPLENISH = "RECOMMEND_REPLENISH" /** 推荐容器补货 */,
-    SELECT_CONTAINER_PUT_AWAY = "SELECT_CONTAINER_PUT_AWAY" /** 选择容器上架 */,
-    WITHOUT_ORDER_PUT_AWAY = "WITHOUT_ORDER_PUT_AWAY" /** 无单上架 */,
-    RELOCATION = "RELOCATION" /** 理库 */,
-    COUNTING = "COUNTING" /** 盘点 */,
-    RECHECK = "RECHECK" /** 复核 */
+    SELECT_CONTAINER_PUT_AWAY = "SELECT_CONTAINER_PUT_AWAY" /** 选择容器上架 */
 }
 
 export interface ToolBar {
@@ -246,6 +235,7 @@ export interface WorkStationView<T> {
     callContainerCount?: number
     warehouseAreaId?: string
     workStationId: string
+    hasOrder: boolean
 }
 
 export interface ContainerSlotSpecsItem {

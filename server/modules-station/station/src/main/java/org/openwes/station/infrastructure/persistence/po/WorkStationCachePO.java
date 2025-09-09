@@ -51,4 +51,6 @@ public class WorkStationCachePO {
     protected ApiCodeEnum eventCode;
 
     protected String scannedBarcode;
+
+    protected boolean hasOrder;
 }

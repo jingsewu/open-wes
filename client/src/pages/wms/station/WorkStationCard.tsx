@@ -11,7 +11,6 @@ export const WORK_STATION_PATH_PREFIX = "/wms/workStation"
 
 export enum StationTypes {
     RECEIVE = "receive",
-    NO_ORDER_RECEIVE = "no_order_receive",
 
     SELECT_CONTAINER_PUT_AWAY = `select_container_put_away`,
 
@@ -35,6 +34,7 @@ interface CardOption {
     avatar: any;
     rightIcon: any;
     backgroundColor?: string;
+    hasOrder?: boolean;
 }
 
 const cardOptions: CardOption[] = [
@@ -43,6 +43,7 @@ const cardOptions: CardOption[] = [
         title: <Translation>{(t) => t("receiving.title")}</Translation>,
         value: "RECEIVE",
         category: WorkflowCategory.RECEIVING,
+        hasOrder: true,
         description: (
             <Translation>{(t) => t("receiving.cardDescription")}</Translation>
         ),
@@ -52,7 +53,8 @@ const cardOptions: CardOption[] = [
     },
     {
         title: <Translation>{(t) => t("receiving.unplanned.title")}</Translation>,
-        value: "NO_ORDER_RECEIVE",
+        value: "RECEIVE",
+        hasOrder: false,
         category: WorkflowCategory.RECEIVING,
         description: (
             <Translation>{(t) => t("receiving.unplanned.cardDescription")}</Translation>
@@ -67,8 +69,21 @@ const cardOptions: CardOption[] = [
         title: <Translation>{(t) => t("select_container_put_away.station.title")}</Translation>,
         value: "SELECT_CONTAINER_PUT_AWAY",
         category: WorkflowCategory.PUT_AWAY,
+        hasOrder: true,
         description: (
             <Translation>{(t) => t("select_container_put_away.station.cardDescription")}</Translation>
+        ),
+        avatar: images.spsh,
+        rightIcon: images.spshbg,
+        backgroundColor: "#fff2e8"
+    },
+    {
+        title: <Translation>{(t) => t("no_order_select_container_put_away.station.title")}</Translation>,
+        value: "SELECT_CONTAINER_PUT_AWAY",
+        category: WorkflowCategory.PUT_AWAY,
+        hasOrder: false,
+        description: (
+            <Translation>{(t) => t("no_order_select_container_put_away.station.cardDescription")}</Translation>
         ),
         avatar: images.spsh,
         rightIcon: images.spshbg,
@@ -126,10 +141,13 @@ const Station = (props: any) => {
         history.replace(path)
     }, [workStationMode, workStationStatus])
 
-    const handleCardClick = (data: string) => {
+    const handleCardClick = (workStationMode: string, hasOrder: boolean) => {
         onActionDispatch({
             eventCode: CustomActionType.ONLINE,
-            data
+            data: {
+                "workStationMode": workStationMode,
+                "hasOrder": hasOrder
+            }
         })
     }
 
@@ -138,12 +156,12 @@ const Station = (props: any) => {
             <h3 className="text-lg font-semibold mb-3 capitalize">
                 <Translation>{(t) => t(`categories.${category.toLowerCase()}`)}</Translation>
             </h3>
-            <Row gutter={[24, { xs: 8, sm: 16, md: 24 }]}>
+            <Row gutter={[24, {xs: 8, sm: 16, md: 24}]}>
                 {cards.map((item) => (
                     <Col md={24} lg={12} key={item.value}>
                         <StationCard
                             {...item}
-                            handleCardClick={() => handleCardClick(item.value)}
+                            handleCardClick={() => handleCardClick(item.value, !!item.hasOrder)}
                         />
                     </Col>
                 ))}
