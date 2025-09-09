@@ -7,8 +7,8 @@ import type {FunctionComponent, ReactNode} from "react"
 import React, {useContext, useEffect, useRef, memo, useMemo, useCallback} from "react"
 
 import {DEBOUNCE_TIME} from "@/pages/wms/station/constants/constant"
-import {APIContext, OperationsContext, WorkStationContext} from "@/pages/wms/station/event-loop/provider"
-import {WorkStationContextProps, WorkStationView} from "@/pages/wms/station/event-loop/types"
+import {WorkStationContext} from "@/pages/wms/station/event-loop/provider"
+import {WorkStationView} from "@/pages/wms/station/event-loop/types"
 import type {OperationProps} from "@/pages/wms/station/instances/types"
 
 import styles from "./layout/styles.module.scss"
@@ -38,11 +38,8 @@ const Wrapper = memo(function Wrapper(props: {
 
     const ref = useRef<ReactNode>(null)
 
-    const {workStationEvent} = useContext<WorkStationContextProps>(WorkStationContext)
-
-    const {operationsMap, setOperationsMap} = useContext(OperationsContext)
-
-    const {onActionDispatch, message} = useContext(APIContext)
+    // 使用统一的WorkStationContext，一次性获取所有需要的值
+    const {workStationEvent, operationsMap, setOperationsMap, onActionDispatch, message} = useContext(WorkStationContext)
 
     // 只对复杂计算使用 useMemo
     const filteredValue = useMemo(() => {
