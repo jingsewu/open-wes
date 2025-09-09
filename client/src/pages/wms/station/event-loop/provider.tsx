@@ -1,4 +1,4 @@
-import {useHistory} from "react-router"
+import { useHistory } from "react-router"
 
 import type {
     WorkStationAPIContextProps,
@@ -7,45 +7,48 @@ import type {
     WorkStationView
 } from "@/pages/wms/station/event-loop/types"
 import Message from "@/pages/wms/station/widgets/message"
-import type {FC, ReactNode} from "react"
-import React, {useEffect, useState} from "react"
+import type { FC, ReactNode } from "react"
+import React, { useEffect, useState } from "react"
 import WorkStationEventLoop from "./index"
 
 const workStationEventLoop = new WorkStationEventLoop()
 
-const WorkStationContext = React.createContext<WorkStationContextProps>({
-    workStationEvent: workStationEventLoop.getCurrentEvent()
-})
+// 统一的WorkStation Context类型
+interface UnifiedWorkStationContextProps
+    extends WorkStationContextProps,
+        WorkStationAPIContextProps {
+    operationsMap: Map<string, any>
+    setOperationsMap: (operationsMap: Map<string, any>) => void
+}
 
-const WorkStationAPIContext = React.createContext<WorkStationAPIContextProps>({
+// 创建统一的Context
+const WorkStationContext = React.createContext<UnifiedWorkStationContextProps>({
+    workStationEvent: workStationEventLoop.getCurrentEvent(),
     message: Message,
     onActionDispatch: async () => {
         return {
             code: "0",
             msg: ""
         }
-    }
-})
-
-const WorkStationOperationsContext = React.createContext<{
-    operationsMap: Map<string, any>
-    setOperationsMap: (operationsMap: Map<string, any>) => void
-}>({
+    },
     operationsMap: new Map(),
-    setOperationsMap: () => {
-    }
+    setOperationsMap: () => {}
 })
 
-function WorkStationValueProvider(props: Readonly<WorkStationProviderProps>) {
-    const {
-        children,
-        type,
-        debugType = false,
-        mockData = {}
-    } = props
+// 统一的WorkStation Provider，合并了所有功能
+const WorkStationProvider: FC<WorkStationProviderProps> = (props) => {
+    const { children, type, debugType = false, mockData = {} } = props
     const history = useHistory()
 
-    const [workStationEvent, setWorkStationEvent] = useState<WorkStationView<any> | undefined>(workStationEventLoop.getCurrentEvent())
+    // 工作站事件状态
+    const [workStationEvent, setWorkStationEvent] = useState<
+        WorkStationView<any> | undefined
+    >(workStationEventLoop.getCurrentEvent())
+
+    // 操作映射状态
+    const [operationsMap, setOperationsMap] = useState<Map<string, any>>(
+        new Map()
+    )
 
     useEffect(() => {
         workStationEventLoop.setDebuggerConfig(debugType, mockData as any[])
@@ -67,68 +70,25 @@ function WorkStationValueProvider(props: Readonly<WorkStationProviderProps>) {
         if (history.location.pathname.includes("workStation")) return
     }, [history.location.pathname])
 
+    // 统一的context值
+    const contextValue: UnifiedWorkStationContextProps = {
+        workStationEvent,
+        message: Message,
+        onActionDispatch: workStationEventLoop.actionDispatch,
+        operationsMap,
+        setOperationsMap
+    }
+
     return (
-        <WorkStationContext.Provider
-            value={{
-                workStationEvent
-            }}
-        >
+        <WorkStationContext.Provider value={contextValue}>
             {children}
         </WorkStationContext.Provider>
     )
 }
 
-const WorkStationAPIProvider: FC<ReactNode> = (props) => {
-    const {children} = props
-
-    return (
-        <WorkStationAPIContext.Provider
-            value={{
-                message: Message,
-                onActionDispatch:
-                workStationEventLoop.actionDispatch
-            }}
-        >
-            {children}
-        </WorkStationAPIContext.Provider>
-    )
-}
-
-const WorkStationComponentsProvider: FC<ReactNode> = (props) => {
-    const [operationsMap, setOperationsMap] = useState<Map<string, any>>(
-        new Map()
-    )
-    const {children} = props
-
-    return (
-        <WorkStationOperationsContext.Provider
-            value={{
-                operationsMap,
-                setOperationsMap
-            }}
-        >
-            {children}
-        </WorkStationOperationsContext.Provider>
-    )
-}
-
-const WorkStationProvider: FC<WorkStationProviderProps> = (props) => {
-    const {children} = props
-
-    return (
-        <WorkStationAPIProvider>
-            <WorkStationComponentsProvider>
-                <WorkStationValueProvider {...props}>
-                    {children}
-                </WorkStationValueProvider>
-            </WorkStationComponentsProvider>
-        </WorkStationAPIProvider>
-    )
-}
-
 export {
     WorkStationProvider as Provider,
-    WorkStationAPIContext as APIContext,
-    WorkStationOperationsContext as OperationsContext,
-    WorkStationContext
+    WorkStationContext,
+    // 导出统一Context类型
+    type UnifiedWorkStationContextProps
 }

@@ -1,11 +1,11 @@
 import { Input, Button } from "antd"
 import React, { useState, useContext } from "react"
 import { SearchOutlined } from "@ant-design/icons"
-import { APIContext } from "@/pages/wms/station/event-loop/provider"
+import { WorkStationContext } from "@/pages/wms/station/event-loop/provider"
 import { CustomActionType } from "../../customActionType"
 
 const ScanBarcode = () => {
-    const { onActionDispatch } = useContext(APIContext)
+    const { onActionDispatch } = useContext(WorkStationContext)
 
     const [barcode, setBarcode] = useState<string>("")
 

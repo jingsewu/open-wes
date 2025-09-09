@@ -12,7 +12,7 @@ import ActionHandler from "@/pages/wms/station/tab-actions"
 import type {EmitterPayload, TabAction} from "@/pages/wms/station/tab-actions/types"
 import {TabActionModalType} from "@/pages/wms/station/tab-actions/types"
 
-import {APIContext, OperationsContext} from "../event-loop/provider"
+import {WorkStationContext} from "../event-loop/provider"
 import Modal, {useWorkStationModal} from "../widgets/modal"
 import styles from "./styles.module.scss"
 
@@ -41,8 +41,7 @@ const WorkStationLayoutToolbar = (props: FooterProps) => {
         const {type, content, duration = 3} = props
         api[type](content, duration)
     }
-    const {onActionDispatch} = useContext(APIContext)
-    const {operationsMap} = useContext(OperationsContext)
+    const {onActionDispatch, operationsMap} = useContext(WorkStationContext)
     const {actions} = props
     const actionsList =
         typeof actions === "function"

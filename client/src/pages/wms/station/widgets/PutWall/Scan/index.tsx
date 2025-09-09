@@ -3,10 +3,10 @@ import React, { useState, useContext, forwardRef } from "react"
 import { Input } from "antd"
 
 import { CustomActionType } from "@/pages/wms/station/instances/outbound/customActionType"
-import { APIContext } from "@/pages/wms/station/event-loop/provider"
+import { WorkStationContext } from "@/pages/wms/station/event-loop/provider"
 
 const Scan = (props: any, ref: any) => {
-    const { onActionDispatch } = useContext(APIContext)
+    const { onActionDispatch } = useContext(WorkStationContext)
 
     const [scanValue, setScanValue] = useState("")
 

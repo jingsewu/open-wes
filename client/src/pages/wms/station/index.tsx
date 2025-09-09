@@ -99,10 +99,9 @@ const WorkStation = (props: WorkStationProps) => {
 
 const InstanceLayoutWrapper: FC<any> = (props) => {
     const {children} = props
-    const {workStationEvent} =
-        useContext<WorkStationContextProps>(WorkStationContext)
-    const {onActionDispatch, message} =
-        useContext<WorkStationAPIContextProps>(APIContext)
+    // 使用统一的WorkStationContext，一次性获取所有需要的值
+    const {workStationEvent, onActionDispatch, message} =
+        useContext(WorkStationContext)
 
     const childrenWithProps = React.Children.map(children, (child) => {
         if (React.isValidElement(child)) {

@@ -4,7 +4,7 @@ import { Translation } from "react-i18next"
 import { withRouter } from "react-router-dom"
 import * as images from "@/icon/station"
 import { CustomActionType } from "@/pages/wms/station/instances/outbound/customActionType"
-import { APIContext } from "@/pages/wms/station/event-loop/provider"
+import { WorkStationContext } from "@/pages/wms/station/event-loop/provider"
 import StationCard from "@/pages/wms/station/widgets/StationCard"
 
 export const WORK_STATION_PATH_PREFIX = "/wms/workStation"
@@ -114,7 +114,7 @@ const groupedCards = cardOptions.reduce((acc, card) => {
 const Station = (props: any) => {
     const { history, workStationEvent } = props
     const { workStationStatus, workStationMode } = workStationEvent || {}
-    const { onActionDispatch } = useContext(APIContext)
+    const { onActionDispatch } = useContext(WorkStationContext)
 
     useEffect(() => {
         const path =
