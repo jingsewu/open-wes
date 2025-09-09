@@ -5,6 +5,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.openwes.common.utils.exception.WmsException;
+import org.openwes.common.utils.exception.code_enum.BasicErrorDescEnum;
 import org.openwes.common.utils.id.IdGenerator;
 import org.openwes.station.domain.entity.InboundWorkStationCache;
 import org.openwes.wes.api.basic.IContainerApi;
@@ -33,11 +34,14 @@ public class ContainerTaskService {
     @DubboReference
     private IContainerApi containerApi;
 
-    public Map<String, List<String>> createContainerTasks(List<String> containerCodes, InboundWorkStationCache workStationCache) {
+    public List<ContainerTaskDTO> createContainerTasks(List<String> containerCodes, InboundWorkStationCache workStationCache) {
 
         Long customerTaskId = IdGenerator.generateId();
 
         Collection<ContainerDTO> containers = containerApi.queryContainer(containerCodes, workStationCache.getWarehouseCode());
+        if (ObjectUtils.isEmpty(containers)) {
+            throw WmsException.throwWmsException(BasicErrorDescEnum.CONTAINER_NOT_EXIST, containerCodes);
+        }
         Map<ContainerDTO, Set<String>> containerMap = containers.stream().collect(Collectors.toMap(v -> v, ContainerDTO::getEmptySlotFaces));
 
         if (ObjectUtils.isEmpty(containerMap) || containerMap.values().stream().filter(ObjectUtils::isNotEmpty)
@@ -65,12 +69,7 @@ public class ContainerTaskService {
             }).toList());
         });
 
-        List<ContainerTaskDTO> containerTasks = containerTaskApi.createContainerTasks(containerTaskDTOS);
-
-        return containerTasks.stream().collect(Collectors.groupingBy(ContainerTaskDTO::getContainerCode))
-                .entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey,
-                        v -> v.getValue().stream().map(ContainerTaskDTO::getTaskCode)
-                                .collect(Collectors.toList())));
+        return containerTaskApi.createContainerTasks(containerTaskDTOS);
     }
 
     public void cancel(List<String> taskCodes) {

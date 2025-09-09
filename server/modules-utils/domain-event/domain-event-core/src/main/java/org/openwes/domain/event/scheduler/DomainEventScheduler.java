@@ -46,7 +46,7 @@ public class DomainEventScheduler {
 
         List<DomainEventPO> failedEvents = domainEventPORepository.findByStatusAndCreateTimeBetween(DomainEventStatusEnum.NEW, startTime, endTime, Pageable.ofSize(MAX_SIZE_PER_TIME));
 
-        if(ObjectUtils.isEmpty(failedEvents)){
+        if (ObjectUtils.isEmpty(failedEvents)) {
             return;
         }
 
