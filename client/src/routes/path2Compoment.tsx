@@ -559,6 +559,15 @@ const menuRouter = [
         }
     },
     {
+        path: "/wms/workStation/no_order_select_container_put_away",
+        name: "无单选容器上架",
+        component: (props: any) => <WorkStation {...props} type="select_container_put_away"/>,
+        meta: {
+            ...meta,
+            cache: false
+        }
+    },
+    {
         path: "/wms/workStation/outbound",
         name: "出库",
         component: (props: any) => <WorkStation {...props} type="outbound"/>,

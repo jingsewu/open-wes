@@ -1,4 +1,3 @@
-import {WorkStationMode} from "@/pages/wms/station/event-loop/types"
 import React, {useEffect, useRef, useState} from "react"
 import type {InputRef, RadioChangeEvent} from "antd"
 import {Button, Col, Divider, Input, InputNumber, message, Radio, Row} from "antd"
@@ -135,7 +134,6 @@ const ContainerHandler = (props: ContainerHandlerProps) => {
                     containerSpecCode: data.containerSpecCode,
                     containerId: data.id
                 })
-                debugger
                 const slotSpec = specOptions.find(
                     (item: any) => item.value === data.containerSpecCode
                 )?.containerSlotSpecs

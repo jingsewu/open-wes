@@ -46,6 +46,8 @@ public class WorkStationVO {
     private Toolbar toolbar;
     private OrderArea operationOrderArea;
 
+    private boolean hasOrder;
+
     private WorkStationProcessingStatusEnum stationProcessingStatus;
 
 

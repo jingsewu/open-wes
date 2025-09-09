@@ -1,6 +1,3 @@
-/**
- * 当前工作站实例的布局
- */
 import {Button, Col, Input, message, Row} from "antd"
 import classNames from "classnames/bind"
 import React, {useEffect, useState} from "react"
@@ -26,43 +23,45 @@ interface ReplenishLayoutProps extends OperationProps<any, any> {
     workStationEvent: WorkStationView<any>
 }
 
+const useContainerCode = (workStationEvent: WorkStationView<any>): string => {
+    const [containerCode, setContainerCode] = useState<string>("")
+
+    useEffect(() => {
+        if (!workStationEvent?.workLocationArea?.workLocationViews) {
+            setContainerCode("")
+            return
+        }
+
+        const enabledLocation = workStationEvent.workLocationArea.workLocationViews.find(
+            (location) => location.enable
+        )
+
+        const code = enabledLocation?.workLocationSlots?.[0]?.arrivedContainer?.containerCode ?? ""
+        setContainerCode(code)
+    }, [workStationEvent])
+
+    return containerCode
+}
+
 const cx = classNames.bind(style)
 
 const Layout = (props: ReplenishLayoutProps) => {
+    const {t} = useTranslation();
+    const {workStationEvent} = props
+
+    console.log('select put away Layout - received workStationEvent:', workStationEvent);
+
     //TODO by Evelyn 这里可能是undefined,导致后面确定收货提交的时候 workStationEvent.workStationId就会报错
-    if (props === undefined) {
-        return <div>加载中</div>
+    if (workStationEvent === undefined) {
+        return <div>{t("common.loading")}</div>
     }
 
-    const {workStationEvent} = props
     const [orderNo, setOrderNo] = useState("")
     const [orderInfo, setOrderInfo] = useState<any>()
     const [currentSkuInfo, setCurrentSkuInfo] = useState<any>({})
     const [focusValue, setFocusValue] = useState("")
 
-    const useContainerCode = (workStationEvent: WorkStationView<any>) => {
-        const [containerCode, setContainerCode] = useState<string>("");
-
-        useEffect(() => {
-            let code = "";
-            const workLocationViews = workStationEvent?.workLocationArea?.workLocationViews;
-
-            if (workLocationViews) {
-                for (let i = 0; i < workLocationViews.length; i++) {
-                    if (workLocationViews[i].enable) {
-                        const firstSlot = workLocationViews[i].workLocationSlots?.[0];
-                        code = firstSlot?.arrivedContainer?.containerCode ?? "";
-                        break;
-                    }
-                }
-            }
-
-            setContainerCode(code);
-        }, [workStationEvent]);
-
-        return containerCode;
-    };
-
+    const hasOrder = workStationEvent?.hasOrder ?? ""
     const containerCode = useContainerCode(workStationEvent);
 
     const onScanSubmit = () => {
@@ -127,18 +126,18 @@ const Layout = (props: ReplenishLayoutProps) => {
         setFocusValue(value)
     }
 
-    const {t} = useTranslation();
-
     return (
         <>
-            {orderInfo ? (
+            {(hasOrder === false || orderInfo) ? (
                 <Row className="h-full" justify="space-between" gutter={16}>
-                    <Col span={24}>
-                        <OrderHandler value={orderInfo}/>
-                    </Col>
+                    {hasOrder && orderInfo && (
+                        <Col span={24}>
+                            <OrderHandler value={orderInfo}/>
+                        </Col>
+                    )}
                     <Col span={12} className="pt-4">
                         <SkuHandler
-                            details={orderInfo.details}
+                            details={orderInfo?.details}
                             currentSkuInfo={currentSkuInfo}
                             focusValue={focusValue}
                             onSkuChange={onSkuChange}

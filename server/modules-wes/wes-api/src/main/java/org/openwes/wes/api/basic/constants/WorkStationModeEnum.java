@@ -6,7 +6,6 @@ public enum WorkStationModeEnum {
      * RECEIVING
      */
     RECEIVE,
-    NO_ORDER_RECEIVE,
 
     /**
      * PUT AWAY
@@ -34,6 +33,6 @@ public enum WorkStationModeEnum {
 
     public static boolean isPutAwayMode(WorkStationModeEnum workStationMode) {
         return workStationMode == SELECT_CONTAINER_PUT_AWAY || workStationMode == RECOMMENDED_CONTAINER_PUT_AWAY
-                || workStationMode == RECEIVE || workStationMode == NO_ORDER_RECEIVE;
+                || workStationMode == RECEIVE;
     }
 }
