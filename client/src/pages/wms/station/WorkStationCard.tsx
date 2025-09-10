@@ -1,10 +1,10 @@
-import { Col, Row } from "antd"
-import React, { useEffect } from "react"
-import { Translation } from "react-i18next"
-import { withRouter } from "react-router-dom"
+import {Col, Row} from "antd"
+import React, {useEffect} from "react"
+import {Translation} from "react-i18next"
+import {withRouter} from "react-router-dom"
 import * as images from "@/icon/station"
-import { CustomActionType } from "@/pages/wms/station/instances/outbound/customActionType"
-import { useWorkStation, observer } from "@/pages/wms/station/state"
+import {CustomActionType} from "@/pages/wms/station/instances/outbound/customActionType"
+import {useWorkStation, observer} from "@/pages/wms/station/state"
 import StationCard from "@/pages/wms/station/widgets/StationCard"
 
 export const WORK_STATION_PATH_PREFIX = "/wms/workStation"
@@ -146,10 +146,10 @@ const groupedCards = cardOptions.reduce((acc, card) => {
 }, {} as Record<WorkflowCategory, CardOption[]>)
 
 const Station = observer((props: any) => {
-    const { history } = props
-    const { store, onActionDispatch } = useWorkStation()
-    const { workStationEvent } = store
-    const { workStationStatus, workStationMode } = workStationEvent || {}
+    const {history} = props
+    const {store, onActionDispatch} = useWorkStation()
+    const {workStationEvent} = store
+    const {workStationStatus, workStationMode} = workStationEvent || {}
 
     console.log("WorkStationCard - workStationEvent:", workStationEvent)
     console.log("WorkStationCard - workStationStatus:", workStationStatus)
@@ -159,8 +159,8 @@ const Station = observer((props: any) => {
         const path =
             workStationStatus !== "OFFLINE" && workStationMode
                 ? `${WORK_STATION_PATH_PREFIX}/${
-                      StationTypes[workStationMode as keyof typeof StationTypes]
-                  }`
+                    StationTypes[workStationMode as keyof typeof StationTypes]
+                }`
                 : WORK_STATION_PATH_PREFIX
         history.replace(path)
     }, [workStationMode, workStationStatus, history])
@@ -184,9 +184,9 @@ const Station = observer((props: any) => {
                             {(t) => t(`categories.${category.toLowerCase()}`)}
                         </Translation>
                     </h3>
-                    <Row gutter={[24, { xs: 8, sm: 16, md: 24 }]}>
+                    <Row gutter={[24, {xs: 8, sm: 16, md: 24}]}>
                         {cards.map((item) => (
-                            <Col md={24} lg={12} key={item.value}>
+                            <Col md={24} lg={12} key={item.value + item.hasOrder}>
                                 <StationCard
                                     {...item}
                                     handleCardClick={() =>
