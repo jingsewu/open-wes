@@ -37,7 +37,9 @@ public class StocktakeTaskSubscriber {
         stocktakeTask.submit(event.getStocktakeTaskDetailId());
         stocktakeTaskRepository.saveOrderAndDetail(stocktakeTask);
 
-        completeStocktakeTask(stocktakeTask.getStocktakeOrderId());
+        if (stocktakeTask.getStocktakeTaskStatus() == StocktakeTaskStatusEnum.DONE) {
+            completeStocktakeTask(stocktakeTask.getStocktakeOrderId());
+        }
     }
 
     @Subscribe

@@ -1,9 +1,9 @@
 package org.openwes.wes.api.stocktake.constants;
 
 import com.google.common.collect.Lists;
-import org.openwes.common.utils.dictionary.IEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.openwes.common.utils.dictionary.IEnum;
 
 import java.util.List;
 
@@ -35,5 +35,9 @@ public enum StocktakeOrderStatusEnum implements IEnum {
 
     public static boolean isFinal(StocktakeOrderStatusEnum status) {
         return FINAL_LIST.contains(status);
+    }
+
+    public static boolean isCanClose(StocktakeOrderStatusEnum status) {
+        return status == NEW || status == STARTED;
     }
 }

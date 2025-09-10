@@ -671,9 +671,9 @@ export const stock_sku_code_table = {
     data: {
         searchIdentity: "SearchSkuCodeTable",
         searchObject: {
-            tables: "w_container_stock k, w_warehouse_ware c, m_sku_main_data a",
-            where: "k.sku_id = a.id and k.container_id = c.id",
-            groupBy: "k.sku_id, c.warehouse_area_id"
+            tables: "w_container_stock k, w_warehouse_area c, m_sku_main_data a, w_sku_batch_stock d",
+            where: "k.sku_id = a.id and k.sku_batch_stock_id = d.id and d.warehouse_area_id = c.id",
+            groupBy: "k.sku_id, c.id"
         },
         showColumns: [
             {
@@ -683,12 +683,12 @@ export const stock_sku_code_table = {
             },
             {
                 dbField: "k.sku_id",
-                name: "value",
+                name: "skuId",
                 javaType: "java.lang.Long"
             },
             {
                 dbField: "max(a.sku_code)",
-                name: "label",
+                name: "skuCode",
                 javaType: "java.lang.String"
             },
             {
@@ -697,8 +697,8 @@ export const stock_sku_code_table = {
                 javaType: "java.lang.String"
             },
             {
-                dbField: "max(c.warehouse_area_id)",
-                name: "warehouseAreaId",
+                dbField: "max(c.id)",
+                name: "id",
                 javaType: "java.lang.String"
             },
             {
@@ -720,6 +720,16 @@ export const stock_sku_code_table = {
                 dbField: "max(a.color)",
                 name: "color",
                 javaType: "java.lang.String"
+            },
+            {
+                dbField: "sum(k.total_qty)",
+                name: "totalQty",
+                javaType: "java.lang.Integer"
+            },
+            {
+                dbField: "sum(k.available_qty)",
+                name: "availableQty",
+                javaType: "java.lang.Integer"
             }
         ]
     }
@@ -731,7 +741,10 @@ export const available_stock_sku_code_table = {
     data: {
         searchIdentity: "AvailableStockSkuCodeTable",
         searchObject: {
-            tables: "w_sku_batch_stock a LEFT JOIN m_sku_main_data b ON a.sku_id = b.id LEFT JOIN m_sku_barcode_data c ON a.sku_id = c.sku_id LEFT JOIN (SELECT sku_code, GROUP_CONCAT(bar_code) bar_codes FROM m_sku_barcode_data GROUP BY sku_code) d ON b.sku_code = d.sku_code",
+            tables: "w_sku_batch_stock a " +
+                "LEFT JOIN m_sku_main_data b ON a.sku_id = b.id " +
+                "LEFT JOIN m_sku_barcode_data c ON a.sku_id = c.sku_id " +
+                "LEFT JOIN (SELECT sku_code, GROUP_CONCAT(bar_code) bar_codes FROM m_sku_barcode_data GROUP BY sku_code) d ON b.sku_code = d.sku_code",
             where: "a.available_qty > 0",
             groupBy:
                 "a.warehouse_code, b.owner_code, a.warehouse_area_id, b.sku_code, c.bar_code"

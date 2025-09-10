@@ -53,7 +53,7 @@ public class ContainerTask implements Serializable, AggregatorRoot {
     // receive from wcs
     private String finalDestination;
 
-    public ContainerTask() {
+    public void initialize() {
         this.taskCode = OrderNoGenerator.generationContainerTaskCode();
         this.taskStatus = ContainerTaskStatusEnum.NEW;
         this.id = IdGenerator.generateId();

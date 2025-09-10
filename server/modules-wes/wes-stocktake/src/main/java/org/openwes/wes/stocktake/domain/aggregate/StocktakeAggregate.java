@@ -142,4 +142,5 @@ public class StocktakeAggregate {
 
         containerTaskApiFacade.cancelTasks(closeableDetails.stream().map(StocktakeTaskDetail::getId).toList());
     }
+
 }

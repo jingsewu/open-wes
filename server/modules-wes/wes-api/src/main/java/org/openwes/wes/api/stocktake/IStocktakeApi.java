@@ -25,4 +25,6 @@ public interface IStocktakeApi {
     List<StocktakeRecordDTO> generateStocktakeRecords(String containerCode, String face, Long workStationId);
 
     List<StocktakeTaskDTO> getStocktakeTasksByWorkStationId(Long workStationId);
+
+    List<String> close(List<Long> ids);
 }
