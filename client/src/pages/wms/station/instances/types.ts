@@ -1,7 +1,7 @@
-import type {WorkStationView} from "@/pages/wms/station/event-loop/types"
-import type {TabActionType} from "@/pages/wms/station/tab-actions/constant"
-import type {TabAction} from "@/pages/wms/station/tab-actions/types"
-import type {MessageProps} from "@/pages/wms/station/widgets/message"
+import type {WorkStationView} from "../event-loop/types"
+import type {TabActionType} from "../tab-actions/constant"
+import type {TabAction} from "../tab-actions/types"
+import type {MessageProps} from "../widgets/message"
 import type {FunctionComponent, ReactNode, Ref} from "react"
 
 export type ToastFn = (props: MessageProps) => void

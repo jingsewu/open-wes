@@ -1,12 +1,12 @@
-import React, { useState, useContext, forwardRef } from "react"
+import React, { useState, forwardRef } from "react"
 
 import { Input } from "antd"
 
 import { CustomActionType } from "@/pages/wms/station/instances/outbound/customActionType"
-import { WorkStationContext } from "@/pages/wms/station/event-loop/provider"
+import { useWorkStation } from "@/pages/wms/station/state"
 
 const Scan = (props: any, ref: any) => {
-    const { onActionDispatch } = useContext(WorkStationContext)
+    const { onActionDispatch } = useWorkStation()
 
     const [scanValue, setScanValue] = useState("")
 

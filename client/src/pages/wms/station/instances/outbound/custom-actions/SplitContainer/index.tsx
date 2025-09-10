@@ -15,7 +15,7 @@ const taskConfig: TabAction = {
     position: "right",
     permissions: [10706],
     content: (props) => {
-        return <Content {...props} />
+        return <Content refs={props.refs} />
     },
     modalConfig: {
         title: <Translation>{(t) => t("button.split")}</Translation>,
