@@ -12,6 +12,7 @@
         "watch": "webpack --watch",
         "start": "npm run dev",
         "dev": "webpack serve -c ./build/webpack.config.dev.js",
+        "dev:fast": "webpack serve -c ./build/webpack.config.fast.js",
         "build": "webpack -c ./build/webpack.config.prod.js",
         "build:analyze": "webpack -c ./build/webpack.config.analyze.js",
         "build:fast": "webpack -c ./build/webpack.config.prod.js --mode=production --progress"
