@@ -1,11 +1,18 @@
 import React from "react"
 
-import {DevicePhysicalType, WorkLocationArea, WorkStationView} from "@/pages/wms/station/event-loop/types"
-import {CustomActionType} from "@/pages/wms/station/instances/outbound/customActionType"
+import {
+    DevicePhysicalType,
+    WorkLocationArea,
+    WorkStationView
+} from "@/pages/wms/station/event-loop/types"
 import MaterialHandler from "@/pages/wms/station/instances/outbound/operations/components/MaterialHandler"
-import type {OutboundProps} from "@/pages/wms/station/instances/outbound/type"
-import type {OperationProps} from "@/pages/wms/station/instances/types"
-import EmptyImage from "@/pages/wms/station/instances/outbound/operations/components/EmptyImage";
+import type { OutboundProps } from "@/pages/wms/station/instances/outbound/type"
+import type { OperationProps } from "@/pages/wms/station/instances/types"
+import EmptyImage from "@/pages/wms/station/instances/outbound/operations/components/EmptyImage"
+import { useWorkStation, observer } from "../../../state"
+
+// 常量定义
+const DEFAULT_WORK_LOCATION_TYPE = DevicePhysicalType.DEFAULT
 
 export interface ContainerHandlerProps {
     workLocationArea: WorkLocationArea
@@ -23,91 +30,64 @@ export const valueFilter = (
     data: WorkStationView<OutboundProps> | undefined
 ):
     | OperationProps<
-    ContainerHandlerProps,
-    ContainerHandlerConfirmProps
->["value"]
+          ContainerHandlerProps,
+          ContainerHandlerConfirmProps
+      >["value"]
     | Record<string, any> => {
     if (!data) return {}
     return data.workLocationArea
 }
 
-const ContainerHandler = (
-    props: OperationProps<WorkLocationArea, ContainerHandlerConfirmProps>
-) => {
-    const {value, onActionDispatch, message, isActive} = props
+const ContainerHandler = observer(
+    (props: OperationProps<WorkLocationArea, ContainerHandlerConfirmProps>) => {
+        const { value } = props
+        const { onActionDispatch } = useWorkStation()
 
-    const containerViews = value?.workLocationViews?.find((item) => {
-        item.enable
-    });
-    const workLocationType = containerViews?.workLocationType || "DEFAULT"
-    const handleScanContainer = async (containerCode: string) => {
-        const {code, msg} = await onActionDispatch({
-            eventCode: CustomActionType.CONTAINER_ARRIVED,
-            data: containerCode
-        })
-        // if (code !== "0") {
-        //     message?.({
-        //         type: MessageType.ERROR,
-        //         content: msg
-        //     })
-        //     return
-        // }
-    }
+        // 查找启用的工作位置视图
+        const containerViews = value?.workLocationViews?.find(
+            (item) => item.enable
+        )
+        const workLocationType =
+            containerViews?.workLocationType || DEFAULT_WORK_LOCATION_TYPE
 
-    const handleShowInput = async () => {
-        // 是否开启多拣选位
-        if (false) {
-            const {code, msg} = await onActionDispatch({
-                eventCode: CustomActionType.CLICK_SCAN_CODE_BOX
-            })
-            // if (code !== "0") {
-            //     message?.({
-            //         type: MessageType.ERROR,
-            //         content: msg
-            //     })
-            //     return
-            // }
-        }
-    }
-
-    const containerComponent = {
-        ROBOT: (
+        // 渲染 MaterialHandler 组件
+        const renderMaterialHandler = () => (
             <MaterialHandler
                 value={containerViews}
                 onActionDispatch={onActionDispatch}
-            />
-        ),
-        BUFFER_SHELVING: (
-            <MaterialHandler
-                value={containerViews}
-                onActionDispatch={onActionDispatch}
-            />
-        ),
-        DEFAULT: (
-            <EmptyImage
-                workStationEvent={value}
-                handleShowInput={handleShowInput}
-                onChange={handleScanContainer}
             />
         )
+
+        // 渲染对应的组件
+        const renderContainerComponent = () => {
+            // 检查是否为需要 MaterialHandler 的类型
+            const isRobotType = workLocationType === DevicePhysicalType.ROBOT
+            const isBufferShelvingType =
+                (workLocationType as string) ===
+                DevicePhysicalType.BUFFER_SHELVING
+
+            if (isRobotType || isBufferShelvingType) {
+                return renderMaterialHandler()
+            }
+
+            return <EmptyImage workStationEvent={value} />
+        }
+
+        // 根据工作位置类型确定布局方向
+        const isDefaultLayout = workLocationType === DevicePhysicalType.DEFAULT
+
+        // 容器样式
+        const containerStyle: React.CSSProperties = {
+            height: "100%",
+            display: "flex",
+            flexDirection: isDefaultLayout ? "column" : "row",
+            alignItems: "center",
+            justifyContent: "center",
+            width: "100%"
+        }
+
+        return <div style={containerStyle}>{renderContainerComponent()}</div>
     }
-    return (
-        <div
-            style={{
-                height: "100%",
-                display: "flex",
-                flexDirection:
-                    workLocationType === DevicePhysicalType.DEFAULT
-                        ? "column"
-                        : "row",
-                alignItems: "center",
-                justifyContent: "center",
-                width: "100%"
-            }}
-        >
-            {containerComponent[workLocationType]}
-        </div>
-    )
-}
+)
 
 export default ContainerHandler

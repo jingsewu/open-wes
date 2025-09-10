@@ -8,7 +8,7 @@ import { ProcessStatusEnum } from "@/pages/wms/station/event-loop/types"
 import { DEBOUNCE_TIME } from "@/pages/wms/station/constants/constant"
 import type { PickerArea } from "@/pages/wms/station/instances/outbound/operations/pickingHandler"
 import SkuInfo from "@/pages/wms/station/widgets/common/SkuInfo"
-import { useBarcodeScanner } from "@/pages/wms/station/event-loop/hooks/useBarcodeScanner"
+import { useBarcodeScanner } from "@/pages/wms/station/state"
 
 interface OutboundSkuInfoProps {
     isActive?: boolean

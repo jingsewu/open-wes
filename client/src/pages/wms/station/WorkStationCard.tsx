@@ -1,10 +1,10 @@
 import { Col, Row } from "antd"
-import React, { useContext, useEffect } from "react"
+import React, { useEffect } from "react"
 import { Translation } from "react-i18next"
 import { withRouter } from "react-router-dom"
 import * as images from "@/icon/station"
 import { CustomActionType } from "@/pages/wms/station/instances/outbound/customActionType"
-import { WorkStationContext } from "@/pages/wms/station/event-loop/provider"
+import { useWorkStation, observer } from "@/pages/wms/station/state"
 import StationCard from "@/pages/wms/station/widgets/StationCard"
 
 export const WORK_STATION_PATH_PREFIX = "/wms/workStation"
@@ -16,7 +16,7 @@ export enum StationTypes {
 
     PICKING = "outbound",
 
-    STOCKTAKE = "stocktake",
+    STOCKTAKE = "stocktake"
 }
 
 export enum WorkflowCategory {
@@ -27,14 +27,14 @@ export enum WorkflowCategory {
 }
 
 interface CardOption {
-    title: React.ReactNode;
-    value: string;
-    category: WorkflowCategory;
-    description: React.ReactNode;
-    avatar: any;
-    rightIcon: any;
-    backgroundColor?: string;
-    hasOrder?: boolean;
+    title: React.ReactNode
+    value: string
+    category: WorkflowCategory
+    description: React.ReactNode
+    avatar: any
+    rightIcon: any
+    backgroundColor?: string
+    hasOrder?: boolean
 }
 
 const cardOptions: CardOption[] = [
@@ -52,12 +52,16 @@ const cardOptions: CardOption[] = [
         backgroundColor: "#e6f7ff"
     },
     {
-        title: <Translation>{(t) => t("receiving.unplanned.title")}</Translation>,
+        title: (
+            <Translation>{(t) => t("receiving.unplanned.title")}</Translation>
+        ),
         value: "RECEIVE",
         hasOrder: false,
         category: WorkflowCategory.RECEIVING,
         description: (
-            <Translation>{(t) => t("receiving.unplanned.cardDescription")}</Translation>
+            <Translation>
+                {(t) => t("receiving.unplanned.cardDescription")}
+            </Translation>
         ),
         avatar: images.spsh,
         rightIcon: images.spshbg,
@@ -66,24 +70,40 @@ const cardOptions: CardOption[] = [
 
     // PUT AWAY Operations
     {
-        title: <Translation>{(t) => t("select_container_put_away.station.title")}</Translation>,
+        title: (
+            <Translation>
+                {(t) => t("select_container_put_away.station.title")}
+            </Translation>
+        ),
         value: "SELECT_CONTAINER_PUT_AWAY",
         category: WorkflowCategory.PUT_AWAY,
         hasOrder: true,
         description: (
-            <Translation>{(t) => t("select_container_put_away.station.cardDescription")}</Translation>
+            <Translation>
+                {(t) => t("select_container_put_away.station.cardDescription")}
+            </Translation>
         ),
         avatar: images.spsh,
         rightIcon: images.spshbg,
         backgroundColor: "#fff2e8"
     },
     {
-        title: <Translation>{(t) => t("no_order_select_container_put_away.station.title")}</Translation>,
+        title: (
+            <Translation>
+                {(t) => t("no_order_select_container_put_away.station.title")}
+            </Translation>
+        ),
         value: "SELECT_CONTAINER_PUT_AWAY",
         category: WorkflowCategory.PUT_AWAY,
         hasOrder: false,
         description: (
-            <Translation>{(t) => t("no_order_select_container_put_away.station.cardDescription")}</Translation>
+            <Translation>
+                {(t) =>
+                    t(
+                        "no_order_select_container_put_away.station.cardDescription"
+                    )
+                }
+            </Translation>
         ),
         avatar: images.spsh,
         rightIcon: images.spshbg,
@@ -117,7 +137,6 @@ const cardOptions: CardOption[] = [
     }
 ]
 
-// Group cards by category
 const groupedCards = cardOptions.reduce((acc, card) => {
     if (!acc[card.category]) {
         acc[card.category] = []
@@ -126,56 +145,64 @@ const groupedCards = cardOptions.reduce((acc, card) => {
     return acc
 }, {} as Record<WorkflowCategory, CardOption[]>)
 
-const Station = (props: any) => {
-    const { history, workStationEvent } = props
+const Station = observer((props: any) => {
+    const { history } = props
+    const { store, onActionDispatch } = useWorkStation()
+    const { workStationEvent } = store
     const { workStationStatus, workStationMode } = workStationEvent || {}
-    const { onActionDispatch } = useContext(WorkStationContext)
+    
+    console.log("WorkStationCard - workStationEvent:", workStationEvent)
+    console.log("WorkStationCard - workStationStatus:", workStationStatus)
+    console.log("WorkStationCard - workStationMode:", workStationMode)
 
     useEffect(() => {
         const path =
             workStationStatus !== "OFFLINE" && workStationMode
                 ? `${WORK_STATION_PATH_PREFIX}/${
-                    StationTypes[workStationMode as keyof typeof StationTypes]
-                }`
+                      StationTypes[workStationMode as keyof typeof StationTypes]
+                  }`
                 : WORK_STATION_PATH_PREFIX
         history.replace(path)
-    }, [workStationMode, workStationStatus])
+    }, [workStationMode, workStationStatus, history])
 
     const handleCardClick = (workStationMode: string, hasOrder: boolean) => {
         onActionDispatch({
             eventCode: CustomActionType.ONLINE,
             data: {
-                "workStationMode": workStationMode,
-                "hasOrder": hasOrder
+                workStationMode: workStationMode,
+                hasOrder: hasOrder
             }
         })
     }
 
-    const renderCategorySection = (category: WorkflowCategory, cards: CardOption[]) => (
-        <div key={category} className="mb-6">
-            <h3 className="text-lg font-semibold mb-3 capitalize">
-                <Translation>{(t) => t(`categories.${category.toLowerCase()}`)}</Translation>
-            </h3>
-            <Row gutter={[24, {xs: 8, sm: 16, md: 24}]}>
-                {cards.map((item) => (
-                    <Col md={24} lg={12} key={item.value}>
-                        <StationCard
-                            {...item}
-                            handleCardClick={() => handleCardClick(item.value, !!item.hasOrder)}
-                        />
-                    </Col>
-                ))}
-            </Row>
-        </div>
-    )
-
     return (
         <div className="site-card-wrapper px-4 pt-4">
-            {Object.entries(groupedCards).map(([category, cards]) =>
-                renderCategorySection(category as WorkflowCategory, cards)
-            )}
+            {Object.entries(groupedCards).map(([category, cards]) => (
+                <div key={category} className="mb-6">
+                    <h3 className="text-lg font-semibold mb-3 capitalize">
+                        <Translation>
+                            {(t) => t(`categories.${category.toLowerCase()}`)}
+                        </Translation>
+                    </h3>
+                    <Row gutter={[24, { xs: 8, sm: 16, md: 24 }]}>
+                        {cards.map((item) => (
+                            <Col md={24} lg={12} key={item.value}>
+                                <StationCard
+                                    {...item}
+                                    handleCardClick={() =>
+                                        handleCardClick(
+                                            item.value,
+                                            !!item.hasOrder
+                                        )
+                                    }
+                                />
+                            </Col>
+                        ))}
+                    </Row>
+                </div>
+            ))}
         </div>
     )
-}
+})
 
 export default withRouter(Station)

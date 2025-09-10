@@ -4,15 +4,15 @@ import {debounce} from "lodash"
 import history from "history/browser"
 import classNames from "classnames/bind"
 import type {FunctionComponent} from "react"
-import React, {createElement, memo, useContext, useRef, useState} from "react"
+import React, {createElement, memo, useRef, useState} from "react"
 import {DEBOUNCE_TIME} from "@/pages/wms/station/constants/constant"
-import {WorkStationContext} from "@/pages/wms/station/event-loop/provider"
+import {useWorkStation} from "@/pages/wms/station/state"
 import type {ToastFn, WorkStationConfig} from "@/pages/wms/station/instances/types"
 import ActionHandler from "@/pages/wms/station/tab-actions"
 import type {EmitterPayload, TabAction} from "@/pages/wms/station/tab-actions/types"
 import {TabActionModalType} from "@/pages/wms/station/tab-actions/types"
 
-import {WorkStationContext} from "../event-loop/provider"
+// 已移除，使用新的状态管理
 import Modal, {useWorkStationModal} from "../widgets/modal"
 import styles from "./styles.module.scss"
 
@@ -26,7 +26,7 @@ const actionHandler = new ActionHandler()
 
 const WorkStationLayoutToolbar = (props: FooterProps) => {
     // const history = props
-    const {workStationEvent} = useContext(WorkStationContext)
+    const { workStationEvent } = useWorkStation()
     const [isModalFullScreen, setIsModalFullScreen] = useState(false)
     const [isModalVisible, setModalVisible] = useState(false)
     const [confirmLoading, setConfirmLoading] = useState(false)
@@ -41,7 +41,8 @@ const WorkStationLayoutToolbar = (props: FooterProps) => {
         const {type, content, duration = 3} = props
         api[type](content, duration)
     }
-    const {onActionDispatch, operationsMap} = useContext(WorkStationContext)
+    const {store, onActionDispatch} = useWorkStation()
+    const {operationsMap} = store
     const {actions} = props
     const actionsList =
         typeof actions === "function"

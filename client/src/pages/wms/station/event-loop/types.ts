@@ -1,6 +1,7 @@
-import type {ReactChild, ReactChildren} from "react"
+import type { ReactChild, ReactChildren } from "react"
 
-import type {DebuggerConfig, OperationProps} from "@/pages/wms/station/instances/types"
+import type { DebuggerConfig, OperationProps } from "../instances/types"
+import { DebugType } from "../instances/types"
 
 export enum ChooseArea {
     workLocationArea = "CONTAINER_AREA",
@@ -300,10 +301,12 @@ export interface WorkLocationArea {
     workLocationViews: WorkLocationViews[]
 }
 
-export interface WorkStationProviderProps extends DebuggerConfig {
+export interface WorkStationProviderProps {
     stationCode: string
     type: string
     children: ReactChildren | ReactChild
+    debugType?: DebugType
+    mockData?: {}
 }
 
 export interface WorkStationContextProps {
@@ -343,7 +346,7 @@ export enum WorkStationStatus {
 export enum DevicePhysicalType {
     /** 人机 */
     ROBOT = "ROBOT",
+    BUFFER_SHELVING = "BUFFER_SHELVING",
     /** 默认空图片 */
     DEFAULT = "DEFAULT"
 }
-

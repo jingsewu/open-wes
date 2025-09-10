@@ -1,15 +1,15 @@
-import React, {useContext, useState} from "react"
+import React, {useState} from "react"
 import {useTranslation} from "react-i18next"
 import {Button, Divider, InputNumber, message, Modal, Typography} from "antd"
 import {CheckOutlined, MinusOutlined, PlusOutlined} from "@ant-design/icons"
-import {WorkStationContext} from "@/pages/wms/station/event-loop/provider"
+import {useWorkStation} from "@/pages/wms/station/state"
 import {CustomActionType} from "../../customActionType"
 
 const { Title, Text } = Typography
 
 const QTYFILL = (props: any) => {
     const { requiredQty, detailId } = props
-    const { onActionDispatch } = useContext(WorkStationContext)
+    const { onActionDispatch } = useWorkStation()
     const { t } = useTranslation()
 
     const [inputQty, setInputQty] = useState<number>(requiredQty)

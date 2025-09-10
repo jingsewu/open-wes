@@ -1,8 +1,8 @@
-import React, {useContext} from "react"
+import React from "react"
 import {useHistory} from "react-router"
 import {useTranslation} from "react-i18next"
 import classNames from "classnames/bind"
-import {WorkStationContext} from "../event-loop/provider"
+import {useWorkStation} from "../state"
 import style from "./styles.module.scss"
 import {WorkStationStatus} from "@/pages/wms/station/event-loop/types"
 import {STATION_MENU_PATH} from "@/pages/wms/station/constants/constant"
@@ -20,7 +20,8 @@ const WorkStationLayoutHeader = (props: HeaderProps) => {
     const {t} = useTranslation()
     // @ts-ignore
     const {title, extraTitleInfo} = props
-    const {workStationEvent} = useContext(WorkStationContext)
+    const {store} = useWorkStation()
+    const {workStationEvent} = store
 
     if (workStationEvent?.workStationStatus === WorkStationStatus.OFFLINE) {
         console.log(

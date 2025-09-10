@@ -1,39 +1,55 @@
 /**
  * 当前工作站实例的布局
  */
-import React, {memo} from "react"
+import React from "react"
 
-import {CustomActionType} from "@/pages/wms/station/instances/outbound/customActionType"
-import {valueFilter as containerFilter} from "@/pages/wms/station/instances/outbound/operations/containerHandler"
-import {valueFilter as pickFilter} from "@/pages/wms/station/instances/outbound/operations/pickingHandler"
-import {valueFilter as putWallFilter} from "@/pages/wms/station/instances/outbound/operations/putWallHandler"
-import {valueFilter as tipsFilter} from "@/pages/wms/station/instances/outbound/operations/tips"
+import { CustomActionType } from "@/pages/wms/station/instances/outbound/customActionType"
+import { valueFilter as containerFilter } from "@/pages/wms/station/instances/outbound/operations/containerHandler"
+import { valueFilter as pickFilter } from "@/pages/wms/station/instances/outbound/operations/pickingHandler"
+import { valueFilter as putWallFilter } from "@/pages/wms/station/instances/outbound/operations/putWallHandler"
+import { valueFilter as tipsFilter } from "@/pages/wms/station/instances/outbound/operations/tips"
 
-import {ChooseArea} from "@/pages/wms/station/event-loop/types"
-import type {
-    WorkStationView
-} from "@/pages/wms/station/event-loop/types"
-import type {OperationProps} from "@/pages/wms/station/instances/types"
-import {MessageType} from "@/pages/wms/station/widgets/message"
+import { ChooseArea } from "@/pages/wms/station/event-loop/types"
+import type { WorkStationView } from "@/pages/wms/station/event-loop/types"
+import { MessageType } from "@/pages/wms/station/widgets/message"
 
 import ComponentWrapper from "../../component-wrapper"
-import {OPERATION_MAP} from "./config"
+import { OPERATION_MAP } from "./config"
+import { useWorkStation, useWorkStationArea, observer } from "../../state"
 
-export interface OutBoundLayoutProps extends OperationProps<any, any> {
+export interface OutBoundLayoutProps {
     workStationEvent: WorkStationView<any>
 }
 
-const OutBoundLayout = (props: OutBoundLayoutProps) => {
-    const {onActionDispatch, message} = props
+const OutBoundLayout = observer((props: OutBoundLayoutProps) => {
+    const { store, onActionDispatch, message } = useWorkStation()
+    const { setChooseArea, setError } = store
+
+    // 区域状态管理
+    const containerArea = useWorkStationArea(ChooseArea.workLocationArea)
+    const skuArea = useWorkStationArea(ChooseArea.skuArea)
+    const putWallArea = useWorkStationArea(ChooseArea.putWallArea)
+
     const changeAreaHandler = async (type: string) => {
-        const {code, msg} = await onActionDispatch({
-            eventCode: CustomActionType.CHOOSE_AREA,
-            data: type
-        })
-        if (code === "-1") {
+        try {
+            const { code, msg } = await onActionDispatch({
+                eventCode: CustomActionType.CHOOSE_AREA,
+                data: type
+            })
+            if (code === "-1") {
+                setError(msg)
+                message?.({
+                    type: MessageType.ERROR,
+                    content: msg
+                })
+            } else {
+                setChooseArea(type as ChooseArea)
+            }
+        } catch (error) {
+            setError(error.message)
             message?.({
                 type: MessageType.ERROR,
-                content: msg
+                content: error.message
             })
         }
     }
@@ -44,11 +60,12 @@ const OutBoundLayout = (props: OutBoundLayoutProps) => {
                 <div className="d-flex mb-4 w-full ">
                     {/* 容器区域 */}
                     <div
-                        className="d-flex mr-5 bg-white overflow-hidden"
-                        style={{flex: 3}}
+                        className={`d-flex mr-5 bg-white overflow-hidden ${
+                            containerArea.isActive ? "border-primary" : ""
+                        }`}
+                        style={{ flex: 3 }}
                     >
                         <ComponentWrapper
-                            // className="w-full p-4 max-w-xs"
                             style={{
                                 width: "100%",
                                 padding: 12,
@@ -63,11 +80,13 @@ const OutBoundLayout = (props: OutBoundLayoutProps) => {
                     </div>
                     {/* 商品信息 */}
                     <div
-                        className="bg-white overflow-hidden"
-                        style={{flex: 7}}
+                        className={`bg-white overflow-hidden ${
+                            skuArea.isActive ? "border-primary" : ""
+                        }`}
+                        style={{ flex: 7 }}
                     >
                         <ComponentWrapper
-                            style={{width: "100%", padding: 12}}
+                            style={{ width: "100%", padding: 12 }}
                             type={ChooseArea.skuArea}
                             Component={OPERATION_MAP[ChooseArea.skuArea]}
                             valueFilter={pickFilter}
@@ -80,7 +99,11 @@ const OutBoundLayout = (props: OutBoundLayoutProps) => {
                 </div>
                 {/* 播种墙 */}
                 <div className="d-flex flex-grow flex-col bg-white">
-                    <div className="flex-1">
+                    <div
+                        className={`flex-1 ${
+                            putWallArea.isActive ? "border-primary" : ""
+                        }`}
+                    >
                         <ComponentWrapper
                             type={ChooseArea.putWallArea}
                             Component={OPERATION_MAP[ChooseArea.putWallArea]}
@@ -101,6 +124,6 @@ const OutBoundLayout = (props: OutBoundLayoutProps) => {
             />
         </>
     )
-}
+})
 
-export default memo(OutBoundLayout)
+export default OutBoundLayout

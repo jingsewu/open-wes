@@ -1,8 +1,8 @@
 import { Badge } from "antd"
 import { CustomActionType } from "@/pages/wms/station/instances/outbound/customActionType"
 import type { OperationProps } from "@/pages/wms/station/instances/types"
-import React, { useContext } from "react"
-import { WorkStationContext } from "@/pages/wms/station/event-loop/provider"
+import React from "react"
+import { useWorkStation } from "@/pages/wms/station/state"
 
 import Icon from "@ant-design/icons"
 import { PutWallViewsItem } from "@/pages/wms/station/event-loop/types"
@@ -16,7 +16,7 @@ const locationEnum = {
 
 const MergeIcon = (props: { putWallViews: PutWallViewsItem[] }) => {
     const { putWallViews = [] } = props
-    const { onActionDispatch } = useContext(WorkStationContext)
+    const { onActionDispatch } = useWorkStation()
 
     const onLocationChange = async (params: "LEFT" | "RIGHT") => {
         await onActionDispatch({
