@@ -31,23 +31,43 @@ export default function request(config: AxiosRequestConfig) {
 
     const __ = makeTranslator("zh-CN")
     return new Promise((resolve, reject) => {
+        function handleDownload(contentDisposition: any, res: any) {
+            try {
+                const filename = contentDisposition.split('filename=')[1];
+                const downloadUrl = window.URL.createObjectURL(new Blob([res.data]));
+                const link = document.createElement('a');
+                link.href = downloadUrl;
+                link.setAttribute('download', filename);
+                document.body.appendChild(link);
+                link.click();
+
+                setTimeout(() => {
+                    document.body.removeChild(link);
+                    window.URL.revokeObjectURL(downloadUrl);
+                }, 100);
+
+                resolve({
+                    status: 200,
+                    msg: "Download completed"
+                });
+            } catch (error) {
+                console.error('Download failed:', error);
+                resolve({
+                    data: {},
+                    status: 200,
+                    msg: "Download completed"
+                });
+            }
+        }
+
         let onSuccess = async (res: any) => {
             console.log("onSuccess", res)
 
             const contentDisposition = res.headers['content-disposition'];
             const responseType = config.responseType
             if (responseType === 'blob' && contentDisposition) {
-                const filename = contentDisposition.split('filename=')[1];
-
-                const downloadUrl = window.URL.createObjectURL(new Blob([res.data]));
-                const link = document.createElement('a');
-                link.href = downloadUrl;
-                link.setAttribute('download', filename); // 设置下载的文件名
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                window.URL.revokeObjectURL(downloadUrl);
-                return; // 不进行 Amis 渲染，直接返回
+                handleDownload(contentDisposition, res);
+                return; // Don't return here, let the Promise resolution handle it
             }
 
             if (res.data === null) {
