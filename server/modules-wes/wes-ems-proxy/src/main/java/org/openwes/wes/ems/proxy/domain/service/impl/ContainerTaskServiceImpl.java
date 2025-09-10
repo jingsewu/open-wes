@@ -43,6 +43,7 @@ public class ContainerTaskServiceImpl implements ContainerTaskService {
     private List<ContainerTask> generateTasks(List<CreateContainerTaskDTO> createContainerTasks) {
 
         ContainerTask containerTask = new ContainerTask();
+        containerTask.initialize();
 
         List<ContainerTaskAndBusinessTaskRelation> relations = Lists.newArrayList();
         List<Long> customerTaskIds = Lists.newArrayList();

@@ -1,8 +1,8 @@
 package org.openwes.wes.stocktake.domain.entity;
 
-import org.openwes.common.utils.id.OrderNoGenerator;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.openwes.common.utils.id.OrderNoGenerator;
 import org.openwes.wes.api.stocktake.constants.*;
 
 import java.util.List;
@@ -92,4 +92,5 @@ public class StocktakeOrder {
     public List<String> getAllStocktakeUnitCodes() {
         return this.details.stream().map(StocktakeOrderDetail::getUnitCode).toList();
     }
+
 }

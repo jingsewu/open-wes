@@ -1,17 +1,16 @@
-import type { WorkStationConfig } from "@/pages/wms/station/instances/types"
-import { DebugType } from "@/pages/wms/station/instances/types"
-import { TabActionType } from "@/pages/wms/station/tab-actions/constant"
-import { Translation } from "react-i18next"
+import type {WorkStationConfig} from "@/pages/wms/station/instances/types"
+import {DebugType} from "@/pages/wms/station/instances/types"
+import {TabActionType} from "@/pages/wms/station/tab-actions/constant"
+import {Translation} from "react-i18next"
 import React from "react"
 import ReceiveTask from "./custom-actions/RecieveTask"
-import CreateCountTask from "./custom-actions/CreateCountTask"
 import InstanceLayout from "./layout"
 import mockData from "./mock-events"
 import DefaultArea from "@/pages/wms/station/instances/receive/operations/defaultPage"
 import ShelfHandler from "./operations/ShelfHandler"
 import StocktakeHandler from "./operations/StocktakeHandler"
 import OrderHandler from "./operations/OrderHandler"
-import { StationOperationType } from "./type"
+import {StationOperationType} from "./type"
 
 export const OPERATION_MAP = {
     [StationOperationType.orderArea]: OrderHandler,
@@ -24,7 +23,7 @@ const config: WorkStationConfig<string> = {
     type: "stocktake",
     title: <Translation>{(t) => t("inventory.title")}</Translation>,
     stepsDescribe: [],
-    actions: [ReceiveTask, CreateCountTask, TabActionType.EXIT],
+    actions: [ReceiveTask, TabActionType.EXIT],
     operationMap: OPERATION_MAP,
     layout: InstanceLayout,
     debugType: DebugType.NONE,

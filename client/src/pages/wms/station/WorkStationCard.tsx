@@ -150,7 +150,7 @@ const Station = observer((props: any) => {
     const { store, onActionDispatch } = useWorkStation()
     const { workStationEvent } = store
     const { workStationStatus, workStationMode } = workStationEvent || {}
-    
+
     console.log("WorkStationCard - workStationEvent:", workStationEvent)
     console.log("WorkStationCard - workStationStatus:", workStationStatus)
     console.log("WorkStationCard - workStationMode:", workStationMode)
