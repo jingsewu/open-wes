@@ -1,19 +1,5 @@
 // 状态管理入口文件
 export { workStationStore } from "./WorkStationStore"
-import { workStationStore } from "./WorkStationStore"
-
-// 废弃的 hooks，建议使用 useWorkStation 替代
-export const useWorkStationStore = () => workStationStore
-export const useWorkStationAPI = () => {
-    const WorkStationEventLoop = require("../event-loop/index").default
-    const Message = require("../widgets/message").default
-    const workStationEventLoop = new WorkStationEventLoop()
-    
-    return { 
-        message: Message, 
-        onActionDispatch: workStationEventLoop.actionDispatch 
-    }
-}
 
 // 导出所有Hooks
 export {
