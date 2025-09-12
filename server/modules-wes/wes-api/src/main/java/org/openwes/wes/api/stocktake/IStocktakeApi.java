@@ -26,5 +26,4 @@ public interface IStocktakeApi {
 
     List<StocktakeTaskDTO> getStocktakeTasksByWorkStationId(Long workStationId);
 
-    List<String> close(List<Long> ids);
 }

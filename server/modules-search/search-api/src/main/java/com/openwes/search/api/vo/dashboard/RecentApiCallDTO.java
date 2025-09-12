@@ -5,7 +5,8 @@ import cn.zhxu.bs.bean.SearchBean;
 import lombok.Data;
 
 @Data
-@SearchBean(tables = "a_api_log")
+@SearchBean(tables = "a_api_log",
+        where = "create_time >= :todayStart AND create_time < :tomorrowStart")
 public class RecentApiCallDTO {
     @DbField("api_code")
     private String endpoint;

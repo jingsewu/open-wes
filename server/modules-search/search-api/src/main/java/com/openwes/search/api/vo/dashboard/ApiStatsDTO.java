@@ -5,7 +5,7 @@ import cn.zhxu.bs.bean.SearchBean;
 import lombok.Data;
 
 @Data
-@SearchBean(tables = "a_api_log")
+@SearchBean(tables = "a_api_log", where = "create_time >= :todayStart AND create_time < :tomorrowStart")
 public class ApiStatsDTO {
     @DbField(value = "COUNT(*)", alias = "totalRequests")
     private Long totalRequests;
@@ -14,6 +14,6 @@ public class ApiStatsDTO {
     private Double avgResponseTime;
 
     @DbField(value = "(SUM(CASE WHEN status LIKE 'ERROR%' OR status LIKE '4%' OR status LIKE '5%' THEN 1 ELSE 0 END) * 100.0 / COUNT(*))",
-             alias = "errorRate")
+            alias = "errorRate")
     private Double errorRate;
 }
