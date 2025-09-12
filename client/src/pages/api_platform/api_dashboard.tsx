@@ -45,14 +45,24 @@ const schema = {
             columns: [
                 {
                     type: 'card',
-                    title: 'Response Time & Requests',
+                    header: {
+                        title: 'Response Time & Requests'
+                    },
                     body: {
                         type: 'chart',
                         height: 300,
-                        data: {
-                            timeSlots: "${timeSeriesData.map(item => item.timeSlot)}",
-                            responseTimes: "${timeSeriesData.map(item => item.avgResponseTime)}",
-                            requestCounts: "${timeSeriesData.map(item => item.requestCount)}"
+                        api: {
+                            method: 'get',
+                            url: '$apiUrl',
+                            adaptor: function (payload: { timeSeriesData: any[]; }) {
+                                return {
+                                    data: {
+                                        timeSlots: payload.timeSeriesData.map(item => item.timeSlot),
+                                        responseTimes: payload.timeSeriesData.map(item => item.avgResponseTime),
+                                        requestCounts: payload.timeSeriesData.map(item => item.requestCount)
+                                    }
+                                };
+                            }
                         },
                         config: {
                             xAxis: {
@@ -93,31 +103,54 @@ const schema = {
                 },
                 {
                     type: 'card',
-                    title: 'Top Endpoints',
+                    header: {
+                        title: 'Top Endpoints',
+                    },
                     body: {
                         type: 'chart',
                         height: 300,
-                        data: {
-                            endpoints: "${topEndpoints.map(item => item.apiCode)}",
-                            counts: "${topEndpoints.map(item => item.requestCount)}"
+                        api: {
+                            method: 'get',
+                            url: '$apiUrl',
+                            adaptor: function (payload: any) {
+                                const endpoints = payload.topEndpoints || [];
+                                return {
+                                    data: {
+                                        categories: endpoints.map((item: { apiCode: any; }) => item.apiCode),
+                                        requestCounts: endpoints.map((item: {
+                                            requestCount: any;
+                                        }) => item.requestCount)
+                                    }
+                                };
+                            }
                         },
                         config: {
+                            tooltip: {
+                                trigger: 'axis',
+                                axisPointer: {
+                                    type: 'shadow'
+                                }
+                            },
+                            legend: {
+                                data: ['Requests', 'Errors']
+                            },
                             xAxis: {
                                 type: 'category',
-                                data: '${endpoints}'
+                                data: '${categories}',
+                                axisLabel: {
+                                    rotate: 45
+                                }
                             },
                             yAxis: {
-                                type: 'value',
+                                type: 'value'
                             },
                             series: [
                                 {
+                                    name: 'Requests',
                                     type: 'bar',
-                                    data: '${counts}'
-                                },
-                            ],
-                            tooltip: {
-                                trigger: 'axis',
-                            },
+                                    data: '${requestCounts}'
+                                }
+                            ]
                         },
                     },
                     md: 6,
@@ -129,28 +162,60 @@ const schema = {
             columns: [
                 {
                     type: 'card',
-                    title: 'Error Distribution',
+                    header: {
+                        title: 'Error Distribution'
+                    },
                     body: {
                         type: 'chart',
                         height: 300,
-                        data: {
-                            errorData: "${errorDistribution.map(item => ({value: item.count, name: item.errorType}))}"
+                        api: {
+                            method: 'get',
+                            url: '$apiUrl',
+                            adaptor: function (payload: { errorDistribution: any[]; }) {
+                                const errorData = payload.errorDistribution || [];
+                                return {
+                                    data: {
+                                        errorData: errorData.map(item => ({
+                                            value: item.count,
+                                            name: item.errorType
+                                        }))
+                                    }
+                                };
+                            }
                         },
                         config: {
+                            tooltip: {
+                                trigger: 'item',
+                                formatter: '{a} <br/>{b}: {c} ({d}%)'
+                            },
+                            legend: {
+                                orient: 'vertical',
+                                left: 'left'
+                            },
                             series: [
                                 {
+                                    name: 'Error Types',
                                     type: 'pie',
                                     radius: '60%',
-                                    data: '${errorData}'
-                                },
-                            ],
+                                    data: '${errorData}',
+                                    emphasis: {
+                                        itemStyle: {
+                                            shadowBlur: 10,
+                                            shadowOffsetX: 0,
+                                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                        }
+                                    }
+                                }
+                            ]
                         },
                     },
                     md: 6,
                 },
                 {
                     type: 'card',
-                    title: 'Recent API Calls',
+                    header: {
+                        title: 'Recent API Calls'
+                    },
                     body: {
                         type: 'table',
                         source: '${recentApiCalls}',
@@ -169,12 +234,13 @@ const schema = {
                             },
                             {
                                 name: 'responseTime',
-                                label: 'Response Time',
+                                label: 'Response Time (ms)',
                             },
                             {
                                 name: 'timestamp',
                                 label: 'Timestamp',
-                                type: 'datetime'
+                                type: 'datetime',
+                                format: 'YYYY-MM-DD HH:mm:ss'
                             },
                         ],
                     },
@@ -200,9 +266,22 @@ const schema = {
             fontWeight: 'bold',
             margin: '0.5rem 0',
         },
-        '.stat-desc': {
+        '.label': {
+            padding: '0.2rem 0.5rem',
+            borderRadius: '3px',
             fontSize: '0.75rem',
-            color: '#888',
+        },
+        '.label-success': {
+            backgroundColor: '#28a745',
+            color: 'white',
+        },
+        '.label-warning': {
+            backgroundColor: '#ffc107',
+            color: 'black',
+        },
+        '.label-danger': {
+            backgroundColor: '#dc3545',
+            color: 'white',
         },
     },
 };
