@@ -61,7 +61,6 @@ export default function request(config: AxiosRequestConfig) {
         }
 
         let onSuccess = async (res: any) => {
-            console.log("onSuccess", res)
 
             const contentDisposition = res.headers['content-disposition'];
             const responseType = config.responseType

@@ -1,4 +1,5 @@
 import {
+    api_container_code_table_query, container_code_columns,
     owner_code,
     stock_sku_id_table,
     stock_sku_id_table_columns,
@@ -254,6 +255,104 @@ const dialog = {
                                 }
                             ]
                         }
+                    },
+                    {
+                        title: "modal.countByContainer",
+                        value: "CONTAINER",
+                        hiddenOn: "${stocktakeType === 'DISCREPANCY_REVIEW'}",
+                        body: {
+                            type: "form",
+                            wrapWithPanel: false,
+                            id: "step2Form",
+                            body: [
+                                {
+                                    name: "containerCode",
+                                    id: "containerCode",
+                                    type: "input-text",
+                                    multiple: true,
+                                    placeholder: "table.containerCode",
+                                    trimContents: true,
+                                    clearable: true,
+                                    className:
+                                        "w-4/5	inline-block mr-3 align-top	",
+                                    source: [],
+                                    onEvent: {
+                                        enter: {
+                                            actions: [
+                                                {
+                                                    componentId:
+                                                        "containerCount-service-reload",
+                                                    actionType: "reload",
+                                                    data: {
+                                                        containerCode:
+                                                            "${event.data.value}"
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        clear: {
+                                            actions: [
+                                                {
+                                                    componentId:
+                                                        "containerCount-service-reload",
+                                                    actionType: "reload",
+                                                    data: {
+                                                        containerCode:
+                                                            "${event.data.value}"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    type: "service",
+                                    id: "containerCount-service-reload",
+                                    name: "containerCount-service-reload",
+                                    api: api_container_code_table_query,
+                                    body: {
+                                        type: "transfer",
+                                        name: "container",
+                                        joinValues: false,
+                                        extractValue: true,
+                                        selectMode: "table",
+                                        affixHeader: true,
+                                        resultListModeFollowSelect: true,
+                                        id: "containerTransferTable",
+                                        virtualThreshold: 10,
+                                        "en-US": {
+                                            searchPlaceholder:
+                                                "Please input the container code"
+                                        },
+                                        source: "${options}",
+                                        footerToolbar: [
+                                            "switch-per-page",
+                                            "statistics",
+                                            "pagination"
+                                        ],
+                                        columns: container_code_columns,
+                                        onEvent: {
+                                            change: {
+                                                actions: [
+                                                    {
+                                                        componentId:
+                                                            "wizardComponent",
+                                                        actionType: "setValue",
+                                                        args: {
+                                                            value: {
+                                                                containerCodes: "${event.data.value}"
+                                                            }
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        valueField: "containerCode",
+                                        labelField: "containerCode"
+                                    }
+                                }
+                            ]
+                        }
                     }
                 ]
             },
@@ -283,17 +382,24 @@ const dialog = {
                     actionType: "submit",
                     className: "generateInventoryOrder",
                     onClick: (_e: any, props: any) => {
-                        if (
-                            !props.scope.skuIds ||
-                            props.scope.skuIds.length === 0
-                        ) {
+                        const isSkuBased = props.scope.stocktakeUnitType === "SKU";
+                        const hasSkuIds = props.scope.skuIds && props.scope.skuIds.length > 0;
+                        const hasContainerCodes = props.scope.containerCodes && props.scope.containerCodes.length > 0;
+
+                        if (isSkuBased && !hasSkuIds) {
                             toast["error"](
                                 "Please select the products you want to count",
-                                "消息"
-                            )
-                            return false
+                                "Message"
+                            );
+                            return false;
+                        } else if (!isSkuBased && !hasContainerCodes) {
+                            toast["error"](
+                                "Please select the containers you want to count",
+                                "Message"
+                            );
+                            return false;
                         }
-                        return true
+                        return true;
                     }
                 }
             ]

@@ -533,7 +533,40 @@ export const shelf_code_table = {
     }
 }
 
-export const container_code_table = {
+export const container_code_columns = [
+    {
+        dbField: "c.id",
+        name: "id",
+        javaType: "java.lang.String",
+        hidden: true
+    },
+    {
+        dbField: "c.container_code",
+        name: "containerCode",
+        label: "table.containerCode",
+        javaType: "java.lang.String"
+    },
+    {
+        dbField: "cs.container_spec_code",
+        name: "containerSpecCode",
+        label: "table.containerSpecificationNumber",
+        javaType: "java.lang.String"
+    },
+    {
+        dbField: "c.location_code",
+        name: "locationCode",
+        label: "table.locationCode",
+        javaType: "java.lang.String"
+    },
+    {
+        dbField: "c.warehouse_logic_code",
+        name: "warehouseLogicCode",
+        label: "table.warehouseLogicCode",
+        javaType: "java.lang.String"
+    }
+]
+
+export const api_container_code_table_query = {
     method: "post",
     url: "/search/search?page=${page}&perPage=10&warehouseCode-op=eq&warehouseCode=${ls:warehouseCode}",
     data: {
@@ -542,38 +575,10 @@ export const container_code_table = {
             tables: "w_container c, w_container_spec cs",
             where: "c.container_spec_code = cs.container_spec_code and cs.container_type = 'CONTAINER'"
         },
-        showColumns: [
-            {
-                dbField: "c.warehouse_code",
-                name: "warehouseCode",
-                javaType: "java.lang.String"
-            },
-            {
-                dbField: "c.container_code",
-                name: "value",
-                javaType: "java.lang.String"
-            },
-            {
-                dbField: "c.container_code",
-                name: "label",
-                javaType: "java.lang.String"
-            },
-            {
-                dbField: "c.location_code",
-                name: "locationCode",
-                javaType: "java.lang.String"
-            },
-            {
-                dbField: "c.warehouse_area_id",
-                name: "warehouseAreaId",
-                javaType: "java.lang.String"
-            },
-            {
-                dbField: "c.warehouse_logic_code",
-                name: "warehouseLogicCode",
-                javaType: "java.lang.String"
-            }
-        ]
+        showColumns: container_code_columns
+    },
+    responseData: {
+        options: "${items}"
     }
 }
 
@@ -654,14 +659,6 @@ export const stock_sku_id_table = {
     },
     responseData: {
         options: "${items}"
-    }
-}
-
-export const stock_abnormal_table = {
-    method: "post",
-    url: "/search/searchV2?page=1&perPage=500&createTime-op=bt&warehouseCode-op=eq&warehouseCode-eq=${ls:warehouseCode}",
-    data: {
-        searchIdentity: "stocktakeByStockAbnormal"
     }
 }
 
