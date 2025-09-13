@@ -51,7 +51,7 @@ public class StocktakeOrderCreateDTO implements Serializable, IValidate {
     private List<String> shelfCodes;
 
     @Schema(title = "容器列表", description = "要盘点的容器列表")
-    private List<String> containerCodes;
+    private List<String> containerCode;
 
     @Schema(title = "商品id列表", description = "要盘点的商品id列表")
     private List<Long> skuIds;
@@ -85,7 +85,7 @@ public class StocktakeOrderCreateDTO implements Serializable, IValidate {
         unitCodes = Lists.newArrayList();
         unitIds = Lists.newArrayList();
         switch (stocktakeUnitType) {
-            case CONTAINER -> unitCodes.addAll(containerCodes);
+            case CONTAINER -> unitCodes.addAll(containerCode);
             case SHELF -> unitCodes.addAll(shelfCodes);
             case SKU -> unitIds.addAll(skuIds);
             case STOCK -> unitIds.addAll(stockIds);
@@ -95,7 +95,7 @@ public class StocktakeOrderCreateDTO implements Serializable, IValidate {
     @Override
     public boolean validate() {
 
-        if (this.stocktakeUnitType == StocktakeUnitTypeEnum.CONTAINER && ObjectUtils.isEmpty(containerCodes)) {
+        if (this.stocktakeUnitType == StocktakeUnitTypeEnum.CONTAINER && ObjectUtils.isEmpty(containerCode)) {
             throw new IllegalArgumentException("containerCodes is empty");
         }
         if (this.stocktakeUnitType == StocktakeUnitTypeEnum.SHELF && ObjectUtils.isEmpty(shelfCodes)) {

@@ -117,7 +117,10 @@ const schema = {
             api: api_crud_search_by_warehouseCode,
             defaultParams: {
                 searchIdentity: searchIdentity,
-                showColumns: columns
+                showColumns: columns,
+                searchObject: {
+                    orderBy: "id ,stocktake_order_status desc"
+                }
             },
             autoFillHeight: true,
             autoGenerateFilter: {

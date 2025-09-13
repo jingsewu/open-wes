@@ -117,7 +117,10 @@ const schema = {
             api: api_crud_search_by_warehouseCode,
             defaultParams: {
                 searchIdentity: "WStocktakeTask",
-                showColumns: columns
+                showColumns: columns,
+                searchObject: {
+                    where: "stocktake_task_status = 'NEW' "
+                }
             },
             autoFillHeight: true,
             autoGenerateFilter: {

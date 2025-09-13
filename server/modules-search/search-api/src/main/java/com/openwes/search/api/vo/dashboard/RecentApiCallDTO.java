@@ -11,7 +11,7 @@ public class RecentApiCallDTO {
     @DbField("api_code")
     private String endpoint;
 
-    @DbField(value = "'GET'", alias = "method") // You can extract method from api_code if needed
+    @DbField(value = "'POST'", alias = "method")
     private String method;
 
     @DbField("status")
