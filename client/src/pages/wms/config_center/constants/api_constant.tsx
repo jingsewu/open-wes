@@ -18,7 +18,7 @@ export const api_owner_get = "post:/wms/basic/owner/${id}"
 // sku module
 export const api_sku_add = "post:/wms/basic/sku/createOrUpdate"
 export const api_sku_update = "post:/wms/basic/sku/createOrUpdate"
-export const api_sku_get = "post:/wms/basic/sku/${id}"
+export const api_sku_get = "post:/wms/basic/sku/getById/${id}"
 
 // barcode parse rule module
 export const api_barcode_parse_rule_add = "post:/wms/config/barcode/parse/createOrUpdate"
