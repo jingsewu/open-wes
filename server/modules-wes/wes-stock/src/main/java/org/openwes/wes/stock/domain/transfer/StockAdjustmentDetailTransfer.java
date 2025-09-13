@@ -31,7 +31,7 @@ public interface StockAdjustmentDetailTransfer {
     @Mapping(source = "stockAdjustmentOrder.orderNo", target = "targetContainerCode")
     @Mapping(target = "targetContainerFace", expression = "java(\"\")")
     @Mapping(target = "targetContainerSlotCode", expression = "java(\"\")")
-    @Mapping(source = "stockAdjustmentDetail.qtyAdjustment", target = "transferQty")
+    @Mapping(target = "transferQty", expression = "java(-stockAdjustmentDetail.getQtyAdjustment())")
     @Mapping(target = "warehouseAreaId", expression = "java(0L)")
     @Mapping(source = "stockAdjustmentOrder.orderNo", target = "orderNo")
     StockTransferDTO toStockTransferDTO(StockAdjustmentDetail stockAdjustmentDetail, StockAdjustmentOrder stockAdjustmentOrder);
