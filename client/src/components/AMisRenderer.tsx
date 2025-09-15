@@ -14,7 +14,7 @@ interface RendererProps {
     [propName: string]: any
 }
 
-const lang = {
+const lang: Record<string, any> = {
     "zh-CN": cn,
     "en-US": en
 }
@@ -192,7 +192,7 @@ export default class AMisRenderer extends React.Component<RendererProps, any> {
                 locale: store && store.locale,
                 ...rest
             },
-            { ...this.env, replaceText: lang[store.locale] }
+            { ...this.env, replaceText: lang[store.locale] || lang["zh-CN"] }
         )
         return this.rendererInstance
     }

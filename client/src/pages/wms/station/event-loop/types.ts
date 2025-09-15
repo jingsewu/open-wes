@@ -313,10 +313,10 @@ export interface WorkStationContextProps {
     workStationEvent: WorkStationView<any> | undefined
 }
 
-export type WorkStationAPIContextProps = Pick<
-    OperationProps<any, any>,
-    "onActionDispatch" | "message"
->
+export type WorkStationAPIContextProps = {
+    onActionDispatch: (payload: any) => Promise<any>
+    message: (options: { type: string; content: string }) => void
+}
 
 export interface SendEventPayload {
     eventCode: string

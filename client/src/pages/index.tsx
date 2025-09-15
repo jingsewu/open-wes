@@ -44,7 +44,6 @@ export interface State {
     iframeShow: number
     iframeUrl: string
     isModalOpen: boolean
-    unlisten?: () => void
 }
 
 export interface AdminProps extends RouteComponentProps<any> {
@@ -54,6 +53,8 @@ export interface AdminProps extends RouteComponentProps<any> {
 @inject("store")
 @observer
 export default class Admin extends React.Component<AdminProps, State> {
+    private unlisten?: (() => void) | undefined
+
     state: State = {
         menus: Object,
         selectedWarehouse: "",
@@ -69,11 +70,12 @@ export default class Admin extends React.Component<AdminProps, State> {
 
     onApplicationChange = (value: any) => {
         let menus: any = this.state.menus
+        const selectedMenu = menus[value.key]
         this.setState({
             selectedApp: value.key,
-            navigations: [menus[value.key]] || [],
-            iframeShow: menus[value.key].iframeShow,
-            iframeUrl: menus[value.key].children?.[0]?.path
+            navigations: selectedMenu ? [selectedMenu] : [],
+            iframeShow: selectedMenu?.iframeShow || 0,
+            iframeUrl: selectedMenu?.children?.[0]?.path || ""
         })
     }
 
@@ -170,7 +172,8 @@ export default class Admin extends React.Component<AdminProps, State> {
                 localStorage.setItem("permissions", res.data.permissions)
                 let applications: string[] = Object.keys(menus)
                 let selectedApp = applications[0]
-                let navigations = [menus[selectedApp]] || []
+                const selectedMenu = menus[selectedApp]
+                let navigations = selectedMenu ? [selectedMenu] : []
                 const options = applications.map((value) => {
                     return {
                         key: value,
@@ -187,8 +190,8 @@ export default class Admin extends React.Component<AdminProps, State> {
                     selectedApp: selectedApp,
                     applications: options,
                     hasLoadMenu: true,
-                    iframeShow: menus[selectedApp].iframeShow,
-                    iframeUrl: menus[selectedApp].children?.[0]?.path
+                    iframeShow: selectedMenu?.iframeShow || 0,
+                    iframeUrl: selectedMenu?.children?.[0]?.path || ""
                 })
 
                 // 角色的仓库权限为空时，不初始化仓库
