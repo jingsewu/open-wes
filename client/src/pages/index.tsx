@@ -44,6 +44,7 @@ export interface State {
     iframeShow: number
     iframeUrl: string
     isModalOpen: boolean
+    unlisten?: () => void
 }
 
 export interface AdminProps extends RouteComponentProps<any> {
@@ -118,6 +119,31 @@ export default class Admin extends React.Component<AdminProps, State> {
         }
         this.refreshMenu()
         this.getAllDictionaryData()
+        
+        // 监听路由变化，清理 ResizeObserver
+        this.unlisten = history.listen(() => {
+            this.cleanupResizeObservers()
+        })
+    }
+
+    componentWillUnmount() {
+        // 清理路由监听器
+        if (this.unlisten) {
+            this.unlisten()
+        }
+        // 清理所有 ResizeObserver
+        this.cleanupResizeObservers()
+    }
+
+    private cleanupResizeObservers = () => {
+        try {
+            const resizeObserverManager = (window as any).ResizeObserverManager
+            if (resizeObserverManager) {
+                resizeObserverManager.disconnectAll()
+            }
+        } catch (error) {
+            console.warn('清理 ResizeObserver 时出错:', error)
+        }
     }
 
     componentDidUpdate() {

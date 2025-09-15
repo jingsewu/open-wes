@@ -60,8 +60,19 @@ export default class WorkStationEventLoop {
 
     public stop: () => Promise<void> = async () => {
         console.log("%c =====> event loop stop", "color:red;font-size:20px;")
-        this.websocketManager?.disconnect()
-        this.websocketManager = null
+        
+        // 清理事件监听器
+        this.eventListener = null
+        
+        // 断开 WebSocket 连接
+        if (this.websocketManager) {
+            this.websocketManager.disconnect()
+            this.websocketManager = null
+        }
+        
+        // 重置当前事件
+        this.currentEvent = undefined
+        
         return Promise.resolve()
     }
 
