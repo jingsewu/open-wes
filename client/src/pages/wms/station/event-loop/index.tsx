@@ -1,13 +1,14 @@
-import {DebugType} from "@/pages/wms/station/instances/types"
-import {toast} from "amis"
-import type {WorkStationView} from "./types"
-import {PrintData, qzPrinter} from "@/pages/wms/station/widgets/printer";
+import { DebugType } from "@/pages/wms/station/instances/types"
+import { toast } from "amis"
+import type { WorkStationView } from "./types"
+import { PrintData, qzPrinter } from "@/pages/wms/station/widgets/printer"
 import {
     request_work_station_event,
     request_work_station_view,
     STATION_WEBSOCKET_URL
-} from "@/pages/wms/station/constants/constant";
-import WebSocketManager from "./websocketManager";
+} from "@/pages/wms/station/constants/constant"
+import WebSocketManager from "./websocketManager"
+import { workStationStore } from "../state/WorkStationStore"
 
 type EventListener = (event: WorkStationView<any> | undefined) => void
 
@@ -49,7 +50,7 @@ export default class WorkStationEventLoop {
     public initListener: (listenerMap: {
         eventListener: EventListener
     }) => void = (listenerMap) => {
-        const {eventListener} = listenerMap
+        const { eventListener } = listenerMap
         this.eventListener = eventListener
     }
 
@@ -60,30 +61,32 @@ export default class WorkStationEventLoop {
 
     public stop: () => Promise<void> = async () => {
         console.log("%c =====> event loop stop", "color:red;font-size:20px;")
-        
+
         // 清理事件监听器
         this.eventListener = null
-        
+
         // 断开 WebSocket 连接
         if (this.websocketManager) {
             this.websocketManager.disconnect()
             this.websocketManager = null
         }
-        
+
         // 重置当前事件
         this.currentEvent = undefined
-        
+
         return Promise.resolve()
     }
 
-    public actionDispatch: (payload: any) => Promise<any> = async (
-        payload
-    ) => {
+    public actionDispatch: (payload: any) => Promise<any> = async (payload) => {
         try {
-            const res: any = await request_work_station_event(payload);
+            const res: any = await request_work_station_event(payload)
             return res
         } catch (error) {
-            console.log("send event http error: %c", "color:red;font-size:20px;", error)
+            console.log(
+                "send event http error: %c",
+                "color:red;font-size:20px;",
+                error
+            )
             toast["error"](error.message)
             return {
                 code: "-1",
@@ -107,69 +110,106 @@ export default class WorkStationEventLoop {
     private readonly handleEventChange: (
         event: WorkStationView<any> | undefined
     ) => void = (event) => {
+        console.log("handleEventChange called with:", event)
+
+        // 更新当前事件
         this.currentEvent = event
+
+        // 更新 MobX store
+        workStationStore.setWorkStationEvent(event)
+
+        // 通知事件监听者
         this.eventListener && this.eventListener(event)
+
+        // 保存到本地存储
         localStorage.setItem("sseInfo", JSON.stringify(event))
+
+        console.log("Event change handled, chooseArea:", event?.chooseArea)
     }
 
-    private readonly getWebsocketData: () => Promise<void> =
-        async () => {
-            const wsUrl = STATION_WEBSOCKET_URL + `?stationCode=${this.stationId ?? localStorage.getItem("stationId")}&Authorization=`
-                + encodeURIComponent(localStorage.getItem("ws_token") as string)
+    private readonly getWebsocketData: () => Promise<void> = async () => {
+        const wsUrl =
+            STATION_WEBSOCKET_URL +
+            `?stationCode=${
+                this.stationId ?? localStorage.getItem("stationId")
+            }&Authorization=` +
+            encodeURIComponent(localStorage.getItem("ws_token") as string)
 
-            this.websocketManager = new WebSocketManager({
-                url: wsUrl,
-                maxReconnectAttempts: 5,
-                reconnectDelay: 1000,
-                heartbeatInterval: 30000,
-                onMessage: (message) => {
-                    console.log("websocket receive data: ", message)
-                    if (message.type === "DATA_CHANGED") {
-                        this.getApiData()
-                    } else if (message.type === "PRINT") {
-                        qzPrinter.printAndUpdateRecord(message as PrintData);
-                    }
-                },
-                onConnect: () => {
-                    console.log(`websocket connect successfully and the session id is: ${wsUrl}`)
-                },
-                onDisconnect: () => {
-                    console.log("WebSocket disconnected")
-                },
-                onError: (error) => {
-                    console.error(`websocket connect failed:`, error)
+        this.websocketManager = new WebSocketManager({
+            url: wsUrl,
+            maxReconnectAttempts: 5,
+            reconnectDelay: 1000,
+            heartbeatInterval: 30000,
+            onMessage: (message) => {
+                console.log("websocket receive data: ", message)
+                if (message.type === "DATA_CHANGED") {
+                    this.getApiData()
+                } else if (message.type === "PRINT") {
+                    qzPrinter.printAndUpdateRecord(message as PrintData)
                 }
-            })
+            },
+            onConnect: () => {
+                console.log(
+                    `websocket connect successfully and the session id is: ${wsUrl}`
+                )
+            },
+            onDisconnect: () => {
+                console.log("WebSocket disconnected")
+            },
+            onError: (error) => {
+                console.error(`websocket connect failed:`, error)
+            }
+        })
 
-            await this.websocketManager.connect()
-            // Initialize QZ Tray
-            await this.initPrinter();
-        }
+        await this.websocketManager.connect()
+        // Initialize QZ Tray
+        await this.initPrinter()
+    }
 
     private async initPrinter() {
         try {
-            await qzPrinter.initialize();
+            await qzPrinter.initialize()
         } catch (error) {
-            console.error("Failed to initialize QZ Tray:", error);
+            console.error("Failed to initialize QZ Tray:", error)
         }
     }
 
     private readonly getApiData: () => Promise<void> = async () => {
         try {
-            const res: any = await request_work_station_view();
-            this.stationId = res.data.workStationId
-            this.handleEventChange(res.data)
+            const res: any = await request_work_station_view()
+
+            if (res && res.data) {
+                this.stationId = res.data.workStationId
+
+                // 处理事件变化，这会更新 MobX store
+                this.handleEventChange(res.data)
+            } else {
+                console.warn("API 返回数据格式异常:", res)
+                this.handleEventChange(undefined)
+            }
         } catch (error) {
-            console.error('获取工作站数据失败:', error);
-            toast.error('获取工作站数据失败，请检查网络连接');
+            console.error("获取工作站数据失败:", error)
+            toast.error("获取工作站数据失败，请检查网络连接")
+            // 发生错误时也要更新 store
+            this.handleEventChange(undefined)
         }
     }
 
-    private readonly getMockEventData: () => Promise<WorkStationView<any> | undefined> =
-        async () => {
-            console.log("getMockEventData", this.mockData)
-            const topEvent = this.mockData
+    private readonly getMockEventData: () => Promise<
+        WorkStationView<any> | undefined
+    > = async () => {
+        console.log("getMockEventData", this.mockData)
+        const topEvent = this.mockData
+
+        if (topEvent) {
+            console.log("Mock 数据的 chooseArea:", topEvent.chooseArea)
+            // 处理事件变化，这会更新 MobX store
             this.handleEventChange(topEvent)
-            return Promise.resolve(topEvent)
+        } else {
+            console.warn("Mock 数据为空")
+            this.handleEventChange(undefined)
         }
+
+        return Promise.resolve(topEvent)
+    }
 }

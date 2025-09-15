@@ -7,7 +7,7 @@ import type { OutboundProps } from "@/pages/wms/station/instances/outbound/type"
 import type { OperationProps } from "@/pages/wms/station/instances/types"
 import React, { useImperativeHandle } from "react"
 import OutboundSkuInfo from "./components/OutboundSkuInfo"
-
+import { useWorkStation } from "../../../state"
 
 export interface PickerArea {
     pickingViews: PickingViewItem[]
@@ -20,31 +20,16 @@ export interface SKUHandlerConfirmProps {
 const PickAreaHandler = (
     props: OperationProps<PickerArea, SKUHandlerConfirmProps>
 ) => {
-    const { value, refs, onActionDispatch, message, isActive } = props
+    const { refs, isActive } = props
+    const { workStationEvent } = useWorkStation()
+
+    const value = workStationEvent?.skuArea
+
     useImperativeHandle(refs, () => {
         return value
     })
-    const handleScanCode = async (skuCode: string) => {
-        const { code, msg } = await onActionDispatch({
-            eventCode: CustomActionType.SCAN_BARCODE,
-            data: skuCode
-        })
-    }
 
-    return (
-        <OutboundSkuInfo
-            value={value}
-            onChange={handleScanCode}
-            isActive={isActive}
-        />
-    )
-}
-
-export const valueFilter = (
-    data: WorkStationView<OutboundProps> | undefined
-): any => {
-    if (!data) return {}
-    return data.skuArea
+    return <OutboundSkuInfo isActive={isActive} />
 }
 
 export default PickAreaHandler

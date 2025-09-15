@@ -69,10 +69,6 @@ export interface CustomActionResponse {
 export interface OperationProps<ExtraData, ConfirmData> {
     /** 操作组件接收到的value */
     value?: ExtraData
-    /** 自定义动作接口 */
-    onActionDispatch: (value: any) => Promise<CustomActionResponse>
-    /** 提示语接口 */
-    message?: ToastFn
     /** 组件ref */
     refs?: Ref<unknown>
     /** 当前操作是否被激活 */

@@ -7,19 +7,72 @@ import Scan from "./Scan"
 import { PutWallProps } from "./types"
 import {
     PutWallDisplayStyle,
-    DisplayOrder
+    DisplayOrder,
+    PutWallSlotsItem,
+    PutWallSlotStatus,
+    ChooseArea
 } from "@/pages/wms/station/event-loop/types"
+import { useWorkStation } from "@/pages/wms/station/state"
 
 const PutWall = (props: PutWallProps) => {
     const inputRef = useRef<InputRef>(null)
+    const { onActionDispatch, workStationEvent, chooseArea } = useWorkStation()
+
+    // 解构 props
     const {
-        putWallViews = [],
-        putWallTagConfigDTO = {},
-        putWallDisplayStyle,
-        putWallStatusTextMap = {},
-        isActive,
-        onSlotClick
+        onSlotClick: propOnSlotClick,
+        putWallDisplayStyle: propPutWallDisplayStyle,
+        putWallViews: propPutWallViews,
+        putWallTagConfigDTO: propPutWallTagConfigDTO,
+        putWallStatusTextMap: propPutWallStatusTextMap,
+        isActive: propIsActive,
+        onLocationChange: propOnLocationChange
     } = props
+
+    // 优先使用 props 中的数据，如果没有则从 WorkStationStore 获取
+    const putWallViews =
+        propPutWallViews || workStationEvent?.putWallArea?.putWallViews || []
+    const putWallTagConfigDTO =
+        propPutWallTagConfigDTO ||
+        workStationEvent?.putWallArea?.putWallTagConfigDTO ||
+        {}
+    const putWallDisplayStyle =
+        propPutWallDisplayStyle ||
+        workStationEvent?.putWallArea?.putWallDisplayStyle
+    const isActive =
+        propIsActive !== undefined
+            ? propIsActive
+            : chooseArea === ChooseArea.putWallArea
+
+    // 处理槽位点击函数 - 优先使用传入的 prop
+    const onSlotClick =
+        propOnSlotClick ||
+        (async (item: PutWallSlotsItem) => {
+            if (
+                ![
+                    PutWallSlotStatus.WAITING_SEAL,
+                    PutWallSlotStatus.DISPATCH
+                ].includes(item.putWallSlotStatus as PutWallSlotStatus)
+            ) {
+                return
+            }
+
+            const { code, msg } = await onActionDispatch({
+                eventCode: "TAP_PUT_WALL_SLOT",
+                data: {
+                    putWallSlotCode: item.putWallSlotCode
+                }
+            })
+        })
+
+    // 播种墙状态文本映射 - 优先使用传入的 prop
+    const putWallStatusTextMap = propPutWallStatusTextMap || {
+        waitingBinding: "待绑定",
+        waitingSeal: "待封箱",
+        dispatch: "待派发",
+        sealed: "已封箱",
+        dispatched: "已派发"
+    }
 
     if (isActive) {
         inputRef.current?.focus()
