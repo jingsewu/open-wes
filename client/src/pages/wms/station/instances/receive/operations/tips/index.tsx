@@ -9,6 +9,7 @@ import {WorkStationView} from "@/pages/wms/station/event-loop/types"
 import type {ModalType} from "@/pages/wms/station/instances/outbound/operations/tips/type"
 import Abnormal from "./Abnormal"
 import {useTranslation} from "react-i18next"
+import {useWorkStation} from "@/pages/wms/station/state"
 
 /**
  * @Description: 对event中的数据进行filter处理
@@ -71,7 +72,8 @@ interface TipData {
 
 function Tips(props: OperationProps<TipProps, any>) {
     const {t} = useTranslation()
-    const {value, onActionDispatch, message} = props
+    const {value} = props
+    const {onActionDispatch, message} = useWorkStation()
     const currentTip = value?.tips?.[0] as TipsHandlerProps
 
     const {data} = currentTip || {}

@@ -23,7 +23,7 @@ const WallIcon = (props: any) => {
     }
 
     return (
-        <div className="leading-none">{displayIcon[putWallDisplayStyle]}</div>
+        <div className="leading-none">{displayIcon[putWallDisplayStyle as keyof typeof displayIcon]}</div>
     )
 }
 

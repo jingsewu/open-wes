@@ -17,8 +17,7 @@
             "@/*": ["./src/*"]
         },
         "resolveJsonModule": true,
-        "esModuleInterop": true,
-        "suppressImplicitAnyIndexErrors": true
+        "esModuleInterop": true
     },
     "include": ["./src/**/*", "typings", "./**/*.ts"]
 }
