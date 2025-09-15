@@ -1,4 +1,4 @@
-import { useMemo, useCallback, useRef, useEffect } from 'react'
+import { useMemo, useCallback } from 'react'
 import { observer } from 'mobx-react-lite'
 import { workStationStore } from '../WorkStationStore'
 import type { WorkStationView, ChooseArea } from '../../event-loop/types'
@@ -27,33 +27,21 @@ export const useWorkStation = () => {
     const state = {
         workStationEvent: store.workStationEvent,
         workStationStatus: store.workStationStatus,
+        // 注意：chooseArea和scanCode都是从getApiData接口返回的值，不能主动设置
         chooseArea: store.chooseArea,
-        scanCode: store.scanCode,
-        isOnline: store.isOnline(),
-        hasActiveTask: store.hasActiveTask()
+        scanCode: store.scanCode
     }
     
     const computed = {
-        workStationId: store.workStationId(),
-        stationCode: store.stationCode(),
-        currentOperation: store.currentOperation(),
-        operationCount: store.operationsMap.size,
-        callContainerCount: store.callContainerCount,
+        workStationId: store.workStationId,
+        stationCode: store.stationCode,
         stationProcessingStatus: store.stationProcessingStatus
     }
     
     const actions = {
-        setChooseArea: (area: ChooseArea) => store.setChooseArea(area),
-        setScanCode: (code: string | null) => store.setScanCode(code),
         setOperationMap: (type: string, operation: any) => store.setOperationMap(type, operation),
-        removeOperation: (type: string) => store.removeOperation(type),
         updateWorkStationState: (updates: Partial<WorkStationView<any>>) => store.updateWorkStationState(updates),
-        reset: () => store.reset(),
-        // 扫描相关操作
-        clearScanCode: () => store.setScanCode(null),
-        // 容器相关操作
-        updateProcessingStatus: (status: 'NO_TASK' | 'WAIT_ROBOT' | 'WAIT_CALL_CONTAINER') => 
-            store.updateWorkStationState({ stationProcessingStatus: status })
+        reset: () => store.reset()
     }
     
     // 返回合并后的结果
@@ -70,128 +58,26 @@ export const useWorkStation = () => {
     }
 }
 
-// 基础状态Hook
-export const useWorkStationState = () => {
-  return {
-    workStationEvent: workStationStore.workStationEvent,
-    workStationStatus: workStationStore.workStationStatus,
-    chooseArea: workStationStore.chooseArea,
-    scanCode: workStationStore.scanCode,
-    isOnline: workStationStore.isOnline(),
-    hasActiveTask: workStationStore.hasActiveTask()
-  }
-}
-
-// 计算属性Hook
-export const useWorkStationComputed = () => {
-  return useMemo(() => ({
-    workStationId: workStationStore.workStationId(),
-    stationCode: workStationStore.stationCode(),
-    currentOperation: workStationStore.currentOperation(),
-    operationCount: workStationStore.operationsMap.size,
-    callContainerCount: workStationStore.callContainerCount,
-    stationProcessingStatus: workStationStore.stationProcessingStatus
-  }), [
-    workStationStore.workStationId(),
-    workStationStore.stationCode(),
-    workStationStore.currentOperation(),
-    workStationStore.operationsMap.size,
-    workStationStore.callContainerCount,
-    workStationStore.stationProcessingStatus
-  ])
-}
-
-// 操作方法Hook
-export const useWorkStationActions = () => {
-  const setChooseArea = useCallback((area: ChooseArea) => {
-    workStationStore.setChooseArea(area)
-  }, [])
-
-  const setScanCode = useCallback((code: string | null) => {
-    workStationStore.setScanCode(code)
-  }, [])
-
-  const setOperationMap = useCallback((type: string, operation: any) => {
-    workStationStore.setOperationMap(type, operation)
-  }, [])
-
-  const removeOperation = useCallback((type: string) => {
-    workStationStore.removeOperation(type)
-  }, [])
-
-  const updateWorkStationState = useCallback((updates: Partial<WorkStationView<any>>) => {
-    workStationStore.updateWorkStationState(updates)
-  }, [])
-
-  const reset = useCallback(() => {
-    workStationStore.reset()
-  }, [])
-
-  return {
-    setChooseArea,
-    setScanCode,
-    setOperationMap,
-    removeOperation,
-    updateWorkStationState,
-    reset
-  }
-}
 
 // 特定区域状态Hook
 export const useWorkStationArea = (areaType: string) => {
-  const isActive = useMemo(() => {
-    return workStationStore.chooseArea === areaType
-  }, [workStationStore.chooseArea, areaType])
+  // 直接使用 store 来确保响应式更新
+  const store = workStationStore
+  const chooseArea = store.chooseArea
+  const isActive = chooseArea === areaType
 
   const operation = useMemo(() => {
-    return workStationStore.operationsMap.get(areaType)
-  }, [workStationStore.operationsMap, areaType])
+    return store.operationsMap.get(areaType)
+  }, [store.operationsMap, areaType])
 
-  const setActive = useCallback(() => {
-    workStationStore.setChooseArea(areaType as ChooseArea)
-  }, [areaType])
+  console.log("useWorkStationArea:", { areaType, chooseArea, isActive })
 
   return {
     isActive,
-    operation,
-    setActive
+    operation
   }
 }
 
-// 扫描相关Hook
-export const useWorkStationScan = () => {
-  const scanCode = workStationStore.scanCode
-
-  const setScanCode = useCallback((code: string | null) => {
-    workStationStore.setScanCode(code)
-  }, [])
-
-  const clearScanCode = useCallback(() => {
-    workStationStore.setScanCode(null)
-  }, [])
-
-  return {
-    scanCode,
-    setScanCode,
-    clearScanCode
-  }
-}
-
-// 容器相关Hook
-export const useWorkStationContainer = () => {
-  const callContainerCount = workStationStore.callContainerCount
-  const stationProcessingStatus = workStationStore.stationProcessingStatus
-
-  const updateProcessingStatus = useCallback((status: 'NO_TASK' | 'WAIT_ROBOT' | 'WAIT_CALL_CONTAINER') => {
-    workStationStore.updateWorkStationState({ stationProcessingStatus: status })
-  }, [])
-
-  return {
-    callContainerCount,
-    stationProcessingStatus,
-    updateProcessingStatus
-  }
-}
 
 
 // 导出observer包装的组件

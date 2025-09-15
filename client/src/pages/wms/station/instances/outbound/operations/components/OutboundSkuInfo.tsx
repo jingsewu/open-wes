@@ -1,27 +1,27 @@
 import type { InputRef } from "antd"
 import { Input } from "antd"
 import { debounce } from "lodash"
-import React, { useRef, useState } from "react"
+import React, { useRef, useState, useMemo, useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import { ProcessStatusEnum } from "@/pages/wms/station/event-loop/types"
 
 import { DEBOUNCE_TIME } from "@/pages/wms/station/constants/constant"
-import type { PickerArea } from "@/pages/wms/station/instances/outbound/operations/pickingHandler"
 import SkuInfo from "@/pages/wms/station/widgets/common/SkuInfo"
-import { useBarcodeScanner } from "@/pages/wms/station/state"
+import { useBarcodeScanner, useWorkStation } from "@/pages/wms/station/state"
 
 interface OutboundSkuInfoProps {
     isActive?: boolean
-    value: PickerArea | undefined
-    onChange: (value: any) => void
 }
 
 const OutboundSkuInfo = (props: OutboundSkuInfoProps) => {
-    const { isActive, value, onChange } = props
+    const { isActive } = props
     const { t } = useTranslation()
+    const { workStationEvent, onActionDispatch } = useWorkStation()
 
+    const value = workStationEvent?.skuArea
     const { pickingViews = [] } = value || {}
 
+    // 计算当前扫描的SKU信息
     const scannedSkuInfo =
         pickingViews?.find(
             (item) =>
@@ -29,53 +29,41 @@ const OutboundSkuInfo = (props: OutboundSkuInfoProps) => {
                 ProcessStatusEnum.PROCESSING
         ) || pickingViews?.[0]
 
-    const toBeOperatedQty = scannedSkuInfo?.operationTaskDTOS?.reduce(
-        (pre, cur) => {
-            return pre + cur.toBeOperatedQty
-        },
-        0
-    )
-
-    let skuList: any[] = [],
-        skuBatchIds: number[] = []
-    pickingViews?.forEach((item) => {
-        if (
-            !skuBatchIds.includes(item.operationTaskDTOS?.[0]?.skuBatchStockId)
-        ) {
-            skuList.push({
-                skuCode: item.skuMainDataDTO.skuCode,
-                toBeOperatedQty: item.operationTaskDTOS?.[0]?.toBeOperatedQty,
-                skuBatchStockId: item.operationTaskDTOS?.[0]?.skuBatchStockId
-            })
-        } else {
-            const currentIndex = skuList.findIndex(
-                (i) =>
-                    i.skuBatchStockId ===
-                    item.operationTaskDTOS?.[0]?.skuBatchStockId
-            )
-            skuList[currentIndex].toBeOperatedQty +=
-                item.operationTaskDTOS?.[0]?.toBeOperatedQty
-        }
-    })
+    // 计算待操作数量
+    const toBeOperatedQty =
+        scannedSkuInfo?.operationTaskDTOS?.reduce(
+            (pre, cur) => pre + cur.toBeOperatedQty,
+            0
+        ) || 0
 
     const inputRef = useRef<InputRef>(null)
     const [state, setState] = useState("")
+
     const handleChange = debounce(async (value?: string) => {
-        onChange(state || value)
+        const skuCode = state || value
+        if (skuCode) {
+            await onActionDispatch({
+                eventCode: "SCAN_BARCODE",
+                data: skuCode
+            })
+        }
         setState("") // 清空输入框
     }, DEBOUNCE_TIME)
 
+    // 扫描完成处理函数
     const onScanComplete = (value: string) => {
-        // setState(value);
         if (!isActive) return
         handleChange(value)
     }
 
     useBarcodeScanner(onScanComplete)
 
-    if (inputRef) {
-        isActive && inputRef.current?.focus()
-    }
+    useEffect(() => {
+        if (isActive && inputRef.current) {
+            inputRef.current.focus()
+        }
+    }, [isActive])
+
     return (
         <div className="w-full h-full d-flex flex-col ">
             <div className="d-flex pb-2" style={{ color: "#292B3E" }}>

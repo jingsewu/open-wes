@@ -1,4 +1,4 @@
-import { observable, action, computed, runInAction, decorate } from 'mobx'
+import { observable, action, computed, runInAction } from 'mobx'
 import './mobxConfig'
 import type { WorkStationView } from '../event-loop/types'
 import { WorkStationStatus, ChooseArea } from '../event-loop/types'
@@ -9,76 +9,63 @@ import { WorkStationStatus, ChooseArea } from '../event-loop/types'
  */
 export class WorkStationStore {
   // 核心状态
-  workStationEvent: WorkStationView<any> | undefined = undefined
-  workStationStatus: WorkStationStatus = WorkStationStatus.OFFLINE
-  chooseArea: ChooseArea = ChooseArea.workLocationArea
+  @observable workStationEvent: WorkStationView<any> | undefined = undefined
+  @observable workStationStatus: WorkStationStatus = WorkStationStatus.OFFLINE
   
   // 操作状态
-  operationsMap = new Map<string, any>()
-  isLoading = false
-  error: string | null = null
+  @observable operationsMap = new Map<string, any>()
   
   // 扫描状态
-  scanCode: string | null = null
-  isScanning = false
+  @observable scanCode: string | null = null
   
   // 容器状态
-  callContainerCount = 0
-  stationProcessingStatus: 'NO_TASK' | 'WAIT_ROBOT' | 'WAIT_CALL_CONTAINER' | undefined = undefined
-  
-  // 调试状态
-  debugMode = false
-  mockData: any = null
+  @observable callContainerCount = 0
+  @observable stationProcessingStatus: 'NO_TASK' | 'WAIT_ROBOT' | 'WAIT_CALL_CONTAINER' | undefined = undefined
 
   // Actions
-  setWorkStationEvent(event: WorkStationView<any> | undefined) {
-    this.workStationEvent = event
-    if (event) {
-      this.workStationStatus = event.workStationStatus
-      this.chooseArea = event.chooseArea
-      this.scanCode = event.scanCode || null
-      this.callContainerCount = event.callContainerCount || 0
-      this.stationProcessingStatus = event.stationProcessingStatus
-    }
+  @action setWorkStationEvent(event: WorkStationView<any> | undefined) {
+    console.log("setWorkStationEvent called with:", event)
+    
+    runInAction(() => {
+      // 保存之前的状态用于比较
+      const previousChooseArea = this.workStationEvent?.chooseArea
+      
+      // 更新事件数据
+      this.workStationEvent = event
+      
+      if (event) {
+        // 更新所有相关状态
+        this.workStationStatus = event.workStationStatus
+        this.scanCode = event.scanCode || null
+        this.callContainerCount = event.callContainerCount || 0
+        this.stationProcessingStatus = event.stationProcessingStatus
+        
+        // 检查 chooseArea 是否发生变化
+        const currentChooseArea = event.chooseArea
+        if (previousChooseArea !== currentChooseArea) {
+          console.log("chooseArea 发生变化:", {
+            from: previousChooseArea,
+            to: currentChooseArea
+          })
+        }
+        
+        console.log("WorkStationEvent updated successfully:", {
+          chooseArea: currentChooseArea,
+          workStationStatus: this.workStationStatus,
+          scanCode: this.scanCode
+        })
+      } else {
+        console.log("WorkStationEvent cleared")
+      }
+    })
   }
 
-  setChooseArea(area: ChooseArea) {
-    this.chooseArea = area
-    if (this.workStationEvent) {
-      this.workStationEvent.chooseArea = area
-    }
-  }
-
-  setScanCode(code: string | null) {
-    this.scanCode = code
-    if (this.workStationEvent) {
-      this.workStationEvent.scanCode = code || undefined
-    }
-  }
-
-  setLoading(loading: boolean) {
-    this.isLoading = loading
-  }
-
-  setError(error: string | null) {
-    this.error = error
-  }
-
-  setOperationMap(type: string, operation: any) {
+  @action setOperationMap(type: string, operation: any) {
     this.operationsMap.set(type, operation)
   }
 
-  removeOperation(type: string) {
-    this.operationsMap.delete(type)
-  }
-
-  setDebugMode(debug: boolean, mockData?: any) {
-    this.debugMode = debug
-    this.mockData = mockData
-  }
-
   // 批量更新状态
-  updateWorkStationState(updates: Partial<WorkStationView<any>>) {
+  @action updateWorkStationState(updates: Partial<WorkStationView<any>>) {
     runInAction(() => {
       if (this.workStationEvent) {
         Object.assign(this.workStationEvent, updates)
@@ -87,81 +74,40 @@ export class WorkStationStore {
   }
 
   // 重置状态
-  reset() {
+  @action reset() {
     runInAction(() => {
       this.workStationEvent = undefined
       this.workStationStatus = WorkStationStatus.OFFLINE
-      this.chooseArea = ChooseArea.workLocationArea
       this.operationsMap.clear()
-      this.isLoading = false
-      this.error = null
       this.scanCode = null
-      this.isScanning = false
       this.callContainerCount = 0
       this.stationProcessingStatus = undefined
     })
   }
 
   // Computed values
-  isOnline() {
-    return this.workStationStatus === WorkStationStatus.ONLINE
+  @computed get chooseArea() {
+    const area = this.workStationEvent?.chooseArea || ChooseArea.workLocationArea
+    console.log("WorkStationStore chooseArea computed:", {
+      area,
+      workStationEvent: this.workStationEvent ? 'exists' : 'null',
+      eventChooseArea: this.workStationEvent?.chooseArea,
+      timestamp: new Date().toISOString()
+    })
+    return area
   }
 
-  hasActiveTask() {
-    return this.workStationStatus === WorkStationStatus.DO_OPERATION
-  }
-
-  isWaiting() {
-    return [
-      WorkStationStatus.WAIT_ROBOT, 
-      WorkStationStatus.WAIT_CONTAINER, 
-      WorkStationStatus.WAIT_CALL_CONTAINER
-    ].includes(this.workStationStatus)
-  }
-
-  currentOperation() {
-    return this.operationsMap.get(this.chooseArea)
-  }
-
-  workStationId() {
+  @computed get workStationId() {
     return this.workStationEvent?.workStationId || ''
   }
 
-  stationCode() {
+  @computed get stationCode() {
     return this.workStationEvent?.stationCode || ''
   }
 }
 
-// MobX 4.x 装饰器配置
-decorate(WorkStationStore, {
-  // 状态属性
-  workStationEvent: observable,
-  workStationStatus: observable,
-  chooseArea: observable,
-  operationsMap: observable,
-  isLoading: observable,
-  error: observable,
-  scanCode: observable,
-  isScanning: observable,
-  callContainerCount: observable,
-  stationProcessingStatus: observable,
-  debugMode: observable,
-  mockData: observable,
-  
-  // 动作方法
-  setWorkStationEvent: action,
-  setChooseArea: action,
-  setScanCode: action,
-  setLoading: action,
-  setError: action,
-  setOperationMap: action,
-  removeOperation: action,
-  setDebugMode: action,
-  updateWorkStationState: action,
-  reset: action,
-  
-  // 计算属性 - 这些是方法而不是 getter，所以不需要 computed 装饰器
-})
-
 // 创建单例实例
 export const workStationStore = new WorkStationStore()
+
+// 使用 MobX 4.x 的简单配置方式
+// 直接在属性上使用 observable 和 action

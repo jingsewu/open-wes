@@ -22,61 +22,32 @@ export interface ContainerHandlerConfirmProps {
     containerCode: string
 }
 
-/**
- * @Description: 对event中的数据进行filter处理
- * @param data
- */
-export const valueFilter = (
-    data: WorkStationView<OutboundProps> | undefined
-):
-    | OperationProps<
-          ContainerHandlerProps,
-          ContainerHandlerConfirmProps
-      >["value"]
-    | Record<string, any> => {
-    if (!data) return {}
-    return data.workLocationArea
-}
-
 const ContainerHandler = observer(
     (props: OperationProps<WorkLocationArea, ContainerHandlerConfirmProps>) => {
-        const { value } = props
-        const { onActionDispatch } = useWorkStation()
+        const { workStationEvent } = useWorkStation()
 
-        // 查找启用的工作位置视图
-        const containerViews = value?.workLocationViews?.find(
+        const workLocationArea = workStationEvent?.workLocationArea
+        const containerViews = workLocationArea?.workLocationViews?.find(
             (item) => item.enable
         )
         const workLocationType =
             containerViews?.workLocationType || DEFAULT_WORK_LOCATION_TYPE
 
-        // 渲染 MaterialHandler 组件
-        const renderMaterialHandler = () => (
-            <MaterialHandler
-                value={containerViews}
-                onActionDispatch={onActionDispatch}
-            />
-        )
+        const renderMaterialHandler = () => <MaterialHandler />
 
-        // 渲染对应的组件
         const renderContainerComponent = () => {
-            // 检查是否为需要 MaterialHandler 的类型
             const isRobotType = workLocationType === DevicePhysicalType.ROBOT
             const isBufferShelvingType =
-                (workLocationType as string) ===
-                DevicePhysicalType.BUFFER_SHELVING
+                workLocationType === DevicePhysicalType.BUFFER_SHELVING
 
             if (isRobotType || isBufferShelvingType) {
                 return renderMaterialHandler()
             }
 
-            return <EmptyImage workStationEvent={value} />
+            return <EmptyImage />
         }
 
-        // 根据工作位置类型确定布局方向
         const isDefaultLayout = workLocationType === DevicePhysicalType.DEFAULT
-
-        // 容器样式
         const containerStyle: React.CSSProperties = {
             height: "100%",
             display: "flex",

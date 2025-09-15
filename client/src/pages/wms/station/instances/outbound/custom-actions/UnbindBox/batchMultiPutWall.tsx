@@ -1,27 +1,31 @@
-import {useTranslation} from "react-i18next"
+import { useTranslation } from "react-i18next"
 
 import PutWall from "@/pages/wms/station/widgets/PutWall"
-import React, {useImperativeHandle, useState} from "react"
-import {onSaveRequest} from "./reqeust"
-import type {PutWallViewsItem} from "@/pages/wms/station/event-loop/types"
-import {ChooseArea} from "@/pages/wms/station/event-loop/types"
-import {changeStateAdaptor, viewsDataAdaptor} from "./utils"
+import React, { useImperativeHandle, useState, useCallback } from "react"
+import { onSaveRequest } from "./reqeust"
+import type { PutWallViewsItem } from "@/pages/wms/station/event-loop/types"
+import { ChooseArea } from "@/pages/wms/station/event-loop/types"
+import { changeStateAdaptor, viewsDataAdaptor } from "./utils"
 import warning from "@/icon/warning.png"
-import {putWallStatusTextMap} from "@/pages/wms/station/instances/outbound/custom-actions/SplitContainer/SplitContent"
+import { putWallStatusTextMap } from "@/pages/wms/station/instances/outbound/custom-actions/SplitContainer/SplitContent"
+import { useWorkStation } from "@/pages/wms/station/state"
 
 const BatchMultiPutWall = (props: any) => {
-    const { operationsMap, onActionDispatch, message, refs } = props
+    const { operationsMap, refs } = props
     const { t } = useTranslation()
-    const putWallArea = operationsMap.get(ChooseArea.putWallArea)
+    const { store, onActionDispatch, message } = useWorkStation()
+
+    const putWallArea =
+        operationsMap.get(ChooseArea.putWallArea) ||
+        store.workStationEvent?.putWallArea
 
     const { putWallDisplayStyle, putWallViews, putWallTagConfigDTO } =
-        putWallArea
-    // 更改槽位状态为可选(OPTIONAL)或者禁用(DISABLED)
-    const initViewsData = viewsDataAdaptor(putWallViews)
+        putWallArea || {}
 
-    const [viewsData, setViewsData] = useState(initViewsData)
+    const [viewsData, setViewsData] = useState(() =>
+        viewsDataAdaptor(putWallViews || [])
+    )
 
-    // 设计要求，暴露当前的方法
     useImperativeHandle(refs, () => ({
         onSave
     }))
@@ -44,25 +48,23 @@ const BatchMultiPutWall = (props: any) => {
      * @param location
      */
     const onLocationChange = (location: "LEFT" | "RIGHT") => {
-        setViewsData(
-            viewsData.map((item) => {
-                return {
-                    ...item,
-                    active: item.location === location
-                }
-            })
+        setViewsData((prevData) =>
+            prevData.map((item) => ({
+                ...item,
+                active: item.location === location
+            }))
         )
     }
 
     /**
      * 点击保存，保存数据到server
      */
-    const onSave = async () => {
+    const onSave = useCallback(async () => {
         return await onSaveRequest(viewsData as PutWallViewsItem[], {
             onActionDispatch,
             message
         })
-    }
+    }, [viewsData])
 
     return (
         <div className="d-flex flex-col" style={{ height: "50vh" }}>

@@ -19,13 +19,14 @@ const cx = classNames.bind(styles)
  * 组件包装器
  * @param props
  */
-const Wrapper = memo(function Wrapper(props: {
+function Wrapper(props: {
     type: string
     Component: FunctionComponent<OperationProps<any, any>>
-    valueFilter: (data: WorkStationView<any> | undefined) => any
+    valueFilter?: (data: WorkStationView<any> | undefined) => any
     changeAreaHandler?: () => Promise<void>
     withWrapper?: boolean
     style?: React.CSSProperties
+    isActive?: boolean
 }) {
     const {
         type,
@@ -33,19 +34,30 @@ const Wrapper = memo(function Wrapper(props: {
         valueFilter,
         changeAreaHandler,
         withWrapper = true,
-        style
+        style,
+        isActive: propIsActive
     } = props
 
     const ref = useRef<ReactNode>(null)
 
-    const { store, onActionDispatch, message } = useWorkStation()
+    const { store } = useWorkStation()
     const { workStationEvent } = store
 
     const filteredValue = useMemo(() => {
-        return valueFilter(workStationEvent)
+        return valueFilter ? valueFilter(workStationEvent) : workStationEvent
     }, [workStationEvent, valueFilter])
 
-    const isActive = workStationEvent?.chooseArea === type
+    const isActive =
+        propIsActive !== undefined
+            ? propIsActive
+            : workStationEvent?.chooseArea === type
+    console.log("ComponentWrapper render:", {
+        type,
+        chooseArea: workStationEvent?.chooseArea,
+        isActive,
+        propIsActive,
+        workStationEvent: workStationEvent ? "exists" : "null"
+    })
 
     const evenChangeHandler = useCallback(
         debounce(
@@ -75,23 +87,11 @@ const Wrapper = memo(function Wrapper(props: {
             onClick={evenChangeHandler}
             style={{ ...style, backgroundColor: "#fff" }}
         >
-            <Component
-                refs={ref}
-                onActionDispatch={onActionDispatch}
-                value={filteredValue}
-                message={message}
-                isActive={isActive}
-            />
+            <Component refs={ref} value={filteredValue} isActive={isActive} />
         </div>
     ) : (
-        <Component
-            refs={ref}
-            onActionDispatch={onActionDispatch}
-            value={filteredValue}
-            message={message}
-            isActive={isActive}
-        />
+        <Component refs={ref} value={filteredValue} isActive={isActive} />
     )
-})
+}
 
 export default Wrapper
