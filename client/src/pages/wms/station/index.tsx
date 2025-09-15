@@ -122,7 +122,19 @@ const WorkStation = (props: WorkStationProps) => {
         }
 
         return () => {
-            workStationEventLoop.resetCurrentEvent()
+            // 停止事件循环和 WebSocket 连接
+            workStationEventLoop.stop()
+            // workStationEventLoop.resetCurrentEvent()
+            
+            // 清理 ResizeObserver
+            try {
+                const resizeObserverManager = (window as any).ResizeObserverManager
+                if (resizeObserverManager) {
+                    resizeObserverManager.disconnectAll()
+                }
+            } catch (error) {
+                console.warn('清理 ResizeObserver 时出错:', error)
+            }
         }
     }, [debugType, mockData, type])
 

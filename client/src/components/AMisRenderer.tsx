@@ -25,9 +25,44 @@ const lang = {
 @observer
 export default class AMisRenderer extends React.Component<RendererProps, any> {
     env: any = null
+    private rendererInstance: any = null
+    private resizeObserverManager: any = null
 
     handleAction = (e: any, action: Action) => {
         this.env.alert(`没有识别的动作：${JSON.stringify(action)}`)
+    }
+
+    componentDidMount() {
+        // 获取 ResizeObserver 管理器
+        this.resizeObserverManager = (window as any).ResizeObserverManager
+    }
+
+    componentWillUnmount() {
+        // 清理 AMis 渲染器实例
+        if (this.rendererInstance) {
+            try {
+                // 如果 AMis 提供了销毁方法，调用它
+                if (typeof this.rendererInstance.destroy === 'function') {
+                    this.rendererInstance.destroy()
+                }
+                this.rendererInstance = null
+            } catch (error) {
+                console.warn('清理 AMis 渲染器时出错:', error)
+            }
+        }
+
+        // 清理 ResizeObserver
+        if (this.resizeObserverManager) {
+            try {
+                // 清理当前组件相关的所有 ResizeObserver
+                const container = this.rendererInstance?.container || this.rendererInstance
+                if (container && container.nodeType === Node.ELEMENT_NODE) {
+                    this.resizeObserverManager.disconnectObserver(container)
+                }
+            } catch (error) {
+                console.warn('清理 ResizeObserver 时出错:', error)
+            }
+        }
     }
 
     constructor(props: RendererProps) {
@@ -148,7 +183,7 @@ export default class AMisRenderer extends React.Component<RendererProps, any> {
 
     render() {
         const { schema, store, onAction, ...rest } = this.props
-        return renderSchema(
+        this.rendererInstance = renderSchema(
             schema,
             {
                 // onAction: onAction || this.handleAction,
@@ -159,5 +194,6 @@ export default class AMisRenderer extends React.Component<RendererProps, any> {
             },
             { ...this.env, replaceText: lang[store.locale] }
         )
+        return this.rendererInstance
     }
 }

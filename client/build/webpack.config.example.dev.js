@@ -154,7 +154,8 @@ webpackConfig = {
     plugins: [
         new CleanWebpackPlugin(),
         new ReactRefreshWebpackPlugin({
-            overlay: false
+            overlay: false,
+            exclude: [/node_modules/]
         }),
         new ForkTsCheckerWebpackPlugin({
             async: true,
