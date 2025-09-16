@@ -29,4 +29,9 @@ public class OutboundPlanOrderController {
         outboundPlanOrderApi.createOutboundPlanOrder(outboundPlanOrderDTOs);
     }
 
+    @PostMapping("/order/improvePriority")
+    @Operation(summary = "提升优先级")
+    public void improvePriority(@Valid @RequestBody List<Long> ids, int priority) {
+        outboundPlanOrderApi.improvePriority(ids,priority);
+    }
 }

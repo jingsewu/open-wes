@@ -159,9 +159,4 @@ public class SkuBatchContainerStockAggregate {
         skuBatchStock.unfreezeQty(qty);
         skuBatchStockRepository.save(skuBatchStock);
     }
-
-    @Transactional(rollbackFor = Exception.class)
-    public void clearContainerStock(List<ContainerStock> containerStocks) {
-        containerStockRepository.clearContainerStockByIds(containerStocks.stream().map(ContainerStock::getId).toList());
-    }
 }

@@ -1,5 +1,6 @@
 package org.openwes.station.application.business.handler.common;
 
+import lombok.extern.slf4j.Slf4j;
 import org.openwes.station.api.constants.ApiCodeEnum;
 import org.openwes.station.api.dto.TapPtlEvent;
 import org.openwes.station.application.business.handler.IBusinessHandler;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TapPtlHandler<T extends WorkStationCache> implements IBusinessHandler<TapPtlEvent> {
 
     private final WorkStationService<T> workStationService;
@@ -29,6 +31,7 @@ public class TapPtlHandler<T extends WorkStationCache> implements IBusinessHandl
 
         // not put wall tap, return now
         if (putWallSlot == null) {
+            log.error("work station: {} don't contains ptl tag: {}",workStationId, tapPtlEvent.getPtlTag());
             return;
         }
 

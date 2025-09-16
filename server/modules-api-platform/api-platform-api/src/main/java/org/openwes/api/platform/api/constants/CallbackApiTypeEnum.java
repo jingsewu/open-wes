@@ -42,6 +42,7 @@ public enum CallbackApiTypeEnum implements IEnum {
      * 任务取消
      */
     CONTAINER_TASK_CANCEL("CONTAINER_TASK_CANCEL", "容器任务取消"),
+    CONTAINER_TASK_IMPROVE_PRIORITY("CONTAINER_TASK_IMPROVE_PRIORITY", "提升容器任务优先级"),
 
 
     /**

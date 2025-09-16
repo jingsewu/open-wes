@@ -104,6 +104,15 @@ public class ContainerTaskApiImpl implements IContainerTaskApi {
         cancelContainerTasks(containerTasks);
     }
 
+    @Override
+    public void improvePriority(List<Long> customerTaskIds, Integer priority) {
+        List<ContainerTask> containerTasks = containerTaskRepository.findAllByCustomerTaskIds(customerTaskIds);
+        containerTasks.forEach(v->v.improvePriority(priority));
+        containerTaskRepository.saveAll(containerTasks);
+
+        callbackApiFacade.callback(CallbackApiTypeEnum.CONTAINER_TASK_IMPROVE_PRIORITY, containerTasks,containerTasks.iterator().next().getContainerTaskType());
+    }
+
     private void cancelContainerTasks(List<ContainerTask> containerTasks) {
         if (containerTasks.isEmpty()) {
             return;

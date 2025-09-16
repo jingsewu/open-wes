@@ -5,6 +5,7 @@ import org.openwes.domain.event.DomainEventPublisher;
 import org.openwes.wes.api.outbound.constants.OutboundPlanOrderStatusEnum;
 import org.openwes.wes.api.outbound.constants.OutboundWaveStatusEnum;
 import org.openwes.wes.api.outbound.event.NewOutboundWaveEvent;
+import org.openwes.wes.api.outbound.event.OutboundPlanOrderImprovePriorityEvent;
 import org.openwes.wes.api.outbound.event.OutboundPlanOrderShortCompleteEvent;
 import org.openwes.wes.api.outbound.event.OutboundWaveCompleteEvent;
 import org.openwes.wes.outbound.domain.aggregate.PickingOrderWaveAggregate;

@@ -1,6 +1,7 @@
 package org.openwes.wes.ems.proxy.domain.entity;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.common.utils.CollectionUtils;
@@ -17,10 +18,11 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
+@EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
 @Data
 @Slf4j
-public class ContainerTask implements Serializable, AggregatorRoot {
+public class ContainerTask extends AggregatorRoot implements Serializable {
 
     private Long id;
 
@@ -107,5 +109,14 @@ public class ContainerTask implements Serializable, AggregatorRoot {
             return true;
         }
         return false;
+    }
+
+    public void improvePriority(Integer priority) {
+        log.info("container task id: {} task code: {} improve priority: {}", this.id, this.taskCode, priority);
+
+        if (this.taskPriority >= priority) {
+            return;
+        }
+        this.taskPriority = priority;
     }
 }

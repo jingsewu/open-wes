@@ -1,7 +1,9 @@
 package org.openwes.wes.outbound.domain.entity;
 
 import com.google.common.collect.Lists;
+import lombok.EqualsAndHashCode;
 import org.openwes.common.utils.id.OrderNoGenerator;
+import org.openwes.domain.event.AggregatorRoot;
 import org.openwes.domain.event.DomainEventPublisher;
 import org.openwes.wes.api.outbound.constants.PickingOrderDetailStatusEnum;
 import org.openwes.wes.api.outbound.constants.PickingOrderStatusEnum;
@@ -11,15 +13,17 @@ import org.openwes.wes.api.outbound.event.PickingOrderCompleteEvent;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
+import org.openwes.wes.api.outbound.event.PickingOrderImprovePriorityEvent;
 import org.springframework.beans.BeanUtils;
 
 import java.util.List;
 import java.util.Map;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Accessors(chain = true)
 @Slf4j
-public class PickingOrder {
+public class PickingOrder extends AggregatorRoot {
 
     private Long id;
 
@@ -67,7 +71,7 @@ public class PickingOrder {
         List<Long> outboundPlanOrderIds = this.details.stream()
                 .map(PickingOrderDetail::getOutboundOrderPlanId)
                 .distinct().toList();
-        DomainEventPublisher.sendAsyncDomainEvent(new OutboundPlanOrderDispatchedEvent().setOutboundPlanOrderIds(outboundPlanOrderIds));
+        this.addAsynchronousDomainEvents(new OutboundPlanOrderDispatchedEvent().setOutboundPlanOrderIds(outboundPlanOrderIds));
     }
 
     public void cancel() {
@@ -92,11 +96,12 @@ public class PickingOrder {
                 .setOperatedQty(operatedQty)
                 .setOutboundOrderDetailId(pickingOrderDetail.getOutboundOrderPlanDetailId())
                 .setOutboundOrderId(pickingOrderDetail.getOutboundOrderPlanId());
-        DomainEventPublisher.sendSyncDomainEvent(new OutboundPlanOrderPickingEvent().setPickingDetails(Lists.newArrayList(pickingDetail)));
+
+        this.addSynchronizationEvents(new OutboundPlanOrderPickingEvent().setPickingDetails(Lists.newArrayList(pickingDetail)));
 
         if (this.details.stream().allMatch(v -> v.getPickingOrderDetailStatus() == PickingOrderDetailStatusEnum.PICKED)) {
             this.pickingOrderStatus = PickingOrderStatusEnum.PICKED;
-            DomainEventPublisher.sendAsyncDomainEvent(new PickingOrderCompleteEvent().setPickingOrderIds(Lists.newArrayList(this.id)));
+            this.addAsynchronousDomainEvents(new PickingOrderCompleteEvent().setPickingOrderIds(Lists.newArrayList(this.id)));
         } else {
             this.pickingOrderStatus = PickingOrderStatusEnum.PICKING;
         }
@@ -132,7 +137,7 @@ public class PickingOrder {
                 .forEach(detail -> detail.shortPicking(shortQty));
         if (this.details.stream().allMatch(v -> v.getPickingOrderDetailStatus() == PickingOrderDetailStatusEnum.PICKED)) {
             this.pickingOrderStatus = PickingOrderStatusEnum.PICKED;
-            DomainEventPublisher.sendAsyncDomainEvent(new PickingOrderCompleteEvent().setPickingOrderIds(Lists.newArrayList(this.id)));
+            this.addAsynchronousDomainEvents(new PickingOrderCompleteEvent().setPickingOrderIds(Lists.newArrayList(this.id)));
         } else {
             this.pickingOrderStatus = PickingOrderStatusEnum.PICKING;
         }
@@ -167,5 +172,17 @@ public class PickingOrder {
         newPickingOrder.setDetails(Lists.newArrayList());
         newPickingOrder.setReallocatedOrder(true);
         return newPickingOrder;
+    }
+
+    public void improvePriority(Integer priority) {
+
+        log.info("picking order id: {} , orderNo: {} improve priority: {}", this.id, this.pickingOrderNo, priority);
+
+        if (this.priority >= priority) {
+            return;
+        }
+        this.priority = priority;
+
+        this.addAsynchronousDomainEvents(new PickingOrderImprovePriorityEvent().setPickingOrderId(this.id).setPriority(this.priority));
     }
 }

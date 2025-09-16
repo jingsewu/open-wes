@@ -13,6 +13,7 @@ import org.openwes.wes.api.outbound.constants.OutboundPlanOrderDetailStatusEnum;
 import org.openwes.wes.api.outbound.constants.OutboundPlanOrderStatusEnum;
 import org.openwes.wes.api.outbound.event.OutboundPlanOrderAssignedEvent;
 import org.openwes.wes.api.outbound.event.OutboundPlanOrderCompleteEvent;
+import org.openwes.wes.api.outbound.event.OutboundPlanOrderImprovePriorityEvent;
 
 import java.util.List;
 import java.util.Map;
@@ -21,7 +22,7 @@ import java.util.stream.Collectors;
 
 @Data
 @Slf4j
-public class OutboundPlanOrder implements AggregatorRoot {
+public class OutboundPlanOrder extends AggregatorRoot {
 
     private Long id;
 
@@ -197,5 +198,10 @@ public class OutboundPlanOrder implements AggregatorRoot {
         this.addAsynchronousDomainEvents(new OutboundPlanOrderCompleteEvent().setOutboundPlanOrderIds(Lists.newArrayList(this.id)));
         this.addAsynchronousDomainEvents(new LifeCycleStatusChangeEvent(this.outboundPlanOrderStatus.name(), this.id, this.getClass().getSimpleName()));
         return true;
+    }
+
+    public void improvePriority(int priority) {
+        this.priority += priority * 10000;
+        this.addAsynchronousDomainEvents(new OutboundPlanOrderImprovePriorityEvent().setOutboundPlanOrderId(this.id).setPriority(this.priority));
     }
 }

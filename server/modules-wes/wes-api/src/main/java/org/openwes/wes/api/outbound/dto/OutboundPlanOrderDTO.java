@@ -54,6 +54,13 @@ public class OutboundPlanOrderDTO implements Serializable {
     @Schema(title = "截单时间")
     private Long expiredTime;
 
+    /**
+     * 优先级的设置,暂时设置4中类别的优先级： 客户优先级 > 业务类型优先级 > xxx > xxx
+     * 1. 客户优先级 * 10000
+     * 2. 业务类型优先级 * 1000
+     * 3. xxx * 100
+     * 4. xxx * 10
+     */
     @Schema(title = "优先级", description = "越大优先级越高")
     private Integer priority;
 

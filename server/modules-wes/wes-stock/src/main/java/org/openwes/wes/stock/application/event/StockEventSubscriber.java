@@ -95,12 +95,12 @@ public class StockEventSubscriber {
             return;
         }
 
-        skuBatchContainerStockAggregate.clearContainerStock(containerStocks);
+        containerStockRepository.clearContainerStockByIds(filterContainerStocks.stream().map(ContainerStock::getId).toList());
 
         DomainEventPublisher.sendAsyncDomainEvent(new ContainerStockUpdateEvent()
-                        .setContainerCode(event.getContainerCode())
-                        .setWarehouseCode(event.getWarehouseCode())
-                );
+                .setContainerCode(event.getContainerCode())
+                .setWarehouseCode(event.getWarehouseCode())
+        );
     }
 
 }

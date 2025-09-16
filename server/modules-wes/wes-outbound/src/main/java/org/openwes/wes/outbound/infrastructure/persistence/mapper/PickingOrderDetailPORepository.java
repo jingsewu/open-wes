@@ -10,4 +10,5 @@ public interface PickingOrderDetailPORepository extends JpaRepository<PickingOrd
 
     List<PickingOrderDetailPO> findByPickingOrderIdIn(Collection<Long> pickingOrderIds);
 
+    List<PickingOrderDetailPO> findAllByOutboundOrderPlanId(Long outboundOrderPlanId);
 }
