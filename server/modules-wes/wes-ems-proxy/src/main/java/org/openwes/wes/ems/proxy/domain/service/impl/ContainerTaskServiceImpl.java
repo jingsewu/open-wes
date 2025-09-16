@@ -2,6 +2,7 @@ package org.openwes.wes.ems.proxy.domain.service.impl;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.openwes.wes.api.ems.proxy.dto.CreateContainerTaskDTO;
@@ -10,10 +11,7 @@ import org.openwes.wes.ems.proxy.domain.entity.ContainerTaskAndBusinessTaskRelat
 import org.openwes.wes.ems.proxy.domain.service.ContainerTaskService;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,8 +23,11 @@ public class ContainerTaskServiceImpl implements ContainerTaskService {
 
         List<ContainerTask> containerTasks = Lists.newArrayList();
         createContainerTaskDTOS.stream().collect(Collectors.groupingBy(v ->
-                        v.getContainerCode() + v.getContainerFace() + Sets.newTreeSet(Optional.ofNullable(v.getDestinations())
-                                .orElseGet(ArrayList::new))))
+                new GroupingKey(
+                        v.getContainerCode(),
+                        v.getContainerFace(),
+                        v.getDestinations())
+                ))
                 .forEach((key, values) -> containerTasks.addAll(this.generateTasks(values)));
         return containerTasks;
     }
@@ -68,7 +69,7 @@ public class ContainerTaskServiceImpl implements ContainerTaskService {
                 .setDestinations(next.getDestinations())
                 .setCustomerTaskIds(customerTaskIds)
                 .setTaskPriority(maxPriority)
-                .setParentContainerTaskId(next.getCustomerTaskId())
+                .setParentContainerTaskId(0L)
                 .setTaskGroupCode(next.getTaskGroupCode())
                 .setTaskGroupPriority(next.getTaskGroupPriority())
                 .setStartLocation(next.getStartLocation())
@@ -120,5 +121,32 @@ public class ContainerTaskServiceImpl implements ContainerTaskService {
             containerTask.setParentContainerTaskId(parentContainerTask.getId());
             setParentId(containerTask);
         });
+    }
+
+    private static class GroupingKey {
+        private final String containerCode;
+        private final String containerFace;
+        private final Set<String> destinations;
+
+        public GroupingKey(String containerCode, String containerFace, Collection<String> destinations) {
+            this.containerCode = containerCode;
+            this.containerFace = containerFace;
+            this.destinations = destinations != null ? Sets.newTreeSet(destinations) : Sets.newTreeSet();
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            GroupingKey that = (GroupingKey) o;
+            return Objects.equals(containerCode, that.containerCode) &&
+                    Objects.equals(containerFace, that.containerFace) &&
+                    Objects.equals(destinations, that.destinations);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(containerCode, containerFace, destinations);
+        }
     }
 }

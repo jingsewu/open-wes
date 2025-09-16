@@ -30,4 +30,6 @@ public interface PickingOrderRepository {
     List<PickingOrder> findWavePickingOrderById(Long pickingOrderId);
 
     List<PickingOrder> findAllByPickingDetailIds(List<Long> pickingOrderDetailIds);
+
+    List<PickingOrder> findAllByOutboundPlanOrderId(Long outboundPlanOrderId);
 }

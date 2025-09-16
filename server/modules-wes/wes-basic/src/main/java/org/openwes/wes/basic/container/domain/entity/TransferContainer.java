@@ -2,12 +2,12 @@ package org.openwes.wes.basic.container.domain.entity;
 
 import com.google.common.collect.Lists;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.openwes.domain.event.AggregatorRoot;
-import org.openwes.domain.event.DomainEventPublisher;
 import org.openwes.wes.api.stock.event.StockClearEvent;
 import org.openwes.wes.api.task.constants.TransferContainerStatusEnum;
 
@@ -16,11 +16,12 @@ import java.util.List;
 
 import static org.openwes.wes.api.task.constants.TransferContainerStatusEnum.*;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Accessors(chain = true)
 @NoArgsConstructor
 @Slf4j
-public class TransferContainer implements Serializable, AggregatorRoot {
+public class TransferContainer extends AggregatorRoot implements Serializable {
 
     private Long id;
     private String transferContainerCode;

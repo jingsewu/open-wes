@@ -11,5 +11,4 @@ public interface PickingOrderPORepository extends JpaRepository<PickingOrderPO, 
     List<PickingOrderPO> findAllByWaveNoIn(Collection<String> waveNos);
 
     List<PickingOrderPO> findAllByWaveNo(String waveNo);
-
 }

@@ -128,6 +128,8 @@ public class Container {
     }
 
     public void changeLocation(String warehouseCode, Long warehouseAreaId, String locationCode, String locationType) {
+        log.info("containerId: {} code: {} change warehouse: {} ,warehouseAreaId: {}, locationCode: {} ,locationType: {}"
+                , this.id, this.containerCode, warehouseCode, warehouseAreaId, locationCode, locationType);
         this.warehouseCode = warehouseCode;
         this.warehouseAreaId = warehouseAreaId;
         this.locationCode = locationCode;
@@ -135,6 +137,7 @@ public class Container {
     }
 
     public void moveOutside() {
+        log.info("containerId: {} code: {} move outside", this.id, this.containerCode);
         this.locked = false;
         this.warehouseAreaId = null;
         this.locationCode = "";
@@ -142,7 +145,7 @@ public class Container {
     }
 
     public void moveInside(String warehouseCode, Long warehouseAreaId, String locationCode) {
-        log.info("containerId: {} containerCode: {} move inside at warehouseAreaId: {} and locationCode: {}", this.id, this.containerCode, warehouseAreaId, locationCode);
+        log.info("containerId: {} code: {} move inside at warehouseAreaId: {} and locationCode: {}", this.id, this.containerCode, warehouseAreaId, locationCode);
         this.containerStatus = ContainerStatusEnum.IN_SIDE;
         this.warehouseCode = warehouseCode;
         this.warehouseAreaId = warehouseAreaId;

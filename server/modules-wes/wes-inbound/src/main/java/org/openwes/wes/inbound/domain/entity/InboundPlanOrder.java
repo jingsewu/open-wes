@@ -3,6 +3,7 @@ package org.openwes.wes.inbound.domain.entity;
 
 import com.google.common.collect.Sets;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.openwes.common.utils.exception.WmsException;
@@ -22,9 +23,10 @@ import java.util.stream.Collectors;
 
 import static org.openwes.common.utils.exception.code_enum.InboundErrorDescEnum.INBOUND_STATUS_ERROR;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Slf4j
-public class InboundPlanOrder implements AggregatorRoot {
+public class InboundPlanOrder extends AggregatorRoot {
 
     private Long id;
 

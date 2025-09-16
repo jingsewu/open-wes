@@ -8,6 +8,7 @@ import org.openwes.wes.api.basic.constants.WarehouseAreaWorkTypeEnum;
 import org.openwes.wes.api.basic.dto.WarehouseAreaDTO;
 import org.openwes.wes.api.outbound.IPickingOrderApi;
 import org.openwes.wes.api.outbound.constants.PickingOrderStatusEnum;
+import org.openwes.wes.api.outbound.event.OutboundPlanOrderImprovePriorityEvent;
 import org.openwes.wes.api.outbound.event.OutboundWaveCompleteEvent;
 import org.openwes.wes.api.outbound.event.PickingOrderAbnormalEvent;
 import org.openwes.wes.api.outbound.event.PickingOrderCompleteEvent;
@@ -128,6 +129,18 @@ public class PickingOrderSubscribe {
                 DomainEventPublisher.sendAsyncDomainEvent(new OutboundWaveCompleteEvent().setWaveNo(waveNo));
             }
         });
+    }
+
+    @Subscribe
+    public void onImprovePriority(OutboundPlanOrderImprovePriorityEvent event) {
+        List<PickingOrder> pickingOrders = pickingOrderRepository.findAllByOutboundPlanOrderId(event.getOutboundPlanOrderId());
+
+        if(ObjectUtils.isEmpty(pickingOrders)){
+            return;
+        }
+
+        pickingOrders.forEach(pickingOrder -> pickingOrder.improvePriority(event.getPriority()));
+        pickingOrderRepository.saveAllOrders(pickingOrders);
     }
 
 }

@@ -2,6 +2,7 @@ package org.openwes.wes.task.domain.entity;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import jakarta.validation.constraints.NotNull;
 import org.openwes.common.utils.base.UpdateUserDTO;
 import org.openwes.common.utils.exception.WmsException;
 import org.openwes.common.utils.exception.code_enum.OperationTaskErrorDescEnum;
@@ -221,5 +222,14 @@ public class OperationTask extends UpdateUserDTO {
                 .build();
 
         DomainEventPublisher.sendAsyncDomainEvent(new StockTransferEvent().setStockTransferDTO(stockTransferDTO).setTaskType(this.taskType));
+    }
+
+    public void improvePriority(@NotNull Integer priority) {
+        log.info("operation task: {} improve priority: {}",this.id,priority);
+
+        if(this.priority >= priority){
+            return;
+        }
+        this.priority = priority;
     }
 }

@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,12 +37,16 @@ public class PickingOrderRepositoryImpl implements PickingOrderRepository {
         pickingOrder.getDetails().forEach(pickingOrderDetail -> pickingOrderDetail.setPickingOrderId(savedPickingOrderPO.getId()));
         pickingOrderDetailPORepository.saveAll(pickingOrderDetailPOTransfer
                 .toPOs(pickingOrder.getDetails().stream().filter(PickingOrderDetail::isModified).toList()));
+
+        pickingOrder.sendAndClearEvents();
+
         pickingOrderPOTransfer.toDO(savedPickingOrderPO);
     }
 
     @Override
     public void saveAllOrders(List<PickingOrder> pickingOrders) {
         pickingOrderPORepository.saveAll(pickingOrderPOTransfer.toPOs(pickingOrders));
+        pickingOrders.forEach(PickingOrder::sendAndClearEvents);
     }
 
     @Override
@@ -62,6 +67,8 @@ public class PickingOrderRepositoryImpl implements PickingOrderRepository {
                 .flatMap(v -> v.getDetails().stream().filter(PickingOrderDetail::isModified))
                 .toList();
         pickingOrderDetailPORepository.saveAll(pickingOrderDetailPOTransfer.toPOs(pickingOrderDetails));
+
+        pickingOrders.forEach(PickingOrder::sendAndClearEvents);
 
         return pickingOrderPOTransfer.toDOs(pickingOrderPOS);
     }
@@ -149,5 +156,12 @@ public class PickingOrderRepositoryImpl implements PickingOrderRepository {
         Map<Long, List<PickingOrderDetailPO>> pickingOrderMap = pickingOrderDetailPOs.stream().collect(Collectors.groupingBy(PickingOrderDetailPO::getPickingOrderId));
         List<PickingOrderPO> pickingOrderPOs = pickingOrderPORepository.findAllById(pickingOrderMap.keySet());
         return pickingOrderPOs.stream().map(v -> pickingOrderPOTransfer.toDO(v, pickingOrderMap.get(v.getId()))).toList();
+    }
+
+    @Override
+    public List<PickingOrder> findAllByOutboundPlanOrderId(Long outboundPlanOrderId) {
+        List<PickingOrderDetailPO> pickingOrderDetailPOS = pickingOrderDetailPORepository.findAllByOutboundOrderPlanId(outboundPlanOrderId);
+        Set<Long> pickingOrderIds = pickingOrderDetailPOS.stream().map(PickingOrderDetailPO::getPickingOrderId).collect(Collectors.toSet());
+        return pickingOrderPOTransfer.toDOs(pickingOrderPORepository.findAllById(pickingOrderIds));
     }
 }

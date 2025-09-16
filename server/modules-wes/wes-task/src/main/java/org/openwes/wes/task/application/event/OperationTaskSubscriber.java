@@ -1,5 +1,6 @@
 package org.openwes.wes.task.application.event;
 
+import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,17 +10,21 @@ import org.openwes.api.platform.api.dto.callback.wms.ContainerSealedDetailDTO;
 import org.openwes.wes.api.basic.ITransferContainerApi;
 import org.openwes.wes.api.basic.ITransferContainerRecordApi;
 import org.openwes.wes.api.basic.dto.TransferContainerRecordDTO;
+import org.openwes.wes.api.ems.proxy.IContainerTaskApi;
 import org.openwes.wes.api.main.data.ISkuMainDataApi;
 import org.openwes.wes.api.main.data.dto.SkuMainDataDTO;
 import org.openwes.wes.api.outbound.IOutboundPlanOrderApi;
 import org.openwes.wes.api.outbound.IPickingOrderApi;
 import org.openwes.wes.api.outbound.dto.OutboundPlanOrderDTO;
 import org.openwes.wes.api.outbound.dto.PickingOrderDTO;
-import org.openwes.wes.api.task.ITaskApi;
-import org.openwes.wes.api.task.dto.OperationTaskDTO;
+import org.openwes.wes.api.outbound.event.PickingOrderImprovePriorityEvent;
+import org.openwes.wes.api.task.constants.OperationTaskStatusEnum;
 import org.openwes.wes.api.task.dto.TransferContainerDTO;
 import org.openwes.wes.api.task.event.TransferContainerSealedEvent;
 import org.openwes.wes.common.facade.CallbackApiFacade;
+import org.openwes.wes.task.domain.entity.OperationTask;
+import org.openwes.wes.task.domain.repository.OperationTaskRepository;
+import org.openwes.wes.task.domain.transfer.OperationTaskTransfer;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -34,13 +39,33 @@ import java.util.stream.Collectors;
 @Slf4j
 public class OperationTaskSubscriber {
 
+    private final OperationTaskRepository operationTaskRepository;
+    private final OperationTaskTransfer operationTaskTransfer;
+
     private final IPickingOrderApi pickingOrderApi;
-    private final ITaskApi taskApi;
     private final IOutboundPlanOrderApi outboundPlanOrderApi;
     private final ISkuMainDataApi skuMainDataApi;
     private final CallbackApiFacade callbackApiFacade;
     private final ITransferContainerRecordApi transferContainerRecordApi;
     private final ITransferContainerApi transferContainerApi;
+    private final IContainerTaskApi containerTaskApi;
+
+    @Subscribe
+    public void onImprovePriority(PickingOrderImprovePriorityEvent event) {
+        List<OperationTask> operationTasks = operationTaskRepository
+                .findAllByPickingOrderIds(Lists.newArrayList(event.getPickingOrderId()))
+                .stream().filter(v->v.getTaskStatus() == OperationTaskStatusEnum.NEW)
+                .toList();
+
+        if(operationTasks.isEmpty()){
+            return;
+        }
+
+        operationTasks.forEach(operationTask -> operationTask.improvePriority(event.getPriority()));
+        operationTaskRepository.saveAll(operationTasks);
+
+        containerTaskApi.improvePriority(operationTasks.stream().map(OperationTask::getId).toList(),event.getPriority());
+    }
 
     @Subscribe
     public void onTransferContainerSealed(TransferContainerSealedEvent transferContainerSealedEvent) {
@@ -63,15 +88,15 @@ public class OperationTaskSubscriber {
         containerSealedDTO.setTransferContainerCode(transferContainerRecord.getTransferContainerCode());
         containerSealedDTO.setWarehouseCode(transferContainerRecord.getWarehouseCode());
 
-        List<OperationTaskDTO> operationTaskDTOS = taskApi.queryByTransferContainerRecordIds(transferContainerRecords.stream()
-                .map(TransferContainerRecordDTO::getId).toList());
-        if (CollectionUtils.isEmpty(operationTaskDTOS)) {
+        List<OperationTask> operationTasks = operationTaskRepository.findAllByTransferContainerRecordIds(transferContainerRecords.stream().map(TransferContainerRecordDTO::getId).toList());
+
+        if (CollectionUtils.isEmpty(operationTasks)) {
             log.error("transfer container record: {} and container: {} contains no operation tasks",
                     transferContainerRecord.getId(), transferContainerRecord.getTransferContainerCode());
             return null;
         }
-        Set<Long> pickingOrderIds = operationTaskDTOS.stream().map(OperationTaskDTO::getOrderId).collect(Collectors.toSet());
-        Set<Long> pickingOrderDetailIds = operationTaskDTOS.stream().map(OperationTaskDTO::getDetailId).collect(Collectors.toSet());
+        Set<Long> pickingOrderIds = operationTasks.stream().map(OperationTask::getOrderId).collect(Collectors.toSet());
+        Set<Long> pickingOrderDetailIds = operationTasks.stream().map(OperationTask::getDetailId).collect(Collectors.toSet());
         List<PickingOrderDTO> pickingOrderDTOs = pickingOrderApi.getOrderAndDetailByPickingOrderIdsAndDetailIds(pickingOrderIds, pickingOrderDetailIds);
 
         Map<Long, PickingOrderDTO.PickingOrderDetailDTO> pickingOrderDetailDTOMap = pickingOrderDTOs.stream().flatMap(v -> v.getDetails().stream())
@@ -84,10 +109,10 @@ public class OperationTaskSubscriber {
         Map<Long, OutboundPlanOrderDTO> outboundPlanOrderDTOMap = outboundPlanOrderApi.getByIds(outboundPlanOrderIds).stream()
                 .collect(Collectors.toMap(OutboundPlanOrderDTO::getId, Function.identity()));
 
-        Set<Long> skuIds = operationTaskDTOS.stream().map(OperationTaskDTO::getSkuId).collect(Collectors.toSet());
+        Set<Long> skuIds = operationTasks.stream().map(OperationTask::getSkuId).collect(Collectors.toSet());
         Map<Long, SkuMainDataDTO> skuMainDataDTOMap = skuMainDataApi.getByIds(skuIds).stream().collect(Collectors.toMap(SkuMainDataDTO::getId, Function.identity()));
 
-        List<ContainerSealedDetailDTO> containerSealedDetailDTOS = operationTaskDTOS.stream()
+        List<ContainerSealedDetailDTO> containerSealedDetailDTOS = operationTasks.stream()
                 .filter(v -> pickingOrderDetailDTOMap.containsKey(v.getDetailId()))
                 .map(task -> {
                     PickingOrderDTO.PickingOrderDetailDTO pickingOrderDetailDTO = pickingOrderDetailDTOMap.get(task.getDetailId());
@@ -95,29 +120,7 @@ public class OperationTaskSubscriber {
                     OutboundPlanOrderDTO outboundPlanOrderDTO = outboundPlanOrderDTOMap.get(pickingOrderDetailDTO.getOutboundOrderPlanId());
                     SkuMainDataDTO skuMainDataDTO = skuMainDataDTOMap.get(task.getSkuId());
 
-                    ContainerSealedDetailDTO detail = new ContainerSealedDetailDTO();
-                    detail.setWarehouseAreaId(pickingOrderDTO.getWarehouseAreaId());
-                    detail.setWorkStationId(task.getWorkStationId());
-                    detail.setOperator(task.getUpdateUser());
-                    detail.setPutWallSlotCode(task.getTargetLocationCode());
-                    detail.setOwnerCode(pickingOrderDetailDTO.getOwnerCode());
-                    detail.setWaveNo(outboundPlanOrderDTO.getWaveNo());
-                    detail.setCustomerOrderNo(outboundPlanOrderDTO.getCustomerOrderNo());
-                    detail.setCustomerOrderType(outboundPlanOrderDTO.getCustomerOrderType());
-                    detail.setCarrierCode(outboundPlanOrderDTO.getCarrierCode());
-                    detail.setWaybillNo(outboundPlanOrderDTO.getWaybillNo());
-                    detail.setOrigPlatformCode(outboundPlanOrderDTO.getOrigPlatformCode());
-                    detail.setExpiredTime(outboundPlanOrderDTO.getExpiredTime());
-                    detail.setPriority(outboundPlanOrderDTO.getPriority());
-                    detail.setOrderNo(outboundPlanOrderDTO.getOrderNo());
-                    detail.setExtendFields(outboundPlanOrderDTO.getExtendFields());
-                    detail.setDestinations(outboundPlanOrderDTO.getDestinations());
-                    detail.setSkuCode(skuMainDataDTO.getSkuCode());
-                    detail.setSkuName(skuMainDataDTO.getSkuName());
-                    detail.setBatchAttributes(pickingOrderDetailDTO.getBatchAttributes());
-                    detail.setQtyRequired(task.getRequiredQty());
-                    detail.setQtyActual(task.getOperatedQty());
-                    return detail;
+                    return operationTaskTransfer.toContainerSealedDetailDTO(task, pickingOrderDTO, pickingOrderDetailDTO, outboundPlanOrderDTO, skuMainDataDTO);
                 }).toList();
 
         containerSealedDTO.setContainerSealedDetailDTOS(containerSealedDetailDTOS);

@@ -1,11 +1,11 @@
 package org.openwes.wes.api.outbound;
 
+import jakarta.validation.Valid;
 import org.openwes.wes.api.outbound.dto.OutboundPlanOrderCancelDTO;
 import org.openwes.wes.api.outbound.dto.OutboundPlanOrderDTO;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 public interface IOutboundPlanOrderApi {
 
@@ -19,4 +19,5 @@ public interface IOutboundPlanOrderApi {
 
     List<OutboundPlanOrderDTO> getByIds(Collection<Long> outboundPlanOrderIds);
 
+    void improvePriority(@Valid List<Long> ids, int priority);
 }

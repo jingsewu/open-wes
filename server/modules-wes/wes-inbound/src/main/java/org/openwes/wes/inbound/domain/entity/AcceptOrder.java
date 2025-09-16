@@ -2,6 +2,7 @@ package org.openwes.wes.inbound.domain.entity;
 
 import com.google.common.collect.Lists;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.openwes.common.utils.exception.WmsException;
@@ -15,9 +16,10 @@ import java.util.List;
 
 import static org.openwes.common.utils.exception.code_enum.InboundErrorDescEnum.ACCEPT_ORDER_HAD_COMPLETED;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Slf4j
-public class AcceptOrder implements AggregatorRoot {
+public class AcceptOrder extends AggregatorRoot {
 
     private Long id;
 

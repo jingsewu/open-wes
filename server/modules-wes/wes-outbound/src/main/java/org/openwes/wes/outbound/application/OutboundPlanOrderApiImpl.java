@@ -93,4 +93,11 @@ public class OutboundPlanOrderApiImpl implements IOutboundPlanOrderApi {
         List<OutboundPlanOrder> outboundPlanOrders = outboundPlanOrderRepository.findAllByIds(outboundPlanOrderIds);
         return outboundPlanOrderTransfer.toDTOs(outboundPlanOrders);
     }
+
+    @Override
+    public void improvePriority(List<Long> ids, int priority) {
+        List<OutboundPlanOrder> outboundPlanOrders = outboundPlanOrderRepository.findAllByIds(ids);
+        outboundPlanOrders.forEach(v->v.improvePriority(priority));
+        outboundPlanOrderRepository.saveAll(outboundPlanOrders);
+    }
 }
