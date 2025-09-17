@@ -29,7 +29,7 @@ public class DomainEventScheduler {
     private static final long DELAY_TIME_IN_MILLIS = 600 * 1000L;
     private static final int MAX_SIZE_PER_TIME = 100;
 
-    @DistributedScheduled(cron = "0 */2 * * * *", name = "DomainEventScheduler#handleFailedDomainEvent")
+    @DistributedScheduled(cron = "0/30 * * * * *", name = "DomainEventScheduler#handleFailedDomainEvent")
     public void handleFailedDomainEvent() {
         CompletableFuture.runAsync(this::doHandleFailedDomainEvent, asyncEventBusExecutor)
                 .exceptionally(e -> {

@@ -85,7 +85,7 @@ public class PickingOrderHandleScheduler {
 
     private void handlePickingOrders(List<PickingOrder> pickingOrders, String warehouseCode, String key) {
 
-        List<Long> warehouseAreaIds = pickingOrders.stream().map(PickingOrder::getWarehouseAreaId).toList();
+        List<Long> warehouseAreaIds = pickingOrders.stream().map(PickingOrder::getWarehouseAreaId).distinct().toList();
         Map<Long, WarehouseAreaDTO> warehouseAreaMap = warehouseAreaApi.getByIds(warehouseAreaIds).stream()
                 .collect(Collectors.toMap(WarehouseAreaDTO::getId, Function.identity()));
 

@@ -117,9 +117,9 @@ public class Container {
         Set<String> notEmptySlots = containerStocks.stream().filter(v -> v.getTotalQty() > 0)
                 .map(ContainerStockDTO::getContainerSlotCode).collect(Collectors.toSet());
         this.emptySlotNum = this.containerSlotNum - notEmptySlots.size();
-        this.occupationRatio = BigDecimal.valueOf(this.containerSlotNum - (long) this.emptySlotNum)
+        this.occupationRatio = BigDecimal.valueOf(this.containerSlotNum - this.emptySlotNum)
                 .divide(BigDecimal.valueOf(this.containerSlotNum), 2, RoundingMode.HALF_EVEN);
-        containerSlots.forEach(containerSlot -> {
+        this.containerSlots.forEach(containerSlot -> {
             if (notEmptySlots.contains(containerSlot.getContainerSlotCode())) {
                 containerSlot.setEmptySlot(false);
                 containerSlot.setOccupationRatio(BigDecimal.ONE);

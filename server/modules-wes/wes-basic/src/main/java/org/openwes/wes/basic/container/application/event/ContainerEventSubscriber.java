@@ -12,6 +12,7 @@ import org.openwes.wes.api.stock.dto.ContainerStockDTO;
 import org.openwes.wes.basic.container.domain.entity.Container;
 import org.openwes.wes.basic.container.domain.repository.ContainerRepository;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.List;
 
@@ -27,14 +28,16 @@ public class ContainerEventSubscriber {
     public void onContainerStockUpdate(@Valid ContainerStockUpdateEvent event) {
         log.info("receive container stock update event: {}", event);
 
+        List<ContainerStockDTO> containerStocks = stockApi.getContainerStocks(
+                Lists.newArrayList(event.getContainerCode()), event.getWarehouseCode());
+
         Container container = containerRepository.findByContainerCode(event.getContainerCode(), event.getWarehouseCode());
         if (container == null) {
             log.warn("no container found with containerCode: {}, warehouseCode: {}", event.getContainerCode(), event.getWarehouseCode());
             return;
         }
-
-        List<ContainerStockDTO> containerStocks = stockApi.getContainerStocks(Lists.newArrayList(event.getContainerCode()), event.getWarehouseCode());
         container.changeStocks(containerStocks);
+
         containerRepository.save(container);
     }
 
@@ -44,7 +47,7 @@ public class ContainerEventSubscriber {
 
         Container container = containerRepository.findByContainerCode(event.getContainerCode(), event.getWarehouseCode());
         if (container == null) {
-            log.warn("no container found with containerCode: {}, warehouseCode: {}", event.getContainerCode(), event.getWarehouseCode());
+            log.warn("no container found with containerCode: {}, warehouseCode: {} when update container location", event.getContainerCode(), event.getWarehouseCode());
             return;
         }
 
