@@ -6,8 +6,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.openwes.common.utils.exception.WmsException;
-import org.openwes.common.utils.exception.code_enum.BasicErrorDescEnum;
 import org.openwes.domain.event.DomainEventPublisher;
 import org.openwes.wes.api.basic.event.ContainerStockUpdateEvent;
 import org.openwes.wes.api.stock.dto.StockTransferDTO;
@@ -97,7 +95,12 @@ public class StockEventSubscriber {
             return;
         }
 
-        skuBatchContainerStockAggregate.clearStock(containerStocks);
+        skuBatchContainerStockAggregate.clearContainerStock(containerStocks);
+
+        DomainEventPublisher.sendAsyncDomainEvent(new ContainerStockUpdateEvent()
+                        .setContainerCode(event.getContainerCode())
+                        .setWarehouseCode(event.getWarehouseCode())
+                );
     }
 
 }

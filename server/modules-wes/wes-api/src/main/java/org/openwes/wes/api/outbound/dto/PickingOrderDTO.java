@@ -39,9 +39,6 @@ public class PickingOrderDTO implements Serializable {
     @Hidden
     private PickingOrderStatusEnum pickingOrderStatus;
 
-    @Hidden
-    private PickingOrderTaskTypeEnum pickingOrderTaskType;
-
     /**
      * one picking order can be assigned to multiple station slot
      * <p>
@@ -107,9 +104,16 @@ public class PickingOrderDTO implements Serializable {
         @Schema(title = "短拣数量")
         private Integer qtyShort;
 
+        @Schema(title = "库存分配的数量")
+        @Hidden
+        private Integer qtyAllocation = 0;
+
         @Hidden
         private Long version;
 
+        public void addAllocation(int qtyPreAllocated) {
+            this.qtyAllocation += qtyPreAllocated;
+        }
     }
 
     @Data

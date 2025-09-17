@@ -1,11 +1,9 @@
 package org.openwes.wes.stock.domain.repository;
 
 import org.openwes.wes.stock.domain.entity.ContainerStock;
-import org.springframework.data.domain.PageRequest;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 public interface ContainerStockRepository {
 
@@ -25,7 +23,7 @@ public interface ContainerStockRepository {
 
     List<ContainerStock> findAllBySkuIds(Collection<Long> skuIds);
 
-    void clearContainerStockByIds(Set<Long> stockIds);
+    void clearContainerStockByIds(Collection<Long> stockIds);
 
     List<ContainerStock> findAllByContainerAndSlotCode(String warehouseCode, String containerCode, String containerSlotCode);
 

@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.openwes.wes.api.ems.proxy.dto.CreateContainerTaskDTO;
 import org.openwes.wes.ems.proxy.domain.entity.ContainerTask;
-import org.openwes.wes.ems.proxy.domain.repository.ContainerTaskAndBusinessTaskRelation;
+import org.openwes.wes.ems.proxy.domain.entity.ContainerTaskAndBusinessTaskRelation;
 import org.openwes.wes.ems.proxy.domain.service.ContainerTaskService;
 import org.springframework.stereotype.Service;
 

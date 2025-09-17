@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
-import org.openwes.domain.event.DomainEvent;
+import org.openwes.domain.event.api.DomainEvent;
 
 @EqualsAndHashCode(callSuper = true)
 @Data

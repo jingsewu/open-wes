@@ -2,8 +2,11 @@ dependencies {
 
     implementation project(path: ":modules-utils:distribute-lock", configuration: 'default')
     implementation project(path: ":modules-wes:wes-common", configuration: 'default')
-    implementation project(path: ":modules-utils:domain-event", configuration: 'default')
+    implementation project(path: ":modules-utils:domain-event:domain-event-core", configuration: 'default')
+    implementation project(path: ":modules-plugin:plugin-sdk", configuration: 'default')
+    implementation project(path: ":modules-plugin:plugin-extension", configuration: 'default')
 
+    implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework:spring-tx'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
@@ -16,8 +19,6 @@ dependencies {
     implementation 'org.mapstruct:mapstruct'
     annotationProcessor 'org.mapstruct:mapstruct-processor'
     implementation 'org.projectlombok:lombok-mapstruct-binding'
-
-    implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
     implementation 'com.alibaba:transmittable-thread-local'
 }

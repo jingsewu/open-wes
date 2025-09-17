@@ -1,6 +1,6 @@
 dependencies {
     implementation project(path: ":modules-utils:distribute-lock", configuration: 'default')
-    implementation project(path: ":modules-utils:domain-event", configuration: 'default')
+    implementation project(path: ":modules-utils:domain-event:domain-event-core", configuration: 'default')
     implementation project(path: ":modules-wes:wes-api", configuration: 'default')
     implementation project(path: ":modules-wes:wes-common", configuration: 'default')
 
@@ -18,8 +18,6 @@ dependencies {
     annotationProcessor 'org.mapstruct:mapstruct-processor'
     implementation 'org.projectlombok:lombok-mapstruct-binding'
 
-
-//    implementation 'com.amihaiemil.web:eo-yaml'
 }
 
 test {

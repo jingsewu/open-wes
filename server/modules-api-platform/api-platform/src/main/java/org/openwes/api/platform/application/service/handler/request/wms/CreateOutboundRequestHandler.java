@@ -1,10 +1,11 @@
 package org.openwes.api.platform.application.service.handler.request.wms;
 
 import org.openwes.api.platform.api.constants.ApiTypeEnum;
-import org.openwes.api.platform.application.context.RequestHandleContext;
-import org.openwes.api.platform.application.service.handler.RequestHandler;
+import org.openwes.api.platform.api.dto.request.RequestHandleContext;
+import org.openwes.api.platform.application.service.handler.AbstractRequestHandler;
 import org.openwes.api.platform.utils.ConverterHelper;
 import org.openwes.common.utils.http.Response;
+import org.openwes.plugin.extension.business.api.platform.request.IInboundPlanOrderCreatePlugin;
 import org.openwes.wes.api.outbound.dto.OutboundPlanOrderDTO;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class CreateOutboundRequestHandler extends RequestHandler {
+public class CreateOutboundRequestHandler extends AbstractRequestHandler {
 
     @Override
     public String getApiType() {
@@ -21,6 +22,7 @@ public class CreateOutboundRequestHandler extends RequestHandler {
 
     @Override
     public void invoke(RequestHandleContext context) {
+
         List<OutboundPlanOrderDTO> list = getTargetList(context, OutboundPlanOrderDTO.class);
         if (CollectionUtils.isEmpty(list)) {
             return;
@@ -32,4 +34,5 @@ public class CreateOutboundRequestHandler extends RequestHandler {
         }
         context.setResponse(Response.builder().build());
     }
+
 }

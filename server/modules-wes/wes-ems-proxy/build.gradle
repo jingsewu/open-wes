@@ -2,7 +2,8 @@ dependencies {
     implementation project(path: ":modules-wes:wes-api", configuration: 'default')
     implementation project(path: ":modules-wes:wes-common", configuration: 'default')
     implementation project(path: ":modules-api-platform:api-platform-api", configuration: 'default')
-    implementation project(path: ":modules-utils:domain-event", configuration: 'default')
+    implementation project(path: ":modules-utils:domain-event:domain-event-core", configuration: 'default')
+    implementation project(path: ":modules-plugin:plugin-sdk", configuration: 'default')
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
 

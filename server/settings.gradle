@@ -18,6 +18,12 @@ include 'modules-station:station-api'
 include 'modules-user:user'
 include 'modules-user:user-api'
 
+include 'modules-plugin:plugin-api'
+include 'modules-plugin:plugin-core'
+include 'modules-plugin:plugin-sdk'
+include 'modules-plugin:plugin-extension'
+include 'modules-plugin:plugin-example'
+
 include 'modules-gateway:gateway-core'
 
 include 'modules-api-platform:api-platform'
@@ -30,15 +36,15 @@ include 'modules-ai:ai-core'
 include 'modules-ai:ai-api'
 
 include 'modules-utils:common-utils'
-include 'modules-utils:domain-event'
 include 'modules-utils:distribute-lock'
 include 'modules-utils:mq'
 include 'modules-utils:distribute-file'
 include 'modules-utils:exception-handler'
 include 'modules-utils:common-import'
 include 'modules-utils:distribute-scheduler'
+include 'modules-utils:domain-event:domain-event-api'
+include 'modules-utils:domain-event:domain-event-core'
 
 include 'server:station-server'
 include 'server:gateway-server'
 include 'server:wes-server'
-

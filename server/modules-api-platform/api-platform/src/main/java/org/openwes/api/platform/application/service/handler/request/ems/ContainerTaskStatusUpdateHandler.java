@@ -1,9 +1,9 @@
 package org.openwes.api.platform.application.service.handler.request.ems;
 
 import org.openwes.api.platform.api.constants.ApiTypeEnum;
-import org.openwes.api.platform.application.context.RequestHandleContext;
+import org.openwes.api.platform.api.dto.request.RequestHandleContext;
 import org.openwes.api.platform.infrastructure.EmsClientService;
-import org.openwes.api.platform.application.service.handler.RequestHandler;
+import org.openwes.api.platform.application.service.handler.AbstractRequestHandler;
 import org.openwes.common.utils.exception.WmsException;
 import org.openwes.common.utils.exception.code_enum.ApiPlatformErrorDescEnum;
 import org.openwes.wes.api.ems.proxy.dto.UpdateContainerTaskDTO;
@@ -16,7 +16,7 @@ import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
-public class ContainerTaskStatusUpdateHandler extends RequestHandler {
+public class ContainerTaskStatusUpdateHandler extends AbstractRequestHandler {
 
     private final EmsClientService emsClientService;
 

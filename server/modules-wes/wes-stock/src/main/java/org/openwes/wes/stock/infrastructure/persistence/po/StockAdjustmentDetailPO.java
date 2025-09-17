@@ -1,6 +1,7 @@
 package org.openwes.wes.stock.infrastructure.persistence.po;
 
 import org.openwes.common.utils.base.UpdateUserPO;
+import org.openwes.common.utils.id.IdGenerator;
 import org.openwes.wes.api.stock.constants.StockAbnormalReasonEnum;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -24,7 +25,7 @@ public class StockAdjustmentDetailPO extends UpdateUserPO {
 
     @Id
     @GeneratedValue(generator = "databaseIdGenerator")
-    @GenericGenerator(name = "databaseIdGenerator", strategy = "org.openwes.common.utils.id.IdGenerator")
+    @GenericGenerator(name = "databaseIdGenerator", type = IdGenerator.class)
     private Long id;
 
     @Column(nullable = false, columnDefinition = "bigint default 0 comment '调整单ID'")

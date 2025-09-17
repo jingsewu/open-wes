@@ -1,9 +1,11 @@
 package org.openwes.wes.outbound.application.scheduler;
 
 import com.alibaba.ttl.TtlRunnable;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.openwes.common.utils.constants.RedisConstants;
 import org.openwes.common.utils.utils.RedisUtils;
-import org.openwes.distribute.lock.DistributeLock;
 import org.openwes.distribute.scheduler.annotation.DistributedScheduled;
 import org.openwes.wes.api.algo.dto.PickingOrderAssignedResult;
 import org.openwes.wes.api.algo.dto.PickingOrderDispatchedResult;
@@ -18,10 +20,6 @@ import org.openwes.wes.outbound.domain.aggregate.PickingOrderTaskAggregate;
 import org.openwes.wes.outbound.domain.entity.PickingOrder;
 import org.openwes.wes.outbound.domain.repository.PickingOrderRepository;
 import org.openwes.wes.outbound.domain.service.PickingOrderService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -45,7 +43,6 @@ public class PickingOrderHandleScheduler {
     private final PickingOrderTaskAggregate pickingOrderTaskAggregate;
     private final PickingOrderRepository pickingOrderRepository;
     private final PickingOrderService pickingOrderService;
-    private final DistributeLock distributeLock;
 
     private final Executor pickingOrderHandleExecutor;
     private final Executor pickingOrderReallocateExecutor;
@@ -54,6 +51,8 @@ public class PickingOrderHandleScheduler {
 
     @DistributedScheduled(cron = "*/5 * * * * *", name = "PickingOrderHandleScheduler#pickingOrderHandle")
     public void pickingOrderHandle() {
+        log.debug("schedule start execute picking order handler.");
+
         List<String> keys = redisUtils.keys(RedisUtils.generateKeysPatten("", NEW_PICKING_ORDER_IDS));
         keys.forEach(key -> {
             List<Long> pickingOrderIds = redisUtils.getListByPureKey(key, MAX_SIZE_PER_TIME);
@@ -66,30 +65,22 @@ public class PickingOrderHandleScheduler {
                     .exceptionally(e -> {
                         log.error("handle picking order failed.", e);
                         return null;
-                    });
+                    }).thenRun(() -> log.debug("schedule end execute picking order handler."));
         });
 
     }
 
     private void tryHandlePickingOrders(List<Long> pickingOrderIds, String key) {
-        boolean acquireLock = distributeLock.acquireLock(RedisConstants.PICKING_ORDER_DISPATCH_SCHEDULE_EXECUTE_LOCK, 0);
-        if (!acquireLock) {
+        String warehouseCode = key.substring(key.lastIndexOf("_") + 1);
+        List<PickingOrder> pickingOrders = pickingOrderRepository.findOrderAndDetailsByPickingOrderIds(pickingOrderIds)
+                .stream().filter(v -> v.getPickingOrderStatus() == PickingOrderStatusEnum.NEW).toList();
+        if (CollectionUtils.isEmpty(pickingOrders)) {
+            log.warn("can not find new picking orders, may be short completed, picking order ids : {}", pickingOrderIds);
+            redisUtils.removeListByPureKey(key, pickingOrderIds);
             return;
         }
-        try {
-            String warehouseCode = key.substring(key.lastIndexOf("_") + 1);
-            List<PickingOrder> pickingOrders = pickingOrderRepository.findOrderAndDetailsByPickingOrderIds(pickingOrderIds)
-                    .stream().filter(v -> v.getPickingOrderStatus() == PickingOrderStatusEnum.NEW).toList();
-            if (CollectionUtils.isEmpty(pickingOrders)) {
-                log.warn("can not find new picking orders, may be short completed, picking order ids : {}", pickingOrderIds);
-                redisUtils.removeListByPureKey(key, pickingOrderIds);
-                return;
-            }
 
-            handlePickingOrders(pickingOrders, warehouseCode, key);
-        } finally {
-            distributeLock.releaseLock(RedisConstants.PICKING_ORDER_DISPATCH_SCHEDULE_EXECUTE_LOCK);
-        }
+        handlePickingOrders(pickingOrders, warehouseCode, key);
     }
 
     private void handlePickingOrders(List<PickingOrder> pickingOrders, String warehouseCode, String key) {
@@ -146,35 +137,20 @@ public class PickingOrderHandleScheduler {
         redisUtils.removeListByPureKey(key, manualPickingOrders.stream().map(PickingOrder::getId).toList());
     }
 
-
     @DistributedScheduled(cron = "0 0/5 * * * *", name = "PickingOrderHandleScheduler#handleAbnormalOrders")
     public void handleAbnormalOrders() {
 
-        List<Long> abnormalTaskIds = redisUtils.getList(RedisConstants.PICKING_ORDER_ABNORMAL_DETAIL_IDS);
-        if (CollectionUtils.isEmpty(abnormalTaskIds)) {
+        List<Long> pickingOrderDetailIds = redisUtils.getList(RedisConstants.PICKING_ORDER_ABNORMAL_DETAIL_IDS);
+        if (CollectionUtils.isEmpty(pickingOrderDetailIds)) {
             return;
         }
 
         CompletableFuture
                 .runAsync(Objects.requireNonNull(TtlRunnable.get(()
-                        -> this.reallocate(abnormalTaskIds))), pickingOrderReallocateExecutor)
+                        -> pickingOrderApi.reallocate(pickingOrderDetailIds))), pickingOrderReallocateExecutor)
                 .exceptionally(e -> {
                     log.error("reallocate failed", e);
                     return null;
                 });
     }
-
-    private void reallocate(List<Long> pickingOrderDetailIds) {
-        boolean acquireLock = distributeLock.acquireLock(RedisConstants.PICKING_ORDER_REALLOCATE_LOCK, 0);
-        if (acquireLock) {
-            log.warn("picking order reallocate can't get distribute lock: {}", RedisConstants.PICKING_ORDER_REALLOCATE_LOCK);
-            return;
-        }
-        try {
-            pickingOrderApi.reallocate(pickingOrderDetailIds);
-        } finally {
-            distributeLock.releaseLock(RedisConstants.PICKING_ORDER_REALLOCATE_LOCK);
-        }
-    }
-
 }

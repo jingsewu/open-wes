@@ -1,7 +1,12 @@
 package org.openwes.wes.outbound.domain.service.impl;
 
 import com.google.common.collect.Lists;
-import org.openwes.common.utils.id.OrderNoGenerator;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.openwes.wes.api.algo.IPickingOrderAlgoApi;
 import org.openwes.wes.api.algo.PickingOrderAlgoApiFactory;
 import org.openwes.wes.api.algo.dto.PickingOrderDispatchedResult;
@@ -28,20 +33,12 @@ import org.openwes.wes.api.stock.dto.SkuBatchAttributeDTO;
 import org.openwes.wes.api.stock.dto.SkuBatchStockDTO;
 import org.openwes.wes.api.task.ITaskApi;
 import org.openwes.wes.api.task.dto.OperationTaskDTO;
-import org.openwes.wes.outbound.domain.entity.OutboundPreAllocatedRecord;
-import org.openwes.wes.outbound.domain.entity.OutboundWave;
-import org.openwes.wes.outbound.domain.entity.PickingOrder;
-import org.openwes.wes.outbound.domain.entity.PickingOrderDetail;
-import org.openwes.wes.outbound.domain.repository.OutboundPreAllocatedRecordRepository;
+import org.openwes.wes.outbound.domain.entity.*;
 import org.openwes.wes.outbound.domain.repository.PickingOrderRepository;
 import org.openwes.wes.outbound.domain.service.PickingOrderService;
 import org.openwes.wes.outbound.domain.transfer.PickingOrderTransfer;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.function.Function;
@@ -60,53 +57,12 @@ public class PickingOrderServiceImpl implements PickingOrderService {
     private final ITaskApi taskApi;
     private final IWorkStationApi workStationApi;
     private final PickingOrderRepository pickingOrderRepository;
-    private final OutboundPreAllocatedRecordRepository outboundPreAllocatedRecordRepository;
     private final PickingOrderTransfer pickingOrderTransfer;
     private final PickingOrderAlgoApiFactory pickingOrderAlgoApiFactory;
     private final ISkuBatchAttributeApi skuBatchAttributeApi;
     private final ISkuMainDataApi skuMainDataApi;
     private final IBatchAttributeConfigApi batchAttributeConfigFacade;
     private final IWarehouseAreaApi warehouseAreaApi;
-
-    @Override
-    public List<PickingOrder> spiltWave(OutboundWave outboundWave) {
-
-        Map<Long, List<OutboundPreAllocatedRecord>> warehouseAreaRecordMap = outboundPreAllocatedRecordRepository
-                .findByOutboundPlanOrderIds(outboundWave.getOutboundPlanOrderIds())
-                .stream().collect(Collectors.groupingBy(OutboundPreAllocatedRecord::getWarehouseAreaId));
-
-        List<PickingOrder> pickingOrders = Lists.newArrayList();
-        warehouseAreaRecordMap.forEach((key, value) -> {
-
-            List<PickingOrderDetail> pickingOrderDetails = value.stream()
-                    .map(preAllocatedRecord -> {
-                                PickingOrderDetail pickingOrderDetail = new PickingOrderDetail()
-                                        .setSkuId(preAllocatedRecord.getSkuId())
-                                        .setOwnerCode(preAllocatedRecord.getOwnerCode())
-                                        .setOutboundOrderPlanId(preAllocatedRecord.getOutboundPlanOrderId())
-                                        .setBatchAttributes(preAllocatedRecord.getBatchAttributes())
-                                        .setQtyRequired(preAllocatedRecord.getQtyPreAllocated())
-                                        .setSkuBatchStockId(preAllocatedRecord.getSkuBatchStockId())
-                                        .setOutboundOrderPlanDetailId(preAllocatedRecord.getOutboundPlanOrderDetailId())
-                                        .setRetargetingWarehouseAreaIds(preAllocatedRecord.getWarehouseAreaIds());
-                                pickingOrderDetail.setModified(true);
-                                return pickingOrderDetail;
-                            }
-                    ).toList();
-
-            PickingOrder pickingOrder = new PickingOrder()
-                    .setPriority(outboundWave.getPriority())
-                    .setShortOutbound(outboundWave.isShortOutbound())
-                    .setWarehouseCode(outboundWave.getWarehouseCode())
-                    .setWarehouseAreaId(key)
-                    .setPickingOrderNo(OrderNoGenerator.generationPickingOrderNo())
-                    .setWaveNo(outboundWave.getWaveNo())
-                    .setDetails(pickingOrderDetails);
-            pickingOrder.setAllowReceive(true);
-            pickingOrders.add(pickingOrder);
-        });
-        return pickingOrders;
-    }
 
     @Override
     public List<OperationTaskDTO> allocateStocks(PickingOrderHandlerContext pickingOrderHandlerContext) {
@@ -206,43 +162,54 @@ public class PickingOrderServiceImpl implements PickingOrderService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PickingOrderReallocateContext prepareReallocateStockContext(String warehouseCode, PickingOrder pickingOrder) {
 
         PickingOrderReallocateContext pickingOrderReallocateContext = new PickingOrderReallocateContext()
                 .setWarehouseCode(warehouseCode)
-                .setPickingOrder(pickingOrderTransfer.toDTO(pickingOrder));
+                .setPickingOrder(pickingOrderTransfer.toDTO(pickingOrder))
+                //TODO need to identity this warehouse area work type
+                .setWarehouseAreaWorkType(WarehouseAreaWorkTypeEnum.ROBOT);
 
         List<PickingOrderDetail> abnormalDetails = pickingOrder.getDetails().stream().filter(v -> v.getQtyAbnormal() > 0).toList();
         List<Long> skuBatchStockIds = abnormalDetails.stream().map(PickingOrderDetail::getSkuBatchStockId).toList();
 
+        //1. match current batch attributes stocks.
         List<SkuBatchStockDTO> skuBatchStocks = stockApi.getSkuBatchStocks(skuBatchStockIds);
         boolean allMatch = skuBatchStocks.stream().allMatch(v -> {
-            Integer totalAbnormalQty = abnormalDetails.stream().filter(a -> Objects.equals(a.getSkuBatchStockId(), v.getId())).map(PickingOrderDetail::getQtyAbnormal)
+            Integer totalAbnormalQty = abnormalDetails.stream()
+                    .filter(a -> Objects.equals(a.getSkuBatchStockId(), v.getId()))
+                    .map(PickingOrderDetail::getQtyAbnormal)
                     .reduce(Integer::sum).orElse(0);
             return v.getAvailableQty() >= totalAbnormalQty;
         });
 
-        List<ContainerStockDTO> containerStockDTOS = stockApi.getContainerStockBySkuBatchStockIds(skuBatchStockIds);
-        List<PickingOrderReallocateContext.PickingOrderReallocateDetail> pickingOrderReallocateDetails = abnormalDetails
-                .stream().map(detail -> new PickingOrderReallocateContext.PickingOrderReallocateDetail()
-                        .setPickingOrderDetailId(detail.getId())
-                        .setSkuBatchStockId(detail.getSkuBatchStockId())
-                        .setSkuBatchStocks(skuBatchStocks.stream().filter(v -> Objects.equals(v.getId(), detail.getSkuBatchStockId())).toList())
-                        .setContainerStocks(containerStockDTOS.stream().filter(v -> Objects.equals(v.getSkuBatchStockId(), detail.getSkuBatchStockId())).toList())
-                ).toList();
-
-        pickingOrderReallocateContext.setPickingOrderReallocateDetails(pickingOrderReallocateDetails);
-
         if (allMatch) {
+            List<ContainerStockDTO> containerStockDTOS = stockApi.getContainerStockBySkuBatchStockIds(skuBatchStockIds);
+            List<PickingOrderReallocateContext.PickingOrderReallocateDetail> pickingOrderReallocateDetails = abnormalDetails
+                    .stream().map(detail -> new PickingOrderReallocateContext.PickingOrderReallocateDetail()
+                            .setPickingOrderDetailId(detail.getId())
+                            .setSkuBatchStockId(detail.getSkuBatchStockId())
+                            .setSkuBatchStocks(skuBatchStocks.stream().filter(v -> Objects.equals(v.getId(), detail.getSkuBatchStockId())).toList())
+                            .setContainerStocks(containerStockDTOS.stream().filter(v -> Objects.equals(v.getSkuBatchStockId(), detail.getSkuBatchStockId())).toList())
+                    ).toList();
+
+            pickingOrderReallocateContext.setPickingOrderReallocateDetails(pickingOrderReallocateDetails);
             return pickingOrderReallocateContext;
         }
-        // match other batch attributes
+
+        //2. match other batch attributes
         List<Long> skuIds = pickingOrder.getDetails().stream().map(PickingOrderDetail::getSkuId).toList();
         List<String> ownerCodes = pickingOrder.getDetails().stream().map(PickingOrderDetail::getOwnerCode).distinct().toList();
         OutboundAllocateSkuBatchContext outboundAllocateSkuBatchContext = this.prepareAllocateCache(skuIds, warehouseCode, ownerCodes);
 
+        if (ObjectUtils.isEmpty(outboundAllocateSkuBatchContext.getSkuBatchStocks())) {
+            return pickingOrderReallocateContext;
+        }
+
         abnormalDetails.forEach(detail -> {
-            List<SkuBatchStockDTO> skuBatchStockDTOS = outboundAllocateSkuBatchContext.matchSkuBatchStocks(detail.getSkuId(), detail.getOwnerCode(), detail.getBatchAttributes()).stream().filter(v -> !Objects.equals(v.getId(), detail.getSkuBatchStockId())).toList();
+            List<SkuBatchStockDTO> skuBatchStockDTOS = outboundAllocateSkuBatchContext.matchSkuBatchStocks(detail.getSkuId(), detail.getOwnerCode(),
+                    detail.getBatchAttributes()).stream().filter(v -> !Objects.equals(v.getId(), detail.getSkuBatchStockId())).toList();
 
             if (CollectionUtils.isNotEmpty(detail.getRetargetingWarehouseAreaIds())) {
                 skuBatchStockDTOS = skuBatchStockDTOS.stream().filter(k -> detail.getRetargetingWarehouseAreaIds().contains(k.getWarehouseAreaId())).toList();
@@ -257,6 +224,7 @@ public class PickingOrderServiceImpl implements PickingOrderService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public OutboundAllocateSkuBatchContext prepareAllocateCache(List<Long> skuIds, String warehouseCode, List<String> ownerCodes) {
         Map<Long, List<SkuBatchAttributeDTO>> skuBatchAttributeMap = skuBatchAttributeApi.getBySkuIds(skuIds)
                 .stream().collect(Collectors.groupingBy(SkuBatchAttributeDTO::getSkuId));

@@ -30,6 +30,8 @@
 **リポジトリをクローン:**
    ```bash
    git clone https://github.com/jingsewu/open-wes.git
+   cd open-wes
+   HOST_IP=$(hostname -I | awk '{print $1}') docker-compose up -d
    ```
 
 #### サーバーの実行

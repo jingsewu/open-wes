@@ -85,7 +85,7 @@ public class ReportAbnormalTipHandler implements IBusinessHandler<Integer> {
             }
 
             if (totalToOperatedQty.get() > 0) {
-                log.warn("station {} occur overflow abnormal pick, overflow qty {}", workStationCache.getStationCode(), totalToOperatedQty);
+                log.warn("work station: {} code: {} occur overflow abnormal pick, overflow qty: {}",workStationId, workStationCache.getStationCode(), totalToOperatedQty);
             }
         }
 

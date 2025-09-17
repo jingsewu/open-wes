@@ -1,0 +1,22 @@
+dependencies {
+    implementation project(path: ":modules-utils:domain-event:domain-event-api", configuration: 'default')
+    implementation 'jakarta.validation:jakarta.validation-api'
+}
+
+bootJar {
+    enabled = false
+}
+
+jar {
+    enabled = true
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allJava
+    archiveClassifier.set('sources')
+}
+
+task javadocJar(type: Jar) {
+    from javadoc
+    archiveClassifier.set('javadoc')
+}

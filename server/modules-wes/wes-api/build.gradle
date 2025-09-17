@@ -1,7 +1,7 @@
 dependencies {
-    compileOnly project(path: ":modules-utils:domain-event", configuration: 'default')
     implementation project(path: ":modules-utils:common-utils", configuration: 'default')
     implementation project(path: ":modules-search:search-api", configuration: 'default')
+    implementation project(path: ":modules-utils:domain-event:domain-event-api", configuration: 'default')
 
     implementation 'jakarta.validation:jakarta.validation-api'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'

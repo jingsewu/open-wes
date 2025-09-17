@@ -58,3 +58,10 @@ management:
   endpoint:
     health:
       show-details: always
+
+pf4j:
+  plugin:
+    jar:
+      dir: /plugins/wes/jar
+    config:
+      dir: /plugins/wes/config

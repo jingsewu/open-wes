@@ -1,8 +1,8 @@
 package org.openwes.api.platform.application.service.handler.request.wms;
 
 import org.openwes.api.platform.api.constants.ApiTypeEnum;
-import org.openwes.api.platform.application.context.RequestHandleContext;
-import org.openwes.api.platform.application.service.handler.RequestHandler;
+import org.openwes.api.platform.api.dto.request.RequestHandleContext;
+import org.openwes.api.platform.application.service.handler.AbstractRequestHandler;
 import org.openwes.api.platform.utils.ConverterHelper;
 import org.openwes.common.utils.http.Response;
 import org.openwes.wes.api.main.data.dto.SkuMainDataDTO;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class CreateSkuRequestHandler extends RequestHandler {
+public class CreateSkuRequestHandler extends AbstractRequestHandler {
 
     @Override
     public String getApiType() {

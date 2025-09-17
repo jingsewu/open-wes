@@ -6,7 +6,6 @@ import org.openwes.wes.stock.domain.repository.SkuBatchStockRepository;
 import org.openwes.wes.stock.infrastructure.persistence.mapper.SkuBatchStockPORepository;
 import org.openwes.wes.stock.infrastructure.persistence.po.SkuBatchStockPO;
 import org.openwes.wes.stock.infrastructure.persistence.transfer.SkuBatchStockPOTransfer;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
