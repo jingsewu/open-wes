@@ -58,6 +58,7 @@ public class DomainTransactionAspect {
 
         DefaultTransactionDefinition def = new DefaultTransactionDefinition();
         def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+        def.setName("EventProcessing-" + domainEventPO.getId());
         TransactionStatus status = transactionManager.getTransaction(def);
         try {
 
