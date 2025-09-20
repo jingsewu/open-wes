@@ -6,6 +6,7 @@ import request from "@/utils/requestInterceptor"
 import ShelfModel from "@/pages/wms/station/widgets/common/Shelf/ShelfModel"
 import {useTranslation} from "react-i18next";
 import {request_select_container_spec} from "@/pages/wms/constants/select_search_api_contant";
+import {CustomActionType} from "@/pages/wms/station/instances/outbound/customActionType";
 
 let warehouseCode = localStorage.getItem("warehouseCode")
 
@@ -22,6 +23,8 @@ interface ContainerHandlerProps {
     containerCode?: string
     disable?: boolean
     isContainerLeave?: boolean
+    hasOrder?: boolean
+    onActionDispatch: any
 }
 
 const ContainerHandler = (props: ContainerHandlerProps) => {
@@ -34,7 +37,9 @@ const ContainerHandler = (props: ContainerHandlerProps) => {
         onConfirm,
         focusValue,
         changeFocusValue,
-        onScanSubmit
+        onScanSubmit,
+        hasOrder,
+        onActionDispatch
     } =
         props
     const containerRef = useRef<InputRef>(null)
@@ -159,7 +164,6 @@ const ContainerHandler = (props: ContainerHandlerProps) => {
             method: "post",
             url: `/wms/inbound/accept/completeByContainer?containerCode=${containerCode}`
         }).then((res: any) => {
-            console.log("onContainerFull", res)
             if (res.status === 200) {
                 setContainerCode("")
                 setContainerSpec({})
@@ -168,7 +172,7 @@ const ContainerHandler = (props: ContainerHandlerProps) => {
                 setInputValue("")
                 changeFocusValue("sku")
 
-                if (onScanSubmit) {
+                if (onScanSubmit && hasOrder) {
                     onScanSubmit()
                 }
 
@@ -180,12 +184,9 @@ const ContainerHandler = (props: ContainerHandlerProps) => {
     }
 
     const containerLeave = (containerCode: string) => {
-        request({
-            method: "put",
-            url: "/station/api?apiCode=CONTAINER_LEAVE",
+        onActionDispatch({
+            eventCode: CustomActionType.CONTAINER_LEAVE,
             data: containerCode
-        }).then((res: any) => {
-            console.log("containerLeave", res)
         })
     }
 

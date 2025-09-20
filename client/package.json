@@ -126,6 +126,10 @@
         "react-cropper": {
             "react": "$react",
             "react-dom": "$react-dom"
+        },
+        "mobx-react": {
+            "react": "$react",
+            "react-dom": "$react-dom"
         }
     }
 }

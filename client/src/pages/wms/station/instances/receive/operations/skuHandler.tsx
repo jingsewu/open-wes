@@ -24,7 +24,7 @@ const SkuAreaHandler = (props: any) => {
     }
 
     const onPressEnter = () => {
-        if (details) {
+        if (details && details.length > 0) {
             const detail = details.find((item: any) => item.skuCode === skuCode)
             if (!detail) {
                 setSkuCode("")
@@ -42,7 +42,7 @@ const SkuAreaHandler = (props: any) => {
             }).then((res: any) => {
                 if (!(res.status === 200 && res.data?.length > 0)) {
                     setSkuCode("")
-                    message.warning(t("receive.station.warning.skuNotInOrder"))
+                    message.warning(t("receive.station.warning.skuNotExist"))
                     return
                 }
                 let sku = res.data[0];
@@ -50,7 +50,7 @@ const SkuAreaHandler = (props: any) => {
             }).catch((error) => {
                 console.log("error", error)
                 setSkuCode("")
-                message.warning(t("receive.station.warning.skuNotInOrder"))
+                message.warning(t("receive.station.warning.skuNotExist"))
             })
         }
 

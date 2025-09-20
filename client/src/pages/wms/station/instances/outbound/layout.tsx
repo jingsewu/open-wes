@@ -20,7 +20,7 @@ export interface OutBoundLayoutProps {
 const OutBoundLayout = observer((props: OutBoundLayoutProps) => {
     const { store, onActionDispatch, message } = useWorkStation()
 
-    const chooseArea = store.chooseArea
+    const chooseArea = store?.chooseArea
     const containerAreaIsActive = chooseArea === ChooseArea.workLocationArea
     const skuAreaIsActive = chooseArea === ChooseArea.skuArea
     const putWallAreaIsActive = chooseArea === ChooseArea.putWallArea
@@ -28,6 +28,9 @@ const OutBoundLayout = observer((props: OutBoundLayoutProps) => {
     const changeAreaHandler = useCallback(
         async (type: string) => {
             try {
+                if (!onActionDispatch) {
+                    return
+                }
                 const { code, msg } = await onActionDispatch({
                     eventCode: CustomActionType.CHOOSE_AREA,
                     data: type

@@ -704,6 +704,7 @@
     "receive.station.orderArea.div.skuKindNumber": "Total SKU count/Received/Pending",
     "receive.station.orderArea.div.totalQty": "Total inbound quantity/Received/Pending",
     "receive.station.warning.skuNotInOrder": "SKU not found in the current order",
+    "receive.station.warning.skuNotExist": "SKU not exist",
     "receive.station.skuArea.scanBarcode": "Please scan the product barcode",
     "receive.station.skuArea.receivedQty": "Received quantity",
     "receive.station.skuArea.totalQty": "Arrived quantity",

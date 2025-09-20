@@ -1,5 +1,5 @@
 import {Col, Row} from "antd"
-import React, {useEffect} from "react"
+import React, {useEffect, useRef} from "react"
 import {Translation} from "react-i18next"
 import {withRouter} from "react-router-dom"
 import * as images from "@/icon/station"

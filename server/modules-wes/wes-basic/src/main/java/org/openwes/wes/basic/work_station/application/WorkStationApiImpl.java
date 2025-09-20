@@ -79,7 +79,6 @@ public class WorkStationApiImpl implements IWorkStationApi {
         List<PutWall> putWalls = putWallRepository.findAllByWorkStationId(workStation.getId());
         workStationService.validateOffline(workStation, putWalls);
 
-        workStation.offline();
         workStationPutWallAggregate.offline(putWalls, workStation);
     }
 

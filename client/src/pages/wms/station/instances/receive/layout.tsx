@@ -1,5 +1,4 @@
-import {Button, Col, Input, message, Row} from "antd"
-import classNames from "classnames/bind"
+import {Button, Col, Input, Row} from "antd"
 import React, {useState} from "react"
 import request from "@/utils/requestInterceptor"
 
@@ -9,13 +8,14 @@ import type {OperationProps} from "@/pages/wms/station/instances/types"
 
 import ComponentWrapper from "../../component-wrapper"
 import {OPERATION_MAP} from "./config"
-import style from "./index.module.scss"
 import ContainerHandler from "./operations/containerHandler"
 import {valueFilter as scanInfoFilter} from "./operations/tips"
 import {StationOperationType} from "./type"
 import SkuHandler from "./operations/skuHandler"
 import OrderHandler from "./operations/orderHandler"
 import {useTranslation} from "react-i18next";
+import {observer, useWorkStation} from "@/pages/wms/station/state";
+import {MessageType} from "@/pages/wms/station/widgets/message";
 
 let warehouseCode = localStorage.getItem("warehouseCode")
 
@@ -23,20 +23,53 @@ interface ReplenishLayoutProps extends OperationProps<any, any> {
     workStationEvent: WorkStationView<any>
 }
 
-const cx = classNames.bind(style)
-
-const Layout = (props: ReplenishLayoutProps) => {
-    const {t} = useTranslation();
-    const {workStationEvent} = props
-
-    //TODO by Evelyn 这里可能是undefined,导致后面确定收货提交的时候 workStationEvent.workStationId就会报错
-    if (workStationEvent === undefined) {
-        return <div>{t("common.loading")}</div>
-    }
+const LayoutInner = (props: ReplenishLayoutProps) => {
     const [orderNo, setOrderNo] = useState("")
     const [orderInfo, setOrderInfo] = useState<any>()
     const [currentSkuInfo, setCurrentSkuInfo] = useState<any>({})
     const [focusValue, setFocusValue] = useState("")
+
+    return <LayoutContent {...props} orderNo={orderNo} setOrderNo={setOrderNo} orderInfo={orderInfo}
+                          setOrderInfo={setOrderInfo} currentSkuInfo={currentSkuInfo}
+                          setCurrentSkuInfo={setCurrentSkuInfo}
+                          focusValue={focusValue} setFocusValue={setFocusValue}/>
+}
+
+const LayoutContent = observer((props: ReplenishLayoutProps & {
+    orderNo: string
+    setOrderNo: (value: string) => void
+    orderInfo: any
+    setOrderInfo: (value: any) => void
+    currentSkuInfo: any
+    setCurrentSkuInfo: (value: any) => void
+    focusValue: string
+    setFocusValue: (value: string) => void
+}) => {
+
+    const {store, message,onActionDispatch} = useWorkStation()
+
+    const {t} = useTranslation();
+
+    // 检查 store 是否有效
+    if (!store) {
+        return <div>{t("common.loading")}</div>
+    }
+
+    const workStationEvent = store.workStationEvent
+    if (workStationEvent === undefined) {
+        return <div>{t("common.loading")}</div>
+    }
+
+    const {
+        orderNo,
+        setOrderNo,
+        orderInfo,
+        setOrderInfo,
+        currentSkuInfo,
+        setCurrentSkuInfo,
+        focusValue,
+        setFocusValue
+    } = props
     const hasOrder = workStationEvent?.hasOrder ?? ""
 
     const onScanSubmit = () => {
@@ -51,7 +84,10 @@ const Layout = (props: ReplenishLayoutProps) => {
             })
             .catch((error) => {
                 console.log("error", error)
-                message.error(error.message)
+                message?.({
+                    type: MessageType.ERROR,
+                    content: error.message
+                })
             })
     }
 
@@ -89,7 +125,9 @@ const Layout = (props: ReplenishLayoutProps) => {
         }).then((res: any) => {
             console.log("confirm", res)
             if (res.status === 200) {
-                onScanSubmit()
+                if(hasOrder){
+                    onScanSubmit()
+                }
                 setCurrentSkuInfo({})
                 changeFocusValue("sku")
             }
@@ -118,7 +156,7 @@ const Layout = (props: ReplenishLayoutProps) => {
                             currentSkuInfo={currentSkuInfo}
                             focusValue={focusValue}
                             onSkuChange={onSkuChange}
-                            displayQty={true}
+                            displayQty={hasOrder}
                         />
                     </Col>
                     <Col span={12} className="pt-4">
@@ -127,6 +165,8 @@ const Layout = (props: ReplenishLayoutProps) => {
                             onConfirm={onConfirm}
                             changeFocusValue={changeFocusValue}
                             onScanSubmit={onScanSubmit}
+                            hasOrder={hasOrder}
+                            onActionDispatch={onActionDispatch}
                         />
                     </Col>
                 </Row>
@@ -155,6 +195,6 @@ const Layout = (props: ReplenishLayoutProps) => {
             />
         </>
     )
-}
+})
 
-export default Layout
+export default LayoutInner
