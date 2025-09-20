@@ -140,6 +140,7 @@ export default class WorkStationEventLoop {
             maxReconnectAttempts: 5,
             reconnectDelay: 1000,
             heartbeatInterval: 30000,
+            connectionTimeout: 15000,
             onMessage: (message) => {
                 console.log("websocket receive data: ", message)
                 if (message.type === "DATA_CHANGED") {
@@ -158,6 +159,10 @@ export default class WorkStationEventLoop {
             },
             onError: (error) => {
                 console.error(`websocket connect failed:`, error)
+            },
+            onTimeout: () => {
+                console.warn("WebSocket连接超时")
+                toast.warning("WebSocket连接超时，正在重试...")
             }
         })
 

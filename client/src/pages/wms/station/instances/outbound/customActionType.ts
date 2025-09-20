@@ -9,6 +9,9 @@ export enum CustomActionType {
     ONLINE = "ONLINE",
     /** 工作站下线 */
     OFFLINE = "OFFLINE",
+
+    CONTAINER_LEAVE = "CONTAINER_LEAVE",
+
     /** 扫描SKU */
     SCAN_BARCODE = "SCAN_BARCODE",
     /** 切换高亮区域 */

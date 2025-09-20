@@ -4,7 +4,6 @@ import './state/mobxConfig'
 import type { WorkStationConfig } from "@/pages/wms/station/instances/types"
 import React, { memo, useEffect, useState, useRef } from "react"
 import type { RouteComponentProps } from "react-router"
-import { useWorkStation } from "./state"
 import { workStationStore } from "./state/WorkStationStore"
 import WorkStationEventLoop from "./event-loop/index"
 import Layout from "./layout"
@@ -35,7 +34,7 @@ const WorkStationFactor: Record<string, WorkStationConfig<string>> = {}
  */
 const initWorkStationFactor = (): Record<string, WorkStationConfig<string>> => {
     const factor: Record<string, WorkStationConfig<string>> = {}
-    
+
     try {
         // @ts-ignore
         const res = require.context("./instances", true, /config\.(ts|tsx)$/)
@@ -48,7 +47,7 @@ const initWorkStationFactor = (): Record<string, WorkStationConfig<string>> => {
     } catch (error) {
         console.error("初始化工作站配置失败:", error)
     }
-    
+
     return factor
 }
 
@@ -82,11 +81,11 @@ const WorkStation = (props: WorkStationProps) => {
             const res: any = await request_work_station_view()
             console.log("request_work_station_view 返回值:", res)
             console.log("res.data:", res?.data)
-            
+
             const isConfigured = res?.data?.status !== STATION_STATUS_NOT_CONFIGURED
             console.log("isConfigured:", isConfigured, "status:", res?.data?.status)
             setIsConfigStationId(isConfigured)
-            
+
             // 将获取到的数据设置到 store 中
             if (res?.data) {
                 console.log("设置 workStationEvent 到 store:", res.data)
@@ -125,7 +124,7 @@ const WorkStation = (props: WorkStationProps) => {
             // 停止事件循环和 WebSocket 连接
             workStationEventLoop.stop()
             // workStationEventLoop.resetCurrentEvent()
-            
+
             // 清理 ResizeObserver
             try {
                 const resizeObserverManager = (window as any).ResizeObserverManager

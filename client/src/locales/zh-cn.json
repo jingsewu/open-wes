@@ -704,6 +704,7 @@
     "receive.station.orderArea.div.skuKindNumber": "品项总数/已收/待收",
     "receive.station.orderArea.div.totalQty": "入库总数/已收/待收",
     "receive.station.warning.skuNotInOrder": "SKU在当前订单找不到",
+    "receive.station.warning.skuNotExist": "SKU不存在",
     "receive.station.skuArea.scanBarcode": "请扫描商品条码",
     "receive.station.skuArea.receivedQty": "已收货数量",
     "receive.station.skuArea.totalQty": "到货数量",
