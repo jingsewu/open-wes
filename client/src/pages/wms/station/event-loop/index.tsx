@@ -128,11 +128,16 @@ export default class WorkStationEventLoop {
     }
 
     private readonly getWebsocketData: () => Promise<void> = async () => {
+
+        const stationId = this.stationId ?? localStorage.getItem("stationId")
+
+        if(!stationId){
+            return;
+        }
+
         const wsUrl =
             STATION_WEBSOCKET_URL +
-            `?stationCode=${
-                this.stationId ?? localStorage.getItem("stationId")
-            }&Authorization=` +
+            `?stationCode=${stationId}&Authorization=` +
             encodeURIComponent(localStorage.getItem("ws_token") as string)
 
         this.websocketManager = new WebSocketManager({
