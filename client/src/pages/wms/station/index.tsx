@@ -104,7 +104,7 @@ const WorkStation = (props: WorkStationProps) => {
 
     // 初始化事件循环
     useEffect(() => {
-        if (isInitialized.current) return
+        if (isInitialized.current && !isConfigStationId) return
         isInitialized.current = true
 
         // 配置事件循环
@@ -121,21 +121,28 @@ const WorkStation = (props: WorkStationProps) => {
         }
 
         return () => {
-            // 停止事件循环和 WebSocket 连接
-            workStationEventLoop.stop()
-            // workStationEventLoop.resetCurrentEvent()
+            // 检查是否正在离开工作站页面
+            const currentPath = window.location.pathname
+            const isLeavingWorkStation = !currentPath.startsWith('/wms/workStation/')
 
-            // 清理 ResizeObserver
-            try {
-                const resizeObserverManager = (window as any).ResizeObserverManager
-                if (resizeObserverManager) {
-                    resizeObserverManager.disconnectAll()
+            if (isLeavingWorkStation) {
+                console.log('Leaving workstation section, stopping event loop')
+                // 停止事件循环和 WebSocket 连接
+                workStationEventLoop.stop()
+                // workStationEventLoop.resetCurrentEvent()
+
+                // 清理 ResizeObserver
+                try {
+                    const resizeObserverManager = (window as any).ResizeObserverManager
+                    if (resizeObserverManager) {
+                        resizeObserverManager.disconnectAll()
+                    }
+                } catch (error) {
+                    console.warn('清理 ResizeObserver 时出错:', error)
                 }
-            } catch (error) {
-                console.warn('清理 ResizeObserver 时出错:', error)
             }
         }
-    }, [debugType, mockData, type])
+    }, [debugType, mockData, type, isConfigStationId])
 
 
     // 根据配置状态渲染不同内容

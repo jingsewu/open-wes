@@ -6,15 +6,15 @@ import {request_work_station} from "@/pages/wms/station/constants/constant";
 
 const {Title} = Typography
 
-const SelectStation = ({isConfigSationId, setIsConfigStationId}: any) => {
+const SelectStation = ({isConfigStationId, setIsConfigStationId}: any) => {
     const [stationId, setStationId] = useState("")
     const [options, setOptions] = useState<any[]>([])
     const [error, setError] = useState("")
 
     useEffect(() => {
-        if (isConfigSationId) return
+        if (isConfigStationId) return
         getStationOptions()
-    }, [store.warehouse.code, isConfigSationId])
+    }, [store.warehouse.code, isConfigStationId])
 
     const getStationOptions = () => {
         request_work_station(store.warehouse.code).then((res: any) => {
