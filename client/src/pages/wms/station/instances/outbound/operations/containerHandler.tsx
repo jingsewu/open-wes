@@ -2,17 +2,12 @@ import React from "react"
 
 import {
     DevicePhysicalType,
-    WorkLocationArea,
-    WorkStationView
+    WorkLocationArea
 } from "@/pages/wms/station/event-loop/types"
 import MaterialHandler from "@/pages/wms/station/instances/outbound/operations/components/MaterialHandler"
-import type { OutboundProps } from "@/pages/wms/station/instances/outbound/type"
 import type { OperationProps } from "@/pages/wms/station/instances/types"
 import EmptyImage from "@/pages/wms/station/instances/outbound/operations/components/EmptyImage"
 import { useWorkStation, observer } from "../../../state"
-
-// 常量定义
-const DEFAULT_WORK_LOCATION_TYPE = DevicePhysicalType.DEFAULT
 
 export interface ContainerHandlerProps {
     workLocationArea: WorkLocationArea
@@ -30,22 +25,12 @@ const ContainerHandler = observer(
         const containerViews = workLocationArea?.workLocationViews?.find(
             (item) => item.enable
         )
-        const workLocationType =
-            containerViews?.workLocationType || DEFAULT_WORK_LOCATION_TYPE
+        const workLocationType = containerViews?.workLocationType || DevicePhysicalType.DEFAULT
 
-        const renderMaterialHandler = () => <MaterialHandler />
-
-        const renderContainerComponent = () => {
-            const isRobotType = workLocationType === DevicePhysicalType.ROBOT
-            const isBufferShelvingType =
-                workLocationType === DevicePhysicalType.BUFFER_SHELVING
-
-            if (isRobotType || isBufferShelvingType) {
-                return renderMaterialHandler()
-            }
-
-            return <EmptyImage />
-        }
+        const isRobotOrBufferType = [
+            DevicePhysicalType.ROBOT,
+            DevicePhysicalType.BUFFER_SHELVING
+        ].includes(workLocationType)
 
         const isDefaultLayout = workLocationType === DevicePhysicalType.DEFAULT
         const containerStyle: React.CSSProperties = {
@@ -57,7 +42,11 @@ const ContainerHandler = observer(
             width: "100%"
         }
 
-        return <div style={containerStyle}>{renderContainerComponent()}</div>
+        return (
+            <div style={containerStyle}>
+                {isRobotOrBufferType ? <MaterialHandler /> : <EmptyImage />}
+            </div>
+        )
     }
 )
 

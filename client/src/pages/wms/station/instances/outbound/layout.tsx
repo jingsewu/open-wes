@@ -1,59 +1,21 @@
 /**
  * 当前工作站实例的布局
  */
-import React, { useCallback } from "react"
-
-import { CustomActionType } from "@/pages/wms/station/instances/outbound/customActionType"
-
+import React from "react"
 import { ChooseArea } from "@/pages/wms/station/event-loop/types"
 import type { WorkStationView } from "@/pages/wms/station/event-loop/types"
-import { MessageType } from "@/pages/wms/station/widgets/message"
 
 import ComponentWrapper from "../../component-wrapper"
-import { OPERATION_MAP } from "./config"
-import { useWorkStation, observer } from "../../state"
+import { OPERATION_MAP, LAYOUT_STYLES } from "./config"
+import { observer } from "../../state"
+import { useOutboundLayout } from "./hooks"
 
 export interface OutBoundLayoutProps {
     workStationEvent: WorkStationView<any>
 }
 
 const OutBoundLayout = observer((props: OutBoundLayoutProps) => {
-    const { store, onActionDispatch, message } = useWorkStation()
-
-    const chooseArea = store?.chooseArea
-    const containerAreaIsActive = chooseArea === ChooseArea.workLocationArea
-    const skuAreaIsActive = chooseArea === ChooseArea.skuArea
-    const putWallAreaIsActive = chooseArea === ChooseArea.putWallArea
-
-    const changeAreaHandler = useCallback(
-        async (type: string) => {
-            try {
-                if (!onActionDispatch) {
-                    return
-                }
-                const { code, msg } = await onActionDispatch({
-                    eventCode: CustomActionType.CHOOSE_AREA,
-                    data: type
-                })
-                if (code === "-1") {
-                    message?.({
-                        type: MessageType.ERROR,
-                        content: msg
-                    })
-                }
-            } catch (error) {
-                message?.({
-                    type: MessageType.ERROR,
-                    content: error.message
-                })
-            }
-        },
-        [onActionDispatch, message]
-    )
-
-    const skuAreaChangeHandler = () => changeAreaHandler(ChooseArea.skuArea)
-    const putWallAreaChangeHandler = () =>
-        changeAreaHandler(ChooseArea.putWallArea)
+    const { changeAreaHandler, containerAreaIsActive, skuAreaIsActive, putWallAreaIsActive } = useOutboundLayout()
 
     return (
         <>
@@ -62,13 +24,13 @@ const OutBoundLayout = observer((props: OutBoundLayoutProps) => {
                     {/* 容器区域 */}
                     <div
                         className="d-flex mr-5 bg-white overflow-hidden"
-                        style={{ flex: 3 }}
+                        style={{ flex: LAYOUT_STYLES.CONTAINER_AREA.flex }}
                     >
                         <ComponentWrapper
                             style={{
                                 width: "100%",
-                                padding: 12,
-                                maxWidth: 550
+                                padding: LAYOUT_STYLES.CONTAINER_AREA.padding,
+                                maxWidth: LAYOUT_STYLES.CONTAINER_AREA.maxWidth
                             }}
                             type={ChooseArea.workLocationArea}
                             Component={
@@ -80,13 +42,13 @@ const OutBoundLayout = observer((props: OutBoundLayoutProps) => {
                     {/* 商品信息 */}
                     <div
                         className="bg-white overflow-hidden"
-                        style={{ flex: 7 }}
+                        style={{ flex: LAYOUT_STYLES.SKU_AREA.flex }}
                     >
                         <ComponentWrapper
-                            style={{ width: "100%", padding: 12 }}
+                            style={{ width: "100%", padding: LAYOUT_STYLES.SKU_AREA.padding }}
                             type={ChooseArea.skuArea}
                             Component={OPERATION_MAP[ChooseArea.skuArea]}
-                            changeAreaHandler={skuAreaChangeHandler}
+                            changeAreaHandler={() => changeAreaHandler(ChooseArea.skuArea)}
                             isActive={skuAreaIsActive}
                         />
                     </div>
@@ -97,7 +59,7 @@ const OutBoundLayout = observer((props: OutBoundLayoutProps) => {
                         <ComponentWrapper
                             type={ChooseArea.putWallArea}
                             Component={OPERATION_MAP[ChooseArea.putWallArea]}
-                            changeAreaHandler={putWallAreaChangeHandler}
+                            changeAreaHandler={() => changeAreaHandler(ChooseArea.putWallArea)}
                             isActive={putWallAreaIsActive}
                         />
                     </div>

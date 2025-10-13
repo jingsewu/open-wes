@@ -1,31 +1,61 @@
+/**
+ * 出库工作站配置
+ */
 import React from "react"
 import { Translation } from "react-i18next"
+import type { WorkStationConfig } from "../types"
+import { DebugType } from "../types"
+import { TabActionType } from "../../tab-actions/constant"
+import { MessageType } from "../../widgets/message"
+import { ChooseArea } from "../../event-loop/types"
 
-import exceptionLog from "@/pages/wms/station/instances/outbound/custom-actions/ExceptionLog"
-import SplitContainer from "@/pages/wms/station/instances/outbound/custom-actions/SplitContainer"
-import taskDetail from "@/pages/wms/station/instances/outbound/custom-actions/TaskDetail"
-import unbindBoxConfig from "@/pages/wms/station/instances/outbound/custom-actions/UnbindBox"
-import { CustomActionType } from "@/pages/wms/station/instances/outbound/customActionType"
-import type { WorkStationConfig } from "@/pages/wms/station/instances/types"
-import { DebugType } from "@/pages/wms/station/instances/types"
-import { TabActionType } from "@/pages/wms/station/tab-actions/constant"
-import { MessageType } from "@/pages/wms/station/widgets/message"
-
+import { CustomActionType } from "./customActionType"
 import InstanceLayout from "./layout"
 import mockData from "./mock-events"
+
+// 操作处理器
 import ContainerHandler from "./operations/containerHandler"
 import PickingHandler from "./operations/pickingHandler"
 import putWallHandler from "./operations/putWallHandler"
 import TipsHandler from "./operations/tips"
-import { ChooseArea } from "@/pages/wms/station/event-loop/types"
 
+// 自定义操作
+import exceptionLog from "./custom-actions/ExceptionLog"
+import SplitContainer from "./custom-actions/SplitContainer"
+import taskDetail from "./custom-actions/TaskDetail"
+import unbindBoxConfig from "./custom-actions/UnbindBox"
+
+// 操作映射
 export const OPERATION_MAP = {
     [ChooseArea.workLocationArea]: ContainerHandler,
     [ChooseArea.skuArea]: PickingHandler,
     [ChooseArea.putWallArea]: putWallHandler,
     [ChooseArea.tips]: TipsHandler
-}
+} as const
 
+// 布局样式常量
+export const LAYOUT_STYLES = {
+    CONTAINER_AREA: { flex: 3, maxWidth: 550, padding: 12 },
+    SKU_AREA: { flex: 7, padding: 12 },
+} as const
+
+// 创建任务控制操作的辅助函数
+const createTaskAction = (actionType: CustomActionType, tabActionType: TabActionType) => ({
+    key: tabActionType,
+    permissions: [10702],
+    emitter: async (props: any) => {
+        const result = await props.onActionDispatch({ eventCode: actionType })
+        
+        if (actionType === CustomActionType.PAUSE && result.code === "-1") {
+            props.message?.({
+                type: MessageType.ERROR,
+                content: result.msg
+            })
+        }
+    }
+})
+
+// 工作站配置
 const config: WorkStationConfig<any> = {
     type: "outbound",
     title: <Translation>{(t) => t("picking.title")}</Translation>,
@@ -44,36 +74,9 @@ const config: WorkStationConfig<any> = {
         }
     ],
     actions: [
-        // 操作按钮
         TabActionType.EXIT,
-        {
-            key: TabActionType.START_TASK,
-            permissions: [10702],
-            emitter: async (props) => {
-                const { onActionDispatch, message } = props
-                const { code, msg } = await onActionDispatch({
-                    eventCode: CustomActionType.RESUME
-                })
-            }
-        },
-        {
-            key: TabActionType.STOP_TASK,
-            permissions: [10702],
-            emitter: async (props) => {
-                const { onActionDispatch, message } = props
-                const { code, msg } = await onActionDispatch({
-                    eventCode: CustomActionType.PAUSE
-                })
-
-                if (code === "-1") {
-                    message?.({
-                        type: MessageType.ERROR,
-                        content: msg
-                    })
-                    return
-                }
-            }
-        },
+        createTaskAction(CustomActionType.RESUME, TabActionType.START_TASK),
+        createTaskAction(CustomActionType.PAUSE, TabActionType.STOP_TASK),
         taskDetail,
         unbindBoxConfig,
         SplitContainer,

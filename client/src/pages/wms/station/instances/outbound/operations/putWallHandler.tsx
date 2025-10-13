@@ -17,14 +17,11 @@ const PutWallHandler = (props: OperationProps<PutWallHandlerProps, any>) => {
     const value = {
         putWallViews: workStationEvent?.putWallArea?.putWallViews || [],
         putWallDisplayStyle: workStationEvent?.putWallArea?.putWallDisplayStyle,
-        putWallTagConfigDTO:
-            workStationEvent?.putWallArea?.putWallTagConfigDTO || {},
+        putWallTagConfigDTO: workStationEvent?.putWallArea?.putWallTagConfigDTO || {},
         chooseType: workStationEvent?.chooseArea
     }
 
-    useImperativeHandle(refs, () => {
-        return value
-    })
+    useImperativeHandle(refs, () => value)
 
     return <PutWall />
 }

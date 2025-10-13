@@ -7,7 +7,7 @@ import {DEBOUNCE_TIME} from "@/pages/wms/station/constants/constant"
 import type {
     ContainerDesc,
     SubContainer
-} from "@/pages/wms/station/instances/outbound/type"
+} from "@/pages/wms/station/instances/outbound/types"
 import {ShelvesStatus} from "@/pages/wms/station/widgets/seedingWall"
 import {BusinessType} from "@/pages/wms/station/widgets/types"
 

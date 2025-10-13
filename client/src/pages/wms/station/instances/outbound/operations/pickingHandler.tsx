@@ -1,9 +1,4 @@
-import type {
-    WorkStationView,
-    PickingViewItem
-} from "@/pages/wms/station/event-loop/types"
-import { CustomActionType } from "@/pages/wms/station/instances/outbound/customActionType"
-import type { OutboundProps } from "@/pages/wms/station/instances/outbound/type"
+import type { PickingViewItem } from "@/pages/wms/station/event-loop/types"
 import type { OperationProps } from "@/pages/wms/station/instances/types"
 import React, { useImperativeHandle } from "react"
 import OutboundSkuInfo from "./components/OutboundSkuInfo"
@@ -23,11 +18,7 @@ const PickAreaHandler = (
     const { refs, isActive } = props
     const { workStationEvent } = useWorkStation()
 
-    const value = workStationEvent?.skuArea
-
-    useImperativeHandle(refs, () => {
-        return value
-    })
+    useImperativeHandle(refs, () => workStationEvent?.skuArea)
 
     return <OutboundSkuInfo isActive={isActive} />
 }

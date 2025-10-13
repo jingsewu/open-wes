@@ -1,4 +1,4 @@
-import type { CarrierDesc } from "@/pages/wms/station/instances/outbound/type"
+import type { CarrierDesc } from "@/pages/wms/station/instances/outbound/types"
 import { BusinessType } from "@/pages/wms/station/widgets/types"
 import classNames from "classnames/bind"
 import React, { memo } from "react"
