@@ -2,7 +2,7 @@
 import './state/mobxConfig'
 
 import type { WorkStationConfig } from "@/pages/wms/station/instances/types"
-import React, { memo, useEffect, useState, useRef } from "react"
+import React, { memo, useEffect, useState, useRef, useMemo, useCallback } from "react"
 import type { RouteComponentProps } from "react-router"
 import { workStationStore } from "./state/WorkStationStore"
 import WorkStationEventLoop from "./event-loop/index"
@@ -58,8 +58,8 @@ const WorkStation = (props: WorkStationProps) => {
     const { code, type } = props
     const isInitialized = useRef(false)
 
-    // 获取工作站配置
-    const workStationConfig = WorkStationFactor[type] || {}
+    const workStationConfig = useMemo(() => WorkStationFactor[type] || {}, [type])
+    
     const {
         actions,
         layout: InstanceLayout,
@@ -68,15 +68,14 @@ const WorkStation = (props: WorkStationProps) => {
         debugType = false,
         mockData = {},
         extraTitleInfo
-    } = workStationConfig
+    } = useMemo(() => workStationConfig, [workStationConfig])
 
     // 工作站配置状态
     const [isConfigStationId, setIsConfigStationId] = useState(
         !!localStorage.getItem("stationId")
     )
 
-    // 获取工作站状态
-    const getStationStatus = async () => {
+    const getStationStatus = useCallback(async () => {
         try {
             const res: any = await request_work_station_view()
             console.log("request_work_station_view 返回值:", res)
@@ -95,7 +94,7 @@ const WorkStation = (props: WorkStationProps) => {
             console.error("获取工作站状态失败:", error)
             setIsConfigStationId(false)
         }
-    }
+    }, [])
 
     // 初始化工作站状态
     useEffect(() => {

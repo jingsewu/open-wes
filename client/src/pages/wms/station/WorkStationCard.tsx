@@ -1,5 +1,5 @@
 import {Col, Row} from "antd"
-import React, {useEffect, useRef} from "react"
+import React, {useEffect, useRef, useMemo, useCallback} from "react"
 import {Translation} from "react-i18next"
 import {withRouter} from "react-router-dom"
 import * as images from "@/icon/station"
@@ -149,6 +149,7 @@ const Station = observer((props: any) => {
     const {history} = props
     const {store, onActionDispatch} = useWorkStation()
     const {workStationEvent} = store
+    
     const {workStationStatus, workStationMode} = workStationEvent || {}
 
     console.log("WorkStationCard - workStationEvent:", workStationEvent)
@@ -156,16 +157,15 @@ const Station = observer((props: any) => {
     console.log("WorkStationCard - workStationMode:", workStationMode)
 
     useEffect(() => {
-        const path =
-            workStationStatus !== "OFFLINE" && workStationMode
-                ? `${WORK_STATION_PATH_PREFIX}/${
-                    StationTypes[workStationMode as keyof typeof StationTypes]
-                }`
-                : WORK_STATION_PATH_PREFIX
+        const path = workStationStatus !== "OFFLINE" && workStationMode
+            ? `${WORK_STATION_PATH_PREFIX}/${
+                StationTypes[workStationMode as keyof typeof StationTypes]
+            }`
+            : WORK_STATION_PATH_PREFIX
         history.replace(path)
     }, [workStationMode, workStationStatus, history])
 
-    const handleCardClick = (workStationMode: string, hasOrder: boolean) => {
+    const handleCardClick = useCallback((workStationMode: string, hasOrder: boolean) => {
         onActionDispatch({
             eventCode: CustomActionType.ONLINE,
             data: {
@@ -173,7 +173,7 @@ const Station = observer((props: any) => {
                 hasOrder: hasOrder
             }
         })
-    }
+    }, [onActionDispatch])
 
     return (
         <div className="site-card-wrapper px-4 pt-4">

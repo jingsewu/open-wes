@@ -47,10 +47,12 @@ function Wrapper(props: {
         return valueFilter ? valueFilter(workStationEvent) : workStationEvent
     }, [workStationEvent, valueFilter])
 
+    const chooseArea = workStationEvent?.chooseArea
+
     const isActive =
         propIsActive !== undefined
             ? propIsActive
-            : workStationEvent?.chooseArea === type
+            : chooseArea === type
     console.log("ComponentWrapper render:", {
         type,
         chooseArea: workStationEvent?.chooseArea,
@@ -62,13 +64,13 @@ function Wrapper(props: {
     const evenChangeHandler = useCallback(
         debounce(
             async () => {
-                if (workStationEvent?.chooseArea === type) return
+                if (chooseArea === type) return
                 changeAreaHandler && (await changeAreaHandler())
             },
             DEBOUNCE_TIME,
             { leading: true }
         ),
-        [type, changeAreaHandler, workStationEvent?.chooseArea]
+        [type, changeAreaHandler, chooseArea]
     )
 
     // 注册组件实例
@@ -94,4 +96,4 @@ function Wrapper(props: {
     )
 }
 
-export default Wrapper
+export default memo(Wrapper)

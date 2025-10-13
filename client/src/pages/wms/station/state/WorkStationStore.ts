@@ -27,6 +27,11 @@ export class WorkStationStore {
     console.log("setWorkStationEvent called with:", event)
     
     runInAction(() => {
+      if (this.workStationEvent === event) {
+        console.log("WorkStationEvent unchanged (same reference), skipping update")
+        return
+      }
+      
       // 保存之前的状态用于比较
       const previousChooseArea = this.workStationEvent?.chooseArea
       
