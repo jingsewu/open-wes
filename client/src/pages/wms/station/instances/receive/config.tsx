@@ -1,19 +1,18 @@
 import React from "react"
-import {Translation} from "react-i18next"
+import { Translation } from "react-i18next"
 
-import type {WorkStationConfig} from "@/pages/wms/station/instances/types"
-import {DebugType} from "@/pages/wms/station/instances/types"
-import {TabActionType} from "@/pages/wms/station/tab-actions/constant"
+import type { WorkStationConfig } from "@/pages/wms/station/instances/types"
+import { DebugType } from "@/pages/wms/station/instances/types"
+import { TabActionType } from "@/pages/wms/station/tab-actions/constant"
 
-import Tips from "./operations/tips"
-import TaskDetail from "./custom-actions/TaskDetail"
+import { StationOperationType } from "./types"
 import InstanceLayout from "./layout"
 import mockData from "./mock-events"
+import Tips from "./operations/tips"
+import TaskDetail from "./custom-actions/TaskDetail"
 import SkuHandler from "./operations/skuHandler"
 import ContainerHandler from "./operations/containerHandler"
 import OrderHandler from "./operations/orderHandler"
-
-import {StationOperationType} from "./type"
 
 export const OPERATION_MAP = {
     [StationOperationType.robotArea]: ContainerHandler,

@@ -1,11 +1,12 @@
 import React from "react"
-import {Col, Row, Typography} from "antd"
-import {useTranslation} from "react-i18next";
+import { Col, Row, Typography } from "antd"
+import { useTranslation } from "react-i18next"
+import type { OrderHandlerProps } from "../types"
 
 const { Title } = Typography
-const OrderHandler = (props: any) => {
-    const { value} = props
-    const { t } = useTranslation();
+
+const OrderHandler = ({ value }: OrderHandlerProps) => {
+    const { t } = useTranslation()
     const { customerOrderNo, storageType, skuKindNum, totalQty } = value
     return (
         <Row gutter={16} className="py-3 bg-white">

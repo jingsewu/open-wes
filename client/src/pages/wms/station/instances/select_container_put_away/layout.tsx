@@ -10,7 +10,7 @@ import ComponentWrapper from "../../component-wrapper"
 import {OPERATION_MAP} from "./config"
 import ContainerHandler from "../receive/operations/containerHandler"
 import {valueFilter as scanInfoFilter} from "../receive/operations/tips"
-import {StationOperationType} from "../receive/type"
+import {StationOperationType} from "../receive/types"
 import SkuHandler from "../receive/operations/skuHandler"
 import OrderHandler from "../receive/operations/orderHandler"
 import {useTranslation} from "react-i18next";

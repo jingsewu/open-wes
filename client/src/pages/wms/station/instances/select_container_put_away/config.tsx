@@ -13,7 +13,7 @@ import SkuHandler from "../receive/operations/skuHandler"
 import ContainerHandler from "../receive/operations/containerHandler"
 import OrderHandler from "../receive/operations/orderHandler"
 
-import {StationOperationType} from "../receive/type"
+import {StationOperationType} from "../receive/types"
 import CallContainer from "../receive/custom-actions/CallContainer"
 
 export const OPERATION_MAP = {

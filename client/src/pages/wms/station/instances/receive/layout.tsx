@@ -1,115 +1,79 @@
-import {Button, Col, Input, Row} from "antd"
-import React, {useState} from "react"
-import request from "@/utils/requestInterceptor"
+import React from "react"
+import { Button, Col, Input, Row } from "antd"
+import { useTranslation } from "react-i18next"
 
-import {WorkStationView} from "@/pages/wms/station/event-loop/types"
-
-import type {OperationProps} from "@/pages/wms/station/instances/types"
+import type { OperationProps } from "@/pages/wms/station/instances/types"
+import { WorkStationView } from "@/pages/wms/station/event-loop/types"
+import { observer, useWorkStation } from "@/pages/wms/station/state"
+import { MessageType } from "@/pages/wms/station/widgets/message"
 
 import ComponentWrapper from "../../component-wrapper"
-import {OPERATION_MAP} from "./config"
+import { OPERATION_MAP } from "./config"
+import { StationOperationType } from "./types"
+import { WAREHOUSE_CODE } from "./constants"
+import { valueFilter as scanInfoFilter } from "./operations/tips"
 import ContainerHandler from "./operations/containerHandler"
-import {valueFilter as scanInfoFilter} from "./operations/tips"
-import {StationOperationType} from "./type"
 import SkuHandler from "./operations/skuHandler"
 import OrderHandler from "./operations/orderHandler"
-import {useTranslation} from "react-i18next";
-import {observer, useWorkStation} from "@/pages/wms/station/state";
-import {MessageType} from "@/pages/wms/station/widgets/message";
-
-let warehouseCode = localStorage.getItem("warehouseCode")
+import { useReceiveState } from "./hooks"
+import { receiveApiService, createApiHandler } from "./services/api"
 
 interface ReplenishLayoutProps extends OperationProps<any, any> {
     workStationEvent: WorkStationView<any>
 }
 
 const LayoutInner = (props: ReplenishLayoutProps) => {
-    const [orderNo, setOrderNo] = useState("")
-    const [orderInfo, setOrderInfo] = useState<any>()
-    const [currentSkuInfo, setCurrentSkuInfo] = useState<any>({})
-    const [focusValue, setFocusValue] = useState("")
-
-    return <LayoutContent {...props} orderNo={orderNo} setOrderNo={setOrderNo} orderInfo={orderInfo}
-                          setOrderInfo={setOrderInfo} currentSkuInfo={currentSkuInfo}
-                          setCurrentSkuInfo={setCurrentSkuInfo}
-                          focusValue={focusValue} setFocusValue={setFocusValue}/>
+    const state = useReceiveState()
+    return <LayoutContent {...props} {...state} />
 }
 
-const LayoutContent = observer((props: ReplenishLayoutProps & {
-    orderNo: string
-    setOrderNo: (value: string) => void
-    orderInfo: any
-    setOrderInfo: (value: any) => void
-    currentSkuInfo: any
-    setCurrentSkuInfo: (value: any) => void
-    focusValue: string
-    setFocusValue: (value: string) => void
-}) => {
+const LayoutContent = observer((props: ReplenishLayoutProps & ReturnType<typeof useReceiveState>) => {
+    const {store, message, onActionDispatch} = useWorkStation()
+    const {t} = useTranslation()
 
-    const {store, message,onActionDispatch} = useWorkStation()
-
-    const {t} = useTranslation();
-
-    // 检查 store 是否有效
-    if (!store) {
+    // 早期返回处理
+    if (!store?.workStationEvent) {
         return <div>{t("common.loading")}</div>
     }
 
     const workStationEvent = store.workStationEvent
-    if (workStationEvent === undefined) {
-        return <div>{t("common.loading")}</div>
-    }
-
     const {
-        orderNo,
-        setOrderNo,
-        orderInfo,
-        setOrderInfo,
-        currentSkuInfo,
-        setCurrentSkuInfo,
-        focusValue,
-        setFocusValue
+        orderNo, setOrderNo,
+        orderInfo, setOrderInfo,
+        currentSkuInfo, setCurrentSkuInfo,
+        focusValue, setFocusValue
     } = props
     const hasOrder = workStationEvent?.hasOrder ?? ""
 
-    const onScanSubmit = () => {
-        request({
-            method: "post",
-            url: `/wms/inbound/plan/query/${orderNo}/` + warehouseCode
+    // API错误处理
+    const handleApiError = (error: any) => {
+        message?.({
+            type: MessageType.ERROR,
+            content: error.message
         })
-            .then((res: any) => {
-                console.log("res", res)
-                setOrderInfo(res.data.data)
-                setFocusValue("sku")
-            })
-            .catch((error) => {
-                console.log("error", error)
-                message?.({
-                    type: MessageType.ERROR,
-                    content: error.message
-                })
-            })
+    }
+
+    const apiHandler = createApiHandler(handleApiError)
+
+    const onScanSubmit = async () => {
+        await apiHandler(async () => {
+            const orderData = await receiveApiService.queryPlan(orderNo, WAREHOUSE_CODE!)
+            setOrderInfo(orderData)
+            setFocusValue("sku")
+        })
     }
 
     const onSkuChange = (detail: any) => {
         setCurrentSkuInfo(detail)
-        changeFocusValue("container")
+        setFocusValue("container")
     }
 
-    const onConfirm = ({
-                           containerCode,
-                           containerSpecCode,
-                           containerId,
-                           activeSlot,
-                           inputValue
-                       }: any) => {
-        request({
-            method: "post",
-            url: "/wms/inbound/plan/accept",
-            data: {
+    const onConfirm = async ({ containerCode, containerSpecCode, containerId, activeSlot, inputValue }: any) => {
+        await apiHandler(async () => {
+            const res = await receiveApiService.acceptPlan({
                 inboundPlanOrderId: orderInfo.id,
                 inboundPlanOrderDetailId: currentSkuInfo.id,
-                warehouseCode,
+                warehouseCode: WAREHOUSE_CODE!,
                 qtyAccepted: inputValue,
                 skuId: currentSkuInfo.skuId,
                 targetContainerCode: containerCode,
@@ -118,75 +82,67 @@ const LayoutContent = observer((props: ReplenishLayoutProps & {
                 batchAttributes: {},
                 targetContainerId: containerId,
                 workStationId: workStationEvent.workStationId
-            },
-            headers: {
-                "Content-Type": "application/json"
-            }
-        }).then((res: any) => {
-            console.log("confirm", res)
+            })
+            
             if (res.status === 200) {
-                if(hasOrder){
-                    onScanSubmit()
-                }
+                if (hasOrder) onScanSubmit()
                 setCurrentSkuInfo({})
-                changeFocusValue("sku")
+                setFocusValue("sku")
             }
-        }).catch((error) => {
-            console.log("error", error)
         })
     }
 
-    const changeFocusValue = (value: string) => {
-        setFocusValue(value)
-    }
+    // 渲染扫描订单界面
+    const renderScanOrderView = () => (
+        <div className="w-full h-full d-flex flex-col justify-center items-center">
+            <div className="w-1/3">
+                <div className="text-xl">{t("receive.station.button.scanLpn")}</div>
+                <Input
+                    size="large"
+                    className="my-4 w-full"
+                    value={orderNo}
+                    onChange={(e) => setOrderNo(e.target.value)}
+                />
+                <Button type="primary" block onClick={onScanSubmit}>
+                    {t("receive.station.button.confirm")}
+                </Button>
+            </div>
+        </div>
+    )
+
+    // 渲染主工作界面
+    const renderWorkView = () => (
+        <Row className="h-full" justify="space-between" gutter={16}>
+            {hasOrder && orderInfo && (
+                <Col span={24}>
+                    <OrderHandler value={orderInfo} />
+                </Col>
+            )}
+            <Col span={12} className="pt-4">
+                <SkuHandler
+                    details={orderInfo?.details}
+                    currentSkuInfo={currentSkuInfo}
+                    focusValue={focusValue}
+                    onSkuChange={onSkuChange}
+                    displayQty={hasOrder}
+                />
+            </Col>
+            <Col span={12} className="pt-4">
+                <ContainerHandler
+                    focusValue={focusValue}
+                    onConfirm={onConfirm}
+                    changeFocusValue={setFocusValue}
+                    onScanSubmit={onScanSubmit}
+                    hasOrder={hasOrder}
+                    onActionDispatch={onActionDispatch}
+                />
+            </Col>
+        </Row>
+    )
 
     return (
         <>
-
-            {(hasOrder === false || orderInfo) ? (
-                <Row className="h-full" justify="space-between" gutter={16}>
-                    {hasOrder && orderInfo && (
-                        <Col span={24}>
-                            <OrderHandler value={orderInfo}/>
-                        </Col>
-                    )}
-                    <Col span={12} className="pt-4">
-                        <SkuHandler
-                            details={orderInfo?.details}
-                            currentSkuInfo={currentSkuInfo}
-                            focusValue={focusValue}
-                            onSkuChange={onSkuChange}
-                            displayQty={hasOrder}
-                        />
-                    </Col>
-                    <Col span={12} className="pt-4">
-                        <ContainerHandler
-                            focusValue={focusValue}
-                            onConfirm={onConfirm}
-                            changeFocusValue={changeFocusValue}
-                            onScanSubmit={onScanSubmit}
-                            hasOrder={hasOrder}
-                            onActionDispatch={onActionDispatch}
-                        />
-                    </Col>
-                </Row>
-            ) : (
-                <div className="w-full h-full d-flex flex-col justify-center items-center">
-                    <div className="w-1/3">
-                        <div className="text-xl">{t("receive.station.button.scanLpn")}</div>
-                        <Input
-                            size="large"
-                            className="my-4 w-full"
-                            value={orderNo}
-                            onChange={(e) => setOrderNo(e.target.value)}
-                        />
-                        <Button type="primary" block onClick={onScanSubmit}>
-                            {t("receive.station.button.confirm")}
-                        </Button>
-                    </div>
-                </div>
-            )}
-
+            {(hasOrder === false || orderInfo) ? renderWorkView() : renderScanOrderView()}
             <ComponentWrapper
                 type={StationOperationType.tips}
                 Component={OPERATION_MAP[StationOperationType.tips]}

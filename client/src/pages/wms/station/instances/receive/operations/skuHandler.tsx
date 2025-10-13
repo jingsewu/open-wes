@@ -1,21 +1,22 @@
-import React, {useEffect, useRef, useState} from "react"
+import React, { useEffect, useRef } from "react"
+import { Divider, Input } from "antd"
+import type { InputRef } from "antd"
+import { useTranslation } from "react-i18next"
 
-import type {InputRef} from "antd"
-import {Divider, Input, message} from "antd"
 import SkuInfo from "@/pages/wms/station/widgets/common/SkuInfo"
-import {useTranslation} from "react-i18next";
-import request from "@/utils/requestInterceptor";
+import type { SkuHandlerProps } from "../types"
+import { useSkuScanner } from "../hooks"
 
-const SkuAreaHandler = (props: any) => {
-    const {details, displayQty, currentSkuInfo, focusValue, onSkuChange} = props
+const SkuAreaHandler = (props: SkuHandlerProps) => {
+    const { details, displayQty, currentSkuInfo, focusValue, onSkuChange } = props
     const inputRef = useRef<InputRef>(null)
+    const { t } = useTranslation()
 
-    const [skuCode, setSkuCode] = useState<string>("")
-    const {t} = useTranslation();
+    const { skuCode, setSkuCode, scanSku, resetSkuCode } = useSkuScanner(onSkuChange)
 
     useEffect(() => {
         if (focusValue !== "sku") return
-        setSkuCode("")
+        resetSkuCode()
         inputRef.current?.focus()
     }, [focusValue, details])
 
@@ -24,36 +25,7 @@ const SkuAreaHandler = (props: any) => {
     }
 
     const onPressEnter = () => {
-        if (details && details.length > 0) {
-            const detail = details.find((item: any) => item.skuCode === skuCode)
-            if (!detail) {
-                setSkuCode("")
-                message.warning(t("receive.station.warning.skuNotInOrder"))
-                return
-            }
-            onSkuChange(detail)
-        } else {
-            request({
-                method: "post",
-                url: "/wms/basic/sku/getBySkuCode?skuCode=" + skuCode,
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            }).then((res: any) => {
-                if (!(res.status === 200 && res.data?.length > 0)) {
-                    setSkuCode("")
-                    message.warning(t("receive.station.warning.skuNotExist"))
-                    return
-                }
-                let sku = res.data[0];
-                onSkuChange({"skuId": sku.id, "skuCode": sku.skuCode, "skuName": sku.skuName})
-            }).catch((error) => {
-                console.log("error", error)
-                setSkuCode("")
-                message.warning(t("receive.station.warning.skuNotExist"))
-            })
-        }
-
+        scanSku(details)
     }
     return (
         <div className="bg-white p-4 h-full">

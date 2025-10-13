@@ -1,5 +1,5 @@
 import type {WorkStationView} from "@/pages/wms/station/event-loop/types"
-import type {replenishProps} from "@/pages/wms/station/instances/receive/type"
+import type {ReplenishProps} from "@/pages/wms/station/instances/receive/types"
 import type {OperationProps} from "@/pages/wms/station/instances/types"
 import MaterialRack from "@/pages/wms/station/widgets/common/Shelf"
 import React from "react"
@@ -28,7 +28,7 @@ export interface RobotHandlerProps {
  * @param data
  */
 export const valueFilter = (
-    data: WorkStationView<replenishProps> | undefined
+    data: WorkStationView<ReplenishProps> | undefined
 ):
     | OperationProps<RobotHandlerProps, ContainerHandlerConfirmProps>["value"]
     | Record<string, any> => {

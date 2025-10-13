@@ -4,7 +4,7 @@ import ChoosePickingTaskTip from "@/pages/wms/station/widgets/ChoosePickingTaskT
 import ChooseSkuCode from "@/pages/wms/station/widgets/ChooseSkuCode"
 import ConfigControlledModal from "@/pages/wms/station/widgets/config-controlled-modal"
 import React from "react"
-import {CustomActionType} from "@/pages/wms/station/instances/receive/customActionType"
+import {CustomActionType} from "../../types"
 import {WorkStationView} from "@/pages/wms/station/event-loop/types"
 import type {ModalType} from "@/pages/wms/station/instances/outbound/operations/tips/type"
 import Abnormal from "./Abnormal"

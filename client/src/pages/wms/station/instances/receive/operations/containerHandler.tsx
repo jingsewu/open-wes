@@ -1,34 +1,34 @@
-import React, {useEffect, useRef, useState} from "react"
-import type {InputRef, RadioChangeEvent} from "antd"
-import {Button, Col, Divider, Input, InputNumber, message, Radio, Row} from "antd"
-import {MinusOutlined, PlusOutlined} from "@ant-design/icons"
-import request from "@/utils/requestInterceptor"
+import React, { useEffect, useState } from "react"
+import { Button, Col, Divider, Input, InputNumber, message, Radio, Row } from "antd"
+import { MinusOutlined, PlusOutlined } from "@ant-design/icons"
+import type { RadioChangeEvent } from "antd"
+import { useTranslation } from "react-i18next"
+
 import ShelfModel from "@/pages/wms/station/widgets/common/Shelf/ShelfModel"
-import {useTranslation} from "react-i18next";
-import {request_select_container_spec} from "@/pages/wms/constants/select_search_api_contant";
-import {CustomActionType} from "@/pages/wms/station/instances/outbound/customActionType";
+import { 
+    CustomActionType,
+    type ContainerHandlerProps
+} from "../types"
+import { 
+    WAREHOUSE_CODE, 
+    CONTAINER_TYPE, 
+    BUTTON_STYLE 
+} from "../constants"
+import { 
+    useContainerSpecs, 
+    useFocusManagement, 
+    useQuantityControl 
+} from "../hooks"
+import { receiveApiService, createApiHandler } from "../services/api"
 
-let warehouseCode = localStorage.getItem("warehouseCode")
-
+// 类型定义
 export interface RobotHandlerProps {
     robotArea: any
     operationType: string
 }
 
-interface ContainerHandlerProps {
-    focusValue: string
-    onConfirm: any
-    changeFocusValue: any
-    onScanSubmit?: any
-    containerCode?: string
-    disable?: boolean
-    isContainerLeave?: boolean
-    hasOrder?: boolean
-    onActionDispatch: any
-}
-
 const ContainerHandler = (props: ContainerHandlerProps) => {
-    const {t} = useTranslation();
+    const { t } = useTranslation()
 
     const {
         disable,
@@ -40,86 +40,67 @@ const ContainerHandler = (props: ContainerHandlerProps) => {
         onScanSubmit,
         hasOrder,
         onActionDispatch
-    } =
-        props
-    const containerRef = useRef<InputRef>(null)
-    const countRef = useRef<any>(null)
-    const [inputValue, setInputValue] = useState<number | string>()
-    const [specOptions, setSpecOptions] = useState<any[]>([])
-    const [containerSpec, setContainerSpec] = useState<any>({})
-    const [containerSlotSpec, setContainerSlotSpec] = useState<string>("")
-    const [activeSlot, setActiveSlot] = useState<string[]>([])
+    } = props
+
+    // 使用自定义Hooks
+    const { containerRef, countRef } = useFocusManagement(focusValue)
+    const { inputValue, setInputValue, handleQuantityChange, resetQuantity } = useQuantityControl()
+    const {
+        specOptions,
+        containerSpec,
+        containerSlotSpec,
+        activeSlot,
+        setActiveSlot,
+        setContainerSpec,
+        setContainerSlotSpec,
+        initializeSpecs,
+        updateContainerSpec,
+        resetSpecs
+    } = useContainerSpecs()
+
     const [containerCode, setContainerCode] = useState<string>("")
 
-    useEffect(() => {
+    // API错误处理
+    const apiHandler = createApiHandler((error) => {
+        console.error("Container operation failed:", error)
+        message.error(error.message)
+    })
 
-        if (!warehouseCode) {
-            message.error(t("warehouse.code.missing"));
-            return;
+    // 初始化容器规格数据
+    useEffect(() => {
+        if (!WAREHOUSE_CODE) {
+            message.error(t("warehouse.code.missing"))
+            return
         }
 
-        request_select_container_spec(warehouseCode, "CONTAINER")
-            .then((res: any) => {
-                console.log("res", res?.data?.options)
-                setSpecOptions(res?.data?.options || [])
-                setContainerSpec({
-                    containerSpecCode: res?.data?.options[0]?.value
-                })
-                const slotSpec = res?.data?.options[0]?.containerSlotSpecs
-                setContainerSlotSpec(JSON.parse(slotSpec || "[]"))
+        const initialize = async () => {
+            const options = await initializeSpecs(WAREHOUSE_CODE!, CONTAINER_TYPE)
+            
+            // 处理预设容器代码
+            if (propContainerCode && propContainerCode !== containerCode) {
+                setContainerCode(propContainerCode)
+                setTimeout(() => onPressEnterLocal(propContainerCode, options), 0)
+            }
+        }
 
-                if (propContainerCode && propContainerCode !== containerCode) {
-                    setContainerCode(propContainerCode);
-                    // Delay the execution to ensure state is updated
-                    setTimeout(() => {
-                        onPressEnterLocal(propContainerCode, res?.data?.options || []);
-                    }, 0);
-                }
-            })
-
-    }, [propContainerCode, containerCode]);
-
-    useEffect(() => {
-        setInputValue("")
-    }, [])
+        initialize()
+    }, [propContainerCode, containerCode])
 
     useEffect(() => {
         if (focusValue === "container") {
             setContainerCode("")
-            setInputValue("")
+            resetQuantity()
             containerRef.current?.focus()
         } else if (focusValue === "count") {
             countRef.current?.focus()
         }
     }, [focusValue])
 
-    const onChange = (value: number) => {
-        setInputValue(value)
-    }
-
-    const handleMinus = () => {
-        if (!inputValue) return
-        setInputValue((prev: number) => prev - 1)
-    }
-
-    const handlePlus = () => {
-        setInputValue((prev: number) => prev + 1)
-    }
-
     const onSpecChange = (e: RadioChangeEvent) => {
-        console.log(`radio checked:${e.target.value}`)
-        setContainerSpec({
-            ...containerSpec,
-            containerSpecCode: e.target.value
-        })
-        const slotSpec = specOptions.find(
-            (item) => item.value === e.target.value
-        )?.containerSlotSpecs
-        setContainerSlotSpec(JSON.parse(slotSpec))
+        updateContainerSpec(e.target.value, specOptions)
     }
 
     const onSlotChange = (cell: any) => {
-        console.log("cell", cell)
         setActiveSlot([cell.containerSlotSpecCode])
     }
 
@@ -127,14 +108,12 @@ const ContainerHandler = (props: ContainerHandlerProps) => {
         setContainerCode(e.target.value)
     }
 
-    const onPressEnterLocal = (code: string, specOptions: any) => {
-        request({
-            method: "post",
-            url: `/wms/basic/container/get?containerCode=${code}&warehouseCode=${warehouseCode}`
-        }).then((res: any) => {
-            console.log("containerCode", res)
-            if (res.data?.containerCode) {
-                const data = res.data
+    const onPressEnterLocal = async (code: string, specOptions: any) => {
+        await apiHandler(async () => {
+            const containerData = await receiveApiService.getContainer(code, WAREHOUSE_CODE!)
+            
+            if (containerData?.containerCode) {
+                const data = containerData
                 setContainerSpec({
                     containerSpecCode: data.containerSpecCode,
                     containerId: data.id
@@ -151,33 +130,31 @@ const ContainerHandler = (props: ContainerHandlerProps) => {
     }
 
     const onPressEnter = () => {
-        onPressEnterLocal(containerCode, specOptions);
+        onPressEnterLocal(containerCode, specOptions)
     }
 
     const handleOK = () => {
-        console.log("activeSlot", activeSlot)
-        onConfirm({...containerSpec, containerCode, activeSlot, inputValue})
+        onConfirm({ ...containerSpec, containerCode, activeSlot, inputValue })
     }
 
-    const onContainerFull = () => {
-        request({
-            method: "post",
-            url: `/wms/inbound/accept/completeByContainer?containerCode=${containerCode}`
-        }).then((res: any) => {
+    const onContainerFull = async () => {
+        await apiHandler(async () => {
+            const res = await receiveApiService.completeByContainer(containerCode)
+
             if (res.status === 200) {
+                // 重置状态
                 setContainerCode("")
-                setContainerSpec({})
-                setContainerSlotSpec("")
-                setActiveSlot([])
-                setInputValue("")
+                resetSpecs()
+                resetQuantity()
                 changeFocusValue("sku")
 
+                // 处理后续操作
                 if (onScanSubmit && hasOrder) {
                     onScanSubmit()
                 }
 
                 if (isContainerLeave) {
-                    containerLeave(containerCode);
+                    containerLeave(containerCode)
                 }
             }
         })
@@ -193,7 +170,9 @@ const ContainerHandler = (props: ContainerHandlerProps) => {
     return (
         <div className="bg-white p-4 h-full">
             <div className="d-flex items-center">
-                <div className="white-space-nowrap">{t("receive.station.containerArea.scan")}:</div>
+                <div className="white-space-nowrap">
+                    {t("receive.station.containerArea.scan")}:
+                </div>
                 <Input
                     bordered={false}
                     value={containerCode}
@@ -203,7 +182,7 @@ const ContainerHandler = (props: ContainerHandlerProps) => {
                     disabled={disable}
                 />
             </div>
-            <Divider style={{margin: "12px 0"}}/>
+            <Divider style={{ margin: "12px 0" }} />
             <div className="px-10">
                 <Row>
                     <Col span={6}>
@@ -214,26 +193,24 @@ const ContainerHandler = (props: ContainerHandlerProps) => {
                     <Col>
                         <div className="border border-solid	">
                             <Button
-                                icon={<MinusOutlined/>}
+                                icon={<MinusOutlined />}
                                 type="text"
-                                onClick={handleMinus}
-                                // size={size}
-                                style={{borderRight: "1px solid #ccc"}}
+                                onClick={handleQuantityChange.minus}
+                                style={{ borderRight: BUTTON_STYLE.borderRight }}
                             />
                             <InputNumber
                                 min={0}
-                                // max={10}
                                 ref={countRef}
                                 controls={false}
                                 bordered={false}
                                 value={inputValue}
-                                onChange={onChange}
+                                onChange={handleQuantityChange.onChange}
                             />
                             <Button
-                                icon={<PlusOutlined/>}
+                                icon={<PlusOutlined />}
                                 type="text"
-                                onClick={handlePlus}
-                                style={{borderLeft: "1px solid #ccc"}}
+                                onClick={handleQuantityChange.plus}
+                                style={{ borderLeft: BUTTON_STYLE.borderLeft }}
                             />
                         </div>
                     </Col>
@@ -241,7 +218,10 @@ const ContainerHandler = (props: ContainerHandlerProps) => {
                 <Row className="my-2">
                     <Col span={6}>
                         <div className="text-right leading-loose">
-                            {t("receive.station.containerArea.chooseContainerSpec")}：
+                            {t(
+                                "receive.station.containerArea.chooseContainerSpec"
+                            )}
+                            ：
                         </div>
                     </Col>
                     <Col span={14}>
@@ -260,7 +240,7 @@ const ContainerHandler = (props: ContainerHandlerProps) => {
                         </div>
                         <div
                             className="d-flex flex-col"
-                            style={{height: 160}}
+                            style={{ height: 160 }}
                         >
                             <ShelfModel
                                 containerSlotSpecs={containerSlotSpec}
@@ -277,11 +257,14 @@ const ContainerHandler = (props: ContainerHandlerProps) => {
                 <Row>
                     <Col span={6}>
                         <div className="text-right leading-loose">
-                            {t("receive.station.containerArea.chooseContainerSlot")}：
+                            {t(
+                                "receive.station.containerArea.chooseContainerSlot"
+                            )}
+                            ：
                         </div>
                     </Col>
                     <Col span={14}>
-                        <Input value={activeSlot[0]}/>
+                        <Input value={activeSlot[0]} />
                     </Col>
                 </Row>
                 <Row justify="end" className="mt-2">
