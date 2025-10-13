@@ -9,6 +9,7 @@ import org.openwes.wes.stock.infrastructure.persistence.po.ContainerStockPO;
 import org.openwes.wes.stock.infrastructure.persistence.transfer.ContainerStockPOTransfer;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -57,7 +58,7 @@ public class ContainerStockRepositoryImpl implements ContainerStockRepository {
         List<ContainerStock> containerStocks = Lists.newArrayList();
         PageRequest pageRequest = PageRequest.of(0, limitSize);
         while (true) {
-            Page<ContainerStockPO> containerStockPOs = containerStockPORepository.findAllBySkuBatchStockIdIn(skuBatchStockIds, pageRequest);
+            Slice<ContainerStockPO> containerStockPOs = containerStockPORepository.findAllBySkuBatchStockIdIn(skuBatchStockIds, pageRequest);
             containerStocks.addAll(containerStockPOTransfer.toDOs(containerStockPOs.getContent()));
             if (containerStockPOs.getContent().size() < limitSize) {
                 break;
@@ -81,7 +82,7 @@ public class ContainerStockRepositoryImpl implements ContainerStockRepository {
         List<ContainerStock> containerStocks = Lists.newArrayList();
         PageRequest pageRequest = PageRequest.of(0, limitSize);
         while (true) {
-            Page<ContainerStockPO> containerStockPOs = containerStockPORepository.findAllBySkuIdIn(skuIds, pageRequest);
+            Slice<ContainerStockPO> containerStockPOs = containerStockPORepository.findAllBySkuIdIn(skuIds, pageRequest);
             containerStocks.addAll(containerStockPOTransfer.toDOs(containerStockPOs.getContent()));
             if (containerStockPOs.getContent().size() < limitSize) {
                 break;

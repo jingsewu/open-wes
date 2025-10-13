@@ -3,6 +3,7 @@ package org.openwes.wes.stock.infrastructure.persistence.mapper;
 import org.openwes.wes.stock.infrastructure.persistence.po.ContainerStockPO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Collection;
@@ -18,9 +19,9 @@ public interface ContainerStockPORepository extends JpaRepository<ContainerStock
 
     List<ContainerStockPO> findAllBySkuId(Long skuId);
 
-    Page<ContainerStockPO> findAllBySkuBatchStockIdIn(Collection<Long> skuBatchStockIds, PageRequest pageRequest);
+    Slice<ContainerStockPO> findAllBySkuBatchStockIdIn(Collection<Long> skuBatchStockIds, PageRequest pageRequest);
 
-    Page<ContainerStockPO> findAllBySkuIdIn(Collection<Long> skuIds, PageRequest pageRequest);
+    Slice<ContainerStockPO> findAllBySkuIdIn(Collection<Long> skuIds, PageRequest pageRequest);
 
     List<ContainerStockPO> findAllByWarehouseCodeAndContainerCodeAndContainerSlotCode(String warehouseCode, String containerCode, String containerSlotCode);
 

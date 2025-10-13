@@ -5,12 +5,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.openwes.domain.event.DomainEventPublisher;
 import org.openwes.wes.api.basic.IPutWallApi;
 import org.openwes.wes.api.basic.ITransferContainerApi;
 import org.openwes.wes.api.main.data.ISkuMainDataApi;
 import org.openwes.wes.api.main.data.dto.SkuMainDataDTO;
-import org.openwes.wes.api.outbound.event.PickingOrderAbnormalEvent;
 import org.openwes.wes.api.stock.IStockAbnormalRecordApi;
 import org.openwes.wes.api.stock.IStockApi;
 import org.openwes.wes.api.stock.constants.StockAbnormalTypeEnum;
@@ -38,7 +36,7 @@ public class OperationTaskStockAggregate {
 
     private final IStockApi stockApi;
     private final IStockAbnormalRecordApi stockAbnormalRecordApi;
-    private final ISkuMainDataApi skuMainDataFacade;
+    private final ISkuMainDataApi skuMainDataApi;
     private final IPutWallApi putWallApi;
     private final OperationTaskService operationTaskService;
     private final OperationTaskRepository operationTaskRepository;
@@ -105,12 +103,11 @@ public class OperationTaskStockAggregate {
         List<SkuBatchStockDTO> skuBatchStockDTOS = stockApi.getSkuBatchStocks(containerStockDTOS.stream().map(ContainerStockDTO::getSkuBatchStockId).collect(Collectors.toSet()));
         Map<Long, SkuBatchStockDTO> skuBatchStockDTOMap = skuBatchStockDTOS.stream()
                 .collect(Collectors.toMap(SkuBatchStockDTO::getId, Function.identity()));
-        Map<Long, SkuMainDataDTO> skuMainDataDTOMap = skuMainDataFacade.getByIds(skuIds).stream().collect(Collectors.toMap(SkuMainDataDTO::getId, Function.identity()));
+        Map<Long, SkuMainDataDTO> skuMainDataDTOMap = skuMainDataApi.getByIds(skuIds).stream().collect(Collectors.toMap(SkuMainDataDTO::getId, Function.identity()));
 
         List<StockAbnormalRecordDTO> stockAbnormalRecordDTOS = Lists.newArrayList();
         List<ContainerStockLockDTO> containerStockLockDTOS = Lists.newArrayList();
         List<SkuBatchStockLockDTO> skuBatchStockLockDTOS = Lists.newArrayList();
-        List<PickingOrderAbnormalEvent.PickingOrderAbnormalDetail> detailAbnormalDTOS = Lists.newArrayList();
         abnormalOperationTasks.forEach(v -> {
 
             //1. unlock unPicked qty
@@ -153,10 +150,6 @@ public class OperationTaskStockAggregate {
             containerStockDTO.setAvailableQty(containerStockDTO.getAvailableQty() - actualAvailableQty);
             skuBatchStockDTO.setAvailableQty(skuBatchStockDTO.getAvailableQty() - actualAvailableQty);
 
-            detailAbnormalDTOS.add(new PickingOrderAbnormalEvent.PickingOrderAbnormalDetail()
-                    .setPickingOrderId(v.getOrderId())
-                    .setPickingOrderDetailId(v.getDetailId())
-                    .setAbnormalQty(v.getAbnormalQty()));
         });
 
         if (CollectionUtils.isNotEmpty(skuBatchStockLockDTOS)) {
@@ -171,9 +164,6 @@ public class OperationTaskStockAggregate {
             stockAbnormalRecordApi.createStockAbnormalRecords(stockAbnormalRecordDTOS);
         }
 
-        if (CollectionUtils.isNotEmpty(detailAbnormalDTOS)) {
-            DomainEventPublisher.sendSyncDomainEvent(new PickingOrderAbnormalEvent().setDetails(detailAbnormalDTOS));
-        }
     }
 
 }

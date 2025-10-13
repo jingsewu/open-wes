@@ -9,6 +9,7 @@ import org.openwes.common.utils.exception.code_enum.OperationTaskErrorDescEnum;
 import org.openwes.domain.event.DomainEventPublisher;
 import org.openwes.wes.api.basic.constants.WarehouseAreaTypeEnum;
 import org.openwes.wes.api.basic.dto.WarehouseAreaDTO;
+import org.openwes.wes.api.outbound.event.PickingOrderAbnormalEvent;
 import org.openwes.wes.api.stock.constants.StockLockTypeEnum;
 import org.openwes.wes.api.stock.dto.StockTransferDTO;
 import org.openwes.wes.api.stock.event.StockTransferEvent;
@@ -164,6 +165,12 @@ public class OperationTask extends UpdateUserDTO {
         this.abnormal = true;
         this.abnormalQty += abnormalQty;
         validateQty();
+
+        PickingOrderAbnormalEvent.PickingOrderAbnormalDetail pickingOrderAbnormalDetail = new PickingOrderAbnormalEvent.PickingOrderAbnormalDetail();
+        pickingOrderAbnormalDetail.setPickingOrderId(this.orderId);
+        pickingOrderAbnormalDetail.setPickingOrderDetailId(this.detailId);
+        pickingOrderAbnormalDetail.setAbnormalQty(abnormalQty);
+        DomainEventPublisher.sendAsyncDomainEvent(new PickingOrderAbnormalEvent().setDetails(Lists.newArrayList(pickingOrderAbnormalDetail)));
     }
 
     public void setActualWorkStation(Long workStationId) {
