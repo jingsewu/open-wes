@@ -1,4 +1,4 @@
-import { observable, action, computed, runInAction } from 'mobx'
+import { observable, action, computed, runInAction, reaction } from 'mobx'
 import './mobxConfig'
 import type { WorkStationView } from '../event-loop/types'
 import { WorkStationStatus, ChooseArea } from '../event-loop/types'
@@ -22,63 +22,50 @@ export class WorkStationStore {
   @observable callContainerCount = 0
   @observable stationProcessingStatus: 'NO_TASK' | 'WAIT_ROBOT' | 'WAIT_CALL_CONTAINER' | undefined = undefined
 
-  // Actions
+
+
   @action setWorkStationEvent(event: WorkStationView<any> | undefined) {
-    console.log("setWorkStationEvent called with:", event)
+    if (this.workStationEvent === event) {
+      return
+    }
     
     runInAction(() => {
-      if (this.workStationEvent === event) {
-        console.log("WorkStationEvent unchanged (same reference), skipping update")
-        return
-      }
-      
-      // 保存之前的状态用于比较
-      const previousChooseArea = this.workStationEvent?.chooseArea
-      
-      // 更新事件数据
       this.workStationEvent = event
       
       if (event) {
-        // 更新所有相关状态
-        this.workStationStatus = event.workStationStatus
-        this.scanCode = event.scanCode || null
-        this.callContainerCount = event.callContainerCount || 0
-        this.stationProcessingStatus = event.stationProcessingStatus
-        
-        // 检查 chooseArea 是否发生变化
-        const currentChooseArea = event.chooseArea
-        if (previousChooseArea !== currentChooseArea) {
-          console.log("chooseArea 发生变化:", {
-            from: previousChooseArea,
-            to: currentChooseArea
-          })
-        }
-        
-        console.log("WorkStationEvent updated successfully:", {
-          chooseArea: currentChooseArea,
-          workStationStatus: this.workStationStatus,
-          scanCode: this.scanCode
-        })
-      } else {
-        console.log("WorkStationEvent cleared")
+        this.batchUpdateStates(event)
       }
     })
   }
 
   @action setOperationMap(type: string, operation: any) {
+    if (this.operationsMap.get(type) === operation) {
+      return
+    }
     this.operationsMap.set(type, operation)
   }
 
-  // 批量更新状态
   @action updateWorkStationState(updates: Partial<WorkStationView<any>>) {
     runInAction(() => {
       if (this.workStationEvent) {
         Object.assign(this.workStationEvent, updates)
+        
+        if (updates.workStationStatus !== undefined) {
+          this.workStationStatus = updates.workStationStatus
+        }
+        if (updates.scanCode !== undefined) {
+          this.scanCode = updates.scanCode || null
+        }
+        if (updates.callContainerCount !== undefined) {
+          this.callContainerCount = updates.callContainerCount || 0
+        }
+        if (updates.stationProcessingStatus !== undefined) {
+          this.stationProcessingStatus = updates.stationProcessingStatus
+        }
       }
     })
   }
 
-  // 重置状态
   @action reset() {
     runInAction(() => {
       this.workStationEvent = undefined
@@ -90,16 +77,8 @@ export class WorkStationStore {
     })
   }
 
-  // Computed values
   @computed get chooseArea() {
-    const area = this.workStationEvent?.chooseArea || ChooseArea.workLocationArea
-    console.log("WorkStationStore chooseArea computed:", {
-      area,
-      workStationEvent: this.workStationEvent ? 'exists' : 'null',
-      eventChooseArea: this.workStationEvent?.chooseArea,
-      timestamp: new Date().toISOString()
-    })
-    return area
+    return this.workStationEvent?.chooseArea || ChooseArea.workLocationArea
   }
 
   @computed get workStationId() {
@@ -108,6 +87,18 @@ export class WorkStationStore {
 
   @computed get stationCode() {
     return this.workStationEvent?.stationCode || ''
+  }
+
+
+  private batchUpdateStates(event: WorkStationView<any>): void {
+    this.workStationStatus = event.workStationStatus
+    this.scanCode = event.scanCode || null
+    this.callContainerCount = event.callContainerCount || 0
+    this.stationProcessingStatus = event.stationProcessingStatus
+  }
+
+  dispose(): void {
+    this.operationsMap.clear()
   }
 }
 

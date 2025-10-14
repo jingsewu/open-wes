@@ -24,6 +24,7 @@ export default class WorkStationEventLoop {
     private websocketManager: WebSocketManager | null = null
     private stationId: string | null = null
 
+
     public resetCurrentEvent() {
         this.currentEvent = undefined
     }
@@ -71,6 +72,7 @@ export default class WorkStationEventLoop {
             this.websocketManager = null
         }
 
+
         // 重置当前事件
         this.currentEvent = undefined
 
@@ -79,14 +81,10 @@ export default class WorkStationEventLoop {
 
     public actionDispatch: (payload: any) => Promise<any> = async (payload) => {
         try {
-            const res: any = await request_work_station_event(payload)
-            return res
+            const result = await request_work_station_event(payload)
+            return result
         } catch (error) {
-            console.log(
-                "send event http error: %c",
-                "color:red;font-size:20px;",
-                error
-            )
+            console.error("send event http error:", error)
             toast["error"](error.message)
             return {
                 code: "-1",
@@ -110,8 +108,6 @@ export default class WorkStationEventLoop {
     private readonly handleEventChange: (
         event: WorkStationView<any> | undefined
     ) => void = (event) => {
-        console.log("handleEventChange called with:", event)
-
         // 更新当前事件
         this.currentEvent = event
 
@@ -121,10 +117,17 @@ export default class WorkStationEventLoop {
         // 通知事件监听者
         this.eventListener && this.eventListener(event)
 
-        // 保存到本地存储
-        localStorage.setItem("sseInfo", JSON.stringify(event))
-
-        console.log("Event change handled, chooseArea:", event?.chooseArea)
+        // 保存基本信息到本地存储
+        if (event) {
+            const essentialData = {
+                stationCode: event.stationCode,
+                workStationStatus: event.workStationStatus,
+                chooseArea: event.chooseArea,
+                workStationId: event.workStationId,
+                timestamp: Date.now()
+            }
+            localStorage.setItem("sseInfo", JSON.stringify(essentialData))
+        }
     }
 
     private readonly getWebsocketData: () => Promise<void> = async () => {
@@ -147,7 +150,6 @@ export default class WorkStationEventLoop {
             heartbeatInterval: 30000,
             connectionTimeout: 15000,
             onMessage: (message) => {
-                console.log("websocket receive data: ", message)
                 if (message.type === "DATA_CHANGED") {
                     this.getApiData()
                 } else if (message.type === "PRINT") {
@@ -155,18 +157,15 @@ export default class WorkStationEventLoop {
                 }
             },
             onConnect: () => {
-                console.log(
-                    `websocket connect successfully and the session id is: ${wsUrl}`
-                )
+                console.log("WebSocket connected successfully")
             },
             onDisconnect: () => {
                 console.log("WebSocket disconnected")
             },
             onError: (error) => {
-                console.error(`websocket connect failed:`, error)
+                console.error("WebSocket connection failed:", error)
             },
             onTimeout: () => {
-                console.warn("WebSocket连接超时")
                 toast.warning("WebSocket连接超时，正在重试...")
             }
         })
@@ -190,8 +189,6 @@ export default class WorkStationEventLoop {
 
             if (res && res.data) {
                 this.stationId = res.data.workStationId
-
-                // 处理事件变化，这会更新 MobX store
                 this.handleEventChange(res.data)
             } else {
                 console.warn("API 返回数据格式异常:", res)
@@ -200,7 +197,6 @@ export default class WorkStationEventLoop {
         } catch (error) {
             console.error("获取工作站数据失败:", error)
             toast.error("获取工作站数据失败，请检查网络连接")
-            // 发生错误时也要更新 store
             this.handleEventChange(undefined)
         }
     }
@@ -208,15 +204,11 @@ export default class WorkStationEventLoop {
     private readonly getMockEventData: () => Promise<
         WorkStationView<any> | undefined
     > = async () => {
-        console.log("getMockEventData", this.mockData)
         const topEvent = this.mockData
 
         if (topEvent) {
-            console.log("Mock 数据的 chooseArea:", topEvent.chooseArea)
-            // 处理事件变化，这会更新 MobX store
             this.handleEventChange(topEvent)
         } else {
-            console.warn("Mock 数据为空")
             this.handleEventChange(undefined)
         }
 
