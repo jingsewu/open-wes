@@ -1,8 +1,13 @@
 // 配置 MobX 4.x 兼容性
-import './state/mobxConfig'
+import "./state/mobxConfig"
 
 import type { WorkStationConfig } from "@/pages/wms/station/instances/types"
-import React, { memo, useEffect, useState, useRef, useMemo, useCallback } from "react"
+import React, {
+    useEffect,
+    useState,
+    useRef,
+    useMemo
+} from "react"
 import type { RouteComponentProps } from "react-router"
 import { workStationStore } from "./state/WorkStationStore"
 import WorkStationEventLoop from "./event-loop/index"
@@ -57,9 +62,14 @@ Object.assign(WorkStationFactor, initWorkStationFactor())
 const WorkStation = (props: WorkStationProps) => {
     const { code, type } = props
     const isInitialized = useRef(false)
+    // 添加一个加载状态
+    const [isLoadingStatus, setIsLoadingStatus] = useState(true)
 
-    const workStationConfig = useMemo(() => WorkStationFactor[type] || {}, [type])
-    
+    const workStationConfig = useMemo(
+        () => WorkStationFactor[type] || {},
+        [type]
+    )
+
     const {
         actions,
         layout: InstanceLayout,
@@ -68,33 +78,34 @@ const WorkStation = (props: WorkStationProps) => {
         debugType = false,
         mockData = {},
         extraTitleInfo
-    } = useMemo(() => workStationConfig, [workStationConfig])
+    } = workStationConfig
 
     // 工作站配置状态
     const [isConfigStationId, setIsConfigStationId] = useState(
         !!localStorage.getItem("stationId")
     )
 
-    const getStationStatus = useCallback(async () => {
+    const getStationStatus = async () => {
         try {
+            setIsLoadingStatus(true)
             const res: any = await request_work_station_view()
             console.log("request_work_station_view 返回值:", res)
-            console.log("res.data:", res?.data)
 
-            const isConfigured = res?.data?.status !== STATION_STATUS_NOT_CONFIGURED
-            console.log("isConfigured:", isConfigured, "status:", res?.data?.status)
+            const isConfigured =
+                res?.data?.status !== STATION_STATUS_NOT_CONFIGURED
             setIsConfigStationId(isConfigured)
 
             // 将获取到的数据设置到 store 中
             if (res?.data) {
-                console.log("设置 workStationEvent 到 store:", res.data)
                 workStationStore.setWorkStationEvent(res.data)
             }
         } catch (error) {
             console.error("获取工作站状态失败:", error)
             setIsConfigStationId(false)
+        } finally {
+            setIsLoadingStatus(false)
         }
-    }, [])
+    }
 
     // 初始化工作站状态
     useEffect(() => {
@@ -103,7 +114,8 @@ const WorkStation = (props: WorkStationProps) => {
 
     // 初始化事件循环
     useEffect(() => {
-        if (isInitialized.current && !isConfigStationId) return
+        if (isLoadingStatus || (isInitialized.current && !isConfigStationId))
+            return
         isInitialized.current = true
 
         // 配置事件循环
@@ -115,34 +127,38 @@ const WorkStation = (props: WorkStationProps) => {
         })
 
         // 启动事件循环（仅卡片类型）
-        if (type === WORK_STATION_TYPE_CARD && !workStationEventLoop.getCurrentEvent()) {
+        if (
+            type === WORK_STATION_TYPE_CARD &&
+            !workStationEventLoop.getCurrentEvent()
+        ) {
             workStationEventLoop.start()
         }
 
         return () => {
             // 检查是否正在离开工作站页面
             const currentPath = window.location.pathname
-            const isLeavingWorkStation = !currentPath.startsWith('/wms/workStation/')
+            const isLeavingWorkStation =
+                !currentPath.startsWith("/wms/workStation/")
 
             if (isLeavingWorkStation) {
-                console.log('Leaving workstation section, stopping event loop')
+                console.log("Leaving workstation section, stopping event loop")
                 // 停止事件循环和 WebSocket 连接
                 workStationEventLoop.stop()
                 // workStationEventLoop.resetCurrentEvent()
 
                 // 清理 ResizeObserver
                 try {
-                    const resizeObserverManager = (window as any).ResizeObserverManager
+                    const resizeObserverManager = (window as any)
+                        .ResizeObserverManager
                     if (resizeObserverManager) {
                         resizeObserverManager.disconnectAll()
                     }
                 } catch (error) {
-                    console.warn('清理 ResizeObserver 时出错:', error)
+                    console.warn("清理 ResizeObserver 时出错:", error)
                 }
             }
         }
-    }, [debugType, mockData, type, isConfigStationId])
-
+    }, [debugType, mockData, type, isConfigStationId, isLoadingStatus])
 
     // 根据配置状态渲染不同内容
     if (!isConfigStationId) {
@@ -169,5 +185,4 @@ const WorkStation = (props: WorkStationProps) => {
     )
 }
 
-
-export default memo(WorkStation)
+export default WorkStation
