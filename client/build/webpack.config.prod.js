@@ -1,9 +1,6 @@
 const path = require("path")
 const HtmlWebpackPlugin = require("html-webpack-plugin")
 const { CleanWebpackPlugin } = require("clean-webpack-plugin")
-const TerserPlugin = require("terser-webpack-plugin")
-const MiniCssExtractPlugin = require("mini-css-extract-plugin")
-const CssMinimizerPlugin = require("css-minimizer-webpack-plugin")
 
 module.exports = {
     mode: "production",
@@ -26,56 +23,33 @@ module.exports = {
             },
             {
                 test: /\.tsx?$/,
-                use: [
-                    {
-                        loader: "ts-loader",
-                        options: {
-                            transpileOnly: true,
-                            happyPackMode: true
-                        }
-                    }
-                ],
+                use: "ts-loader",
                 exclude: /node_modules/
             },
             {
                 test: /\.css$/,
                 use: [
-                    MiniCssExtractPlugin.loader,
                     {
-                        loader: "css-loader",
-                        options: {
-                            importLoaders: 1
-                        }
-                    }
+                        loader: "style-loader",
+                        options: { injectType: "styleTag" }
+                    },
+                    "css-loader"
                 ]
             },
             {
                 test: /\.s[ac]ss$/i,
                 use: [
-                    MiniCssExtractPlugin.loader,
                     {
-                        loader: "css-loader",
-                        options: {
-                            importLoaders: 2
-                        }
+                        loader: "style-loader",
+                        options: { injectType: "styleTag" }
                     },
-                    {
-                        loader: "sass-loader",
-                        options: {
-                            api: "modern",
-                            sassOptions: {
-                                outputStyle: "compressed"
-                            }
-                        }
-                    }
+                    "css-loader",
+                    "sass-loader"
                 ]
             },
             {
                 test: /\.(png|jpg|gif|woff|woff2|eot|ttf|otf)$/,
-                type: "asset/resource",
-                generator: {
-                    filename: "assets/[name].[hash:8][ext]"
-                }
+                use: ["file-loader"]
             },
             {
                 test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
@@ -89,80 +63,16 @@ module.exports = {
             "@": path.resolve(__dirname, "..", "src")
         }
     },
-    optimization: {
-        minimize: true,
-        minimizer: [
-            new TerserPlugin({
-                parallel: true,
-                terserOptions: {
-                    compress: {
-                        drop_console: true,
-                        drop_debugger: true
-                    }
-                }
-            })
-            // 暂时禁用CSS压缩，避免与某些CSS文件冲突
-            // new CssMinimizerPlugin()
-        ],
-        splitChunks: {
-            chunks: "all",
-            cacheGroups: {
-                vendor: {
-                    test: /[\\/]node_modules[\\/]/,
-                    name: "vendors",
-                    chunks: "all",
-                    priority: 10
-                },
-                monaco: {
-                    test: /[\\/]node_modules[\\/]monaco-editor[\\/]/,
-                    name: "monaco",
-                    chunks: "all",
-                    priority: 20
-                },
-                common: {
-                    name: "common",
-                    minChunks: 2,
-                    chunks: "all",
-                    priority: 5,
-                    reuseExistingChunk: true
-                }
-            }
-        }
-    },
-    cache: {
-        type: "filesystem",
-        buildDependencies: {
-            config: [__filename]
-        }
-    },
     plugins: [
         new CleanWebpackPlugin(),
-        new MiniCssExtractPlugin({
-            filename: "css/[name].[contenthash:8].css",
-            chunkFilename: "css/[name].[contenthash:8].chunk.css"
-        }),
         new HtmlWebpackPlugin({
             template: "./src/index.html",
-            chunks: ["app", "vendors", "common"],
-            minify: {
-                removeComments: true,
-                collapseWhitespace: true,
-                removeRedundantAttributes: true,
-                useShortDoctype: true,
-                removeEmptyAttributes: true,
-                removeStyleLinkTypeAttributes: true,
-                keepClosingSlash: true,
-                minifyJS: true,
-                minifyCSS: true,
-                minifyURLs: true
-            }
+            chunks: ["app"]
         })
     ],
     output: {
-        filename: "js/[name].[contenthash:8].js",
-        chunkFilename: "js/[name].[contenthash:8].chunk.js",
+        filename: "[name].bundle.js",
         path: path.resolve(__dirname, "../dist"),
-        publicPath: "/",
-        clean: true
+        publicPath: "/"
     }
 }
