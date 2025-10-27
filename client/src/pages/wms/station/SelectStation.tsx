@@ -1,57 +1,111 @@
 import React, {memo, useEffect, useState} from "react"
-import {Button, message, Select, Typography} from "antd"
+import {Button, message, Select, Typography, Spin, Alert} from "antd"
 import store from "@/stores"
-import {useTranslation} from "react-i18next";
-import {request_work_station} from "@/pages/wms/station/constants/constant";
+import {useTranslation} from "react-i18next"
+import {request_work_station} from "@/pages/wms/station/constants/constant"
 
 const {Title} = Typography
 
-const SelectStation = ({isConfigStationId, setIsConfigStationId}: any) => {
+interface SelectStationProps {
+    isConfigStationId: boolean
+    setIsConfigStationId: (value: boolean) => void
+}
+
+const SelectStation = ({isConfigStationId, setIsConfigStationId}: SelectStationProps) => {
+    const {t} = useTranslation()
     const [stationId, setStationId] = useState("")
     const [options, setOptions] = useState<any[]>([])
-    const [error, setError] = useState("")
+    const [loading, setLoading] = useState(false)
+    const [fetchError, setFetchError] = useState("")
 
     useEffect(() => {
         if (isConfigStationId) return
-        getStationOptions()
-    }, [store.warehouse.code, isConfigStationId])
 
-    const getStationOptions = () => {
-        request_work_station(store.warehouse.code).then((res: any) => {
-            setOptions(res.data.items)
-        })
-    }
+        let isMounted = true
+
+        const fetchStations = async () => {
+            try {
+                setLoading(true)
+                setFetchError("")
+                const res: any = await request_work_station(store.warehouse.code)
+                
+                if (!isMounted) return
+                
+                setOptions(res?.data?.items || [])
+            } catch (error: any) {
+                if (!isMounted) return
+                
+                console.error("获取工作站列表失败:", error)
+                const errorMsg = error?.message || "获取工作站列表失败"
+                setFetchError(errorMsg)
+                message.error("获取工作站列表失败，请刷新重试")
+            } finally {
+                if (isMounted) {
+                    setLoading(false)
+                }
+            }
+        }
+
+        fetchStations()
+
+        return () => {
+            isMounted = false
+        }
+    }, [store.warehouse.code, isConfigStationId])
 
     const handleChange = (val: string) => {
         setStationId(val)
-        setError("")
     }
 
-    const handleClick = () => {
+    const handleConfirm = () => {
         if (!stationId) {
-            setError(t("station.home.div.selectStation"))
             message.error(t("station.home.div.selectStation"))
-            return;
+            return
         }
-        setIsConfigStationId(true)
         localStorage.setItem("stationId", stationId)
+        setIsConfigStationId(true)
     }
 
-    const {t} = useTranslation();
+    const handleRetry = () => {
+        window.location.reload()
+    }
+
+    const isDisabled = loading || !!fetchError
 
     return (
         <div className="w-full h-full d-flex flex-col justify-center items-center">
             <Title level={4} className="mb-3">
                 {t("station.home.div.selectStation")}
             </Title>
-            <Select
-                style={{width: 300}}
-                value={stationId}
-                onChange={handleChange}
-                options={options}
-                fieldNames={{label: "stationName", value: "id"}}
-                status={error ? "error" : ""}
-            />
+
+            {fetchError && (
+                <Alert
+                    message="获取工作站列表失败"
+                    description={fetchError}
+                    type="error"
+                    showIcon
+                    style={{width: 300, marginBottom: 16}}
+                    action={
+                        <Button size="small" onClick={handleRetry}>
+                            重试
+                        </Button>
+                    }
+                />
+            )}
+
+            <Spin spinning={loading}>
+                <Select
+                    style={{width: 300}}
+                    value={stationId}
+                    onChange={handleChange}
+                    options={options}
+                    fieldNames={{label: "stationName", value: "id"}}
+                    disabled={isDisabled}
+                    placeholder="请选择工作站"
+                    notFoundContent="暂无工作站"
+                />
+            </Spin>
+
             <Button
                 type="primary"
                 style={{
@@ -60,7 +114,8 @@ const SelectStation = ({isConfigStationId, setIsConfigStationId}: any) => {
                     borderColor: "#23c560",
                     marginTop: 10
                 }}
-                onClick={handleClick}
+                onClick={handleConfirm}
+                disabled={isDisabled}
             >
                 {t("station.home.button.confirm")}
             </Button>

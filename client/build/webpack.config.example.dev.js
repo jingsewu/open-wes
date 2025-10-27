@@ -1,8 +1,7 @@
 const path = require("path")
 const HtmlWebpackPlugin = require("html-webpack-plugin")
 const { CleanWebpackPlugin } = require("clean-webpack-plugin")
-const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin")
-const ReactRefreshTypeScript = require("react-refresh-typescript").default
+// const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin")
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin")
 const SpeedMeasurePlugin = require("speed-measure-webpack-plugin")
 
@@ -30,11 +29,6 @@ webpackConfig = {
                     {
                         loader: require.resolve("ts-loader"),
                         options: {
-                            getCustomTransformers: () => ({
-                                before: [ReactRefreshTypeScript()].filter(
-                                    Boolean
-                                )
-                            }),
                             transpileOnly: true,
                             happyPackMode: true,
                             // 优化TypeScript编译
@@ -47,6 +41,15 @@ webpackConfig = {
                     }
                 ],
                 exclude: /node_modules/
+            },
+            {
+                // 处理 node_modules 中的 ESM 模块
+                test: /\.m?js$/,
+                resolve: {
+                    fullySpecified: false
+                },
+                include: /node_modules/,
+                type: "javascript/auto"
             },
             {
                 test: /\.css$/,
@@ -90,7 +93,7 @@ webpackConfig = {
         ]
     },
     resolve: {
-        extensions: [".tsx", ".ts", ".js", ".html", ".mjs"],
+        extensions: [".tsx", ".ts", ".js", ".jsx", ".html", ".mjs"],
         alias: {
             "@": path.resolve(__dirname, "..", "src")
         }
@@ -153,10 +156,11 @@ webpackConfig = {
     },
     plugins: [
         new CleanWebpackPlugin(),
-        new ReactRefreshWebpackPlugin({
-            overlay: false,
-            exclude: [/node_modules/]
-        }),
+        // 暂时禁用 React Refresh，使用传统的 HMR
+        // new ReactRefreshWebpackPlugin({
+        //     overlay: false,
+        //     exclude: [/node_modules/]
+        // }),
         new ForkTsCheckerWebpackPlugin({
             async: true,
             typescript: {
