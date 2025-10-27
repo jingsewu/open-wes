@@ -1,5 +1,5 @@
 import type { InputRef } from "antd"
-import React, { useRef } from "react"
+import React, { useRef, useEffect } from "react"
 import SlotLayout from "./SlotLayout"
 import WallIcon from "./WallIcon"
 import SlotStatusMap from "./SlotStatusMap"
@@ -74,9 +74,11 @@ const PutWall = (props: PutWallProps) => {
         dispatched: "已派发"
     }
 
-    if (isActive) {
-        inputRef.current?.focus()
-    }
+    useEffect(() => {
+        if (isActive) {
+            inputRef.current?.focus()
+        }
+    }, [isActive])
 
     const handleInputFocus = () => {
         inputRef.current?.focus()

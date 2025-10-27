@@ -2,12 +2,7 @@
 import "./state/mobxConfig"
 
 import type { WorkStationConfig } from "@/pages/wms/station/instances/types"
-import React, {
-    useEffect,
-    useState,
-    useRef,
-    useMemo
-} from "react"
+import React, { useEffect, useState, useRef, useMemo } from "react"
 import type { RouteComponentProps } from "react-router"
 import { workStationStore } from "./state/WorkStationStore"
 import WorkStationEventLoop from "./event-loop/index"
@@ -85,31 +80,43 @@ const WorkStation = (props: WorkStationProps) => {
         !!localStorage.getItem("stationId")
     )
 
-    const getStationStatus = async () => {
-        try {
-            setIsLoadingStatus(true)
-            const res: any = await request_work_station_view()
-            console.log("request_work_station_view 返回值:", res)
-
-            const isConfigured =
-                res?.data?.status !== STATION_STATUS_NOT_CONFIGURED
-            setIsConfigStationId(isConfigured)
-
-            // 将获取到的数据设置到 store 中
-            if (res?.data) {
-                workStationStore.setWorkStationEvent(res.data)
-            }
-        } catch (error) {
-            console.error("获取工作站状态失败:", error)
-            setIsConfigStationId(false)
-        } finally {
-            setIsLoadingStatus(false)
-        }
-    }
-
-    // 初始化工作站状态
     useEffect(() => {
+        let isMounted = true
+
+        const getStationStatus = async () => {
+            try {
+                if (!isMounted) return
+
+                setIsLoadingStatus(true)
+                const res: any = await request_work_station_view()
+                console.log("request_work_station_view 返回值:", res)
+
+                if (!isMounted) return
+
+                const isConfigured =
+                    res?.data?.status !== STATION_STATUS_NOT_CONFIGURED
+                setIsConfigStationId(isConfigured)
+
+                // 将获取到的数据设置到 store 中
+                if (res?.data) {
+                    workStationStore.setWorkStationEvent(res.data)
+                }
+            } catch (error) {
+                console.error("获取工作站状态失败:", error)
+                if (!isMounted) return
+                setIsConfigStationId(false)
+            } finally {
+                if (isMounted) {
+                    setIsLoadingStatus(false)
+                }
+            }
+        }
+
         getStationStatus()
+
+        return () => {
+            isMounted = false
+        }
     }, [])
 
     // 初始化事件循环
