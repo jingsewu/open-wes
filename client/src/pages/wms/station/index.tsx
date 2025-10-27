@@ -140,6 +140,20 @@ const WorkStation = (props: WorkStationProps) => {
                     console.warn("清理 ResizeObserver 时出错:", error)
                 }
             }
+
+            // 清理所有定时器（包括 debounce/throttle）
+            // 这可以减少热更新时的 MST 生命周期错误
+            if (process.env.NODE_ENV === "development") {
+                try {
+                    // 清理高 ID 的定时器（通常是组件内的定时器）
+                    const maxTimerId = setTimeout(() => {}, 0)
+                    for (let i = maxTimerId; i > maxTimerId - 100; i--) {
+                        clearTimeout(i)
+                    }
+                } catch (error) {
+                    // 忽略清理错误
+                }
+            }
         }
     }, [debugType, mockData, type, isConfigStationId, isLoadingStatus])
 
