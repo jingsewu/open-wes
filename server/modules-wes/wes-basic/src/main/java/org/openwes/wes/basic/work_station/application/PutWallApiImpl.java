@@ -6,7 +6,6 @@ import org.apache.dubbo.config.annotation.DubboService;
 import org.openwes.common.utils.exception.WmsException;
 import org.openwes.common.utils.validate.ValidationSequence;
 import org.openwes.domain.event.DomainEventPublisher;
-import org.openwes.wes.api.basic.IContainerSpecApi;
 import org.openwes.wes.api.basic.IPutWallApi;
 import org.openwes.wes.api.basic.dto.*;
 import org.openwes.wes.api.basic.event.AssignOrderEvent;
@@ -26,7 +25,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @Service
 @Primary
@@ -35,7 +37,6 @@ import java.util.*;
 @Validated(value = ValidationSequence.class)
 public class PutWallApiImpl implements IPutWallApi {
 
-    private final IContainerSpecApi containerSpecApi;
     private final PutWallAggregate putWallAggregate;
     private final PutWallRepository putWallRepository;
     private final PutWallSlotRepository putWallSlotRepository;

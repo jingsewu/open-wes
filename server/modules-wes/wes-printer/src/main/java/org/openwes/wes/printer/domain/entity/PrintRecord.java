@@ -6,7 +6,7 @@ import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
-import org.openwes.common.utils.base.CreateUserDTO;
+import org.openwes.common.utils.base.CreateUserPO;
 import org.openwes.common.utils.id.IdGenerator;
 import org.openwes.wes.api.print.constants.ModuleEnum;
 import org.openwes.wes.api.print.constants.PrintNodeEnum;
@@ -20,9 +20,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @DynamicUpdate
 @Table(name = "p_print_record",
         indexes = {
-            @Index(name = "idx_create_time", columnList = "createTime")
+                @Index(name = "idx_create_time", columnList = "createTime")
         })
-public class PrintRecord extends CreateUserDTO {
+public class PrintRecord extends CreateUserPO {
 
     @Id
     @GeneratedValue(generator = "databaseIdGenerator")

@@ -16,9 +16,10 @@ import java.util.List;
 
 import static org.openwes.common.utils.exception.code_enum.InboundErrorDescEnum.ACCEPT_ORDER_HAD_COMPLETED;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Slf4j
-public class AcceptOrder implements AggregatorRoot {
+public class AcceptOrder extends AggregatorRoot {
 
     private Long id;
 
