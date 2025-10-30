@@ -1,6 +1,7 @@
 package org.openwes.wes.outbound.infrastructure.persistence.po;
 
 import org.openwes.common.utils.base.UpdateUserPO;
+import org.openwes.common.utils.id.IdGenerator;
 import org.openwes.wes.api.outbound.constants.PickingOrderStatusEnum;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -30,7 +31,7 @@ public class PickingOrderPO extends UpdateUserPO {
 
     @Id
     @GeneratedValue(generator = "databaseIdGenerator")
-    @GenericGenerator(name = "databaseIdGenerator", strategy = "org.openwes.common.utils.id.IdGenerator")
+    @GenericGenerator(name = "databaseIdGenerator", type = IdGenerator.class)
     private Long id;
 
     @Column(nullable = false, columnDefinition = "varchar(64) comment '仓库'")

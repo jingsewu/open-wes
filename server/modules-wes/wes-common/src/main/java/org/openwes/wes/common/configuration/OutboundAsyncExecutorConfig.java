@@ -37,7 +37,7 @@ public class OutboundAsyncExecutorConfig {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(Runtime.getRuntime().availableProcessors() * 2 + 1);
         executor.setMaxPoolSize(executor.getCorePoolSize() * 2);
-        executor.setQueueCapacity(256);
+        executor.setQueueCapacity(1000);
         executor.setThreadNamePrefix(executorName);
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
         executor.initialize();

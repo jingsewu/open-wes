@@ -1,6 +1,7 @@
 package org.openwes.wes.stocktake.infrastructure.persistence.po;
 
 import org.openwes.common.utils.base.UpdateUserPO;
+import org.openwes.common.utils.id.IdGenerator;
 import org.openwes.wes.api.stocktake.constants.StocktakeUnitTypeEnum;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -25,7 +26,7 @@ public class StocktakeOrderDetailPO extends UpdateUserPO {
 
     @Id
     @GeneratedValue(generator = "databaseIdGenerator")
-    @GenericGenerator(name = "databaseIdGenerator", strategy = "org.openwes.common.utils.id.IdGenerator")
+    @GenericGenerator(name = "databaseIdGenerator", type = IdGenerator.class)
     private Long id;
 
     @Column(nullable = false, columnDefinition = "bigint comment '盘点单ID'")

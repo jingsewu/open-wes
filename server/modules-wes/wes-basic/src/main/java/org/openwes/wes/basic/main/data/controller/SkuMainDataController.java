@@ -1,15 +1,15 @@
 package org.openwes.wes.basic.main.data.controller;
 
 import com.google.common.collect.Lists;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.openwes.common.utils.http.Response;
 import org.openwes.wes.api.main.data.ISkuMainDataApi;
 import org.openwes.wes.api.main.data.dto.SkuMainDataDTO;
 import org.openwes.wes.basic.main.data.domain.entity.SkuMainData;
 import org.openwes.wes.basic.main.data.domain.repository.SkuMainDataRepository;
-import org.openwes.wes.basic.main.data.transfer.SkuMainDataDTOTransfer;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
+import org.openwes.wes.basic.main.data.domain.transfer.SkuMainDataTransfer;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +24,7 @@ public class SkuMainDataController {
 
     private final ISkuMainDataApi skuMainDataApi;
     private final SkuMainDataRepository skuMainDataRepository;
-    private final SkuMainDataDTOTransfer skuMainDataDTOTransfer;
+    private final SkuMainDataTransfer skuMainDataTransfer;
 
     @PostMapping("createOrUpdate")
     public Object createOrUpdate(@RequestBody @Valid SkuMainDataDTO skuMainDataDTO) {
@@ -35,12 +35,12 @@ public class SkuMainDataController {
     @PostMapping("getById/{id}")
     public Object getById(@PathVariable Long id) {
         SkuMainData ownerData = skuMainDataRepository.findById(id);
-        return skuMainDataDTOTransfer.toDTO(ownerData);
+        return skuMainDataTransfer.toDTO(ownerData);
     }
 
     @PostMapping("getBySkuCode")
     public Object getBySkuCode(@RequestParam("skuCode") String skuCode) {
         List<SkuMainData> skus = skuMainDataRepository.findAllBySkuCode(skuCode);
-        return skuMainDataDTOTransfer.toDTOs(skus);
+        return skuMainDataTransfer.toDTOs(skus);
     }
 }

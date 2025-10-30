@@ -7,6 +7,7 @@ import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 import org.openwes.common.utils.base.UpdateUserPO;
+import org.openwes.common.utils.id.IdGenerator;
 import org.openwes.wes.api.stocktake.constants.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -17,7 +18,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Table(
         name = "w_stocktake_task",
         indexes = {
-                @Index(unique = true, name = "idx_task_no", columnList = "taskNo"),
+                @Index(unique = true, name = "uk_task_no", columnList = "taskNo"),
                 @Index(name = "idx_stocktake_order_id", columnList = "stocktakeOrderId"),
                 @Index(name = "idx_stocktake_task_status", columnList = "stocktakeTaskStatus"),
         }
@@ -27,7 +28,7 @@ public class StocktakeTaskPO extends UpdateUserPO {
 
     @Id
     @GeneratedValue(generator = "databaseIdGenerator")
-    @GenericGenerator(name = "databaseIdGenerator", strategy = "org.openwes.common.utils.id.IdGenerator")
+    @GenericGenerator(name = "databaseIdGenerator", type = IdGenerator.class)
     private Long id;
 
     @Column(nullable = false)

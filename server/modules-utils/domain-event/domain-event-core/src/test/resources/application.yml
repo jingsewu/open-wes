@@ -7,7 +7,7 @@ spring:
     hikari:
       minimum-idle: 5
       idle-timeout: 180000
-      maximum-pool-size: 100
+      maximum-pool-size: 50
       auto-commit: true
       pool-name: test_datasource_pool
       max-lifetime: 1800000

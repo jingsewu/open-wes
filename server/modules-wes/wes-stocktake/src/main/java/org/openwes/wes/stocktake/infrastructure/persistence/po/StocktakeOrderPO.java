@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
+import org.openwes.common.utils.id.IdGenerator;
 import org.openwes.wes.api.stocktake.constants.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -18,7 +19,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
         name = "w_stocktake_order",
         indexes = {
                 @Index(name = "idx_customer_order_no", columnList = "customerOrderNo"),
-                @Index(unique = true, name = "idx_order_no", columnList = "orderNo")
+                @Index(unique = true, name = "uk_order_no", columnList = "orderNo")
         }
 )
 @DynamicUpdate
@@ -26,7 +27,7 @@ public class StocktakeOrderPO extends UpdateUserPO {
 
     @Id
     @GeneratedValue(generator = "databaseIdGenerator")
-    @GenericGenerator(name = "databaseIdGenerator", strategy = "org.openwes.common.utils.id.IdGenerator")
+    @GenericGenerator(name = "databaseIdGenerator", type = IdGenerator.class)
     private Long id;
 
     @Column(nullable = false, columnDefinition = "varchar(64) comment '仓库编码'")

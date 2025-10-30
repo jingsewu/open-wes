@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.openwes.domain.event.AggregatorRoot;
 import org.openwes.wes.api.inbound.constants.InboundPlanOrderStatusEnum;
 import org.openwes.wes.inbound.domain.entity.InboundPlanOrder;
+import org.openwes.wes.inbound.domain.entity.InboundPlanOrderDetail;
 import org.openwes.wes.inbound.domain.repository.InboundPlanOrderRepository;
 import org.openwes.wes.inbound.infrastructure.persistence.mapper.InboundPlanOrderDetailPORepository;
 import org.openwes.wes.inbound.infrastructure.persistence.mapper.InboundPlanOrderPORepository;
@@ -34,13 +35,14 @@ public class InboundPlanOrderRepositoryImpl implements InboundPlanOrderRepositor
     public InboundPlanOrder saveOrderAndDetail(InboundPlanOrder inboundPlanOrder) {
         InboundPlanOrderPO inboundPlanOrderPO = inboundPlanOrderPORepository.save(inboundPlanOrderPOTransfer.toPO(inboundPlanOrder));
 
-        List<InboundPlanOrderDetailPO> inboundPlanOrderDetailPOS = inboundPlanOrderPOTransfer.toDetailPOs(inboundPlanOrder.getDetails());
-        inboundPlanOrderDetailPOS.forEach(v -> v.setInboundPlanOrderId(inboundPlanOrderPO.getId()));
-        inboundPlanOrderDetailPORepository.saveAll(inboundPlanOrderDetailPOS);
+        List<InboundPlanOrderDetail> modifiedDetails = inboundPlanOrder.getDetails().stream().filter(InboundPlanOrderDetail::isModified).toList();
+        List<InboundPlanOrderDetailPO> inboundPlanOrderDetailPOs = inboundPlanOrderPOTransfer.toDetailPOs(modifiedDetails);
+        inboundPlanOrderDetailPOs.forEach(v -> v.setInboundPlanOrderId(inboundPlanOrderPO.getId()));
+        inboundPlanOrderDetailPORepository.saveAll(inboundPlanOrderDetailPOs);
 
         inboundPlanOrder.sendAndClearEvents();
 
-        return inboundPlanOrderPOTransfer.toDO(inboundPlanOrderPO, inboundPlanOrderDetailPOS);
+        return inboundPlanOrderPOTransfer.toDO(inboundPlanOrderPO, inboundPlanOrderDetailPOs);
     }
 
     @Override

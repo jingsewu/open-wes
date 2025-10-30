@@ -33,8 +33,8 @@ public class OperationTaskRepositoryImpl implements OperationTaskRepository {
 
     @Override
     public List<OperationTask> findAllUndoTasksByStationAndContainer(Long workStationId, String containerCode, String face, OperationTaskTypeEnum taskType) {
-        List<OperationTaskPO> operationTaskPOS = operationTaskPORepository.findAllByTaskStatusInAndTaskTypeAndSourceContainerCodeAndSourceContainerFace(
-                        Lists.newArrayList(OperationTaskStatusEnum.NEW, OperationTaskStatusEnum.PROCESSING), taskType, containerCode, face)
+        List<OperationTaskPO> operationTaskPOS = operationTaskPORepository.findAllByTaskStatusInAndSourceContainerCodeAndTaskTypeAndSourceContainerFace(
+                        Lists.newArrayList(OperationTaskStatusEnum.NEW, OperationTaskStatusEnum.PROCESSING), containerCode, taskType, face)
                 .stream().filter(v -> Objects.equals(workStationId, v.getWorkStationId())
                         || (v.getAssignedStationSlot() != null && v.getAssignedStationSlot().containsKey(workStationId))).toList();
 

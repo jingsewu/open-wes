@@ -7,7 +7,9 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import org.openwes.common.utils.base.UpdateUserDTO;
 import org.openwes.wes.api.task.constants.OperationTaskStatusEnum;
 import org.openwes.wes.api.task.constants.OperationTaskTypeEnum;
 
@@ -17,10 +19,11 @@ import java.util.Map;
 /**
  * abstract of operation task contains all tasks. eg: inbound, outbound, relocation, etc.
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
 @AllArgsConstructor
 @Accessors(chain = true)
-public class OperationTaskDTO implements Serializable {
+public class OperationTaskDTO extends UpdateUserDTO implements Serializable {
 
     @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
@@ -66,17 +69,12 @@ public class OperationTaskDTO implements Serializable {
     private Long orderId;
     private String orderNo;
     private Long detailId;
-    private Long originalTaskId;
 
     private OperationTaskStatusEnum taskStatus;
 
     private Map<Long, String> assignedStationSlot;
 
     private boolean abnormal;
-
-    private boolean shortComplete;
-
-    private String updateUser;
 
     public OperationTaskDTO() {
         this.taskStatus = OperationTaskStatusEnum.NEW;
