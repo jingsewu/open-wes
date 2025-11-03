@@ -12,4 +12,6 @@ public interface IEmptyContainerOutboundOrderApi {
     void execute(List<Long> orderIds);
 
     void cancel(List<Long> orderIds);
+
+    void completeDetails(List<Long> detailIds);
 }

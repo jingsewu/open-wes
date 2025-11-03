@@ -6,13 +6,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.openwes.common.utils.exception.WmsException;
-import org.openwes.domain.event.DomainEventPublisher;
 import org.openwes.wes.api.config.ISystemConfigApi;
 import org.openwes.wes.api.config.dto.SystemConfigDTO;
 import org.openwes.wes.api.main.data.dto.SkuMainDataDTO;
 import org.openwes.wes.api.outbound.dto.OutboundPlanOrderCancelDTO;
 import org.openwes.wes.api.outbound.dto.OutboundPlanOrderDTO;
-import org.openwes.wes.api.outbound.event.NewOutboundPlanOrderEvent;
 import org.openwes.wes.common.validator.IValidator;
 import org.openwes.wes.common.validator.ValidateResult;
 import org.openwes.wes.common.validator.ValidatorFactory;
@@ -76,7 +74,6 @@ public class OutboundPlanOrderServiceImpl implements OutboundPlanOrderService {
 
     @Override
     public void afterDoCreation(OutboundPlanOrder outboundPlanOrder) {
-        DomainEventPublisher.sendAsyncDomainEvent(new NewOutboundPlanOrderEvent().setOrderNo(outboundPlanOrder.getOrderNo()));
     }
 
     @Override

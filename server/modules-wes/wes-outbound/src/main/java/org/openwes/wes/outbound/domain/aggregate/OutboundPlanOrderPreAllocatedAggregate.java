@@ -39,7 +39,7 @@ public class OutboundPlanOrderPreAllocatedAggregate {
         });
 
         boolean preAllocateResult = outboundPlanOrder.preAllocate(planPreAllocatedRecords);
-        outboundPlanOrderRepository.saveOutboundPlanOrder(outboundPlanOrder);
+        outboundPlanOrderRepository.saveOrderAndDetail(outboundPlanOrder);
 
         if (!preAllocateResult) {
             return;

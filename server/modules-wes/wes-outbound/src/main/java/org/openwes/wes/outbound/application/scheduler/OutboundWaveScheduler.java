@@ -5,11 +5,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.openwes.common.utils.utils.RedisUtils;
-import org.openwes.distribute.lock.DistributeLock;
 import org.openwes.distribute.scheduler.annotation.DistributedScheduled;
-import org.openwes.domain.event.DomainEventPublisher;
 import org.openwes.wes.api.outbound.constants.OutboundPlanOrderStatusEnum;
-import org.openwes.wes.api.outbound.event.NewOutboundWaveEvent;
 import org.openwes.wes.outbound.domain.aggregate.OutboundWaveAggregate;
 import org.openwes.wes.outbound.domain.entity.OutboundPlanOrder;
 import org.openwes.wes.outbound.domain.repository.OutboundPlanOrderRepository;
@@ -73,8 +70,7 @@ public class OutboundWaveScheduler {
         }
 
         lists.forEach(list -> {
-            String waveNo = outboundWaveAggregate.waveOrders(list);
-            DomainEventPublisher.sendAsyncDomainEvent(new NewOutboundWaveEvent().setWaveNo(waveNo));
+            outboundWaveAggregate.waveOrders(list);
             redisUtils.removeListByPureKey(key, list.stream().map(OutboundPlanOrder::getId).toList());
         });
     }

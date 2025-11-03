@@ -57,15 +57,14 @@ public class OutboundPlanOrderApiImpl implements IOutboundPlanOrderApi {
 
         distributionLock.acquireLockIfThrows(RedisConstants.OUTBOUND_PLAN_ORDER_ADD_LOCK);
 
-        List<OutboundPlanOrder> savedOrders;
         try {
             outboundPlanOrderService.syncValidate(outboundPlanOrders);
-            savedOrders = outboundPlanOrderRepository.saveAllOrderAndDetails(outboundPlanOrders);
+            outboundPlanOrderRepository.saveAllOrderAndDetails(outboundPlanOrders);
         } finally {
             distributionLock.releaseLock(RedisConstants.OUTBOUND_PLAN_ORDER_ADD_LOCK);
         }
 
-        savedOrders.forEach(outboundPlanOrderService::afterDoCreation);
+        outboundPlanOrders.forEach(outboundPlanOrderService::afterDoCreation);
     }
 
     @Override
@@ -97,7 +96,7 @@ public class OutboundPlanOrderApiImpl implements IOutboundPlanOrderApi {
     @Override
     public void improvePriority(List<Long> ids, int priority) {
         List<OutboundPlanOrder> outboundPlanOrders = outboundPlanOrderRepository.findAllByIds(ids);
-        outboundPlanOrders.forEach(v->v.improvePriority(priority));
-        outboundPlanOrderRepository.saveAll(outboundPlanOrders);
+        outboundPlanOrders.forEach(v -> v.improvePriority(priority));
+        outboundPlanOrderRepository.saveAllOrders(outboundPlanOrders);
     }
 }

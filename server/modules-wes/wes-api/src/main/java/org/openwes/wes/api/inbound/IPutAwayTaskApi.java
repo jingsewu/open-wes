@@ -8,4 +8,5 @@ public interface IPutAwayTaskApi {
 
     void create(List<PutAwayTaskDTO> putAwayTasks);
 
+    void complete(List<Long> putAwayTaskIds, String locationCode);
 }

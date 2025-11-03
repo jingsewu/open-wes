@@ -1,20 +1,20 @@
 package org.openwes.wes.outbound.domain.entity;
 
-import com.google.common.collect.Lists;
-import lombok.EqualsAndHashCode;
-import org.openwes.common.utils.id.OrderNoGenerator;
-import org.openwes.domain.event.AggregatorRoot;
-import org.openwes.domain.event.DomainEventPublisher;
-import org.openwes.wes.api.outbound.constants.PickingOrderDetailStatusEnum;
-import org.openwes.wes.api.outbound.constants.PickingOrderStatusEnum;
-import org.openwes.wes.api.outbound.event.OutboundPlanOrderDispatchedEvent;
-import org.openwes.wes.api.outbound.event.OutboundPlanOrderPickingEvent;
-import org.openwes.wes.api.outbound.event.PickingOrderCompleteEvent;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
+import org.openwes.common.utils.id.OrderNoGenerator;
+import org.openwes.common.utils.id.SnowflakeUtils;
+import org.openwes.domain.event.AggregatorRoot;
+import org.openwes.plugin.api.dto.event.LifeCycleStatusChangeEvent;
+import org.openwes.wes.api.outbound.constants.PickingOrderDetailStatusEnum;
+import org.openwes.wes.api.outbound.constants.PickingOrderStatusEnum;
+import org.openwes.wes.api.outbound.event.PickingOrderCompleteEvent;
+import org.openwes.wes.api.outbound.event.PickingOrderDispatchedEvent;
 import org.openwes.wes.api.outbound.event.PickingOrderImprovePriorityEvent;
-import org.springframework.beans.BeanUtils;
+import org.openwes.wes.api.outbound.event.PickingOrderPickedEvent;
 
 import java.util.List;
 import java.util.Map;
@@ -59,6 +59,35 @@ public class PickingOrder extends AggregatorRoot {
     private String receivedUserAccount;
     private boolean allowReceive;
 
+    public static PickingOrder create(
+            Integer priority,
+            boolean shortOutbound,
+            String warehouseCode,
+            Long warehouseAreaId,
+            String waveNo,
+            List<PickingOrderDetail> details,
+            boolean allowReceive) {
+
+        PickingOrder order = new PickingOrder();
+        order.id = SnowflakeUtils.generateId();
+        order.pickingOrderNo = OrderNoGenerator.generationPickingOrderNo();
+        order.priority = priority;
+        order.shortOutbound = shortOutbound;
+        order.warehouseCode = warehouseCode;
+        order.warehouseAreaId = warehouseAreaId;
+        order.waveNo = waveNo;
+        order.details = details;
+        order.allowReceive = allowReceive;
+
+        if (details != null) {
+            details.forEach(detail -> detail.setPickingOrderId(order.id));
+        }
+
+        order.addLifecycleEvent(new LifeCycleStatusChangeEvent().setEntityId(order.getId()).setNewStatus(PickingOrderStatusEnum.NEW.name()));
+
+        return order;
+    }
+
     public void dispatch(Map<Long, String> assignedStationSlot) {
 
         log.info("picking order id: {}, orderNo: {} dispatch to {}", this.id, this.pickingOrderNo, assignedStationSlot);
@@ -68,10 +97,8 @@ public class PickingOrder extends AggregatorRoot {
         this.assignedStationSlot = assignedStationSlot;
         this.pickingOrderStatus = PickingOrderStatusEnum.DISPATCHED;
 
-        List<Long> outboundPlanOrderIds = this.details.stream()
-                .map(PickingOrderDetail::getOutboundOrderPlanId)
-                .distinct().toList();
-        this.addAsynchronousDomainEvents(new OutboundPlanOrderDispatchedEvent().setOutboundPlanOrderIds(outboundPlanOrderIds));
+        this.addAsynchronousDomainEvents(new PickingOrderDispatchedEvent(this.id));
+        this.addLifecycleEvent(new LifeCycleStatusChangeEvent().setEntityId(this.id).setNewStatus(PickingOrderStatusEnum.DISPATCHED.name()));
     }
 
     public void cancel() {
@@ -82,6 +109,7 @@ public class PickingOrder extends AggregatorRoot {
         }
         this.details.forEach(PickingOrderDetail::cancel);
         this.pickingOrderStatus = PickingOrderStatusEnum.CANCELED;
+        addLifecycleEvent(new LifeCycleStatusChangeEvent().setEntityId(this.id).setNewStatus(PickingOrderStatusEnum.CANCELED.name()));
     }
 
     public void picking(Integer operatedQty, Long detailId) {
@@ -92,16 +120,16 @@ public class PickingOrder extends AggregatorRoot {
         PickingOrderDetail pickingOrderDetail = this.details.stream().filter(v -> v.getId().equals(detailId)).findFirst().orElseThrow();
         pickingOrderDetail.picking(operatedQty);
 
-        OutboundPlanOrderPickingEvent.PickingDetail pickingDetail = new OutboundPlanOrderPickingEvent.PickingDetail()
+        PickingOrderPickedEvent.PickingDetail pickingDetail = new PickingOrderPickedEvent.PickingDetail()
                 .setOperatedQty(operatedQty)
                 .setOutboundOrderDetailId(pickingOrderDetail.getOutboundOrderPlanDetailId())
                 .setOutboundOrderId(pickingOrderDetail.getOutboundOrderPlanId());
 
-        this.addSynchronizationEvents(new OutboundPlanOrderPickingEvent().setPickingDetails(Lists.newArrayList(pickingDetail)));
+        this.addSynchronizationEvents(new PickingOrderPickedEvent(this.id, pickingDetail));
 
         if (this.details.stream().allMatch(v -> v.getPickingOrderDetailStatus() == PickingOrderDetailStatusEnum.PICKED)) {
             this.pickingOrderStatus = PickingOrderStatusEnum.PICKED;
-            this.addAsynchronousDomainEvents(new PickingOrderCompleteEvent().setPickingOrderIds(Lists.newArrayList(this.id)));
+            this.addAsynchronousDomainEvents(new PickingOrderCompleteEvent(this.id));
         } else {
             this.pickingOrderStatus = PickingOrderStatusEnum.PICKING;
         }
@@ -137,7 +165,7 @@ public class PickingOrder extends AggregatorRoot {
                 .forEach(detail -> detail.shortPicking(shortQty));
         if (this.details.stream().allMatch(v -> v.getPickingOrderDetailStatus() == PickingOrderDetailStatusEnum.PICKED)) {
             this.pickingOrderStatus = PickingOrderStatusEnum.PICKED;
-            this.addAsynchronousDomainEvents(new PickingOrderCompleteEvent().setPickingOrderIds(Lists.newArrayList(this.id)));
+            this.addAsynchronousDomainEvents(new PickingOrderCompleteEvent(this.id));
         } else {
             this.pickingOrderStatus = PickingOrderStatusEnum.PICKING;
         }
@@ -162,16 +190,29 @@ public class PickingOrder extends AggregatorRoot {
         this.pickingOrderStatus = PickingOrderStatusEnum.PICKING;
     }
 
-    public PickingOrder copyAndNew(Long warehouseAreaId) {
-        PickingOrder newPickingOrder = new PickingOrder();
-        BeanUtils.copyProperties(this, newPickingOrder, "id", "version", "assignedStationSlot", "receivedUserAccount");
+    public static PickingOrder copyAndNew(PickingOrder source, Long warehouseAreaId,
+                                          @NotEmpty List<PickingOrderDetail> pickingOrderDetails) {
+        PickingOrder newOrder = new PickingOrder();
 
-        newPickingOrder.setPickingOrderNo(OrderNoGenerator.generationPickingOrderNo());
-        newPickingOrder.setPickingOrderStatus(PickingOrderStatusEnum.NEW);
-        newPickingOrder.setWarehouseAreaId(warehouseAreaId);
-        newPickingOrder.setDetails(Lists.newArrayList());
-        newPickingOrder.setReallocatedOrder(true);
-        return newPickingOrder;
+        newOrder.warehouseCode = source.warehouseCode;
+        newOrder.waveNo = source.waveNo;
+        newOrder.priority = source.priority;
+        newOrder.shortOutbound = source.shortOutbound;
+        newOrder.isReallocatedOrder = source.isReallocatedOrder;
+        newOrder.allowReceive = source.allowReceive;
+
+        newOrder.id = SnowflakeUtils.generateId();
+        newOrder.pickingOrderNo = OrderNoGenerator.generationPickingOrderNo();
+        newOrder.pickingOrderStatus = PickingOrderStatusEnum.NEW;
+        newOrder.warehouseAreaId = warehouseAreaId;
+        newOrder.details = pickingOrderDetails;
+        newOrder.isReallocatedOrder = true;
+        newOrder.version = null;
+        newOrder.assignedStationSlot = null;
+        newOrder.receivedUserAccount = null;
+        newOrder.details.forEach(detail -> detail.setPickingOrderId(newOrder.id));
+
+        return newOrder;
     }
 
     public void improvePriority(Integer priority) {
@@ -183,6 +224,6 @@ public class PickingOrder extends AggregatorRoot {
         }
         this.priority = priority;
 
-        this.addAsynchronousDomainEvents(new PickingOrderImprovePriorityEvent().setPickingOrderId(this.id).setPriority(this.priority));
+        this.addAsynchronousDomainEvents(new PickingOrderImprovePriorityEvent(this.id, this.priority));
     }
 }

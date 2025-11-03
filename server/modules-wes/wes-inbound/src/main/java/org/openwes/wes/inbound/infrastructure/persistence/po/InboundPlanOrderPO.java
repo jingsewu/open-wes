@@ -36,8 +36,6 @@ import java.util.Map;
 public class InboundPlanOrderPO extends AuditUserPO {
 
     @Id
-    @GeneratedValue(generator = "databaseIdGenerator")
-    @GenericGenerator(name = "databaseIdGenerator", type = IdGenerator.class)
     @Comment("Primary key - Unique identifier for each inbound plan")
     private Long id;
 

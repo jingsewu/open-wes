@@ -1,17 +1,9 @@
 package org.openwes.domain.event.domain.entity;
 
-import org.openwes.domain.event.constants.DomainEventStatusEnum;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Id;
-import jakarta.persistence.Index;
-import jakarta.persistence.Table;
-import jakarta.persistence.Version;
+import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.Comment;
+import org.openwes.domain.event.constants.DomainEventStatusEnum;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -22,7 +14,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Table(
         name = "d_domain_event",
         indexes = {
-                @Index(name = "idx_create_time", columnList = "createTime")
+                @Index(name = "idx_create_time", columnList = "createTime"),
+                @Index(name = "idx_aggregator_id", columnList = "aggregatorId")
         }
 )
 public class DomainEventPO {
@@ -33,6 +26,9 @@ public class DomainEventPO {
     @Column(nullable = false, length = 5000)
     @Comment("事件信息")
     private String event;
+
+    @Column(nullable = false, updatable = false)
+    private Long aggregatorId = 0L;
 
     @Column(nullable = false)
     @Comment("事件类型")

@@ -25,7 +25,7 @@ public class EmptyContainerInboundRepositoryImpl implements EmptyContainerInboun
     private final EmptyContainerInboundOrderPOTransfer emptyContainerInboundOrderPOTransfer;
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public List<EmptyContainerInboundOrderDetail> saveOrderAndDetails(EmptyContainerInboundOrder emptyContainerInboundOrder) {
         EmptyContainerInboundOrderPO savedOrder = emptyContainerInboundOrderPORepository.save(emptyContainerInboundOrderPOTransfer.toPO(emptyContainerInboundOrder));
 
@@ -38,6 +38,20 @@ public class EmptyContainerInboundRepositoryImpl implements EmptyContainerInboun
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void saveAllOrderAndDetails(List<EmptyContainerInboundOrder> orders) {
+
+        List<EmptyContainerInboundOrderPO> pos = emptyContainerInboundOrderPOTransfer.toPOs(orders);
+
+        List<EmptyContainerInboundOrderDetail> details = orders.stream().flatMap(v -> v.getDetails().stream()).toList();
+        List<EmptyContainerInboundOrderDetailPO> detailPOS = emptyContainerInboundOrderPOTransfer.toDetailPOs(details);
+
+        emptyContainerInboundOrderPORepository.saveAll(pos);
+        emptyContainerInboundOrderDetailPORepository.saveAll(detailPOS);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<EmptyContainerInboundOrder> findOrdersByDetailIds(Collection<Long> detailIds) {
         List<EmptyContainerInboundOrderDetailPO> detailPOS = emptyContainerInboundOrderDetailPORepository.findAllById(detailIds);
         if (CollectionUtils.isEmpty(detailPOS)) {
@@ -61,16 +75,4 @@ public class EmptyContainerInboundRepositoryImpl implements EmptyContainerInboun
         return orders;
     }
 
-
-    @Override
-    public void saveAllOrderAndDetails(List<EmptyContainerInboundOrder> orders) {
-
-        List<EmptyContainerInboundOrderPO> pos = emptyContainerInboundOrderPOTransfer.toPOs(orders);
-
-        List<EmptyContainerInboundOrderDetail> details = orders.stream().flatMap(v -> v.getDetails().stream()).toList();
-        List<EmptyContainerInboundOrderDetailPO> detailPOS = emptyContainerInboundOrderPOTransfer.toDetailPOs(details);
-
-        emptyContainerInboundOrderPORepository.saveAll(pos);
-        emptyContainerInboundOrderDetailPORepository.saveAll(detailPOS);
-    }
 }

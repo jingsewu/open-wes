@@ -1,15 +1,15 @@
 package org.openwes.wes.inbound.domain.entity;
 
 import com.google.common.collect.Lists;
-import org.openwes.wes.api.inbound.constants.PutAwayTaskStatusEnum;
-import org.openwes.wes.api.inbound.event.PutAwayTaskCompletionEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openwes.wes.api.inbound.constants.PutAwayTaskStatusEnum;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class PutAwayTaskTest extends BaseTest {
 
@@ -30,26 +30,6 @@ class PutAwayTaskTest extends BaseTest {
         assertEquals(PutAwayTaskStatusEnum.NEW, putAwayTask.getTaskStatus(), "TaskStatus should be NEW after initialization");
     }
 
-    @Test
-    void testComplete_TaskAlreadyCompleted_ThrowsIllegalStateException() {
-        putAwayTask.setTaskStatus(PutAwayTaskStatusEnum.PUTTED_AWAY);  // Directly set the task status to PUTTED_AWAY
-        PutAwayTaskCompletionEvent.PutAwayTaskCompleteDetail detail = new PutAwayTaskCompletionEvent.PutAwayTaskCompleteDetail();
-        detail.setLocationCode("A1");
-
-        assertThrows(IllegalStateException.class, () -> putAwayTask.complete(detail.getLocationCode()),
-                "Expected IllegalStateException when task is already completed");
-    }
-
-    @Test
-    void testComplete_TaskSuccessfullyCompleted_UpdatesStatusAndLocation() {
-        PutAwayTaskCompletionEvent.PutAwayTaskCompleteDetail detail = new PutAwayTaskCompletionEvent.PutAwayTaskCompleteDetail();
-        detail.setLocationCode("A1");
-
-        putAwayTask.complete(detail.getLocationCode());
-
-        assertEquals(PutAwayTaskStatusEnum.PUTTED_AWAY, putAwayTask.getTaskStatus(), "TaskStatus should be PUTTED_AWAY after completion");
-        assertEquals("A1", putAwayTask.getLocationCode(), "LocationCode should be updated to 'A1' after completion");
-    }
 
     @Test
     void testPutAwayTaskDetails_AddAndRetrieveDetails() {

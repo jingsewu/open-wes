@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.openwes.common.utils.exception.WmsException;
 import org.openwes.common.utils.id.OrderNoGenerator;
+import org.openwes.common.utils.id.SnowflakeUtils;
 import org.openwes.domain.event.AggregatorRoot;
 import org.openwes.wes.api.inbound.constants.InboundPlanOrderStatusEnum;
 import org.openwes.wes.api.inbound.constants.StorageTypeEnum;
@@ -60,6 +61,7 @@ public class InboundPlanOrder extends AggregatorRoot {
     private Long version;
 
     public void initialize() {
+        this.id = SnowflakeUtils.generateId();
         this.orderNo = OrderNoGenerator.generationInboundPlanOrderNo();
         this.inboundPlanOrderStatus = InboundPlanOrderStatusEnum.NEW;
         this.totalBox = (this.totalBox == null ? 0 : this.totalBox);
@@ -67,6 +69,7 @@ public class InboundPlanOrder extends AggregatorRoot {
 
         Set<String> skuSet = Sets.newHashSet();
         for (InboundPlanOrderDetail inboundPlanOrderDetail : details) {
+            inboundPlanOrderDetail.setInboundPlanOrderId(this.id);
             skuSet.add(inboundPlanOrderDetail.getSkuCode());
             int box = StringUtils.isNotEmpty(inboundPlanOrderDetail.getBoxNo()) ? 1 : 0;
             this.totalBox += box;

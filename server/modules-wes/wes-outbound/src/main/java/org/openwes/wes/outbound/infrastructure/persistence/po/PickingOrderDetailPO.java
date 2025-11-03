@@ -1,24 +1,15 @@
 package org.openwes.wes.outbound.infrastructure.persistence.po;
 
-import org.openwes.common.utils.base.UpdateUserPO;
-import org.openwes.common.utils.id.IdGenerator;
-import org.openwes.wes.api.outbound.constants.PickingOrderDetailStatusEnum;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Index;
-import jakarta.persistence.Table;
-import jakarta.persistence.Version;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+import org.openwes.common.utils.base.UpdateUserPO;
+import org.openwes.common.utils.id.IdGenerator;
+import org.openwes.wes.api.outbound.constants.PickingOrderDetailStatusEnum;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.Collection;
@@ -29,10 +20,11 @@ import java.util.Map;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(
-    name = "w_picking_order_detail",
-    indexes = {
-        @Index(name = "idx_picking_order_id", columnList = "pickingOrderId")
-    }
+        name = "w_picking_order_detail",
+        indexes = {
+                @Index(name = "idx_picking_order_id", columnList = "pickingOrderId"),
+                @Index(name = "idx_outbound_plan_order_id", columnList = "outboundOrderPlanId")
+        }
 )
 @DynamicUpdate
 public class PickingOrderDetailPO extends UpdateUserPO {

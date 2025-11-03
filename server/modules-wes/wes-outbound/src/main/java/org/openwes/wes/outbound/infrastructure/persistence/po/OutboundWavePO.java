@@ -1,15 +1,13 @@
 package org.openwes.wes.outbound.infrastructure.persistence.po;
 
-import org.openwes.common.utils.base.UpdateUserPO;
-import org.openwes.common.utils.id.IdGenerator;
-import org.openwes.wes.api.outbound.constants.OutboundWaveStatusEnum;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+import org.openwes.common.utils.base.UpdateUserPO;
+import org.openwes.wes.api.outbound.constants.OutboundWaveStatusEnum;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.List;
@@ -19,17 +17,15 @@ import java.util.List;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(
-    name = "w_outbound_wave",
-    indexes = {
-        @Index(unique = true, name = "uk_wave_no", columnList = "waveNo")
-    }
+        name = "w_outbound_wave",
+        indexes = {
+                @Index(unique = true, name = "uk_wave_no", columnList = "waveNo")
+        }
 )
 @DynamicUpdate
 public class OutboundWavePO extends UpdateUserPO {
 
     @Id
-    @GeneratedValue(generator = "databaseIdGenerator")
-    @GenericGenerator(name = "databaseIdGenerator", type = IdGenerator.class)
     private Long id;
 
     @Column(nullable = false, columnDefinition = "varchar(64) comment '仓库'")

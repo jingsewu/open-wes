@@ -12,7 +12,10 @@ import org.openwes.domain.event.api.DomainEvent;
 public class PickingOrderImprovePriorityEvent extends DomainEvent {
 
     @NotNull
-    private Long pickingOrderId;
-    @NotNull
     private Integer priority;
+
+    public PickingOrderImprovePriorityEvent(Long pickingOrderId, Integer priority) {
+        super(pickingOrderId);
+        this.priority = priority;
+    }
 }

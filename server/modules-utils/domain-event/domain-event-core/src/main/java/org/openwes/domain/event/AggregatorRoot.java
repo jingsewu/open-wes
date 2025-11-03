@@ -3,13 +3,14 @@ package org.openwes.domain.event;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import org.apache.commons.lang3.ObjectUtils;
+import org.openwes.common.utils.base.UpdateUserDTO;
 import org.openwes.domain.event.api.DomainEvent;
 
 import java.util.Collections;
 import java.util.List;
 
 @Getter
-public abstract class AggregatorRoot {
+public abstract class AggregatorRoot extends UpdateUserDTO {
 
     private final List<DomainEvent> synchronousDomainEvents = Lists.newArrayList();
     private final List<DomainEvent> asynchronousDomainEvents = Lists.newArrayList();
@@ -53,5 +54,9 @@ public abstract class AggregatorRoot {
         } finally {
             this.clearEvents();
         }
+    }
+
+    public void addLifecycleEvent(DomainEvent event) {
+        this.addSynchronizationEvents(event);
     }
 }

@@ -58,7 +58,8 @@ public class EmptyContainerOutboundOrder {
 
     public void complete(List<Long> emptyContainerOutboundOrderDetailIds) {
 
-        this.details.stream().filter(detail -> emptyContainerOutboundOrderDetailIds.contains(detail.getId())).forEach(EmptyContainerOutboundOrderDetail::complete);
+        this.details.stream().filter(detail ->
+                emptyContainerOutboundOrderDetailIds.contains(detail.getId())).forEach(EmptyContainerOutboundOrderDetail::complete);
 
         if (this.details.stream().allMatch(EmptyContainerOutboundOrderDetail::isCompleted)) {
             log.info("empty container outbound order: {} complete", this.id);

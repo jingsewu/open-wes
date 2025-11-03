@@ -32,17 +32,16 @@ public class InboundPlanOrderRepositoryImpl implements InboundPlanOrderRepositor
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public InboundPlanOrder saveOrderAndDetail(InboundPlanOrder inboundPlanOrder) {
+    public void saveOrderAndDetail(InboundPlanOrder inboundPlanOrder) {
         InboundPlanOrderPO inboundPlanOrderPO = inboundPlanOrderPORepository.save(inboundPlanOrderPOTransfer.toPO(inboundPlanOrder));
 
         List<InboundPlanOrderDetail> modifiedDetails = inboundPlanOrder.getDetails().stream().filter(InboundPlanOrderDetail::isModified).toList();
         List<InboundPlanOrderDetailPO> inboundPlanOrderDetailPOs = inboundPlanOrderPOTransfer.toDetailPOs(modifiedDetails);
-        inboundPlanOrderDetailPOs.forEach(v -> v.setInboundPlanOrderId(inboundPlanOrderPO.getId()));
         inboundPlanOrderDetailPORepository.saveAll(inboundPlanOrderDetailPOs);
 
         inboundPlanOrder.sendAndClearEvents();
 
-        return inboundPlanOrderPOTransfer.toDO(inboundPlanOrderPO, inboundPlanOrderDetailPOs);
+        inboundPlanOrderPOTransfer.toDO(inboundPlanOrderPO, inboundPlanOrderDetailPOs);
     }
 
     @Override
@@ -55,12 +54,21 @@ public class InboundPlanOrderRepositoryImpl implements InboundPlanOrderRepositor
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public List<InboundPlanOrder> saveAllOrdersAndDetails(List<InboundPlanOrder> inboundPlanOrders) {
+    public void saveAllOrdersAndDetails(List<InboundPlanOrder> inboundPlanOrders) {
         inboundPlanOrders.forEach(AggregatorRoot::sendAndClearEvents);
-        return inboundPlanOrders.stream().map(this::saveOrderAndDetail).toList();
+
+        Collection<InboundPlanOrderPO> inboundPlanOrderPOs = inboundPlanOrderPOTransfer.toPOs(inboundPlanOrders);
+        List<InboundPlanOrderDetailPO> inboundPlanOrderDetailPOs = inboundPlanOrders.stream()
+                .flatMap(inboundPlanOrder -> inboundPlanOrder.getDetails()
+                        .stream().filter(InboundPlanOrderDetail::isModified))
+                .map(inboundPlanOrderPOTransfer::toDetailPO).toList();
+
+        inboundPlanOrderPORepository.saveAll(inboundPlanOrderPOs);
+        inboundPlanOrderDetailPORepository.saveAll(inboundPlanOrderDetailPOs);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public InboundPlanOrder findById(Long inboundPlanOrderId) {
 
         InboundPlanOrderPO inboundPlanOrderPO = inboundPlanOrderPORepository.findById(inboundPlanOrderId).orElseThrow();
@@ -70,6 +78,7 @@ public class InboundPlanOrderRepositoryImpl implements InboundPlanOrderRepositor
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<InboundPlanOrder> findAllByLpnCodeOrCustomerOrderNoAndWarehouseCode(String identifyNo, String warehouseCode) {
         List<InboundPlanOrderPO> inboundPlanOrderPOs = inboundPlanOrderPORepository.findByCustomerOrderNoAndWarehouseCode(identifyNo, warehouseCode);
         if (ObjectUtils.isEmpty(inboundPlanOrderPOs)) {
@@ -87,6 +96,7 @@ public class InboundPlanOrderRepositoryImpl implements InboundPlanOrderRepositor
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<InboundPlanOrder> findAllByLpnCodeOrCustomerOrderNoAndWarehouseCode(Collection<String> identifyNos, String warehouseCode) {
         List<InboundPlanOrderPO> inboundPlanOrderPOList = inboundPlanOrderPORepository.findAllByLpnCodeInOrCustomerOrderNoInAndWarehouseCode(identifyNos, identifyNos, warehouseCode);
 
@@ -99,11 +109,13 @@ public class InboundPlanOrderRepositoryImpl implements InboundPlanOrderRepositor
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean existByCustomerOrderNo(Collection<String> customerOrderNos, String warehouseCode) {
         return inboundPlanOrderPORepository.existsByCustomerOrderNoInAndWarehouseCode(customerOrderNos, warehouseCode);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean existByBoxNos(Collection<String> boxNos, String warehouseCode) {
         List<InboundPlanOrderDetailPO> inboundPlanOrderDetailPOS = inboundPlanOrderDetailPORepository.findByBoxNoIn(boxNos);
 
@@ -113,6 +125,7 @@ public class InboundPlanOrderRepositoryImpl implements InboundPlanOrderRepositor
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<InboundPlanOrder> findAllByIds(Collection<Long> ids) {
         Map<Long, List<InboundPlanOrderDetailPO>> planOrderDetailGroupByOrderId = Optional.ofNullable(inboundPlanOrderDetailPORepository.findByInboundPlanOrderIdIn(ids))
                 .filter(CollectionUtils::isNotEmpty)
@@ -128,6 +141,7 @@ public class InboundPlanOrderRepositoryImpl implements InboundPlanOrderRepositor
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Collection<InboundPlanOrder> findAllByStatus(Collection<InboundPlanOrderStatusEnum> inboundPlanOrderStatusEnums) {
         final List<InboundPlanOrderPO> inboundPlanOrderPOS = inboundPlanOrderPORepository.findAllByInboundPlanOrderStatusIn(inboundPlanOrderStatusEnums);
         if (CollectionUtils.isEmpty(inboundPlanOrderPOS)) {
@@ -149,6 +163,7 @@ public class InboundPlanOrderRepositoryImpl implements InboundPlanOrderRepositor
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<InboundPlanOrder> findAllByDetailIds(Collection<Long> detailIds) {
         final List<InboundPlanOrderDetailPO> inboundPlanOrderDetailPOS = inboundPlanOrderDetailPORepository.findAllById(detailIds);
         if (CollectionUtils.isEmpty(inboundPlanOrderDetailPOS)) {
@@ -163,6 +178,7 @@ public class InboundPlanOrderRepositoryImpl implements InboundPlanOrderRepositor
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean existByLpnCodeAndStatus(Set<String> lpnCodes, Collection<InboundPlanOrderStatusEnum> statues, String warehouseCode) {
         return inboundPlanOrderPORepository.existsByLpnCodeInAndInboundPlanOrderStatusInAndWarehouseCode(lpnCodes, statues, warehouseCode);
     }

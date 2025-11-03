@@ -11,7 +11,7 @@ public interface PickingOrderRepository {
 
     void saveAllOrders(List<PickingOrder> pickingOrders);
 
-    List<PickingOrder> saveOrderAndDetails(List<PickingOrder> pickingOrders);
+    List<PickingOrder> saveAllOrderAndDetails(List<PickingOrder> pickingOrders);
 
     List<PickingOrder> findOrderByPickingOrderIds(Collection<Long> pickingOrderIds);
 
@@ -32,4 +32,6 @@ public interface PickingOrderRepository {
     List<PickingOrder> findAllByPickingDetailIds(List<Long> pickingOrderDetailIds);
 
     List<PickingOrder> findAllByOutboundPlanOrderId(Long outboundPlanOrderId);
+
+    List<PickingOrder> findAllOrderByOutboundPlanOrderIds(List<Long> outboundPlanOrderIds);
 }

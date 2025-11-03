@@ -1,19 +1,21 @@
 package org.openwes.wes.basic.container.domain.entity;
 
-import org.openwes.domain.event.DomainEventPublisher;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.openwes.domain.event.AggregatorRoot;
 import org.openwes.wes.api.task.constants.TransferContainerRecordStatusEnum;
 import org.openwes.wes.api.task.dto.BindContainerDTO;
 import org.openwes.wes.api.task.event.TransferContainerSealedEvent;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @Slf4j
-public class TransferContainerRecord implements Serializable {
+public class TransferContainerRecord extends AggregatorRoot implements Serializable {
 
     private Long id;
     private Long pickingOrderId;
@@ -60,7 +62,6 @@ public class TransferContainerRecord implements Serializable {
 
         this.sealTime = System.currentTimeMillis();
         this.transferContainerStatus = TransferContainerRecordStatusEnum.SEALED;
-        DomainEventPublisher.sendAsyncDomainEvent(new TransferContainerSealedEvent()
-                .setTransferContainerRecordId(this.id).setWarehouseCode(this.warehouseCode));
+        this.addAsynchronousDomainEvents((new TransferContainerSealedEvent(this.id, this.warehouseCode)));
     }
 }

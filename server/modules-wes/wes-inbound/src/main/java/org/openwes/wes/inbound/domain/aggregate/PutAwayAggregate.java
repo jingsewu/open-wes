@@ -28,10 +28,11 @@ public class PutAwayAggregate {
 
     @Transactional(rollbackFor = Exception.class)
     public void createPutAwayTasks(List<PutAwayTask> putAwayTasks) {
-        List<PutAwayTask> savedPutAwayTasks = putAwayTaskRepository.saveAllOrdersAndDetails(putAwayTasks);
+
+        putAwayTaskRepository.saveAllOrdersAndDetails(putAwayTasks);
 
         List<CreateContainerTaskDTO> createContainerTaskDTOS = Lists.newArrayList();
-        savedPutAwayTasks.forEach(putAwayTask -> putAwayTask.getPutAwayTaskDetails()
+        putAwayTasks.forEach(putAwayTask -> putAwayTask.getPutAwayTaskDetails()
                 .stream().collect(Collectors.groupingBy(PutAwayTaskDetail::getContainerFace))
                 .forEach((containerFace, putAwayTaskDetails) -> {
                     CreateContainerTaskDTO createContainerTaskDTO = new CreateContainerTaskDTO();
@@ -48,7 +49,7 @@ public class PutAwayAggregate {
                 }));
         containerTaskApiFacade.createContainerTasks(createContainerTaskDTOS);
 
-        savedPutAwayTasks.forEach(putAwayTask -> putAwayTask.getPutAwayTaskDetails().forEach(detail -> {
+        putAwayTasks.forEach(putAwayTask -> putAwayTask.getPutAwayTaskDetails().forEach(detail -> {
 
             StockCreateDTO stockCreateDTO = StockCreateDTO.builder()
                     .boxStock(StringUtils.isNotEmpty(detail.getBoxNo()))

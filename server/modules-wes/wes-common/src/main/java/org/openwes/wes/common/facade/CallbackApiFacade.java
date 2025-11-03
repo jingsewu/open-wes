@@ -1,14 +1,16 @@
 package org.openwes.wes.common.facade;
 
+import lombok.RequiredArgsConstructor;
 import org.openwes.api.platform.api.ICallbackApi;
 import org.openwes.api.platform.api.constants.CallbackApiTypeEnum;
 import org.openwes.api.platform.api.dto.callback.CallbackMessage;
 import org.openwes.common.utils.http.Response;
 import org.openwes.wes.api.ems.proxy.constants.ContainerTaskTypeEnum;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -16,20 +18,26 @@ public class CallbackApiFacade {
 
     private final ICallbackApi callbackApi;
 
-    public <T> Response callback(CallbackApiTypeEnum callbackType, String bizType, Object sourceData) {
-
+    public <T> CompletableFuture<Response> callback(CallbackApiTypeEnum callbackType, String bizType, Object sourceData) {
         if (TransactionSynchronizationManager.isSynchronizationActive()) {
+            CompletableFuture<Response> future = new CompletableFuture<>();
             TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
                 @Override
                 public void afterCommit() {
-                    callbackApi.callback(callbackType, bizType, new CallbackMessage<>().setData(sourceData));
+                    try {
+                        Response response = callbackApi.callback(callbackType, bizType, new CallbackMessage<>().setData(sourceData));
+                        future.complete(response);
+                    } catch (Exception e) {
+                        future.completeExceptionally(e);
+                    }
                 }
             });
+            return future;
         } else {
-            callbackApi.callback(callbackType, bizType, new CallbackMessage<>().setData(sourceData));
+            return CompletableFuture.completedFuture(
+                    callbackApi.callback(callbackType, bizType, new CallbackMessage<>().setData(sourceData))
+            );
         }
-
-        return callbackApi.callback(callbackType, bizType, new CallbackMessage<>().setData(sourceData));
     }
 
     public void callback(CallbackApiTypeEnum callbackType, Object sourceData, ContainerTaskTypeEnum bizType) {

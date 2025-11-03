@@ -1,19 +1,23 @@
 package org.openwes.wes.api.outbound.event;
 
-import org.openwes.domain.event.api.DomainEvent;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import org.openwes.domain.event.api.DomainEvent;
 
 import java.io.Serializable;
-import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Accessors(chain = true)
-public class OutboundPlanOrderPickingEvent extends DomainEvent {
+public class PickingOrderPickedEvent extends DomainEvent {
 
-    private List<PickingDetail> pickingDetails;
+    private PickingDetail pickingDetail;
+
+    public PickingOrderPickedEvent(Long pickingOrderId, PickingDetail detail) {
+        super(pickingOrderId);
+        this.pickingDetail = detail;
+    }
 
     @Data
     @Accessors(chain = true)

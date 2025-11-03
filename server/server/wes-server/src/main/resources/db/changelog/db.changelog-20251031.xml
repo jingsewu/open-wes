@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="add_accept_order_columns_index" author="Kinser">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="w_accept_order"/>
+            </and>
+        </preConditions>
+        <comment>add accept order columns and index</comment>
+        <sql>
+            alter table w_accept_order
+                add column complete_time bigint not null default 0 comment '完成时间';
+            alter table w_accept_order
+                add unique index uk_identify_no_complete_time(identify_no, complete_time);
+        </sql>
+        <rollback>
+            <sql>
+                alter table w_accept_order drop column complete_time;
+                alter table w_accept_order drop index uk_identify_no_complete_time;
+            </sql>
+        </rollback>
+    </changeSet>
+
+
+</databaseChangeLog>

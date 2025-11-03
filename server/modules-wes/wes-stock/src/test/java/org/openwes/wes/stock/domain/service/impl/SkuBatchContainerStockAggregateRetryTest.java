@@ -2,25 +2,25 @@ package org.openwes.wes.stock.domain.service.impl;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
 import org.openwes.wes.api.stock.dto.StockCreateDTO;
 import org.openwes.wes.stock.domain.aggregate.SkuBatchContainerStockAggregate;
 import org.openwes.wes.stock.domain.entity.ContainerStock;
 import org.openwes.wes.stock.domain.entity.ContainerStockTransaction;
 import org.openwes.wes.stock.domain.entity.SkuBatchStock;
-import org.openwes.wes.stock.domain.repository.*;
+import org.openwes.wes.stock.domain.repository.ContainerStockRepository;
+import org.openwes.wes.stock.domain.repository.ContainerStockTransactionRepository;
+import org.openwes.wes.stock.domain.repository.SkuBatchStockRepository;
 import org.openwes.wes.stock.domain.service.StockService;
-import org.openwes.wes.stock.domain.transfer.*;
-import org.openwes.wes.api.task.constants.OperationTaskTypeEnum;
+import org.openwes.wes.stock.domain.transfer.ContainerStockTransactionTransfer;
+import org.openwes.wes.stock.domain.transfer.ContainerStockTransfer;
+import org.openwes.wes.stock.domain.transfer.SkuBatchStockTransfer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import jakarta.persistence.OptimisticLockException;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -93,8 +93,8 @@ public class SkuBatchContainerStockAggregateRetryTest {
 
         // Make save throw twice, then succeed
         when(skuBatchStockRepository.save(any()))
-                .thenThrow(new OptimisticLockException("first"))
-                .thenThrow(new OptimisticLockException("second"))
+                .thenThrow(new OptimisticLockingFailureException("first"))
+                .thenThrow(new OptimisticLockingFailureException("second"))
                 .thenReturn(new SkuBatchStock());
 
         // Act — this will be retried by Spring Retry
@@ -135,8 +135,8 @@ public class SkuBatchContainerStockAggregateRetryTest {
         containerStock.setAvailableQty(10);
 
         when(containerStockRepository.findByContainerAndSlotAndSkuBatch(any(), any(), any())).thenReturn(containerStock);
-        doThrow(new OptimisticLockException("first"))
-                .doThrow(new OptimisticLockException("second"))
+        doThrow(new OptimisticLockingFailureException("first"))
+                .doThrow(new OptimisticLockingFailureException("second"))
                 .doNothing()
                 .when(containerStockRepository)
                 .save(any(ContainerStock.class));

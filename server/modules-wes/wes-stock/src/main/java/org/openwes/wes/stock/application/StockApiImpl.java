@@ -15,6 +15,7 @@ import org.openwes.wes.stock.domain.transfer.ContainerStockTransfer;
 import org.openwes.wes.stock.domain.transfer.SkuBatchStockTransfer;
 import lombok.RequiredArgsConstructor;
 import org.apache.dubbo.config.annotation.DubboService;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
@@ -37,7 +38,7 @@ public class StockApiImpl implements IStockApi {
     private final SkuBatchContainerStockAggregate skuBatchContainerStockAggregate;
 
     @Override
-    @Retryable(retryFor =  OptimisticLockException.class , maxAttempts = 3, backoff = @Backoff(delay = 200))
+    @Retryable(retryFor =  OptimisticLockingFailureException.class , maxAttempts = 3, backoff = @Backoff(delay = 200))
     public void addAndLockSkuBatchStock(List<SkuBatchStockLockDTO> skuBatchStockLockDTOS) {
         List<Long> skuBatchStockIds = skuBatchStockLockDTOS.stream().map(SkuBatchStockLockDTO::getSkuBatchStockId).toList();
         List<SkuBatchStock> skuBatchStocks = skuBatchStockRepository.findAllByIds(skuBatchStockIds);
@@ -51,7 +52,7 @@ public class StockApiImpl implements IStockApi {
     }
 
     @Override
-    @Retryable(retryFor =  OptimisticLockException.class , maxAttempts = 3, backoff = @Backoff(delay = 200))
+    @Retryable(retryFor =  OptimisticLockingFailureException.class , maxAttempts = 3, backoff = @Backoff(delay = 200))
     public void lockSkuBatchStock(List<SkuBatchStockLockDTO> skuBatchStockLockDTOS) {
         List<Long> skuBatchStockIds = skuBatchStockLockDTOS.stream().map(SkuBatchStockLockDTO::getSkuBatchStockId).toList();
         List<SkuBatchStock> skuBatchStocks = skuBatchStockRepository.findAllByIds(skuBatchStockIds);
@@ -65,7 +66,7 @@ public class StockApiImpl implements IStockApi {
     }
 
     @Override
-    @Retryable(retryFor =  OptimisticLockException.class , maxAttempts = 3, backoff = @Backoff(delay = 200))
+    @Retryable(retryFor =  OptimisticLockingFailureException.class , maxAttempts = 3, backoff = @Backoff(delay = 200))
     public void lockContainerStock(List<ContainerStockLockDTO> containerStockLockDTOS) {
         List<Long> containerStockIds = containerStockLockDTOS.stream().map(ContainerStockLockDTO::getContainerStockId).toList();
         List<ContainerStock> containerStocks = containerStockRepository.findAllByIds(containerStockIds);
@@ -79,7 +80,7 @@ public class StockApiImpl implements IStockApi {
     }
 
     @Override
-    @Retryable(retryFor =  OptimisticLockException.class , maxAttempts = 3, backoff = @Backoff(delay = 200))
+    @Retryable(retryFor =  OptimisticLockingFailureException.class , maxAttempts = 3, backoff = @Backoff(delay = 200))
     public void addAndLockContainerStock(List<ContainerStockLockDTO> containerStockLockDTOS) {
         List<Long> containerStockIds = containerStockLockDTOS.stream().map(ContainerStockLockDTO::getContainerStockId).toList();
         List<ContainerStock> containerStocks = containerStockRepository.findAllByIds(containerStockIds);

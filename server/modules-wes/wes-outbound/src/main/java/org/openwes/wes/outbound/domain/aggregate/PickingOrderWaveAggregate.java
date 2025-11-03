@@ -28,7 +28,7 @@ public class PickingOrderWaveAggregate {
     @Transactional(rollbackFor = Exception.class)
     public void split(OutboundWave outboundWave) {
         List<PickingOrder> pickingOrders = outboundWaveService.spiltWave(outboundWave);
-        List<PickingOrder> savePickingOrders = pickingOrderRepository.saveOrderAndDetails(pickingOrders);
+        List<PickingOrder> savePickingOrders = pickingOrderRepository.saveAllOrderAndDetails(pickingOrders);
 
         outboundWave.process();
         outboundWaveRepository.save(outboundWave);

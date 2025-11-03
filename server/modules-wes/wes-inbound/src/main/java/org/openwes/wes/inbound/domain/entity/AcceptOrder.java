@@ -48,6 +48,8 @@ public class AcceptOrder extends AggregatorRoot {
 
     private List<AcceptOrderDetail> details;
 
+    private Long completeTime;
+
     private Long version;
 
     public void initialize() {
@@ -80,6 +82,7 @@ public class AcceptOrder extends AggregatorRoot {
             throw WmsException.throwWmsException(ACCEPT_ORDER_HAD_COMPLETED, this.orderNo);
         }
         this.acceptOrderStatus = AcceptOrderStatusEnum.COMPLETE;
+        this.completeTime = System.currentTimeMillis();
     }
 
     public void cancel(Long acceptOrderDetailId) {

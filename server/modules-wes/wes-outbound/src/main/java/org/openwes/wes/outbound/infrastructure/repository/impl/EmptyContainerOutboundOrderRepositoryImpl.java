@@ -24,6 +24,7 @@ public class EmptyContainerOutboundOrderRepositoryImpl implements EmptyContainer
     private final EmptyContainerOutboundOrderPOTransfer emptyContainerOutboundOrderPOTransfer;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void save(EmptyContainerOutboundOrder order) {
 
         EmptyContainerOutboundOrderPO saved = orderPORepository.save(emptyContainerOutboundOrderPOTransfer.toPO(order));
@@ -35,6 +36,21 @@ public class EmptyContainerOutboundOrderRepositoryImpl implements EmptyContainer
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void saveAll(List<EmptyContainerOutboundOrder> emptyContainerOutboundOrders) {
+        orderPORepository.saveAll(emptyContainerOutboundOrderPOTransfer.toPOs(emptyContainerOutboundOrders));
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void saveAllOrderAndDetails(List<EmptyContainerOutboundOrder> emptyContainerOutboundOrders) {
+        detailPORepository.saveAll(emptyContainerOutboundOrderPOTransfer.toDetailPOs(emptyContainerOutboundOrders
+                .stream().flatMap(v -> v.getDetails().stream()).toList()));
+        orderPORepository.saveAll(emptyContainerOutboundOrderPOTransfer.toPOs(emptyContainerOutboundOrders));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<EmptyContainerOutboundOrder> findAllByIds(List<Long> orderIds) {
 
         List<EmptyContainerOutboundOrderPO> orderPOS = orderPORepository.findAllById(orderIds);
@@ -47,22 +63,10 @@ public class EmptyContainerOutboundOrderRepositoryImpl implements EmptyContainer
     }
 
     @Override
-    public void saveAll(List<EmptyContainerOutboundOrder> emptyContainerOutboundOrders) {
-        orderPORepository.saveAll(emptyContainerOutboundOrderPOTransfer.toPOs(emptyContainerOutboundOrders));
-    }
-
-    @Override
+    @Transactional(readOnly = true)
     public List<EmptyContainerOutboundOrder> findOrderByDetailIds(List<Long> emptyContainerOutboundOrderDetailIds) {
         List<EmptyContainerOutboundOrderDetailPO> detailPOs = detailPORepository.findAllById(emptyContainerOutboundOrderDetailIds);
         return findAllByIds(detailPOs.stream().map(EmptyContainerOutboundOrderDetailPO::getEmptyContainerOutboundOrderId)
                 .collect(Collectors.toList()));
-    }
-
-    @Transactional(rollbackFor = Exception.class)
-    @Override
-    public void saveAllOrderAndDetails(List<EmptyContainerOutboundOrder> emptyContainerOutboundOrders) {
-        detailPORepository.saveAll(emptyContainerOutboundOrderPOTransfer.toDetailPOs(emptyContainerOutboundOrders
-                .stream().flatMap(v -> v.getDetails().stream()).toList()));
-        orderPORepository.saveAll(emptyContainerOutboundOrderPOTransfer.toPOs(emptyContainerOutboundOrders));
     }
 }

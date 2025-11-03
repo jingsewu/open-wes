@@ -1,22 +1,18 @@
 package org.openwes.wes.outbound.application.event;
 
 import com.google.common.eventbus.Subscribe;
-import org.openwes.domain.event.DomainEventPublisher;
-import org.openwes.wes.api.outbound.constants.OutboundPlanOrderStatusEnum;
-import org.openwes.wes.api.outbound.constants.OutboundWaveStatusEnum;
-import org.openwes.wes.api.outbound.event.NewOutboundWaveEvent;
-import org.openwes.wes.api.outbound.event.OutboundPlanOrderImprovePriorityEvent;
-import org.openwes.wes.api.outbound.event.OutboundPlanOrderShortCompleteEvent;
-import org.openwes.wes.api.outbound.event.OutboundWaveCompleteEvent;
-import org.openwes.wes.outbound.domain.aggregate.PickingOrderWaveAggregate;
-import org.openwes.wes.outbound.domain.entity.OutboundPlanOrder;
-import org.openwes.wes.outbound.domain.entity.OutboundWave;
-import org.openwes.wes.outbound.domain.repository.OutboundPlanOrderRepository;
-import org.openwes.wes.outbound.domain.repository.OutboundWaveRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
+import org.openwes.wes.api.outbound.constants.OutboundWaveStatusEnum;
+import org.openwes.wes.api.outbound.constants.PickingOrderStatusEnum;
+import org.openwes.wes.api.outbound.event.NewOutboundWaveEvent;
+import org.openwes.wes.api.outbound.event.PickingOrderCompleteEvent;
+import org.openwes.wes.outbound.domain.aggregate.PickingOrderWaveAggregate;
+import org.openwes.wes.outbound.domain.entity.OutboundWave;
+import org.openwes.wes.outbound.domain.entity.PickingOrder;
+import org.openwes.wes.outbound.domain.repository.OutboundWaveRepository;
+import org.openwes.wes.outbound.domain.repository.PickingOrderRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -28,7 +24,7 @@ public class OutboundWaveSubscribe {
 
     private final OutboundWaveRepository outboundWaveRepository;
     private final PickingOrderWaveAggregate pickingOrderWaveAggregate;
-    private final OutboundPlanOrderRepository outboundPlanOrderRepository;
+    private final PickingOrderRepository pickingOrderRepository;
 
     @Subscribe
     public void onCreateEvent(@Valid NewOutboundWaveEvent event) {
@@ -40,21 +36,18 @@ public class OutboundWaveSubscribe {
     }
 
     @Subscribe
-    public void onCompleteEvent(@Valid OutboundWaveCompleteEvent event) {
+    public void onPickingOrderCompleteEvent(@Valid PickingOrderCompleteEvent event) {
+        PickingOrder pickingOrder = pickingOrderRepository.findById(event.getAggregatorId());
+        String waveNo = pickingOrder.getWaveNo();
 
-        OutboundWave outboundWave = outboundWaveRepository.findByWaveNo(event.getWaveNo());
-        outboundWave.complete();
-        outboundWaveRepository.save(outboundWave);
+        List<PickingOrder> pickingOrders = pickingOrderRepository.findByWaveNo(waveNo);
 
-        List<OutboundPlanOrder> outboundPlanOrders = outboundPlanOrderRepository.findAllByIds(outboundWave.getOutboundPlanOrderIds());
+        if (pickingOrders.stream().allMatch(v -> v.getPickingOrderStatus() == PickingOrderStatusEnum.PICKED
+                || v.getPickingOrderStatus() == PickingOrderStatusEnum.CANCELED)) {
 
-        List<Long> outboundPlainOrderIds = outboundPlanOrders.stream().filter(v ->
-                        !OutboundPlanOrderStatusEnum.isFinalStatues(v.getOutboundPlanOrderStatus()))
-                .map(OutboundPlanOrder::getId).toList();
-
-        if (CollectionUtils.isNotEmpty(outboundPlainOrderIds)) {
-            log.info("outbound plan order ids: {} short completed", outboundPlainOrderIds);
-            DomainEventPublisher.sendAsyncDomainEvent(new OutboundPlanOrderShortCompleteEvent().setOutboundPlanOrderIds(outboundPlainOrderIds));
+            OutboundWave outboundWave = outboundWaveRepository.findByWaveNo(waveNo);
+            outboundWave.complete();
+            outboundWaveRepository.save(outboundWave);
         }
     }
 }

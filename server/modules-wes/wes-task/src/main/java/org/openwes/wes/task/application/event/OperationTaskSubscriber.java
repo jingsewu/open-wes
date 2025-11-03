@@ -53,24 +53,25 @@ public class OperationTaskSubscriber {
     @Subscribe
     public void onImprovePriority(PickingOrderImprovePriorityEvent event) {
         List<OperationTask> operationTasks = operationTaskRepository
-                .findAllByPickingOrderIds(Lists.newArrayList(event.getPickingOrderId()))
-                .stream().filter(v->v.getTaskStatus() == OperationTaskStatusEnum.NEW)
+                .findAllByPickingOrderIds(Lists.newArrayList(event.getAggregatorId()))
+                .stream().filter(v -> v.getTaskStatus() == OperationTaskStatusEnum.NEW)
                 .toList();
 
-        if(operationTasks.isEmpty()){
+        if (operationTasks.isEmpty()) {
             return;
         }
 
         operationTasks.forEach(operationTask -> operationTask.improvePriority(event.getPriority()));
         operationTaskRepository.saveAll(operationTasks);
 
-        containerTaskApi.improvePriority(operationTasks.stream().map(OperationTask::getId).toList(),event.getPriority());
+        containerTaskApi.improvePriority(operationTasks.stream().map(OperationTask::getId).toList(), event.getPriority());
     }
 
     @Subscribe
     public void onTransferContainerSealed(TransferContainerSealedEvent transferContainerSealedEvent) {
 
-        TransferContainerRecordDTO transferContainerRecord = transferContainerRecordApi.findById(transferContainerSealedEvent.getTransferContainerRecordId());
+        TransferContainerRecordDTO transferContainerRecord = transferContainerRecordApi
+                .findById(transferContainerSealedEvent.getAggregatorId());
         TransferContainerDTO transferContainer = transferContainerApi
                 .findByContainerCodeAndWarehouseCode(transferContainerRecord.getTransferContainerCode(), transferContainerRecord.getWarehouseCode());
 

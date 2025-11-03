@@ -12,9 +12,9 @@ public interface InboundPlanOrderRepository {
 
     void saveOrders(Collection<InboundPlanOrder> inboundPlanOrders);
 
-    InboundPlanOrder saveOrderAndDetail(InboundPlanOrder inboundPlanOrder);
+    void saveOrderAndDetail(InboundPlanOrder inboundPlanOrder);
 
-    List<InboundPlanOrder> saveAllOrdersAndDetails(List<InboundPlanOrder> inboundPlanOrders);
+    void saveAllOrdersAndDetails(List<InboundPlanOrder> inboundPlanOrders);
 
     InboundPlanOrder findById(Long inboundPlanOrderId);
 

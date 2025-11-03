@@ -1,16 +1,19 @@
 package org.openwes.wes.api.outbound.event;
 
-import org.openwes.domain.event.api.DomainEvent;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import org.openwes.domain.event.api.DomainEvent;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Accessors(chain = true)
 public class OutboundPlanOrderAssignedEvent extends DomainEvent {
 
-    private Long outboundPlanOrderId;
-
     private String warehouseCode;
+
+    public OutboundPlanOrderAssignedEvent(Long outboundPlanOrderId, String warehouseCode) {
+        super(outboundPlanOrderId);
+        this.warehouseCode = warehouseCode;
+    }
 }

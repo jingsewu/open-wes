@@ -1,22 +1,25 @@
-package org.openwes.wes.api.outbound.event;
+package org.openwes.wes.api.task.event;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import org.openwes.domain.event.api.DomainEvent;
 
-import java.util.List;
-
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Accessors(chain = true)
-public class PickingOrderAbnormalEvent extends DomainEvent {
+public class OperationTaskAbnormalEvent extends DomainEvent {
 
-    private List<PickingOrderAbnormalDetail> details;
+    private OperationTaskAbnormalDetail detail;
+
+    public OperationTaskAbnormalEvent(Long operationTaskId, OperationTaskAbnormalDetail detail) {
+        super(operationTaskId);
+        this.detail = detail;
+    }
 
     @Data
     @Accessors(chain = true)
-    public static class PickingOrderAbnormalDetail {
+    public static class OperationTaskAbnormalDetail {
         private Long pickingOrderId;
         private Long pickingOrderDetailId;
         private Integer abnormalQty;

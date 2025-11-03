@@ -27,7 +27,7 @@ public class OutboundPlanOrderAggregate {
     public void cancel(OutboundPlanOrderCancelContext outboundPlanOrderCancelContext) {
 
         outboundPlanOrderCancelContext.getOutboundPlanOrders().forEach(OutboundPlanOrder::cancel);
-        outboundPlanOrderRepository.saveOrderAndDetails(outboundPlanOrderCancelContext.getOutboundPlanOrders());
+        outboundPlanOrderRepository.saveAllOrderAndDetails(outboundPlanOrderCancelContext.getOutboundPlanOrders());
 
         outboundPlanOrderPreAllocatedAggregate.cancel(outboundPlanOrderCancelContext.getOutboundPreAllocatedRecords());
 
@@ -35,7 +35,7 @@ public class OutboundPlanOrderAggregate {
         outboundWaveRepository.saveAll(outboundPlanOrderCancelContext.getOutboundWaves());
 
         outboundPlanOrderCancelContext.getPickingOrders().forEach(PickingOrder::cancel);
-        pickingOrderRepository.saveOrderAndDetails(outboundPlanOrderCancelContext.getPickingOrders());
+        pickingOrderRepository.saveAllOrderAndDetails(outboundPlanOrderCancelContext.getPickingOrders());
 
     }
 }

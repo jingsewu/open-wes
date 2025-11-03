@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="add_aggregator_id_to_domain_event" author="Kinser">
+        <addColumn tableName="d_domain_event">
+            <column name="aggregator_id" type="BIGINT" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+        <createIndex indexName="idx_aggregator_id" tableName="d_domain_event">
+            <column name="aggregator_id"/>
+        </createIndex>
+    </changeSet>
+
+
+</databaseChangeLog>

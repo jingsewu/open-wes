@@ -1,6 +1,5 @@
 package org.openwes.exception.handler;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.openwes.common.utils.exception.WmsException;
@@ -25,6 +24,7 @@ import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 @Slf4j
 @RestControllerAdvice
@@ -52,8 +52,8 @@ public class ControllerExceptionHandler {
         return ResponseEntity.status(HttpStatus.OK).body(errorResponse);
     }
 
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<OpenWesErrorResponse> handleEntityNotFound(EntityNotFoundException ex) {
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<OpenWesErrorResponse> handleEntityNotFound(NoSuchElementException ex) {
         OpenWesErrorResponse errorResponse = OpenWesErrorResponse.builder().msg("Entity Not Found")
                 .status(String.valueOf(HttpStatus.NOT_FOUND.value()))
                 .description(CommonErrorDescEnum.NOT_FOUND.getDesc())

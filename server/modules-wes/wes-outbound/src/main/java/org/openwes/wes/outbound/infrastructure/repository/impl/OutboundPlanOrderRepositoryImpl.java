@@ -27,27 +27,39 @@ public class OutboundPlanOrderRepositoryImpl implements OutboundPlanOrderReposit
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public OutboundPlanOrder saveOutboundPlanOrder(OutboundPlanOrder outboundPlanOrder) {
+    public void saveOrderAndDetail(OutboundPlanOrder outboundPlanOrder) {
         OutboundPlanOrderPO outboundPlanOrderPO = outboundPlanOrderPORepository.save(outboundPlanOrderPOTransfer.toPO(outboundPlanOrder));
 
         List<OutboundPlanOrderDetailPO> outboundPlanOrderDetailPOS = outboundPlanOrderPOTransfer.toDetailPOs(outboundPlanOrder.getDetails());
-        outboundPlanOrderDetailPOS.forEach(v -> v.setOutboundPlanOrderId(outboundPlanOrderPO.getId()));
 
         List<OutboundPlanOrderDetailPO> details = outboundPlanOrderDetailPORepository.saveAll(outboundPlanOrderDetailPOS);
 
         outboundPlanOrder.sendAndClearEvents();
 
-        return outboundPlanOrderPOTransfer.toDO(outboundPlanOrderPO, details);
+        outboundPlanOrderPOTransfer.toDO(outboundPlanOrderPO, details);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void saveAll(List<OutboundPlanOrder> outboundPlanOrders) {
+    public void saveAllOrders(List<OutboundPlanOrder> outboundPlanOrders) {
         outboundPlanOrderPORepository.saveAll(outboundPlanOrderPOTransfer.toPOs(outboundPlanOrders));
         outboundPlanOrders.forEach(AggregatorRoot::sendAndClearEvents);
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void saveAllOrderAndDetails(List<OutboundPlanOrder> outboundPlanOrders) {
+        outboundPlanOrderPORepository.saveAll(outboundPlanOrderPOTransfer.toPOs(outboundPlanOrders));
+
+        List<OutboundPlanOrderDetail> outboundPlanOrderDetails = outboundPlanOrders.stream()
+                .flatMap(v -> v.getDetails().stream()).toList();
+        outboundPlanOrderDetailPORepository.saveAll(outboundPlanOrderPOTransfer.toDetailPOs(outboundPlanOrderDetails));
+
+        outboundPlanOrders.forEach(AggregatorRoot::sendAndClearEvents);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public OutboundPlanOrder findByOrderNo(String orderNo) {
         OutboundPlanOrderPO outboundPlanOrderPO = outboundPlanOrderPORepository.findByOrderNo(orderNo);
         List<OutboundPlanOrderDetailPO> details = outboundPlanOrderDetailPORepository
@@ -56,6 +68,15 @@ public class OutboundPlanOrderRepositoryImpl implements OutboundPlanOrderReposit
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public OutboundPlanOrder findById(Long orderId) {
+        OutboundPlanOrderPO outboundPlanOrderPO = outboundPlanOrderPORepository.findById(orderId).orElseThrow();
+        List<OutboundPlanOrderDetailPO> details = outboundPlanOrderDetailPORepository.findAllByOutboundPlanOrderId(orderId);
+        return outboundPlanOrderPOTransfer.toDO(outboundPlanOrderPO, details);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<OutboundPlanOrder> findAllByIds(Collection<Long> orderIds) {
 
         List<OutboundPlanOrderPO> outboundPlanOrderPOS = outboundPlanOrderPORepository.findAllById(orderIds);
@@ -67,6 +88,7 @@ public class OutboundPlanOrderRepositoryImpl implements OutboundPlanOrderReposit
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<OutboundPlanOrder> findByCustomerOrderNo(String warehouseCode, String customerOrderNo) {
         List<OutboundPlanOrderPO> outboundPlanOrderPOS = outboundPlanOrderPORepository.findAllByWarehouseCodeAndCustomerOrderNo(warehouseCode, customerOrderNo);
         return outboundPlanOrderPOS.stream().map(outboundPlanOrderPO -> {
@@ -77,6 +99,7 @@ public class OutboundPlanOrderRepositoryImpl implements OutboundPlanOrderReposit
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<OutboundPlanOrder> findByCustomerOrderNos(String warehouseCode, Collection<String> customerOrderNos) {
         List<OutboundPlanOrderPO> outboundPlanOrderPOS = outboundPlanOrderPORepository.findAllByWarehouseCodeAndCustomerOrderNoIn(warehouseCode, customerOrderNos);
         return outboundPlanOrderPOS.stream().map(outboundPlanOrderPO -> {
@@ -87,12 +110,14 @@ public class OutboundPlanOrderRepositoryImpl implements OutboundPlanOrderReposit
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<OutboundPlanOrder> findByCustomerWaveNos(Collection<String> customerWaveNos) {
         List<OutboundPlanOrderPO> outboundPlanOrderPOS = outboundPlanOrderPORepository.findAllByCustomerWaveNoIn(customerWaveNos);
         return outboundPlanOrderPOTransfer.toDOs((outboundPlanOrderPOS));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<OutboundPlanOrder> findByWaveNos(Collection<String> waveNos) {
         List<OutboundPlanOrderPO> outboundPlanOrderPOS = outboundPlanOrderPORepository.findAllByWaveNoIn(waveNos);
         return outboundPlanOrderPOS.stream().map(outboundPlanOrderPO -> {
@@ -103,30 +128,14 @@ public class OutboundPlanOrderRepositoryImpl implements OutboundPlanOrderReposit
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void saveOrderAndDetails(List<OutboundPlanOrder> outboundPlanOrders) {
-        outboundPlanOrderPORepository.saveAll(outboundPlanOrderPOTransfer.toPOs(outboundPlanOrders));
-
-        List<OutboundPlanOrderDetail> outboundPlanOrderDetails = outboundPlanOrders.stream().flatMap(v -> v.getDetails().stream()).toList();
-        outboundPlanOrderDetailPORepository.saveAll(outboundPlanOrderPOTransfer.toDetailPOs(outboundPlanOrderDetails));
-
-        outboundPlanOrders.forEach(AggregatorRoot::sendAndClearEvents);
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public List<OutboundPlanOrder> saveAllOrderAndDetails(List<OutboundPlanOrder> outboundPlanOrders) {
-        outboundPlanOrders.forEach(AggregatorRoot::sendAndClearEvents);
-        return outboundPlanOrders.stream().map(this::saveOutboundPlanOrder).toList();
-    }
-
-    @Override
+    @Transactional(readOnly = true)
     public List<OutboundPlanOrder> findAllByStatus(OutboundPlanOrderStatusEnum outboundPlanOrderStatusEnum) {
         List<OutboundPlanOrderPO> outboundPlanOrderPOs = outboundPlanOrderPORepository.findAllByOutboundPlanOrderStatus(outboundPlanOrderStatusEnum);
         return outboundPlanOrderPOTransfer.toDOs(outboundPlanOrderPOs);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public long countByCustomerOrderNos(String warehouseCode, Collection<String> customerOrderNos) {
         return outboundPlanOrderPORepository.countByWarehouseCodeAndCustomerOrderNoIn(warehouseCode, customerOrderNos);
     }

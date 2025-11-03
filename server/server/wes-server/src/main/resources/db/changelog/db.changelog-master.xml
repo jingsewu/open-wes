@@ -18,5 +18,7 @@
     <include file="/db/changelog/db.changelog-20250523.xml"/>
     <include file="/db/changelog/db.changelog-20250824.xml"/>
     <include file="/db/changelog/db.changelog-20250908.xml"/>
+    <include file="/db/changelog/db.changelog-20251031.xml"/>
+    <include file="/db/changelog/db.changelog-20251103.xml"/>
 
 </databaseChangeLog>

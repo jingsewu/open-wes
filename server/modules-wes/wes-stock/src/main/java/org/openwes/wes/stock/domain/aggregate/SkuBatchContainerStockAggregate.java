@@ -1,6 +1,5 @@
 package org.openwes.wes.stock.domain.aggregate;
 
-import jakarta.persistence.OptimisticLockException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.openwes.wes.api.stock.dto.StockCreateDTO;
@@ -16,13 +15,14 @@ import org.openwes.wes.stock.domain.service.StockService;
 import org.openwes.wes.stock.domain.transfer.ContainerStockTransactionTransfer;
 import org.openwes.wes.stock.domain.transfer.ContainerStockTransfer;
 import org.openwes.wes.stock.domain.transfer.SkuBatchStockTransfer;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
-import java.util.*;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -38,7 +38,7 @@ public class SkuBatchContainerStockAggregate {
     private final StockService stockService;
 
     @Transactional(rollbackFor = Exception.class)
-    @Retryable(retryFor =  OptimisticLockException.class , maxAttempts = 3, backoff = @Backoff(delay = 200))
+    @Retryable(retryFor =  OptimisticLockingFailureException.class , maxAttempts = 3, backoff = @Backoff(delay = 200))
     public void createStock(@Valid StockCreateDTO stockCreateDTO, Long eventId) {
 
         //1. create sku batch stock
@@ -69,7 +69,7 @@ public class SkuBatchContainerStockAggregate {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    @Retryable(retryFor =  OptimisticLockException.class , maxAttempts = 3, backoff = @Backoff(delay = 200))
+    @Retryable(retryFor =  OptimisticLockingFailureException.class , maxAttempts = 3, backoff = @Backoff(delay = 200))
     public void transferStock(StockTransferDTO stockTransferDTO, ContainerStock containerStock, Long eventId) {
         saveTransactionRecord(stockTransferDTO, containerStock, eventId);
 
@@ -86,7 +86,7 @@ public class SkuBatchContainerStockAggregate {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    @Retryable(retryFor =  OptimisticLockException.class , maxAttempts = 3, backoff = @Backoff(delay = 200))
+    @Retryable(retryFor =  OptimisticLockingFailureException.class , maxAttempts = 3, backoff = @Backoff(delay = 200))
     public void transferAndUnlockStock(StockTransferDTO stockTransferDTO, ContainerStock containerStock, Long eventId) {
 
         saveTransactionRecord(stockTransferDTO, containerStock, eventId);
@@ -137,7 +137,7 @@ public class SkuBatchContainerStockAggregate {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    @Retryable(retryFor =  OptimisticLockException.class , maxAttempts = 3, backoff = @Backoff(delay = 200))
+    @Retryable(retryFor =  OptimisticLockingFailureException.class , maxAttempts = 3, backoff = @Backoff(delay = 200))
     public void freezeStock(Long containerStockId, int qty) {
         ContainerStock containerStock = containerStockRepository.findById(containerStockId);
         containerStock.freezeQty(qty);
@@ -149,7 +149,7 @@ public class SkuBatchContainerStockAggregate {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    @Retryable(retryFor =  OptimisticLockException.class , maxAttempts = 3, backoff = @Backoff(delay = 200))
+    @Retryable(retryFor =  OptimisticLockingFailureException.class , maxAttempts = 3, backoff = @Backoff(delay = 200))
     public void unfreezeStock(Long containerStockId, int qty) {
         ContainerStock containerStock = containerStockRepository.findById(containerStockId);
         containerStock.unfreezeQty(qty);

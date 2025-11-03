@@ -68,4 +68,14 @@ public class EmptyContainerOutboundOrderApiImpl implements IEmptyContainerOutbou
         emptyContainerOutboundAggregate.cancel(emptyContainerOutboundOrders);
     }
 
+    @Override
+    public void completeDetails(List<Long> detailIds) {
+        List<EmptyContainerOutboundOrder> emptyContainerOutboundOrders = emptyContainerOutboundOrderRepository.findOrderByDetailIds(detailIds);
+
+        emptyContainerOutboundOrders.forEach(emptyContainerOutboundOrder ->
+                emptyContainerOutboundOrder.complete(detailIds));
+
+        emptyContainerOutboundOrderRepository.saveAllOrderAndDetails(emptyContainerOutboundOrders);
+    }
+
 }

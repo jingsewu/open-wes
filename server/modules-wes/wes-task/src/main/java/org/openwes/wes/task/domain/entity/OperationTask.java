@@ -1,15 +1,18 @@
 package org.openwes.wes.task.domain.entity;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
+import io.micrometer.common.util.StringUtils;
 import jakarta.validation.constraints.NotNull;
-import org.openwes.common.utils.base.UpdateUserDTO;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.openwes.common.utils.exception.WmsException;
 import org.openwes.common.utils.exception.code_enum.OperationTaskErrorDescEnum;
-import org.openwes.domain.event.DomainEventPublisher;
+import org.openwes.domain.event.AggregatorRoot;
 import org.openwes.wes.api.basic.constants.WarehouseAreaTypeEnum;
 import org.openwes.wes.api.basic.dto.WarehouseAreaDTO;
-import org.openwes.wes.api.outbound.event.PickingOrderAbnormalEvent;
+import org.openwes.wes.api.task.event.OperationTaskAbnormalEvent;
 import org.openwes.wes.api.stock.constants.StockLockTypeEnum;
 import org.openwes.wes.api.stock.dto.StockTransferDTO;
 import org.openwes.wes.api.stock.event.StockTransferEvent;
@@ -17,13 +20,8 @@ import org.openwes.wes.api.task.constants.OperationTaskStatusEnum;
 import org.openwes.wes.api.task.constants.OperationTaskTypeEnum;
 import org.openwes.wes.api.task.dto.HandleTaskDTO;
 import org.openwes.wes.api.task.dto.OperationTaskPickingDTO;
-import org.openwes.wes.api.task.event.PickingOrderPickingEvent;
+import org.openwes.wes.api.task.event.OperationTaskPickedEvent;
 import org.openwes.wes.common.constants.WmsCommonConstants;
-import io.micrometer.common.util.StringUtils;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -35,7 +33,7 @@ import static org.openwes.common.utils.exception.code_enum.OperationTaskErrorDes
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Slf4j
-public class OperationTask extends UpdateUserDTO {
+public class OperationTask extends AggregatorRoot {
 
     private Long id;
 
@@ -129,7 +127,7 @@ public class OperationTask extends UpdateUserDTO {
 
         OperationTaskPickingDTO operationTaskPickingDTO = new OperationTaskPickingDTO().setOperatedQty(operatedQty)
                 .setDetailId(this.detailId).setOrderId(this.orderId).setTaskType(this.taskType);
-        DomainEventPublisher.sendAsyncDomainEvent(new PickingOrderPickingEvent().setOperationTasks(Lists.newArrayList(operationTaskPickingDTO)));
+        this.addSynchronizationEvents(new OperationTaskPickedEvent(this.id, operationTaskPickingDTO));
     }
 
     private void split(Integer operatedQty) {
@@ -152,7 +150,7 @@ public class OperationTask extends UpdateUserDTO {
 
         OperationTaskPickingDTO operationTaskPickingDTO = new OperationTaskPickingDTO().setOperatedQty(operatedQty)
                 .setDetailId(this.detailId).setOrderId(this.orderId).setTaskType(this.taskType);
-        DomainEventPublisher.sendSyncDomainEvent(new PickingOrderPickingEvent().setOperationTasks(Lists.newArrayList(operationTaskPickingDTO)));
+        this.addSynchronizationEvents(new OperationTaskPickedEvent(this.id, operationTaskPickingDTO));
     }
 
     public void reportAbnormal(Integer abnormalQty) {
@@ -166,11 +164,11 @@ public class OperationTask extends UpdateUserDTO {
         this.abnormalQty += abnormalQty;
         validateQty();
 
-        PickingOrderAbnormalEvent.PickingOrderAbnormalDetail pickingOrderAbnormalDetail = new PickingOrderAbnormalEvent.PickingOrderAbnormalDetail();
+        OperationTaskAbnormalEvent.OperationTaskAbnormalDetail pickingOrderAbnormalDetail = new OperationTaskAbnormalEvent.OperationTaskAbnormalDetail();
         pickingOrderAbnormalDetail.setPickingOrderId(this.orderId);
         pickingOrderAbnormalDetail.setPickingOrderDetailId(this.detailId);
         pickingOrderAbnormalDetail.setAbnormalQty(abnormalQty);
-        DomainEventPublisher.sendAsyncDomainEvent(new PickingOrderAbnormalEvent().setDetails(Lists.newArrayList(pickingOrderAbnormalDetail)));
+        this.addAsynchronousDomainEvents(new OperationTaskAbnormalEvent(this.id, pickingOrderAbnormalDetail));
     }
 
     public void setActualWorkStation(Long workStationId) {
@@ -228,13 +226,13 @@ public class OperationTask extends UpdateUserDTO {
                 .orderNo(this.orderNo)
                 .build();
 
-        DomainEventPublisher.sendAsyncDomainEvent(new StockTransferEvent().setStockTransferDTO(stockTransferDTO).setTaskType(this.taskType));
+        this.addAsynchronousDomainEvents(new StockTransferEvent().setStockTransferDTO(stockTransferDTO).setTaskType(this.taskType));
     }
 
     public void improvePriority(@NotNull Integer priority) {
-        log.info("operation task: {} improve priority: {}",this.id,priority);
+        log.info("operation task: {} improve priority: {}", this.id, priority);
 
-        if(this.priority >= priority){
+        if (this.priority >= priority) {
             return;
         }
         this.priority = priority;

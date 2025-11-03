@@ -3,12 +3,9 @@ package org.openwes.wes.ems.proxy.application;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.openwes.api.platform.api.constants.CallbackApiTypeEnum;
 import org.openwes.wes.api.ems.proxy.IContainerTaskApi;
-import org.openwes.wes.api.ems.proxy.constants.BusinessTaskTypeEnum;
-import org.openwes.wes.api.ems.proxy.constants.ContainerTaskStatusEnum;
 import org.openwes.wes.api.ems.proxy.constants.ContainerTaskTypeEnum;
 import org.openwes.wes.api.ems.proxy.dto.ContainerTaskDTO;
 import org.openwes.wes.api.ems.proxy.dto.CreateContainerTaskDTO;
@@ -21,6 +18,7 @@ import org.openwes.wes.ems.proxy.domain.transfer.ContainerTaskTransfer;
 import org.openwes.wes.ems.proxy.infrastructure.remote.WmsTaskCallbackFacade;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.Collection;
@@ -58,6 +56,7 @@ public class ContainerTaskApiImpl implements IContainerTaskApi {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void updateContainerTaskStatus(List<UpdateContainerTaskDTO> updateContainerTasks) {
         List<ContainerTask> containerTasks = containerTaskRepository.findAllByTaskCodes(
                 updateContainerTasks.stream().map(UpdateContainerTaskDTO::getTaskCode).toList());
@@ -78,18 +77,6 @@ public class ContainerTaskApiImpl implements IContainerTaskApi {
         containerTaskRepository.saveAll(containerTasks);
 
         containerTaskService.doAfterFinishContainerTasks(containerTasks);
-
-        Map<BusinessTaskTypeEnum, List<ContainerTask>> goupByBusinessTaskTypeMap = containerTasks.stream()
-                .filter(v -> v.getTaskStatus() == ContainerTaskStatusEnum.COMPLETED)
-                .filter(v -> ObjectUtils.isNotEmpty(v.getCustomerTaskIds()))
-                .collect(Collectors.groupingBy(ContainerTask::getBusinessTaskType));
-
-        if (ObjectUtils.isEmpty(goupByBusinessTaskTypeMap)) {
-            return;
-        }
-
-        goupByBusinessTaskTypeMap.forEach((businessTaskType, doneContainerTasks) ->
-                wmsTaskCallbackFacade.wmsTaskCallback(doneContainerTasks, businessTaskType));
     }
 
     @Override
@@ -107,10 +94,10 @@ public class ContainerTaskApiImpl implements IContainerTaskApi {
     @Override
     public void improvePriority(List<Long> customerTaskIds, Integer priority) {
         List<ContainerTask> containerTasks = containerTaskRepository.findAllByCustomerTaskIds(customerTaskIds);
-        containerTasks.forEach(v->v.improvePriority(priority));
+        containerTasks.forEach(v -> v.improvePriority(priority));
         containerTaskRepository.saveAll(containerTasks);
 
-        callbackApiFacade.callback(CallbackApiTypeEnum.CONTAINER_TASK_IMPROVE_PRIORITY, containerTasks,containerTasks.iterator().next().getContainerTaskType());
+        callbackApiFacade.callback(CallbackApiTypeEnum.CONTAINER_TASK_IMPROVE_PRIORITY, containerTasks, containerTasks.iterator().next().getContainerTaskType());
     }
 
     private void cancelContainerTasks(List<ContainerTask> containerTasks) {

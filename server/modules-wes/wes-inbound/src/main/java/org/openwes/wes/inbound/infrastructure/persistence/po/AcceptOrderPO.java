@@ -21,7 +21,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
         name = "w_accept_order",
         indexes = {
                 @Index(unique = true, name = "uk_order_no", columnList = "orderNo"),
-                @Index(name = "idx_identify_no", columnList = "identifyNo")
+                @Index(unique = true, name = "uk_identify_no_complete_time", columnList = "identifyNo,completeTime")
         }
 )
 @DynamicUpdate
@@ -94,6 +94,9 @@ public class AcceptOrderPO extends AuditUserPO {
             "COMPLETE (已完成-验收完成). " +
             "Controls available actions and validation rules")
     private AcceptOrderStatusEnum acceptOrderStatus = AcceptOrderStatusEnum.NEW;
+
+    @Column(nullable = false)
+    private Long completeTime = 0L;
 
     @Version
     @Comment("Version number - Used for optimistic locking to prevent concurrent modifications. " +

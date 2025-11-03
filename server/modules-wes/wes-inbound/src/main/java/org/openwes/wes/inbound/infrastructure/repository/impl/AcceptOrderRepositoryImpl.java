@@ -42,6 +42,7 @@ public class AcceptOrderRepositoryImpl implements AcceptOrderRepository {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<AcceptOrder> findAllByInboundPlanOrderIds(Collection<Long> inboundPlanOrderIds) {
         List<AcceptOrderDetailPO> acceptOrderDetailPOS = acceptOrderDetailPORepository.findAllByInboundPlanOrderIdIn(inboundPlanOrderIds);
         Set<Long> acceptOrderIds = acceptOrderDetailPOS.stream().map(AcceptOrderDetailPO::getAcceptOrderId).collect(Collectors.toSet());
@@ -50,12 +51,14 @@ public class AcceptOrderRepositoryImpl implements AcceptOrderRepository {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<AcceptOrderDetail> findAllDetailsByStationId(Long workStationId) {
         List<AcceptOrderDetailPO> acceptOrderPOS = acceptOrderDetailPORepository.findAllByWorkStationId(workStationId);
         return acceptOrderPOTransfer.toDetailDOs(acceptOrderPOS);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public AcceptOrder findById(Long acceptOrderId) {
 
         AcceptOrderPO acceptOrder = acceptOrderPORepository.findById(acceptOrderId).orElseThrow();
@@ -65,14 +68,17 @@ public class AcceptOrderRepositoryImpl implements AcceptOrderRepository {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<AcceptOrder> findAllByIdentifyNo(String identifyNo) {
         List<AcceptOrderPO> acceptOrderPOs = acceptOrderPORepository.findAllByIdentifyNo(identifyNo);
         return acceptOrderPOTransfer.toDOs(acceptOrderPOs);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public AcceptOrder findNewStatusAcceptOrder(String identifyNo) {
-        List<AcceptOrderPO> acceptOrderPOs = acceptOrderPORepository.findAllByIdentifyNoAndAcceptOrderStatus(identifyNo, AcceptOrderStatusEnum.NEW);
+        List<AcceptOrderPO> acceptOrderPOs = acceptOrderPORepository.findAllByIdentifyNoAndAcceptOrderStatus(identifyNo,
+                AcceptOrderStatusEnum.NEW);
         if (ObjectUtils.isEmpty(acceptOrderPOs)) {
             return null;
         }

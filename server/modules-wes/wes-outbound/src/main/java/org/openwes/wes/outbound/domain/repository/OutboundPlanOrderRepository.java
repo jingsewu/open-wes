@@ -8,11 +8,15 @@ import java.util.List;
 
 public interface OutboundPlanOrderRepository {
 
-    OutboundPlanOrder saveOutboundPlanOrder(OutboundPlanOrder outboundPlanOrder);
+    void saveOrderAndDetail(OutboundPlanOrder outboundPlanOrder);
 
-    void saveAll(List<OutboundPlanOrder> outboundPlanOrders);
+    void saveAllOrderAndDetails(List<OutboundPlanOrder> outboundPlanOrders);
+
+    void saveAllOrders(List<OutboundPlanOrder> outboundPlanOrders);
 
     OutboundPlanOrder findByOrderNo(String orderNo);
+
+    OutboundPlanOrder findById(Long orderId);
 
     List<OutboundPlanOrder> findAllByIds(Collection<Long> orderIds);
 
@@ -23,10 +27,6 @@ public interface OutboundPlanOrderRepository {
     List<OutboundPlanOrder> findByCustomerWaveNos(Collection<String> customerWaveNos);
 
     List<OutboundPlanOrder> findByWaveNos(Collection<String> waveNos);
-
-    void saveOrderAndDetails(List<OutboundPlanOrder> outboundPlanOrders);
-
-    List<OutboundPlanOrder> saveAllOrderAndDetails(List<OutboundPlanOrder> outboundPlanOrders);
 
     List<OutboundPlanOrder> findAllByStatus(OutboundPlanOrderStatusEnum outboundPlanOrderStatusEnum);
 

@@ -14,4 +14,6 @@ public interface OutboundWaveRepository {
     List<OutboundWave> findByWaveNos(Collection<String> waveNos);
 
     void saveAll(List<OutboundWave> outboundWaves);
+
+    OutboundWave findById(Long id);
 }

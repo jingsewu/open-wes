@@ -55,14 +55,13 @@ public class InboundPlanOrderApiImpl implements IInboundPlanOrderApi {
 
         distributeLock.acquireLockIfThrows(RedisConstants.INBOUND_PLAN_ORDER_ADD_LOCK);
 
-        List<InboundPlanOrder> savedOrders;
         try {
             inboundPlanOrderService.syncValidate(inboundPlanOrders);
-            savedOrders = inboundPlanOrderRepository.saveAllOrdersAndDetails(inboundPlanOrders);
+            inboundPlanOrderRepository.saveAllOrdersAndDetails(inboundPlanOrders);
         } finally {
             distributeLock.releaseLock(RedisConstants.INBOUND_PLAN_ORDER_ADD_LOCK);
         }
-        inboundPlanOrderService.afterDoCreation(savedOrders);
+        inboundPlanOrderService.afterDoCreation(inboundPlanOrders);
     }
 
     @Override

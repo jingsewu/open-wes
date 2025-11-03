@@ -13,6 +13,7 @@ import org.openwes.wes.api.ems.proxy.constants.BusinessTaskTypeEnum;
 import org.openwes.wes.api.ems.proxy.constants.ContainerTaskAndBusinessTaskRelationStatusEnum;
 import org.openwes.wes.api.ems.proxy.constants.ContainerTaskStatusEnum;
 import org.openwes.wes.api.ems.proxy.constants.ContainerTaskTypeEnum;
+import org.openwes.wes.api.ems.proxy.event.ContainerTaskUpdatedStatusEvent;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -80,9 +81,12 @@ public class ContainerTask extends AggregatorRoot implements Serializable {
         this.addAsynchronousDomainEvents(new LifeCycleStatusChangeEvent(this.taskStatus.name(),
                 this.id, this.getClass().getSimpleName()));
 
-        if (CollectionUtils.isEmpty(relations)) {
+        if (CollectionUtils.isEmpty(this.relations)) {
             return;
         }
+        this.addAsynchronousDomainEvents(new ContainerTaskUpdatedStatusEvent(this.id, this.taskStatus, locationCode,
+                this.relations.stream().map(ContainerTaskAndBusinessTaskRelation::getCustomerTaskId).distinct().toList(),
+                this.businessTaskType));
 
         if (ContainerTaskStatusEnum.COMPLETED == this.taskStatus) {
             this.relations.stream()

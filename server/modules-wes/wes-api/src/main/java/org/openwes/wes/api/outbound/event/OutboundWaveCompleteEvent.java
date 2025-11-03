@@ -11,4 +11,9 @@ import lombok.experimental.Accessors;
 public class OutboundWaveCompleteEvent extends DomainEvent {
 
     private String waveNo;
+
+    public OutboundWaveCompleteEvent(Long id, String waveNo) {
+        super(id);
+        this.waveNo = waveNo;
+    }
 }

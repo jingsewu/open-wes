@@ -7,9 +7,9 @@ import java.util.List;
 
 public interface PutAwayTaskRepository {
 
-    PutAwayTask saveOrderAndDetail(PutAwayTask putAwayTask);
+    void saveOrderAndDetail(PutAwayTask putAwayTask);
 
-    List<PutAwayTask> saveAllOrdersAndDetails(List<PutAwayTask> putAwayTasks);
+    void saveAllOrdersAndDetails(List<PutAwayTask> putAwayTasks);
 
     List<PutAwayTask> findAllByTaskNoIn(Collection<String> taskNos);
 

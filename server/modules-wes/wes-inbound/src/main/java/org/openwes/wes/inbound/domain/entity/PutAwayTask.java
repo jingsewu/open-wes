@@ -1,8 +1,12 @@
 package org.openwes.wes.inbound.domain.entity;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.openwes.common.utils.id.OrderNoGenerator;
+import org.openwes.common.utils.id.SnowflakeUtils;
+import org.openwes.domain.event.AggregatorRoot;
 import org.openwes.domain.event.DomainEventPublisher;
 import org.openwes.wes.api.basic.event.ContainerLocationUpdateEvent;
 import org.openwes.wes.api.inbound.constants.PutAwayTaskStatusEnum;
@@ -11,9 +15,10 @@ import org.openwes.wes.api.inbound.constants.PutAwayTaskTypeEnum;
 import java.util.List;
 import java.util.Map;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Slf4j
-public class PutAwayTask {
+public class PutAwayTask extends AggregatorRoot {
 
     private Long id;
 
@@ -37,8 +42,14 @@ public class PutAwayTask {
     private Long version;
 
     public void initialize() {
-        taskNo = OrderNoGenerator.generationPutAwayTaskNo();
+        this.id = SnowflakeUtils.generateId();
+        this.taskNo = OrderNoGenerator.generationPutAwayTaskNo();
         this.taskStatus = PutAwayTaskStatusEnum.NEW;
+
+        if (ObjectUtils.isEmpty(this.putAwayTaskDetails)) {
+            throw new IllegalArgumentException("putAwayTaskDetails is empty");
+        }
+        this.putAwayTaskDetails.forEach(detail -> detail.setPutAwayTaskId(this.id));
     }
 
     public void complete(String locationCode) {
@@ -52,7 +63,7 @@ public class PutAwayTask {
 
         this.locationCode = locationCode;
 
-        DomainEventPublisher.sendAsyncDomainEvent(new ContainerLocationUpdateEvent()
+        this.addAsynchronousDomainEvents(new ContainerLocationUpdateEvent()
                 .setLocationCode(this.locationCode).setWarehouseAreaId(this.warehouseAreaId)
                 .setWarehouseCode(this.warehouseCode).setContainerCode(this.containerCode));
     }

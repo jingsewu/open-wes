@@ -43,6 +43,7 @@ public class DomainEventPublisher {
         Objects.requireNonNull(event, "DomainEvent cannot be null");
 
         DomainEventPO domainEventPO = new DomainEventPO();
+        domainEventPO.setAggregatorId(event.getAggregatorId() == null ? 0L : event.getAggregatorId());
         domainEventPO.setId(event.getEventId());
         domainEventPO.setEvent(JsonUtils.obj2String(event));
         domainEventPO.setEventType(event.getClass().getName());

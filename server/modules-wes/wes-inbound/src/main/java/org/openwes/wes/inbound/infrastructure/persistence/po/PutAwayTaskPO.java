@@ -5,11 +5,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.openwes.common.utils.base.AuditUserPO;
-import org.openwes.common.utils.id.IdGenerator;
 import org.openwes.wes.api.inbound.constants.PutAwayTaskStatusEnum;
 import org.openwes.wes.api.inbound.constants.PutAwayTaskTypeEnum;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -33,8 +31,6 @@ import java.util.Map;
 public class PutAwayTaskPO extends AuditUserPO {
 
     @Id
-    @GeneratedValue(generator = "databaseIdGenerator")
-    @GenericGenerator(name = "databaseIdGenerator", type = IdGenerator.class)
     @Comment("Primary key - Unique identifier for each put-away task")
     private Long id;
 

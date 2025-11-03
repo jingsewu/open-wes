@@ -1,12 +1,11 @@
 package org.openwes.wes.outbound.domain.service.impl;
 
 import com.google.common.collect.Lists;
-import org.openwes.plugin.extension.business.wes.outbound.action.IOutboundWaveSplitAction;
-import org.openwes.plugin.extension.business.wes.outbound.action.IOutboundWaveWaveAction;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.openwes.common.utils.id.OrderNoGenerator;
+import org.openwes.plugin.extension.business.wes.outbound.action.IOutboundWaveSplitAction;
+import org.openwes.plugin.extension.business.wes.outbound.action.IOutboundWaveWaveAction;
 import org.openwes.plugin.sdk.utils.PluginSdkUtils;
 import org.openwes.wes.api.outbound.dto.PickingOrderDTO;
 import org.openwes.wes.outbound.domain.entity.*;
@@ -18,7 +17,9 @@ import org.openwes.wes.outbound.domain.transfer.OutboundWaveTransfer;
 import org.openwes.wes.outbound.domain.transfer.PickingOrderTransfer;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -87,15 +88,8 @@ public class OutboundWaveServiceImpl implements OutboundWaveService {
                             }
                     ).toList();
 
-            PickingOrder pickingOrder = new PickingOrder()
-                    .setPriority(outboundWave.getPriority())
-                    .setShortOutbound(outboundWave.isShortOutbound())
-                    .setWarehouseCode(outboundWave.getWarehouseCode())
-                    .setWarehouseAreaId(key)
-                    .setPickingOrderNo(OrderNoGenerator.generationPickingOrderNo())
-                    .setWaveNo(outboundWave.getWaveNo())
-                    .setDetails(pickingOrderDetails);
-            pickingOrder.setAllowReceive(true);
+            PickingOrder pickingOrder = PickingOrder.create(outboundWave.getPriority(), outboundWave.isShortOutbound(),
+                    outboundWave.getWarehouseCode(), key, outboundWave.getWaveNo(), pickingOrderDetails, true);
             pickingOrders.add(pickingOrder);
         });
         return pickingOrders;

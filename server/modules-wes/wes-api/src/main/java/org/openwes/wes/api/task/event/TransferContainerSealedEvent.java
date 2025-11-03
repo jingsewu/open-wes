@@ -1,15 +1,20 @@
 package org.openwes.wes.api.task.event;
 
-import org.openwes.domain.event.api.DomainEvent;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import org.openwes.domain.event.api.DomainEvent;
 
 
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Accessors(chain = true)
 public class TransferContainerSealedEvent extends DomainEvent {
-    private Long transferContainerRecordId;
     private String warehouseCode;
+
+    public TransferContainerSealedEvent(Long transferContainerRecordId,
+                                        String warehouseCode) {
+        super(transferContainerRecordId);
+        this.warehouseCode = warehouseCode;
+    }
 }

@@ -2,6 +2,7 @@ package org.openwes.wes.basic.container.application.event;
 
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
+import jakarta.persistence.OptimisticLockException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,8 +12,10 @@ import org.openwes.wes.api.stock.IStockApi;
 import org.openwes.wes.api.stock.dto.ContainerStockDTO;
 import org.openwes.wes.basic.container.domain.entity.Container;
 import org.openwes.wes.basic.container.domain.repository.ContainerRepository;
+import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.List;
 
@@ -25,6 +28,7 @@ public class ContainerEventSubscriber {
     private final IStockApi stockApi;
 
     @Subscribe
+    @Retryable(retryFor =  OptimisticLockingFailureException.class , maxAttempts = 3, backoff = @Backoff(delay = 200))
     public void onContainerStockUpdate(@Valid ContainerStockUpdateEvent event) {
         log.info("receive container stock update event: {}", event);
 

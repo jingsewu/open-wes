@@ -11,7 +11,10 @@ import org.openwes.domain.event.api.DomainEvent;
 @Accessors(chain = true)
 public class OutboundPlanOrderImprovePriorityEvent extends DomainEvent {
     @NotNull
-    private Long outboundPlanOrderId;
-    @NotNull
     private Integer priority;
+
+    public OutboundPlanOrderImprovePriorityEvent(Long outboundPlanOrderId, Integer priority) {
+        super(outboundPlanOrderId);
+        this.priority = priority;
+    }
 }

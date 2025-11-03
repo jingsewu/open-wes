@@ -1,6 +1,11 @@
 package org.openwes.wes.outbound.domain.aggregate;
 
 import com.google.common.collect.Lists;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.openwes.common.utils.utils.RedisUtils;
 import org.openwes.wes.api.algo.dto.PickingOrderAssignedResult;
 import org.openwes.wes.api.algo.dto.PickingOrderReallocatedResult;
@@ -13,16 +18,10 @@ import org.openwes.wes.api.stock.dto.ContainerStockLockDTO;
 import org.openwes.wes.api.stock.dto.SkuBatchStockLockDTO;
 import org.openwes.wes.api.task.ITaskApi;
 import org.openwes.wes.api.task.dto.OperationTaskDTO;
-import org.openwes.wes.api.task.dto.OperationTaskPickingDTO;
 import org.openwes.wes.common.facade.ContainerTaskApiFacade;
 import org.openwes.wes.outbound.domain.entity.PickingOrder;
 import org.openwes.wes.outbound.domain.entity.PickingOrderDetail;
 import org.openwes.wes.outbound.domain.repository.PickingOrderRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -79,18 +78,6 @@ public class PickingOrderTaskAggregate {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void picking(List<OperationTaskPickingDTO> operationTasks, List<PickingOrder> pickingOrders) {
-        pickingOrders.forEach(pickingOrder -> operationTasks.forEach(operationTaskDTO -> {
-            if (Objects.equals(pickingOrder.getId(), operationTaskDTO.getOrderId())) {
-                pickingOrder.picking(operationTaskDTO.getOperatedQty(), operationTaskDTO.getDetailId());
-            }
-        }));
-
-        pickingOrderRepository.saveOrderAndDetails(pickingOrders);
-
-    }
-
-    @Transactional(rollbackFor = Exception.class)
     public void reallocate(PickingOrderReallocatedResult pickingOrderReallocatedResult, PickingOrder pickingOrder) {
 
         if (pickingOrderReallocatedResult.getDetails() == null) {
@@ -111,7 +98,7 @@ public class PickingOrderTaskAggregate {
             Set<Long> pickingOrderIds = pickingOrderDetails.stream().map(PickingOrderDetail::getPickingOrderId).collect(Collectors.toSet());
             List<PickingOrder> shortPickedPickingOrders = pickingOrderRepository.findOrderAndDetailsByPickingOrderIds(pickingOrderIds);
             pickingOrderDetails.forEach(pickingOrderDetail -> pickingOrder.shortPicking(pickingOrderDetail.getQtyAbnormal(), pickingOrderDetail.getId()));
-            pickingOrderRepository.saveOrderAndDetails(shortPickedPickingOrders);
+            pickingOrderRepository.saveAllOrderAndDetails(shortPickedPickingOrders);
         }
 
         pickingOrderReallocatedResult.getDetails().forEach(detail -> {
@@ -126,7 +113,6 @@ public class PickingOrderTaskAggregate {
     }
 
     private void createPickingOrder(PickingOrderReallocatedResult.PickingOrderReallocatedDetail detail, PickingOrder pickingOrder) {
-        PickingOrder newPickingOrder = pickingOrder.copyAndNew(detail.getWarehouseAreaId());
 
         Map<Long, PickingOrderDetail> pickingOrderDetailMap = pickingOrder.getDetails().stream().collect(Collectors.toMap(PickingOrderDetail::getId, Function.identity()));
 
@@ -135,7 +121,7 @@ public class PickingOrderTaskAggregate {
             return pickingOrderDetail.copyAndNew(operationTaskDTO.getSkuBatchStockId(), operationTaskDTO.getRequiredQty());
         }).toList();
 
-        newPickingOrder.setDetails(pickingOrderDetails);
+        PickingOrder newPickingOrder = PickingOrder.copyAndNew(pickingOrder, detail.getWarehouseAreaId(), pickingOrderDetails);
         pickingOrderRepository.saveOrderAndDetail(newPickingOrder);
 
         String redisKey = NEW_PICKING_ORDER_IDS + "_" + newPickingOrder.getWarehouseCode();

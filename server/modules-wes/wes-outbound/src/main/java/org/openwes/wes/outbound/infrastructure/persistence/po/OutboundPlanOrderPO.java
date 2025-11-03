@@ -4,11 +4,9 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.openwes.common.utils.base.AuditUserPO;
-import org.openwes.common.utils.id.IdGenerator;
 import org.openwes.wes.api.outbound.constants.OutboundPlanOrderStatusEnum;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -32,8 +30,6 @@ import java.util.Set;
 public class OutboundPlanOrderPO extends AuditUserPO {
 
     @Id
-    @GeneratedValue(generator = "databaseIdGenerator")
-    @GenericGenerator(name = "databaseIdGenerator", type = IdGenerator.class)
     private Long id;
 
     @Column(nullable = false, columnDefinition = "varchar(64) comment '仓库'")

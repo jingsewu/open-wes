@@ -40,4 +40,10 @@ public class OutboundWaveRepositoryImpl implements OutboundWaveRepository {
     public void saveAll(List<OutboundWave> outboundWaves) {
         outboundWavePORepository.saveAll(outboundWavePOTransfer.toPOs(outboundWaves));
     }
+
+    @Override
+    public OutboundWave findById(Long id) {
+        OutboundWavePO outboundWavePO = outboundWavePORepository.findById(id).orElseThrow();
+        return outboundWavePOTransfer.toDO(outboundWavePO);
+    }
 }
