@@ -1,15 +1,19 @@
 package org.openwes.wes.stocktake.domain.entity;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.openwes.common.utils.id.OrderNoGenerator;
+import org.openwes.common.utils.id.SnowflakeUtils;
+import org.openwes.domain.event.AggregatorRoot;
 import org.openwes.wes.api.stocktake.constants.*;
 
 import java.util.List;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Slf4j
-public class StocktakeOrder {
+public class StocktakeOrder extends AggregatorRoot {
 
     private Long id;
 
@@ -45,12 +49,12 @@ public class StocktakeOrder {
 
     private List<StocktakeTask> taskList;
 
-
     public void initialize() {
-        this.stocktakeOrderStatus = StocktakeOrderStatusEnum.NEW;
+        this.id = SnowflakeUtils.generateId();
         this.orderNo = OrderNoGenerator.generationStocktakeOrderNo();
+        this.stocktakeOrderStatus = StocktakeOrderStatusEnum.NEW;
         this.abnormal = false;
-        this.details.forEach(StocktakeOrderDetail::initialize);
+        this.details.forEach(v -> v.initialize(this.id));
 
         log.info("stocktake order: {} orderNo: {} initialize", this.id, this.orderNo);
     }

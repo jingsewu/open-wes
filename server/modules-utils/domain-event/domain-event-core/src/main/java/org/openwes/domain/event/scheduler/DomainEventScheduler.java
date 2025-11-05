@@ -13,7 +13,8 @@ import org.openwes.domain.event.domain.repository.DomainEventPORepository;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.Date;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
@@ -44,33 +45,22 @@ public class DomainEventScheduler {
         Long startTime = DateUtils.addDays(new Date(), -1).getTime();
         Long endTime = System.currentTimeMillis() - DELAY_TIME_IN_MILLIS;
 
-        List<DomainEventPO> failedEvents = domainEventPORepository.findByStatusAndCreateTimeBetween(DomainEventStatusEnum.NEW, startTime, endTime, Pageable.ofSize(MAX_SIZE_PER_TIME));
+        List<DomainEventPO> failedEvents = domainEventPORepository
+                .findByStatusAndCreateTimeBetween(DomainEventStatusEnum.NEW, startTime, endTime, Pageable.ofSize(MAX_SIZE_PER_TIME));
 
         if (ObjectUtils.isEmpty(failedEvents)) {
             return;
         }
 
-        // Track processed event signatures (type + content hash)
-        Set<String> processedEventSignatures = new HashSet<>();
-
         failedEvents.forEach(e -> {
             try {
-                // Create a unique signature for this event (type + content hash)
-                String eventSignature = e.getEventType() + ":" + generateEventHash(e.getEvent());
-
-                // Check if we've already processed an identical event
-                if (processedEventSignatures.contains(eventSignature)) {
-                    log.warn("Skipping duplicate event {} with signature {}", e.getId(), eventSignature);
-                    e.succeed(); // Mark as success without processing
-                    domainEventPORepository.save(e);
-                    return;
-                }
-
                 // Process the event
                 Object object = JsonUtils.string2Object(e.getEvent(), Class.forName(e.getEventType()));
                 if (object != null) {
+                    log.debug("Retry post failed async event: {}", e.getId());
                     asyncEventBus.post(object);
-                    processedEventSignatures.add(eventSignature); // Remember we processed this
+                } else {
+                    log.error("Retry failed - the event object is null: {}, event: {}", e.getEventType(), e);
                 }
             } catch (ClassNotFoundException ex) {
                 log.error("Retry failed - unknown event type: {}, event: {}", e.getEventType(), e);
@@ -89,20 +79,4 @@ public class DomainEventScheduler {
         }
     }
 
-
-    private int generateEventHash(String event) {
-        try {
-            // Convert string event to Map
-            Map<String, Object> eventMap = JsonUtils.string2MapObject(event);
-
-            // Create a copy without the eventId field
-            Map<String, Object> copy = new HashMap<>(eventMap);
-            copy.remove("eventId");
-
-            return copy.hashCode();
-        } catch (Exception e) {
-            log.warn("Failed to generate event hash, using raw event string: {}", e.getMessage());
-            return event.hashCode();
-        }
-    }
 }

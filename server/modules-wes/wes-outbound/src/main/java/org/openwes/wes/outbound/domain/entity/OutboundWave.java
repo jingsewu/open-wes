@@ -7,8 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.openwes.common.utils.id.SnowflakeUtils;
 import org.openwes.domain.event.AggregatorRoot;
 import org.openwes.wes.api.outbound.constants.OutboundWaveStatusEnum;
-import org.openwes.wes.api.outbound.event.NewOutboundWaveEvent;
-import org.openwes.wes.api.outbound.event.OutboundWaveCompleteEvent;
+import org.openwes.wes.api.outbound.event.OutboundWaveCompletionEvent;
+import org.openwes.wes.api.outbound.event.OutboundWaveCreatedEvent;
 
 import java.util.List;
 
@@ -36,7 +36,7 @@ public class OutboundWave extends AggregatorRoot {
         this.outboundPlanOrderIds = orders.stream().map(OutboundPlanOrder::getId).toList();
         this.waveStatus = OutboundWaveStatusEnum.NEW;
 
-        this.addLifecycleEvent(new NewOutboundWaveEvent(this.id, this.waveNo));
+        this.addLifecycleEvent(new OutboundWaveCreatedEvent(this.id, this.waveNo));
     }
 
     public void process() {
@@ -58,7 +58,7 @@ public class OutboundWave extends AggregatorRoot {
         }
         this.waveStatus = OutboundWaveStatusEnum.DONE;
 
-        this.addAsynchronousDomainEvents(new OutboundWaveCompleteEvent(this.id, this.waveNo));
+        this.addAsynchronousDomainEvents(new OutboundWaveCompletionEvent(this.id, this.waveNo, this.outboundPlanOrderIds));
     }
 
     public void cancel() {

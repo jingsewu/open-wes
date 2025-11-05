@@ -36,8 +36,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class StockAbnormalRecordPO extends UpdateUserPO {
 
     @Id
-    @GeneratedValue(generator = "databaseIdGenerator")
-    @GenericGenerator(name = "databaseIdGenerator", type = IdGenerator.class)
     private Long id;
 
     @Column(nullable = false, columnDefinition = "varchar(64) default '' COMMENT '仓库'")

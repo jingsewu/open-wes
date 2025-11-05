@@ -8,7 +8,9 @@ import org.openwes.common.utils.id.SnowflakeUtils;
 import java.io.Serializable;
 
 /**
- * import: DomainEvent object size can't be over 5000
+ * important:
+ * 1. DomainEvent object size can't be over 5000
+ * 2. One DomainEvent only should have one consumer in mysql mode, if you used mq, then you need to set consumer as different group.
  */
 @Data
 @Accessors(chain = true)

@@ -4,9 +4,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.openwes.common.utils.base.UpdateUserDTO;
 import org.openwes.common.utils.id.OrderNoGenerator;
-import org.openwes.domain.event.DomainEventPublisher;
+import org.openwes.common.utils.id.SnowflakeUtils;
+import org.openwes.domain.event.AggregatorRoot;
 import org.openwes.wes.api.stock.constants.StockAbnormalReasonEnum;
 import org.openwes.wes.api.stock.constants.StockAbnormalStatusEnum;
 import org.openwes.wes.api.stock.constants.StockAbnormalTypeEnum;
@@ -15,7 +15,7 @@ import org.openwes.wes.api.stock.event.StockAbnormalRecordCreatedEvent;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Slf4j
-public class StockAbnormalRecord extends UpdateUserDTO {
+public class StockAbnormalRecord extends AggregatorRoot {
 
     private Long id;
 
@@ -49,7 +49,8 @@ public class StockAbnormalRecord extends UpdateUserDTO {
 
     public void initial() {
         this.orderNo = OrderNoGenerator.generationStockAbnormalOrderNo();
-        DomainEventPublisher.sendAsyncDomainEvent(new StockAbnormalRecordCreatedEvent().setOrderNo(this.orderNo));
+        this.id = SnowflakeUtils.generateId();
+        this.addAsynchronousDomainEvents(new StockAbnormalRecordCreatedEvent(this.id, this.orderNo));
     }
 
     public void createAdjustmentOrder() {

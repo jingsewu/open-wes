@@ -1,8 +1,8 @@
 package org.openwes.wes.basic.work_station.application.event;
 
 import com.google.common.eventbus.Subscribe;
-import org.openwes.wes.api.basic.event.AssignOrderEvent;
-import org.openwes.wes.api.basic.event.RemindSealContainerEvent;
+import org.openwes.wes.api.basic.event.PutWallAssignOrderEvent;
+import org.openwes.wes.api.basic.event.PutWallRemindSealContainerEvent;
 import org.openwes.wes.common.facade.StationCallbackFacade;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,12 +17,12 @@ public class PutWallSubscribe {
     private final StationCallbackFacade stationCallbackFacade;
 
     @Subscribe
-    public void onAssignOrderEvent(@Valid AssignOrderEvent assignOrderEvent) {
+    public void onAssignOrderEvent(@Valid PutWallAssignOrderEvent assignOrderEvent) {
         stationCallbackFacade.assignOrder(assignOrderEvent.getDetails());
     }
 
     @Subscribe
-    public void onRemindSealContainerEvent(@Valid RemindSealContainerEvent remindSealContainerEvent) {
+    public void onRemindSealContainerEvent(@Valid PutWallRemindSealContainerEvent remindSealContainerEvent) {
         stationCallbackFacade.remindSealContainer(remindSealContainerEvent.getDetails());
     }
 }

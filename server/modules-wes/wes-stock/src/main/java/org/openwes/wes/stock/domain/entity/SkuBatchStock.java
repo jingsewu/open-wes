@@ -1,6 +1,7 @@
 package org.openwes.wes.stock.domain.entity;
 
 import com.google.common.base.Preconditions;
+import org.openwes.common.utils.base.UpdateUserDTO;
 import org.openwes.common.utils.base.UpdateUserPO;
 import org.openwes.wes.api.stock.constants.StockLockTypeEnum;
 import lombok.Data;
@@ -16,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Slf4j
-public class SkuBatchStock extends UpdateUserPO {
+public class SkuBatchStock extends UpdateUserDTO {
 
     private Long id;
 
@@ -48,7 +49,7 @@ public class SkuBatchStock extends UpdateUserPO {
         Preconditions.checkState(this.noOutboundLockedQty >= 0, "no outbound lock qty must be greater than 0");
         Preconditions.checkState(this.frozenQty >= 0, "frozen qty must be greater than 0");
         Preconditions.checkState(this.totalQty == this.availableQty + this.outboundLockedQty + this.noOutboundLockedQty + this.frozenQty,
-            "total qty must equals availableQty + noOutboundLockedQty + outboundLockedQty +frozenQty");
+                "total qty must equals availableQty + noOutboundLockedQty + outboundLockedQty +frozenQty");
     }
 
     public void lockQty(Integer lockQty, StockLockTypeEnum stockLockType) {

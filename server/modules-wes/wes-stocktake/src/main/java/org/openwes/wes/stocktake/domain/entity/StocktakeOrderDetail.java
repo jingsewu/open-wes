@@ -1,7 +1,7 @@
 package org.openwes.wes.stocktake.domain.entity;
 
-import org.openwes.wes.api.stocktake.constants.StocktakeUnitTypeEnum;
 import lombok.Data;
+import org.openwes.wes.api.stocktake.constants.StocktakeUnitTypeEnum;
 
 @Data
 public class StocktakeOrderDetail {
@@ -29,7 +29,7 @@ public class StocktakeOrderDetail {
 
     private Long version;
 
-    public void initialize() {
-
+    public void initialize(Long stocktakeOrderId) {
+        this.stocktakeOrderId = stocktakeOrderId;
     }
 }

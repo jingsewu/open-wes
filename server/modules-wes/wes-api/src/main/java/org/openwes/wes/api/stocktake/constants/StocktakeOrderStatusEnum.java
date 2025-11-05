@@ -37,7 +37,4 @@ public enum StocktakeOrderStatusEnum implements IEnum {
         return FINAL_LIST.contains(status);
     }
 
-    public static boolean isCanClose(StocktakeOrderStatusEnum status) {
-        return status == NEW || status == STARTED;
-    }
 }

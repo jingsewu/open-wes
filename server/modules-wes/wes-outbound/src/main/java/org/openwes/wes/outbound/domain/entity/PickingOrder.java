@@ -11,10 +11,7 @@ import org.openwes.domain.event.AggregatorRoot;
 import org.openwes.plugin.api.dto.event.LifeCycleStatusChangeEvent;
 import org.openwes.wes.api.outbound.constants.PickingOrderDetailStatusEnum;
 import org.openwes.wes.api.outbound.constants.PickingOrderStatusEnum;
-import org.openwes.wes.api.outbound.event.PickingOrderCompleteEvent;
-import org.openwes.wes.api.outbound.event.PickingOrderDispatchedEvent;
-import org.openwes.wes.api.outbound.event.PickingOrderImprovePriorityEvent;
-import org.openwes.wes.api.outbound.event.PickingOrderPickedEvent;
+import org.openwes.wes.api.outbound.event.*;
 
 import java.util.List;
 import java.util.Map;
@@ -129,7 +126,8 @@ public class PickingOrder extends AggregatorRoot {
 
         if (this.details.stream().allMatch(v -> v.getPickingOrderDetailStatus() == PickingOrderDetailStatusEnum.PICKED)) {
             this.pickingOrderStatus = PickingOrderStatusEnum.PICKED;
-            this.addAsynchronousDomainEvents(new PickingOrderCompleteEvent(this.id));
+            this.addAsynchronousDomainEvents(new PickingOrderCompletionEvent(this.id));
+            this.addAsynchronousDomainEvents(new PickingOrderRemindSealContainerEvent(this.id,this.warehouseAreaId,this.assignedStationSlot));
         } else {
             this.pickingOrderStatus = PickingOrderStatusEnum.PICKING;
         }
@@ -165,7 +163,7 @@ public class PickingOrder extends AggregatorRoot {
                 .forEach(detail -> detail.shortPicking(shortQty));
         if (this.details.stream().allMatch(v -> v.getPickingOrderDetailStatus() == PickingOrderDetailStatusEnum.PICKED)) {
             this.pickingOrderStatus = PickingOrderStatusEnum.PICKED;
-            this.addAsynchronousDomainEvents(new PickingOrderCompleteEvent(this.id));
+            this.addAsynchronousDomainEvents(new PickingOrderCompletionEvent(this.id));
         } else {
             this.pickingOrderStatus = PickingOrderStatusEnum.PICKING;
         }
@@ -224,6 +222,6 @@ public class PickingOrder extends AggregatorRoot {
         }
         this.priority = priority;
 
-        this.addAsynchronousDomainEvents(new PickingOrderImprovePriorityEvent(this.id, this.priority));
+        this.addAsynchronousDomainEvents(new PickingOrderImprovedPriorityEvent(this.id, this.priority));
     }
 }

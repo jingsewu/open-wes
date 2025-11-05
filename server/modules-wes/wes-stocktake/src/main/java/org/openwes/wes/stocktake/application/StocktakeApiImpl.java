@@ -79,7 +79,7 @@ public class StocktakeApiImpl implements IStocktakeApi {
 
         cancelableOrders.forEach(StocktakeOrder::cancel);
 
-        cancelableOrders = stocktakeOrderRepository.saveAllOrderAndDetails(cancelableOrders);
+        stocktakeOrderRepository.saveAllOrderAndDetails(cancelableOrders);
 
         return cancelableOrders.stream().map(StocktakeOrder::getOrderNo).toList();
     }

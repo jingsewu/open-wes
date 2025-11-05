@@ -8,6 +8,7 @@ import org.openwes.wes.stock.infrastructure.persistence.mapper.StockAbnormalReco
 import org.openwes.wes.stock.infrastructure.persistence.po.StockAbnormalRecordPO;
 import org.openwes.wes.stock.infrastructure.persistence.transfer.StockAbnormalRecordPOTransfer;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
@@ -20,7 +21,9 @@ public class StockAbnormalRecordRepositoryImpl implements StockAbnormalRecordRep
     private final StockAbnormalRecordPOTransfer stockAbnormalRecordPOTransfer;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public List<StockAbnormalRecord> saveAll(List<StockAbnormalRecord> stockAbnormalRecords) {
+        stockAbnormalRecords.forEach(StockAbnormalRecord::sendAndClearEvents);
         List<StockAbnormalRecordPO> stockAbnormalRecordPOs = stockAbnormalRecordPORepository.saveAll(stockAbnormalRecordPOTransfer.toPOs(stockAbnormalRecords));
         return stockAbnormalRecordPOTransfer.toDOs(stockAbnormalRecordPOs);
     }
@@ -38,15 +41,14 @@ public class StockAbnormalRecordRepositoryImpl implements StockAbnormalRecordRep
     }
 
     @Override
-    public StockAbnormalRecord findByOrderNo(String orderNo) {
-        StockAbnormalRecordPO stockAbnormalRecordPO = stockAbnormalRecordPORepository.findByOrderNo(orderNo);
-        return stockAbnormalRecordPOTransfer.toDO(stockAbnormalRecordPO);
-    }
-
-    @Override
     public List<StockAbnormalRecord> findAllByContainerStockId(Long stockId) {
         List<StockAbnormalRecordPO> stockAbnormalRecordPOs = stockAbnormalRecordPORepository.findAllByContainerStockId(stockId);
         return stockAbnormalRecordPOTransfer.toDOs(stockAbnormalRecordPOs);
+    }
+
+    @Override
+    public StockAbnormalRecord findById(Long id) {
+        return stockAbnormalRecordPOTransfer.toDO(stockAbnormalRecordPORepository.findById(id).orElseThrow());
     }
 
 }

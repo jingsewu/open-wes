@@ -8,9 +8,9 @@ import java.util.List;
 
 public interface StocktakeOrderRepository {
 
-    StocktakeOrder saveStocktakeOrder(StocktakeOrder stocktakeOrder);
+    void saveStocktakeOrder(StocktakeOrder stocktakeOrder);
 
-    List<StocktakeOrder> saveAllOrderAndDetails(List<StocktakeOrder> stocktakeOrderList);
+    void saveAllOrderAndDetails(List<StocktakeOrder> stocktakeOrderList);
 
     List<StocktakeOrder> findAllByOrderNosAndWarehouseCodeAndStatuses(Collection<String> orderNos, String warehouseCode, List<StocktakeOrderStatusEnum> statuses);
 

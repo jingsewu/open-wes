@@ -2,15 +2,17 @@ package org.openwes.wes.api.outbound.event;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import org.openwes.domain.event.api.DomainEvent;
-
-import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Accessors(chain = true)
-public class EmptyContainerOutboundOrderCompletionEvent extends DomainEvent {
+@NoArgsConstructor
+public class OutboundPlanOrderCompletionEvent extends DomainEvent {
 
-    private List<Long> emptyContainerOutboundOrderDetailIds;
+    public OutboundPlanOrderCompletionEvent(Long outboundPlanOrderId) {
+        super(outboundPlanOrderId);
+    }
 }

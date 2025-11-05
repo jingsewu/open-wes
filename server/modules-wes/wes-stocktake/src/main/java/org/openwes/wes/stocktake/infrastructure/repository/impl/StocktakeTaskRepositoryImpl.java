@@ -2,6 +2,7 @@ package org.openwes.wes.stocktake.infrastructure.repository.impl;
 
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
+import org.openwes.domain.event.AggregatorRoot;
 import org.openwes.wes.api.stocktake.constants.StocktakeTaskStatusEnum;
 import org.openwes.wes.stocktake.domain.entity.StocktakeTask;
 import org.openwes.wes.stocktake.domain.entity.StocktakeTaskDetail;
@@ -30,11 +31,11 @@ public class StocktakeTaskRepositoryImpl implements StocktakeTaskRepository {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveOrderAndDetail(StocktakeTask stocktakeTask) {
+
+        stocktakeTask.sendAndClearEvents();
+
         StocktakeTaskPO stocktakeTaskPO = stocktakeTaskPORepository.save(stocktakeTaskPOTransfer.toPO(stocktakeTask));
-
         List<StocktakeTaskDetailPO> stocktakeTaskDetailPOS = stocktakeTaskPOTransfer.toDetailPOS(stocktakeTask.getDetails());
-        stocktakeTaskDetailPOS.forEach(v -> v.setStocktakeTaskId(stocktakeTaskPO.getId()));
-
         List<StocktakeTaskDetailPO> details = stocktakeTaskDetailPORepository.saveAll(stocktakeTaskDetailPOS);
 
         stocktakeTaskPOTransfer.toDO(stocktakeTaskPO, details);
@@ -43,7 +44,11 @@ public class StocktakeTaskRepositoryImpl implements StocktakeTaskRepository {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveAllTaskAndDetails(List<StocktakeTask> stocktakeTaskList) {
-        stocktakeTaskList.forEach(this::saveOrderAndDetail);
+        stocktakeTaskList.forEach(AggregatorRoot::sendAndClearEvents);
+
+        stocktakeTaskPORepository.saveAll(stocktakeTaskPOTransfer.toPOs(stocktakeTaskList));
+        List<StocktakeTaskDetail> details = stocktakeTaskList.stream().flatMap(v -> v.getDetails().stream()).toList();
+        stocktakeTaskDetailPORepository.saveAll(stocktakeTaskPOTransfer.toDetailPOS(details));
     }
 
     @Override
@@ -57,6 +62,10 @@ public class StocktakeTaskRepositoryImpl implements StocktakeTaskRepository {
     @Override
     public List<StocktakeTask> findAllById(List<Long> stocktakeOrderIds) {
         List<StocktakeTaskPO> stocktakeTaskPOs = stocktakeTaskPORepository.findAllById(stocktakeOrderIds);
+        return findStocktakeTasks(stocktakeTaskPOs);
+    }
+
+    private List<StocktakeTask> findStocktakeTasks(List<StocktakeTaskPO> stocktakeTaskPOs) {
         List<Long> stocktakeTaskIds = stocktakeTaskPOs.stream().map(StocktakeTaskPO::getId).toList();
         Map<Long, List<StocktakeTaskDetailPO>> detailMap = stocktakeTaskDetailPORepository.findAllByStocktakeTaskIdIn(stocktakeTaskIds)
                 .stream().collect(Collectors.groupingBy(StocktakeTaskDetailPO::getStocktakeTaskId));
@@ -73,11 +82,7 @@ public class StocktakeTaskRepositoryImpl implements StocktakeTaskRepository {
     @Override
     public List<StocktakeTask> findAllByWorkStationIdAndStatus(Long workStationId, Collection<StocktakeTaskStatusEnum> statuses) {
         List<StocktakeTaskPO> stocktakeTaskPOs = stocktakeTaskPORepository.findAllByWorkStationIdAndStocktakeTaskStatusIn(workStationId, statuses);
-        List<Long> stocktakeTaskIds = stocktakeTaskPOs.stream().map(StocktakeTaskPO::getId).toList();
-        Map<Long, List<StocktakeTaskDetailPO>> detailMap = stocktakeTaskDetailPORepository.findAllByStocktakeTaskIdIn(stocktakeTaskIds)
-                .stream().collect(Collectors.groupingBy(StocktakeTaskDetailPO::getStocktakeTaskId));
-        return stocktakeTaskPOs.stream().map(v -> stocktakeTaskPOTransfer.toDO(v, detailMap.get(v.getId())))
-                .toList();
+        return findStocktakeTasks(stocktakeTaskPOs);
     }
 
     @Override

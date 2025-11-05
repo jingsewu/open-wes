@@ -7,7 +7,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.openwes.distribute.scheduler.annotation.DistributedScheduled;
 import org.openwes.domain.event.DomainEventPublisher;
 import org.openwes.wes.api.outbound.constants.OutboundPlanOrderStatusEnum;
-import org.openwes.wes.api.outbound.event.NewOutboundPlanOrderEvent;
+import org.openwes.wes.api.outbound.event.OutboundPlanOrderCreatedEvent;
 import org.openwes.wes.outbound.domain.entity.OutboundPlanOrder;
 import org.openwes.wes.outbound.domain.repository.OutboundPlanOrderRepository;
 import org.springframework.stereotype.Component;
@@ -42,7 +42,7 @@ public class OutboundPlanOrderScheduler {
         }
 
         outboundPlanOrders.forEach(outboundPlanOrder ->
-                DomainEventPublisher.sendAsyncDomainEvent(new NewOutboundPlanOrderEvent(outboundPlanOrder.getId(), outboundPlanOrder.getOrderNo())));
+                DomainEventPublisher.sendAsyncDomainEvent(new OutboundPlanOrderCreatedEvent(outboundPlanOrder.getId(), outboundPlanOrder.getOrderNo())));
     }
 
 }

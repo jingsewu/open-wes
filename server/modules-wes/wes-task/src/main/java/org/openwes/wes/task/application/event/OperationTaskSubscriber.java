@@ -17,7 +17,7 @@ import org.openwes.wes.api.outbound.IOutboundPlanOrderApi;
 import org.openwes.wes.api.outbound.IPickingOrderApi;
 import org.openwes.wes.api.outbound.dto.OutboundPlanOrderDTO;
 import org.openwes.wes.api.outbound.dto.PickingOrderDTO;
-import org.openwes.wes.api.outbound.event.PickingOrderImprovePriorityEvent;
+import org.openwes.wes.api.outbound.event.PickingOrderImprovedPriorityEvent;
 import org.openwes.wes.api.task.constants.OperationTaskStatusEnum;
 import org.openwes.wes.api.task.dto.TransferContainerDTO;
 import org.openwes.wes.api.task.event.TransferContainerSealedEvent;
@@ -26,6 +26,7 @@ import org.openwes.wes.task.domain.entity.OperationTask;
 import org.openwes.wes.task.domain.repository.OperationTaskRepository;
 import org.openwes.wes.task.domain.transfer.OperationTaskTransfer;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
@@ -51,7 +52,7 @@ public class OperationTaskSubscriber {
     private final IContainerTaskApi containerTaskApi;
 
     @Subscribe
-    public void onImprovePriority(PickingOrderImprovePriorityEvent event) {
+    public void onImprovePriority(PickingOrderImprovedPriorityEvent event) {
         List<OperationTask> operationTasks = operationTaskRepository
                 .findAllByPickingOrderIds(Lists.newArrayList(event.getAggregatorId()))
                 .stream().filter(v -> v.getTaskStatus() == OperationTaskStatusEnum.NEW)
@@ -68,6 +69,7 @@ public class OperationTaskSubscriber {
     }
 
     @Subscribe
+    @Transactional(readOnly = true)
     public void onTransferContainerSealed(TransferContainerSealedEvent transferContainerSealedEvent) {
 
         TransferContainerRecordDTO transferContainerRecord = transferContainerRecordApi

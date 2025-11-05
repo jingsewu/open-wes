@@ -33,22 +33,20 @@ public class InboundPlanOrderRepositoryImpl implements InboundPlanOrderRepositor
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveOrderAndDetail(InboundPlanOrder inboundPlanOrder) {
-        InboundPlanOrderPO inboundPlanOrderPO = inboundPlanOrderPORepository.save(inboundPlanOrderPOTransfer.toPO(inboundPlanOrder));
-
-        List<InboundPlanOrderDetail> modifiedDetails = inboundPlanOrder.getDetails().stream().filter(InboundPlanOrderDetail::isModified).toList();
-        List<InboundPlanOrderDetailPO> inboundPlanOrderDetailPOs = inboundPlanOrderPOTransfer.toDetailPOs(modifiedDetails);
-        inboundPlanOrderDetailPORepository.saveAll(inboundPlanOrderDetailPOs);
-
         inboundPlanOrder.sendAndClearEvents();
 
-        inboundPlanOrderPOTransfer.toDO(inboundPlanOrderPO, inboundPlanOrderDetailPOs);
+        inboundPlanOrderPORepository.save(inboundPlanOrderPOTransfer.toPO(inboundPlanOrder));
+        List<InboundPlanOrderDetail> modifiedDetails = inboundPlanOrder.getDetails().stream()
+                .filter(InboundPlanOrderDetail::isModified).toList();
+        List<InboundPlanOrderDetailPO> inboundPlanOrderDetailPOs = inboundPlanOrderPOTransfer.toDetailPOs(modifiedDetails);
+        inboundPlanOrderDetailPORepository.saveAll(inboundPlanOrderDetailPOs);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveOrders(Collection<InboundPlanOrder> inboundPlanOrders) {
-        Collection<InboundPlanOrderPO> orderPOs = inboundPlanOrderPOTransfer.toPOs(inboundPlanOrders);
         inboundPlanOrders.forEach(AggregatorRoot::sendAndClearEvents);
+        Collection<InboundPlanOrderPO> orderPOs = inboundPlanOrderPOTransfer.toPOs(inboundPlanOrders);
         inboundPlanOrderPOTransfer.toDOs(inboundPlanOrderPORepository.saveAll(orderPOs));
     }
 

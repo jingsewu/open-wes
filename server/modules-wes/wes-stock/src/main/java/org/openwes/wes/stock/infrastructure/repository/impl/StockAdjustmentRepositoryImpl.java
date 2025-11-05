@@ -1,5 +1,7 @@
 package org.openwes.wes.stock.infrastructure.repository.impl;
 
+import lombok.RequiredArgsConstructor;
+import org.openwes.domain.event.AggregatorRoot;
 import org.openwes.wes.stock.domain.entity.StockAdjustmentOrder;
 import org.openwes.wes.stock.domain.repository.StockAdjustmentRepository;
 import org.openwes.wes.stock.infrastructure.persistence.mapper.StockAdjustmentDetailPORepository;
@@ -7,7 +9,6 @@ import org.openwes.wes.stock.infrastructure.persistence.mapper.StockAdjustmentOr
 import org.openwes.wes.stock.infrastructure.persistence.po.StockAdjustmentDetailPO;
 import org.openwes.wes.stock.infrastructure.persistence.po.StockAdjustmentOrderPO;
 import org.openwes.wes.stock.infrastructure.persistence.transfer.StockAdjustmentPOTransfer;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +24,10 @@ public class StockAdjustmentRepositoryImpl implements StockAdjustmentRepository 
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public StockAdjustmentOrder createOrderAndDetails(StockAdjustmentOrder stockAdjustmentOrder) {
+    public StockAdjustmentOrder saveOrderAndDetails(StockAdjustmentOrder stockAdjustmentOrder) {
+
+        stockAdjustmentOrder.sendAndClearEvents();
+
         StockAdjustmentOrderPO stockAdjustmentOrderPO = stockAdjustmentPOTransfer.toPO(stockAdjustmentOrder);
         StockAdjustmentOrderPO saved = stockAdjustmentOrderPORepository.save(stockAdjustmentOrderPO);
 
@@ -31,6 +35,21 @@ public class StockAdjustmentRepositoryImpl implements StockAdjustmentRepository 
         detailPOs.forEach(v -> v.setStockAdjustmentOrderId(saved.getId()));
         List<StockAdjustmentDetailPO> stockAdjustmentDetailPOS = stockAdjustmentDetailPORepository.saveAll(detailPOs);
         return stockAdjustmentPOTransfer.toDO(stockAdjustmentOrderPO, stockAdjustmentDetailPOS);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void saveOrders(List<StockAdjustmentOrder> stockAdjustmentOrders) {
+
+        stockAdjustmentOrders.forEach(AggregatorRoot::sendAndClearEvents);
+
+        List<StockAdjustmentOrderPO> stockAdjustmentOrderPOS = stockAdjustmentPOTransfer.toPOs(stockAdjustmentOrders);
+        stockAdjustmentOrderPORepository.saveAll(stockAdjustmentOrderPOS);
+    }
+
+    @Override
+    public StockAdjustmentOrder findById(Long id) {
+        return stockAdjustmentPOTransfer.toDO(stockAdjustmentOrderPORepository.findById(id).orElseThrow());
     }
 
     @Override
@@ -43,12 +62,6 @@ public class StockAdjustmentRepositoryImpl implements StockAdjustmentRepository 
             return stockAdjustmentPOTransfer.toDO(stockAdjustmentOrderPO, detailPOS);
         }).toList();
 
-    }
-
-    @Override
-    public void saveOrders(List<StockAdjustmentOrder> stockAdjustmentOrders) {
-        List<StockAdjustmentOrderPO> stockAdjustmentOrderPOS = stockAdjustmentPOTransfer.toPOs(stockAdjustmentOrders);
-        stockAdjustmentOrderPORepository.saveAll(stockAdjustmentOrderPOS);
     }
 
     @Override

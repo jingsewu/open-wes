@@ -4,7 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.openwes.wes.api.inbound.event.AcceptEvent;
+import org.openwes.wes.api.inbound.event.InboundPlanOrderAcceptedEvent;
 import org.openwes.wes.api.main.data.ISkuMainDataApi;
 import org.openwes.wes.api.main.data.dto.SkuMainDataDTO;
 import org.openwes.wes.api.stock.ISkuBatchAttributeApi;
@@ -26,15 +26,15 @@ public class AcceptOrderSubscriber {
     private final ISkuMainDataApi skuMainDataApi;
 
     @Subscribe
-    public void onAccept(@Valid AcceptEvent event) {
+    public void onAccept(@Valid InboundPlanOrderAcceptedEvent event) {
 
         SkuMainDataDTO skuMainDataDTO = skuMainDataApi.getById(event.getSkuId());
         SkuBatchAttributeDTO skuBatchAttribute = skuBatchAttributeApi
                 .getOrCreateSkuBatchAttribute(event.getSkuId(), event.getBatchAttributes());
 
-        AcceptOrder acceptOrder = acceptOrderRepository.findNewStatusAcceptOrder(event.getTargetContainerCode());
+        AcceptOrder acceptOrder = acceptOrderRepository.findNewStatusAcceptOrder(event.getTargetContainer().getTargetContainerCode());
 
-        AcceptOrderDetail acceptOrderDetail = acceptOrderTransfer.toDetailDO(skuMainDataDTO, event);
+        AcceptOrderDetail acceptOrderDetail = acceptOrderTransfer.toDetailDO(skuMainDataDTO, event, event.getTargetContainer());
         acceptOrderDetail.setSkuBatchAttributeId(skuBatchAttribute.getId());
 
         if (acceptOrder == null) {

@@ -138,7 +138,8 @@ public class OperationTaskApiImpl implements ITaskApi {
                 .collect(Collectors.toMap(HandleTaskDTO.HandleTask::getTaskId, v -> v));
         List<OperationTask> operationTasks = operationTaskRepository.findAllByIds(handleTaskMap.keySet());
 
-        operationTaskStockAggregate.complete(operationTasks, handleTaskDTO);
+        operationTaskService.handleTasks(operationTasks, handleTaskDTO);
+        operationTaskRepository.saveAll(operationTasks);
     }
 
     @Override

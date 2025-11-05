@@ -2,6 +2,7 @@ package org.openwes.wes.api.ems.proxy.event;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.openwes.domain.event.api.DomainEvent;
 import org.openwes.wes.api.ems.proxy.constants.BusinessTaskTypeEnum;
 import org.openwes.wes.api.ems.proxy.constants.ContainerTaskStatusEnum;
@@ -11,6 +12,7 @@ import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
+@NoArgsConstructor
 public class ContainerTaskUpdatedStatusEvent extends DomainEvent {
 
     private List<Long> relationTaskIds;

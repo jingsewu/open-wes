@@ -10,7 +10,7 @@ public interface StocktakeRecordRepository {
 
     List<StocktakeRecord> findAllByTaskDetailId(Long stocktakeTaskDetailId);
 
-    StocktakeRecord save(StocktakeRecord stocktakeRecord);
+    void save(StocktakeRecord stocktakeRecord);
 
     List<StocktakeRecord> saveAll(List<StocktakeRecord> newRecordList);
 

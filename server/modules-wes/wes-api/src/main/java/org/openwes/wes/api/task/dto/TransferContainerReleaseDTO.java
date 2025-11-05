@@ -6,7 +6,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 @Data
-@Schema(description = "出库计划单")
+@Schema(description = "周转箱释放DTO")
 public class TransferContainerReleaseDTO implements Serializable {
 
     @Schema(title = "仓库编码", requiredMode = Schema.RequiredMode.REQUIRED)

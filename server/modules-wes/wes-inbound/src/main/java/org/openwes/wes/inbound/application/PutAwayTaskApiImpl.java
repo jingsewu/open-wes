@@ -10,6 +10,7 @@ import org.openwes.wes.inbound.domain.repository.PutAwayTaskRepository;
 import org.openwes.wes.inbound.domain.service.PutAwayTaskService;
 import org.openwes.wes.inbound.domain.transfer.PutAwayTaskTransfer;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -30,12 +31,13 @@ public class PutAwayTaskApiImpl implements IPutAwayTaskApi {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void complete(List<Long> putAwayTaskIds, String locationCode) {
         List<PutAwayTask> putAwayTasks = putAwayTaskRepository.findAllByIds(putAwayTaskIds);
         putAwayTasks.forEach(putAwayTask -> putAwayTask.complete(locationCode));
 
         putAwayTaskRepository.saveAllOrders(putAwayTasks);
-        callbackApiFacade.callback(CallbackApiTypeEnum.PUT_AWAY_TASK_COMPLETED, "", putAwayTasks);
+        callbackApiFacade.callback(CallbackApiTypeEnum.PUT_AWAY_TASK_COMPLETED, "", putAwayTaskTransfer.toDTOs(putAwayTasks));
     }
 
 }

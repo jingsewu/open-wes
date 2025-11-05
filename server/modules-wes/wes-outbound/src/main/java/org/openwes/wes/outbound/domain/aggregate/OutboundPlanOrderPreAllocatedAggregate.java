@@ -75,8 +75,8 @@ public class OutboundPlanOrderPreAllocatedAggregate {
                 break;
             }
             int preAllocated = Math.min(skuBatchStockDTO.getAvailableQty(), qtyRequired);
-            qtyRequired -= preAllocated;
             skuBatchStockDTO.setAvailableQty(skuBatchStockDTO.getAvailableQty() - qtyRequired);
+            qtyRequired -= preAllocated;
 
             OutboundPreAllocatedRecord preAllocatedRecord = new OutboundPreAllocatedRecord()
                     .setOwnerCode(detail.getOwnerCode())

@@ -12,7 +12,6 @@ import org.openwes.common.utils.exception.code_enum.OperationTaskErrorDescEnum;
 import org.openwes.domain.event.AggregatorRoot;
 import org.openwes.wes.api.basic.constants.WarehouseAreaTypeEnum;
 import org.openwes.wes.api.basic.dto.WarehouseAreaDTO;
-import org.openwes.wes.api.task.event.OperationTaskAbnormalEvent;
 import org.openwes.wes.api.stock.constants.StockLockTypeEnum;
 import org.openwes.wes.api.stock.dto.StockTransferDTO;
 import org.openwes.wes.api.stock.event.StockTransferEvent;
@@ -20,6 +19,7 @@ import org.openwes.wes.api.task.constants.OperationTaskStatusEnum;
 import org.openwes.wes.api.task.constants.OperationTaskTypeEnum;
 import org.openwes.wes.api.task.dto.HandleTaskDTO;
 import org.openwes.wes.api.task.dto.OperationTaskPickingDTO;
+import org.openwes.wes.api.task.event.OperationTaskAbnormalEvent;
 import org.openwes.wes.api.task.event.OperationTaskPickedEvent;
 import org.openwes.wes.common.constants.WmsCommonConstants;
 
@@ -164,11 +164,7 @@ public class OperationTask extends AggregatorRoot {
         this.abnormalQty += abnormalQty;
         validateQty();
 
-        OperationTaskAbnormalEvent.OperationTaskAbnormalDetail pickingOrderAbnormalDetail = new OperationTaskAbnormalEvent.OperationTaskAbnormalDetail();
-        pickingOrderAbnormalDetail.setPickingOrderId(this.orderId);
-        pickingOrderAbnormalDetail.setPickingOrderDetailId(this.detailId);
-        pickingOrderAbnormalDetail.setAbnormalQty(abnormalQty);
-        this.addAsynchronousDomainEvents(new OperationTaskAbnormalEvent(this.id, pickingOrderAbnormalDetail));
+        this.addAsynchronousDomainEvents(new OperationTaskAbnormalEvent(this.id, this.orderId, this.detailId, abnormalQty));
     }
 
     public void setActualWorkStation(Long workStationId) {

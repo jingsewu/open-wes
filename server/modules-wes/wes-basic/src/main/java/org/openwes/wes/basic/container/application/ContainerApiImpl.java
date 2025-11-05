@@ -81,17 +81,23 @@ public class ContainerApiImpl implements IContainerApi {
         }
 
         String format = "%0" + createContainerDTO.getIndexNumber() + "d";
-
-        List<Container> containers = Lists.newArrayList();
         int endIndex = createContainerDTO.getStartIndex() + createContainerDTO.getCreateNumber();
-        for (int i = createContainerDTO.getStartIndex(); i <= endIndex - 1; i++) {
-            String containerCode = createContainerDTO.getContainerCodePrefix() + String.format(format, i);
-            containers.add(new Container(createContainerDTO.getWarehouseCode(), containerCode,
-                    createContainerDTO.getContainerSpecCode(),
-                    containerSpecTransfer.toContainerSlots(containerSpec.getContainerSlotSpecs())));
-        }
 
-        containerRepository.saveAll(containers);
+        // 分批处理容器创建，避免一次性创建过多对象导致内存问题
+        int batchSize = 1000; // 可配置的批次大小
+        for (int i = createContainerDTO.getStartIndex(); i < endIndex; i += batchSize) {
+            int currentBatchEnd = Math.min(i + batchSize, endIndex);
+            List<Container> containers = Lists.newArrayListWithCapacity(batchSize);
+
+            for (int j = i; j < currentBatchEnd; j++) {
+                String containerCode = createContainerDTO.getContainerCodePrefix() + String.format(format, j);
+                containers.add(new Container(createContainerDTO.getWarehouseCode(), containerCode,
+                        createContainerDTO.getContainerSpecCode(),
+                        containerSpecTransfer.toContainerSlots(containerSpec.getContainerSlotSpecs())));
+            }
+
+            containerRepository.saveAll(containers);
+        }
     }
 
     @Override

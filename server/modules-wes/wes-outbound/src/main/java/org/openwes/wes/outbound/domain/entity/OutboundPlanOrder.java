@@ -12,10 +12,10 @@ import org.openwes.plugin.api.dto.event.LifeCycleStatusChangeEvent;
 import org.openwes.wes.api.main.data.dto.SkuMainDataDTO;
 import org.openwes.wes.api.outbound.constants.OutboundPlanOrderDetailStatusEnum;
 import org.openwes.wes.api.outbound.constants.OutboundPlanOrderStatusEnum;
-import org.openwes.wes.api.outbound.event.NewOutboundPlanOrderEvent;
+import org.openwes.wes.api.outbound.event.OutboundPlanOrderCreatedEvent;
 import org.openwes.wes.api.outbound.event.OutboundPlanOrderAssignedEvent;
-import org.openwes.wes.api.outbound.event.OutboundPlanOrderCompleteEvent;
-import org.openwes.wes.api.outbound.event.OutboundPlanOrderImprovePriorityEvent;
+import org.openwes.wes.api.outbound.event.OutboundPlanOrderCompletionEvent;
+import org.openwes.wes.api.outbound.event.OutboundPlanOrderImprovedPriorityEvent;
 
 import java.util.List;
 import java.util.Map;
@@ -78,7 +78,7 @@ public class OutboundPlanOrder extends AggregatorRoot {
         this.totalQty = total;
         this.skuKindNum = skuSet.size();
         this.outboundPlanOrderStatus = OutboundPlanOrderStatusEnum.NEW;
-        this.addAsynchronousDomainEvents(new NewOutboundPlanOrderEvent(this.id, this.orderNo));
+        this.addAsynchronousDomainEvents(new OutboundPlanOrderCreatedEvent(this.id, this.orderNo));
         this.addAsynchronousDomainEvents(new LifeCycleStatusChangeEvent(this.outboundPlanOrderStatus.name(), this.id, this.getClass().getSimpleName()));
     }
 
@@ -179,7 +179,7 @@ public class OutboundPlanOrder extends AggregatorRoot {
 
         if (details.stream().allMatch(v -> v.getOutboundPlanOrderDetailStatus() == OutboundPlanOrderDetailStatusEnum.PICKED)) {
             this.outboundPlanOrderStatus = OutboundPlanOrderStatusEnum.PICKED;
-            this.addAsynchronousDomainEvents(new OutboundPlanOrderCompleteEvent(this.id));
+            this.addAsynchronousDomainEvents(new OutboundPlanOrderCompletionEvent(this.id));
             this.addAsynchronousDomainEvents(new LifeCycleStatusChangeEvent(this.outboundPlanOrderStatus.name(), this.id, this.getClass().getSimpleName()));
         } else if (this.outboundPlanOrderStatus != OutboundPlanOrderStatusEnum.PICKING) {
             this.outboundPlanOrderStatus = OutboundPlanOrderStatusEnum.PICKING;
@@ -203,12 +203,12 @@ public class OutboundPlanOrder extends AggregatorRoot {
         this.details.stream().filter(v -> v.getOutboundPlanOrderDetailStatus() != OutboundPlanOrderDetailStatusEnum.PICKED)
                 .forEach(OutboundPlanOrderDetail::shortComplete);
 
-        this.addAsynchronousDomainEvents(new OutboundPlanOrderCompleteEvent(this.id));
+        this.addAsynchronousDomainEvents(new OutboundPlanOrderCompletionEvent(this.id));
         this.addAsynchronousDomainEvents(new LifeCycleStatusChangeEvent(this.outboundPlanOrderStatus.name(), this.id, this.getClass().getSimpleName()));
     }
 
     public void improvePriority(int priority) {
         this.priority += priority * 10000;
-        this.addAsynchronousDomainEvents(new OutboundPlanOrderImprovePriorityEvent(this.id, this.priority));
+        this.addAsynchronousDomainEvents(new OutboundPlanOrderImprovedPriorityEvent(this.id, this.priority));
     }
 }

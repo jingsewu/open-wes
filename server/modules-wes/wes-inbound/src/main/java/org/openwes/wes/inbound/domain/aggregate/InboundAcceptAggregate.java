@@ -1,9 +1,6 @@
 package org.openwes.wes.inbound.domain.aggregate;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.ObjectUtils;
-import org.openwes.domain.event.DomainEventPublisher;
-import org.openwes.wes.api.inbound.event.PutAwayCreationEvent;
 import org.openwes.wes.inbound.domain.entity.AcceptOrder;
 import org.openwes.wes.inbound.domain.entity.AcceptOrderDetail;
 import org.openwes.wes.inbound.domain.entity.InboundPlanOrder;
@@ -48,9 +45,5 @@ public class InboundAcceptAggregate {
         List<InboundPlanOrder> filteredInboundOrderPlanOrders = inboundPlanOrders.stream().filter(InboundPlanOrder::isFullAccepted).toList();
         filteredInboundOrderPlanOrders.forEach(InboundPlanOrder::completeAccepted);
         inboundPlanOrderRepository.saveOrders(filteredInboundOrderPlanOrders);
-
-        if (ObjectUtils.isNotEmpty(filteredInboundOrderPlanOrders)) {
-            DomainEventPublisher.sendAsyncDomainEvent(new PutAwayCreationEvent().setAcceptOrderId(acceptOrder.getId()));
-        }
     }
 }

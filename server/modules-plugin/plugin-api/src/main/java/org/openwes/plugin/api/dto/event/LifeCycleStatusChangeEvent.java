@@ -17,6 +17,7 @@ public class LifeCycleStatusChangeEvent extends DomainEvent {
     private String entityName;
 
     public LifeCycleStatusChangeEvent(String newStatus, Long entityId, String entityNo, String entityName) {
+        super(entityId);
         this.newStatus = newStatus;
         this.entityId = entityId;
         this.entityNo = entityNo;
@@ -24,6 +25,7 @@ public class LifeCycleStatusChangeEvent extends DomainEvent {
     }
 
     public LifeCycleStatusChangeEvent(String newStatus, Long entityId, String entityName) {
+        super(entityId);
         this.newStatus = newStatus;
         this.entityId = entityId;
         this.entityName = entityName;

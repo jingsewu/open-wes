@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.openwes.domain.event.api.DomainEvent;
 import org.openwes.wes.api.print.constants.ModuleEnum;
 import org.openwes.wes.api.print.constants.PrintNodeEnum;
@@ -12,6 +13,7 @@ import java.util.Map;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
+@NoArgsConstructor
 public class PrintEvent extends DomainEvent {
 
     @NotEmpty

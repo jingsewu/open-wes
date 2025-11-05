@@ -43,12 +43,6 @@ public class OperationTaskStockAggregate {
     private final ITransferContainerApi transferContainerApi;
 
     @Transactional(rollbackFor = Exception.class)
-    public void complete(List<OperationTask> operationTasks, HandleTaskDTO handleTaskDTO) {
-        operationTaskService.handleTasks(operationTasks, handleTaskDTO);
-        operationTaskRepository.saveAll(operationTasks);
-    }
-
-    @Transactional(rollbackFor = Exception.class)
     public void splitTasks(List<OperationTask> operationTasks, HandleTaskDTO handleTaskDTO) {
 
         operationTaskService.handleTasks(operationTasks, handleTaskDTO);

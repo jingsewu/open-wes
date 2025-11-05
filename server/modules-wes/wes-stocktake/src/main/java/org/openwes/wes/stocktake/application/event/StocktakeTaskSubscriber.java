@@ -3,12 +3,8 @@ package org.openwes.wes.stocktake.application.event;
 import com.google.common.eventbus.Subscribe;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.openwes.domain.event.DomainEventPublisher;
 import org.openwes.wes.api.stocktake.constants.StocktakeRecordStatusEnum;
-import org.openwes.wes.api.stocktake.constants.StocktakeTaskStatusEnum;
-import org.openwes.wes.api.stocktake.event.StocktakeOrderCompleteEvent;
 import org.openwes.wes.api.stocktake.event.StocktakeRecordSubmitEvent;
-import org.openwes.wes.api.stocktake.event.StocktakeTaskCloseEvent;
 import org.openwes.wes.stocktake.domain.entity.StocktakeRecord;
 import org.openwes.wes.stocktake.domain.entity.StocktakeTask;
 import org.openwes.wes.stocktake.domain.repository.StocktakeRecordRepository;
@@ -36,27 +32,6 @@ public class StocktakeTaskSubscriber {
         StocktakeTask stocktakeTask = stocktakeTaskRepository.findById(event.getStocktakeTaskId());
         stocktakeTask.submit(event.getStocktakeTaskDetailId());
         stocktakeTaskRepository.saveOrderAndDetail(stocktakeTask);
-
-        if (stocktakeTask.getStocktakeTaskStatus() == StocktakeTaskStatusEnum.DONE) {
-            completeStocktakeTask(stocktakeTask.getStocktakeOrderId());
-        }
     }
 
-    @Subscribe
-    public void onClose(StocktakeTaskCloseEvent event) {
-        completeStocktakeTask(event.getStocktakeOrderId());
-    }
-
-    private void completeStocktakeTask(Long stocktakeOrderId) {
-        List<StocktakeTask> stocktakeTasks = stocktakeTaskRepository.findAllByStocktakeOrderId(stocktakeOrderId);
-
-        boolean result = stocktakeTasks.stream().anyMatch(v -> v.getStocktakeTaskStatus() == StocktakeTaskStatusEnum.NEW
-                || v.getStocktakeTaskStatus() == StocktakeTaskStatusEnum.STARTED);
-
-        if (result) {
-            return;
-        }
-
-        DomainEventPublisher.sendAsyncDomainEvent(new StocktakeOrderCompleteEvent().setStocktakeOrderId(stocktakeOrderId));
-    }
 }

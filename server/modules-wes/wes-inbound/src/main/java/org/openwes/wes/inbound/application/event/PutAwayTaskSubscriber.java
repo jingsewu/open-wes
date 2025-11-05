@@ -4,15 +4,13 @@ import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.openwes.wes.api.inbound.event.PutAwayCreationEvent;
-import org.openwes.wes.common.facade.CallbackApiFacade;
+import org.openwes.wes.api.inbound.event.AcceptOrderCompletionEvent;
 import org.openwes.wes.inbound.domain.aggregate.PutAwayAggregate;
 import org.openwes.wes.inbound.domain.entity.AcceptOrder;
 import org.openwes.wes.inbound.domain.entity.AcceptOrderDetail;
 import org.openwes.wes.inbound.domain.entity.PutAwayTask;
 import org.openwes.wes.inbound.domain.entity.PutAwayTaskDetail;
 import org.openwes.wes.inbound.domain.repository.AcceptOrderRepository;
-import org.openwes.wes.inbound.domain.repository.PutAwayTaskRepository;
 import org.openwes.wes.inbound.domain.service.PutAwayTaskService;
 import org.openwes.wes.inbound.domain.transfer.PutAwayTaskTransfer;
 import org.springframework.stereotype.Component;
@@ -27,13 +25,11 @@ public class PutAwayTaskSubscriber {
 
     private final AcceptOrderRepository acceptOrderRepository;
     private final PutAwayTaskTransfer putAwayTaskTransfer;
-    private final PutAwayTaskRepository putAwayTaskRepository;
     private final PutAwayAggregate putAwayAggregate;
     private final PutAwayTaskService putAwayTaskService;
-    private final CallbackApiFacade callbackApiFacade;
 
     @Subscribe
-    public void onCreation(PutAwayCreationEvent putAwayEvent) {
+    public void onCreation(AcceptOrderCompletionEvent putAwayEvent) {
 
         AcceptOrder acceptOrder = acceptOrderRepository.findById(putAwayEvent.getAcceptOrderId());
 

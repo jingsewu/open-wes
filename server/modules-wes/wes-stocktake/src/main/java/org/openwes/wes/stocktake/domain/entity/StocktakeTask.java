@@ -2,10 +2,12 @@ package org.openwes.wes.stocktake.domain.entity;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
-import org.openwes.domain.event.DomainEventPublisher;
+import org.openwes.common.utils.id.SnowflakeUtils;
+import org.openwes.domain.event.AggregatorRoot;
 import org.openwes.wes.api.stocktake.constants.*;
-import org.openwes.wes.api.stocktake.event.StocktakeTaskCloseEvent;
+import org.openwes.wes.api.stocktake.event.StocktakeTaskCompletionEvent;
 import org.springframework.util.Assert;
 
 import java.util.List;
@@ -13,9 +15,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Slf4j
-public class StocktakeTask {
+public class StocktakeTask extends AggregatorRoot {
 
     private Long id;
 
@@ -79,9 +82,10 @@ public class StocktakeTask {
     }
 
     public void initialize(String stocktakeOrderNo, int index) {
+        this.id = SnowflakeUtils.generateId();
         this.stocktakeTaskStatus = StocktakeTaskStatusEnum.NEW;
         this.taskNo = String.format("%s-%d", stocktakeOrderNo, index);
-        this.details.forEach(StocktakeTaskDetail::initialize);
+        this.details.forEach(v -> v.initialize(this.id));
 
         log.info("stocktake order: {} stocktake task: {} initialized", this.stocktakeOrderId, this.taskNo);
     }
@@ -109,6 +113,7 @@ public class StocktakeTask {
 
         if (this.details.stream().allMatch(StocktakeTaskDetail::isCompleted)) {
             this.stocktakeTaskStatus = StocktakeTaskStatusEnum.DONE;
+            this.addAsynchronousDomainEvents(new StocktakeTaskCompletionEvent(this.id, this.stocktakeOrderId));
         }
     }
 
@@ -122,10 +127,10 @@ public class StocktakeTask {
 
         this.stocktakeTaskStatus = StocktakeTaskStatusEnum.CLOSE;
 
-        DomainEventPublisher.sendAsyncDomainEvent(new StocktakeTaskCloseEvent().setStocktakeTaskId(this.id).setStocktakeOrderId(this.stocktakeOrderId));
-
         this.details.stream().filter(v -> v.getStocktakeTaskDetailStatus() == StocktakeTaskDetailStatusEnum.NEW
                         || v.getStocktakeTaskDetailStatus() == StocktakeTaskDetailStatusEnum.STARTED)
                 .forEach(StocktakeTaskDetail::close);
+
+        this.addAsynchronousDomainEvents(new StocktakeTaskCompletionEvent(this.id, this.stocktakeOrderId));
     }
 }

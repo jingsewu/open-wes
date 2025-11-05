@@ -32,7 +32,7 @@ public class StockAbnormalAggregate {
     private final StockAbnormalRecordRepository stockAbnormalRecordRepository;
 
     @Transactional(rollbackFor = Exception.class)
-    public StockAdjustmentOrder createAdjustmentOrder(List<StockAbnormalRecord> stockAbnormalRecords) {
+    public void createAdjustmentOrder(List<StockAbnormalRecord> stockAbnormalRecords) {
         stockAbnormalRecords.forEach(StockAbnormalRecord::createAdjustmentOrder);
         stockAbnormalRecordRepository.saveAll(stockAbnormalRecords);
 
@@ -41,7 +41,7 @@ public class StockAbnormalAggregate {
 
         StockAdjustmentOrder stockAdjustmentOrder = new StockAdjustmentOrder(stockAbnormalRecord.getWarehouseCode(), details, "");
 
-        return stockAdjustmentRepository.createOrderAndDetails(stockAdjustmentOrder);
+        stockAdjustmentRepository.saveOrderAndDetails(stockAdjustmentOrder);
     }
 
     @Transactional(rollbackFor = Exception.class)

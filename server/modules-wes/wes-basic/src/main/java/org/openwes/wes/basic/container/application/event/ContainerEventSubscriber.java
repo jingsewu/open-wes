@@ -13,6 +13,7 @@ import org.openwes.wes.api.stock.dto.ContainerStockDTO;
 import org.openwes.wes.basic.container.domain.entity.Container;
 import org.openwes.wes.basic.container.domain.repository.ContainerRepository;
 import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
@@ -28,7 +29,7 @@ public class ContainerEventSubscriber {
     private final IStockApi stockApi;
 
     @Subscribe
-    @Retryable(retryFor =  OptimisticLockingFailureException.class , maxAttempts = 3, backoff = @Backoff(delay = 200))
+    @Retryable(retryFor = {OptimisticLockingFailureException.class, ObjectOptimisticLockingFailureException.class}, maxAttempts = 3, backoff = @Backoff(delay = 200))
     public void onContainerStockUpdate(@Valid ContainerStockUpdateEvent event) {
         log.info("receive container stock update event: {}", event);
 

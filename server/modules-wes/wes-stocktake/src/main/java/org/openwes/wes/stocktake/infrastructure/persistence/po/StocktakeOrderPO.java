@@ -1,13 +1,11 @@
 package org.openwes.wes.stocktake.infrastructure.persistence.po;
 
-import org.openwes.common.utils.base.UpdateUserPO;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.GenericGenerator;
-import org.openwes.common.utils.id.IdGenerator;
+import org.openwes.common.utils.base.UpdateUserPO;
 import org.openwes.wes.api.stocktake.constants.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -26,8 +24,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class StocktakeOrderPO extends UpdateUserPO {
 
     @Id
-    @GeneratedValue(generator = "databaseIdGenerator")
-    @GenericGenerator(name = "databaseIdGenerator", type = IdGenerator.class)
     private Long id;
 
     @Column(nullable = false, columnDefinition = "varchar(64) comment '仓库编码'")

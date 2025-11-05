@@ -31,7 +31,8 @@ public class StocktakeTaskDetail extends UpdateUserDTO {
 
     private List<StocktakeRecord> recordList;
 
-    public void initialize() {
+    public void initialize(Long stocktakeTaskId) {
+        this.stocktakeTaskId = stocktakeTaskId;
         this.stocktakeTaskDetailStatus = StocktakeTaskDetailStatusEnum.NEW;
     }
 

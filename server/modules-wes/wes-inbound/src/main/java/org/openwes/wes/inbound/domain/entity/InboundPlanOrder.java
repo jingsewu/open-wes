@@ -14,6 +14,7 @@ import org.openwes.wes.api.inbound.constants.InboundPlanOrderStatusEnum;
 import org.openwes.wes.api.inbound.constants.StorageTypeEnum;
 import org.openwes.wes.api.inbound.dto.AcceptRecordDTO;
 import org.openwes.wes.api.inbound.event.InboundOrderCompletionEvent;
+import org.openwes.wes.api.inbound.event.InboundPlanOrderAcceptedEvent;
 import org.openwes.wes.api.main.data.dto.SkuMainDataDTO;
 
 import java.util.List;
@@ -101,6 +102,12 @@ public class InboundPlanOrder extends AggregatorRoot {
             this.inboundPlanOrderStatus = InboundPlanOrderStatusEnum.ACCEPTING;
         }
 
+        InboundPlanOrderAcceptedEvent.AcceptTargetContainer acceptTargetContainer = InboundPlanOrderAcceptedEvent.AcceptTargetContainer.build(acceptRecord);
+        InboundPlanOrderAcceptedEvent acceptEvent = new InboundPlanOrderAcceptedEvent(this.id, acceptRecord.getInboundPlanOrderDetailId(),
+                acceptRecord.getWarehouseCode(), acceptRecord.getSkuId(),
+                acceptRecord.getWorkStationId(), acceptRecord.getQtyAccepted(),
+                acceptRecord.getQtyAbnormal(), acceptRecord.getBatchAttributes(), acceptTargetContainer);
+        this.addAsynchronousDomainEvents(acceptEvent);
     }
 
     public void close() {
@@ -112,7 +119,7 @@ public class InboundPlanOrder extends AggregatorRoot {
 
         this.inboundPlanOrderStatus = InboundPlanOrderStatusEnum.CLOSED;
         this.details.forEach(InboundPlanOrderDetail::close);
-        this.addAsynchronousDomainEvents(new InboundOrderCompletionEvent().setInboundOrderId(this.id));
+        this.addAsynchronousDomainEvents(new InboundOrderCompletionEvent(this.id));
     }
 
     public void cancel() {
@@ -146,7 +153,7 @@ public class InboundPlanOrder extends AggregatorRoot {
         }
         this.inboundPlanOrderStatus = InboundPlanOrderStatusEnum.ACCEPTED;
 
-        this.addAsynchronousDomainEvents(new InboundOrderCompletionEvent().setInboundOrderId(this.id));
+        this.addAsynchronousDomainEvents(new InboundOrderCompletionEvent(this.id));
     }
 
     public void forceCompleteAccepted() {
@@ -155,7 +162,7 @@ public class InboundPlanOrder extends AggregatorRoot {
         this.details.forEach(InboundPlanOrderDetail::forceCompleteAccepted);
         this.inboundPlanOrderStatus = InboundPlanOrderStatusEnum.ACCEPTED;
 
-        this.addAsynchronousDomainEvents(new InboundOrderCompletionEvent().setInboundOrderId(this.id));
+        this.addAsynchronousDomainEvents(new InboundOrderCompletionEvent(this.id));
     }
 
 }

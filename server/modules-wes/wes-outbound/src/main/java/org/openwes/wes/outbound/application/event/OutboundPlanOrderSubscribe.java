@@ -19,6 +19,7 @@ import org.openwes.wes.outbound.domain.entity.PickingOrderDetail;
 import org.openwes.wes.outbound.domain.repository.OutboundPlanOrderRepository;
 import org.openwes.wes.outbound.domain.repository.PickingOrderRepository;
 import org.openwes.wes.outbound.domain.service.PickingOrderService;
+import org.openwes.wes.outbound.domain.transfer.OutboundPlanOrderTransfer;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -36,9 +37,10 @@ public class OutboundPlanOrderSubscribe {
     private final OutboundPlanOrderRepository outboundPlanOrderRepository;
     private final CallbackApiFacade callbackApiFacade;
     private final RedisUtils redisUtils;
+    private final OutboundPlanOrderTransfer outboundPlanOrderTransfer;
 
     @Subscribe
-    public void onCreateEvent(@Valid NewOutboundPlanOrderEvent event) {
+    public void onCreateEvent(@Valid OutboundPlanOrderCreatedEvent event) {
         log.info("Receive new outbound plan order pre allocate required, order no: {}", event.getOrderNo());
 
         OutboundPlanOrder outboundPlanOrder = outboundPlanOrderRepository.findById(event.getAggregatorId());
@@ -90,26 +92,18 @@ public class OutboundPlanOrderSubscribe {
     }
 
     @Subscribe
-    public void onPickingOrderCompleteEvent(@Valid PickingOrderCompleteEvent event) {
-        PickingOrder pickingOrder = pickingOrderRepository.findById(event.getAggregatorId());
-
-        List<Long> outboundPlanOrderIds = pickingOrder.getDetails().stream()
-                .map(PickingOrderDetail::getOutboundOrderPlanId).distinct().toList();
-
-        for (Long outboundPlanOrderId : outboundPlanOrderIds) {
-            List<PickingOrder> pickingOrders = pickingOrderRepository.findAllByOutboundPlanOrderId(outboundPlanOrderId);
-            if (pickingOrders.stream().allMatch(v -> PickingOrderStatusEnum.isFinalStatues(v.getPickingOrderStatus()))) {
-                OutboundPlanOrder outboundPlanOrder = outboundPlanOrderRepository.findById(outboundPlanOrderId);
-                outboundPlanOrder.shortComplete();
-                outboundPlanOrderRepository.saveOrderAndDetail(outboundPlanOrder);
-            }
-        }
+    public void onOutboundWaveCompletionEvent(@Valid OutboundWaveCompletionEvent event) {
+        List<OutboundPlanOrder> outboundPlanOrders = outboundPlanOrderRepository.findAllByIds(event.getOutboundPlanOrderIds());
+        outboundPlanOrders.stream().filter(v -> v.getOutboundPlanOrderStatus() != OutboundPlanOrderStatusEnum.PICKED)
+                .forEach(OutboundPlanOrder::shortComplete);
+        outboundPlanOrderRepository.saveAllOrderAndDetails(outboundPlanOrders);
     }
 
     @Subscribe
-    public void onCompleteEvent(@Valid OutboundPlanOrderCompleteEvent event) {
+    public void onCompleteEvent(@Valid OutboundPlanOrderCompletionEvent event) {
         OutboundPlanOrder outboundPlanOrder = outboundPlanOrderRepository.findById(event.getAggregatorId());
-        callbackApiFacade.callback(CallbackApiTypeEnum.OUTBOUND_PLAN_ORDER_COMPLETE, outboundPlanOrder.getCustomerOrderType(), outboundPlanOrder);
+        callbackApiFacade.callback(CallbackApiTypeEnum.OUTBOUND_PLAN_ORDER_COMPLETE, outboundPlanOrder.getCustomerOrderType(),
+                outboundPlanOrderTransfer.toDTO(outboundPlanOrder));
     }
 
 }

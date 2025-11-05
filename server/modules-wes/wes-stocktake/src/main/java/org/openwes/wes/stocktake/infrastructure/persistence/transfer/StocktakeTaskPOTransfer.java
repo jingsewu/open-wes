@@ -22,7 +22,7 @@ public interface StocktakeTaskPOTransfer {
 
     StocktakeTaskPO toPO(StocktakeTask stocktakeTask);
 
-    List<StocktakeTaskPO> toPOS(List<StocktakeTask> stocktakeTaskList);
+    Iterable<StocktakeTaskPO> toPOs(List<StocktakeTask> stocktakeTaskList);
 
     List<StocktakeTaskDetailPO> toDetailPOS(List<StocktakeTaskDetail> details);
 

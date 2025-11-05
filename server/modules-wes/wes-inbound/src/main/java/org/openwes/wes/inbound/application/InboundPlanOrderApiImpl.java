@@ -13,7 +13,7 @@ import org.openwes.wes.api.inbound.IInboundPlanOrderApi;
 import org.openwes.wes.api.inbound.constants.InboundPlanOrderStatusEnum;
 import org.openwes.wes.api.inbound.dto.AcceptRecordDTO;
 import org.openwes.wes.api.inbound.dto.InboundPlanOrderDTO;
-import org.openwes.wes.api.inbound.event.AcceptEvent;
+import org.openwes.wes.api.inbound.event.InboundPlanOrderAcceptedEvent;
 import org.openwes.wes.api.main.data.dto.SkuMainDataDTO;
 import org.openwes.wes.common.validator.IValidator;
 import org.openwes.wes.common.validator.ValidateResult;
@@ -77,19 +77,17 @@ public class InboundPlanOrderApiImpl implements IInboundPlanOrderApi {
         if (inboundPlanOrder != null) {
             inboundPlanOrder.accept(acceptRecord);
             inboundPlanOrderRepository.saveOrderAndDetail(inboundPlanOrder);
+        } else {
+            InboundPlanOrderAcceptedEvent.AcceptTargetContainer acceptTargetContainer = InboundPlanOrderAcceptedEvent.AcceptTargetContainer.build(acceptRecord);
+
+            InboundPlanOrderAcceptedEvent acceptEvent = new InboundPlanOrderAcceptedEvent(acceptRecord.getInboundPlanOrderId(),
+                    acceptRecord.getInboundPlanOrderDetailId(),
+                    acceptRecord.getWarehouseCode(), acceptRecord.getSkuId(),
+                    acceptRecord.getWorkStationId(), acceptRecord.getQtyAccepted(),
+                    acceptRecord.getQtyAbnormal(), acceptRecord.getBatchAttributes(), acceptTargetContainer);
+
+            DomainEventPublisher.sendAsyncDomainEvent(acceptEvent);
         }
-        DomainEventPublisher.sendAsyncDomainEvent(AcceptEvent.builder()
-                .warehouseCode(acceptRecord.getWarehouseCode())
-                .inboundPlanOrderId(acceptRecord.getInboundPlanOrderId())
-                .inboundPlanOrderDetailId(acceptRecord.getInboundPlanOrderDetailId())
-                .skuId(acceptRecord.getSkuId())
-                .workStationId(acceptRecord.getWorkStationId())
-                .targetContainerId(acceptRecord.getTargetContainerId())
-                .targetContainerCode(acceptRecord.getTargetContainerCode())
-                .targetContainerFace(acceptRecord.getTargetContainerFace())
-                .targetContainerSlotCode(acceptRecord.getTargetContainerSlotCode())
-                .targetContainerSpecCode(acceptRecord.getTargetContainerSpecCode())
-                .qtyAccepted(acceptRecord.getQtyAccepted()).build());
     }
 
     @Override

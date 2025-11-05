@@ -1,17 +1,20 @@
 package org.openwes.wes.stock.domain.entity;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.openwes.common.utils.id.OrderNoGenerator;
-import org.openwes.domain.event.DomainEventPublisher;
+import org.openwes.common.utils.id.SnowflakeUtils;
+import org.openwes.domain.event.AggregatorRoot;
 import org.openwes.wes.api.stock.constants.StockAdjustmentOrderStatusEnum;
 import org.openwes.wes.api.stock.event.StockAdjustmentOrderCreatedEvent;
 
 import java.util.List;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Slf4j
-public class StockAdjustmentOrder {
+public class StockAdjustmentOrder extends AggregatorRoot {
 
     private Long id;
     private String orderNo;
@@ -29,9 +32,10 @@ public class StockAdjustmentOrder {
         this.details = details;
         this.description = description == null ? "" : description;
         this.orderNo = OrderNoGenerator.generationStockAdjustmentOrderNo();
+        this.id = SnowflakeUtils.generateId();
         this.status = StockAdjustmentOrderStatusEnum.NEW;
 
-        DomainEventPublisher.sendAsyncDomainEvent(new StockAdjustmentOrderCreatedEvent().setOrderNo(this.orderNo));
+        this.addAsynchronousDomainEvents(new StockAdjustmentOrderCreatedEvent(this.id, this.orderNo));
     }
 
     public void adjust() {

@@ -54,7 +54,7 @@ public class PutAwayTask extends AggregatorRoot {
 
     public void complete(String locationCode) {
 
-        log.info("put away task: {} complete and location: {}", taskNo, locationCode);
+        log.info("put away task: {} complete and location: {}", this.taskNo, locationCode);
 
         if (this.taskStatus == PutAwayTaskStatusEnum.PUTTED_AWAY) {
             throw new IllegalStateException("put away task has been completed");

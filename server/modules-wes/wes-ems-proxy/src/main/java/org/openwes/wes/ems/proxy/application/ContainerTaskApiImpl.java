@@ -15,7 +15,6 @@ import org.openwes.wes.ems.proxy.domain.entity.ContainerTask;
 import org.openwes.wes.ems.proxy.domain.repository.ContainerTaskRepository;
 import org.openwes.wes.ems.proxy.domain.service.ContainerTaskService;
 import org.openwes.wes.ems.proxy.domain.transfer.ContainerTaskTransfer;
-import org.openwes.wes.ems.proxy.infrastructure.remote.WmsTaskCallbackFacade;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,7 +36,6 @@ public class ContainerTaskApiImpl implements IContainerTaskApi {
     private final ContainerTaskService containerTaskService;
     private final ContainerTaskRepository containerTaskRepository;
     private final CallbackApiFacade callbackApiFacade;
-    private final WmsTaskCallbackFacade wmsTaskCallbackFacade;
     private final ContainerTaskTransfer containerTaskTransfer;
 
     @Override
@@ -80,12 +78,14 @@ public class ContainerTaskApiImpl implements IContainerTaskApi {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void cancel(Collection<String> taskCodes) {
         List<ContainerTask> containerTasks = containerTaskRepository.findAllByTaskCodes(taskCodes);
         cancelContainerTasks(containerTasks);
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void cancel(List<Long> customerTaskIds) {
         List<ContainerTask> containerTasks = containerTaskRepository.findAllByCustomerTaskIds(customerTaskIds);
         cancelContainerTasks(containerTasks);

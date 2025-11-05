@@ -1,18 +1,21 @@
 package org.openwes.wes.stocktake.domain.entity;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.extern.slf4j.Slf4j;
+import org.openwes.domain.event.AggregatorRoot;
 import org.openwes.domain.event.DomainEventPublisher;
 import org.openwes.wes.api.stocktake.constants.StocktakeAbnormalReasonEnum;
 import org.openwes.wes.api.stocktake.constants.StocktakeRecordStatusEnum;
 import org.openwes.wes.api.stocktake.dto.StocktakeRecordSubmitDTO;
 import org.openwes.wes.api.stocktake.event.StocktakeRecordSubmitEvent;
-import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.Optional;
 
+@EqualsAndHashCode(callSuper = true)
 @Slf4j
 @Data
-public class StocktakeRecord {
+public class StocktakeRecord extends AggregatorRoot {
 
     private Long id;
 
@@ -85,9 +88,7 @@ public class StocktakeRecord {
         }
         this.stocktakeRecordStatus = StocktakeRecordStatusEnum.DONE;
 
-        DomainEventPublisher.sendAsyncDomainEvent(new StocktakeRecordSubmitEvent()
-                .setStocktakeRecordId(this.id).setStocktakeTaskDetailId(this.stocktakeTaskDetailId)
-                .setStocktakeTaskId(this.stocktakeTaskId));
+        this.addAsynchronousDomainEvents(new StocktakeRecordSubmitEvent(this.stocktakeTaskDetailId, this.stocktakeTaskId, this.id));
     }
 
     public void close() {

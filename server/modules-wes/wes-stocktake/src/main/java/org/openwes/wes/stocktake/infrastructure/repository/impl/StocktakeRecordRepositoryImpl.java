@@ -1,6 +1,7 @@
 package org.openwes.wes.stocktake.infrastructure.repository.impl;
 
 import com.google.common.collect.Lists;
+import org.openwes.domain.event.AggregatorRoot;
 import org.openwes.wes.api.stocktake.constants.StocktakeRecordStatusEnum;
 import org.openwes.wes.stocktake.domain.entity.StocktakeRecord;
 import org.openwes.wes.stocktake.domain.repository.StocktakeRecordRepository;
@@ -21,24 +22,28 @@ public class StocktakeRecordRepositoryImpl implements StocktakeRecordRepository 
     private final StocktakeRecordPOTransfer stocktakeRecordPOTransfer;
 
     @Override
-    public List<StocktakeRecord> findAllByTaskDetailId(Long stocktakeTaskDetailId) {
-        List<StocktakeRecordPO> stocktakeRecordPOs = stocktakeRecordPORepository
-                .findAllByStocktakeTaskDetailIdIn(Lists.newArrayList(stocktakeTaskDetailId));
-        return stocktakeRecordPOTransfer.toDOS(stocktakeRecordPOs);
-    }
-
-    @Override
-    public StocktakeRecord save(StocktakeRecord stocktakeRecord) {
-        return stocktakeRecordPOTransfer.toDO(
+    public void save(StocktakeRecord stocktakeRecord) {
+        stocktakeRecord.sendAndClearEvents();
+        stocktakeRecordPOTransfer.toDO(
                 stocktakeRecordPORepository.save(stocktakeRecordPOTransfer.toPO(stocktakeRecord))
         );
     }
 
     @Override
     public List<StocktakeRecord> saveAll(List<StocktakeRecord> newRecordList) {
+
+        newRecordList.forEach(AggregatorRoot::sendAndClearEvents);
+
         return stocktakeRecordPOTransfer.toDOS(
                 stocktakeRecordPORepository.saveAll(stocktakeRecordPOTransfer.toPOS(newRecordList))
         );
+    }
+
+    @Override
+    public List<StocktakeRecord> findAllByTaskDetailId(Long stocktakeTaskDetailId) {
+        List<StocktakeRecordPO> stocktakeRecordPOs = stocktakeRecordPORepository
+                .findAllByStocktakeTaskDetailIdIn(Lists.newArrayList(stocktakeTaskDetailId));
+        return stocktakeRecordPOTransfer.toDOS(stocktakeRecordPOs);
     }
 
     @Override

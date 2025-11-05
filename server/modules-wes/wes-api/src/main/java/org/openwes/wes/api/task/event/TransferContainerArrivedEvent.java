@@ -1,19 +1,22 @@
 package org.openwes.wes.api.task.event;
 
-import org.openwes.domain.event.api.DomainEvent;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import org.openwes.domain.event.api.DomainEvent;
 
 import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
 @Data
+@NoArgsConstructor
 public class TransferContainerArrivedEvent extends DomainEvent {
 
-    @NotEmpty
+    @NotNull
     private Long warehouseAreaId;
 
     @NotEmpty

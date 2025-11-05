@@ -7,6 +7,7 @@ import org.openwes.wes.stock.infrastructure.persistence.mapper.SkuBatchStockPORe
 import org.openwes.wes.stock.infrastructure.persistence.po.SkuBatchStockPO;
 import org.openwes.wes.stock.infrastructure.persistence.transfer.SkuBatchStockPOTransfer;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
@@ -25,6 +26,7 @@ public class SkuBatchStockRepositoryImpl implements SkuBatchStockRepository {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public List<SkuBatchStock> saveAll(List<SkuBatchStock> skuBatchStocks) {
         return skuBatchStockPOTransfer.toDOs(skuBatchStockPORepository.saveAll(skuBatchStockPOTransfer.toPOs(skuBatchStocks)));
     }

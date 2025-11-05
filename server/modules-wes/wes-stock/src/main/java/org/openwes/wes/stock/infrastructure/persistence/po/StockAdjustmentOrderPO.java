@@ -1,13 +1,11 @@
 package org.openwes.wes.stock.infrastructure.persistence.po;
 
-import org.openwes.common.utils.base.UpdateUserPO;
-import org.openwes.common.utils.id.IdGenerator;
-import org.openwes.wes.api.stock.constants.StockAdjustmentOrderStatusEnum;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.GenericGenerator;
+import org.openwes.common.utils.base.UpdateUserPO;
+import org.openwes.wes.api.stock.constants.StockAdjustmentOrderStatusEnum;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Data
@@ -23,8 +21,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class StockAdjustmentOrderPO extends UpdateUserPO {
 
     @Id
-    @GeneratedValue(generator = "databaseIdGenerator")
-    @GenericGenerator(name = "databaseIdGenerator", type = IdGenerator.class)
     private Long id;
 
     @Column(nullable = false, columnDefinition = "varchar(64) default '' COMMENT '仓库'")

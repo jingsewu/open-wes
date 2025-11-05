@@ -6,8 +6,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.openwes.wes.api.outbound.constants.OutboundWaveStatusEnum;
 import org.openwes.wes.api.outbound.constants.PickingOrderStatusEnum;
-import org.openwes.wes.api.outbound.event.NewOutboundWaveEvent;
-import org.openwes.wes.api.outbound.event.PickingOrderCompleteEvent;
+import org.openwes.wes.api.outbound.event.OutboundWaveCreatedEvent;
+import org.openwes.wes.api.outbound.event.PickingOrderCompletionEvent;
 import org.openwes.wes.outbound.domain.aggregate.PickingOrderWaveAggregate;
 import org.openwes.wes.outbound.domain.entity.OutboundWave;
 import org.openwes.wes.outbound.domain.entity.PickingOrder;
@@ -27,7 +27,7 @@ public class OutboundWaveSubscribe {
     private final PickingOrderRepository pickingOrderRepository;
 
     @Subscribe
-    public void onCreateEvent(@Valid NewOutboundWaveEvent event) {
+    public void onCreateEvent(@Valid OutboundWaveCreatedEvent event) {
         OutboundWave outboundWave = outboundWaveRepository.findByWaveNo(event.getWaveNo());
         if (outboundWave.getWaveStatus() != OutboundWaveStatusEnum.NEW) {
             return;
@@ -36,7 +36,7 @@ public class OutboundWaveSubscribe {
     }
 
     @Subscribe
-    public void onPickingOrderCompleteEvent(@Valid PickingOrderCompleteEvent event) {
+    public void onPickingOrderCompleteEvent(@Valid PickingOrderCompletionEvent event) {
         PickingOrder pickingOrder = pickingOrderRepository.findById(event.getAggregatorId());
         String waveNo = pickingOrder.getWaveNo();
 

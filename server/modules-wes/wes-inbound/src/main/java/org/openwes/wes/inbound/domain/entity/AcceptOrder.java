@@ -11,6 +11,7 @@ import org.openwes.domain.event.AggregatorRoot;
 import org.openwes.wes.api.inbound.constants.AcceptMethodEnum;
 import org.openwes.wes.api.inbound.constants.AcceptOrderStatusEnum;
 import org.openwes.wes.api.inbound.constants.AcceptTypeEnum;
+import org.openwes.wes.api.inbound.event.AcceptOrderCompletionEvent;
 
 import java.util.List;
 
@@ -71,7 +72,9 @@ public class AcceptOrder extends AggregatorRoot {
         } else {
             this.details.add(acceptOrderDetail);
         }
-        calculateTotal();
+
+        //TODO 压力测试临时注释，防止并发报错
+//        calculateTotal();
     }
 
     public void complete() {
@@ -83,6 +86,8 @@ public class AcceptOrder extends AggregatorRoot {
         }
         this.acceptOrderStatus = AcceptOrderStatusEnum.COMPLETE;
         this.completeTime = System.currentTimeMillis();
+
+        this.addAsynchronousDomainEvents(new AcceptOrderCompletionEvent(this.id));
     }
 
     public void cancel(Long acceptOrderDetailId) {

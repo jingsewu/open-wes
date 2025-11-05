@@ -11,11 +11,11 @@ import org.openwes.wes.api.basic.IWarehouseAreaApi;
 import org.openwes.wes.api.basic.constants.WarehouseAreaWorkTypeEnum;
 import org.openwes.wes.api.basic.dto.WarehouseAreaDTO;
 import org.openwes.wes.api.outbound.IPickingOrderApi;
-import org.openwes.wes.api.outbound.event.OutboundPlanOrderImprovePriorityEvent;
-import org.openwes.wes.api.task.event.OperationTaskAbnormalEvent;
-import org.openwes.wes.api.outbound.event.PickingOrderCompleteEvent;
+import org.openwes.wes.api.outbound.event.OutboundPlanOrderImprovedPriorityEvent;
+import org.openwes.wes.api.outbound.event.PickingOrderRemindSealContainerEvent;
 import org.openwes.wes.api.task.ITaskApi;
 import org.openwes.wes.api.task.dto.OperationTaskPickingDTO;
+import org.openwes.wes.api.task.event.OperationTaskAbnormalEvent;
 import org.openwes.wes.api.task.event.OperationTaskPickedEvent;
 import org.openwes.wes.outbound.domain.entity.PickingOrder;
 import org.openwes.wes.outbound.domain.repository.PickingOrderRepository;
@@ -45,31 +45,29 @@ public class PickingOrderSubscribe {
     }
 
     @Subscribe
-    public void onPickingAbnormalEvent(@Valid OperationTaskAbnormalEvent event) {
+    public void onOperationTaskAbnormalEvent(@Valid OperationTaskAbnormalEvent event) {
 
-        OperationTaskAbnormalEvent.OperationTaskAbnormalDetail detail = event.getDetail();
-        PickingOrder pickingOrder = pickingOrderRepository.findById(detail.getPickingOrderId());
-        pickingOrder.reportAbnormal(detail.getAbnormalQty(), detail.getPickingOrderDetailId());
+        PickingOrder pickingOrder = pickingOrderRepository.findById(event.getPickingOrderId());
+        pickingOrder.reportAbnormal(event.getAbnormalQty(), event.getPickingOrderDetailId());
 
         pickingOrderRepository.saveOrderAndDetail(pickingOrder);
 
-        pickingOrderApi.reallocate(Lists.newArrayList(detail.getPickingOrderDetailId()));
+        pickingOrderApi.reallocate(Lists.newArrayList(event.getPickingOrderDetailId()));
     }
 
     @Subscribe
-    public void onCompleteEvent(@Valid PickingOrderCompleteEvent event) {
-        PickingOrder pickingOrder = pickingOrderRepository.findById(event.getAggregatorId());
+    public void onPickingOrderRemindSealContainerEvent(@Valid PickingOrderRemindSealContainerEvent event) {
 
-        WarehouseAreaDTO warehouseArea = warehouseAreaApi.getById(pickingOrder.getWarehouseAreaId());
+        WarehouseAreaDTO warehouseArea = warehouseAreaApi.getById(event.getWarehouseAreaId());
         if (WarehouseAreaWorkTypeEnum.ROBOT == warehouseArea.getWarehouseAreaWorkType()) {
-            putWallApi.remindToSealContainer(pickingOrder.getId(), pickingOrder.getAssignedStationSlot());
+            putWallApi.remindToSealContainer(event.getAggregatorId(), event.getAssignedStationSlots());
         } else if (WarehouseAreaWorkTypeEnum.MANUAL == warehouseArea.getWarehouseAreaWorkType()) {
-            taskApi.sealContainer(pickingOrder.getId());
+            taskApi.sealContainer(event.getAggregatorId());
         }
     }
 
     @Subscribe
-    public void onImprovePriority(OutboundPlanOrderImprovePriorityEvent event) {
+    public void onImprovePriority(OutboundPlanOrderImprovedPriorityEvent event) {
         List<PickingOrder> pickingOrders = pickingOrderRepository.findAllByOutboundPlanOrderId(event.getAggregatorId());
 
         if (ObjectUtils.isEmpty(pickingOrders)) {

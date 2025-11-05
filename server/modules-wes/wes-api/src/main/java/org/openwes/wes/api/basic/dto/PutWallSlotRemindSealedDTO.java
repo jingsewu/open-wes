@@ -8,5 +8,6 @@ import lombok.experimental.Accessors;
 public class PutWallSlotRemindSealedDTO {
     private Long workStationId;
     private String putWallSlotCode;
+    private Long pickingOrderId;
     private String ptlTag;
 }

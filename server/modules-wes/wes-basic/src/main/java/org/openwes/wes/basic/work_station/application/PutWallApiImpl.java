@@ -8,8 +8,8 @@ import org.openwes.common.utils.validate.ValidationSequence;
 import org.openwes.domain.event.DomainEventPublisher;
 import org.openwes.wes.api.basic.IPutWallApi;
 import org.openwes.wes.api.basic.dto.*;
-import org.openwes.wes.api.basic.event.AssignOrderEvent;
-import org.openwes.wes.api.basic.event.RemindSealContainerEvent;
+import org.openwes.wes.api.basic.event.PutWallAssignOrderEvent;
+import org.openwes.wes.api.basic.event.PutWallRemindSealContainerEvent;
 import org.openwes.wes.api.task.dto.BindContainerDTO;
 import org.openwes.wes.api.task.dto.UnBindContainerDTO;
 import org.openwes.wes.basic.work_station.domain.aggregate.PutWallAggregate;
@@ -111,7 +111,7 @@ public class PutWallApiImpl implements IPutWallApi {
                         .setPutWallSlotCode(v.getPutWallSlotCode())
                         .setPtlTag(v.getPtlTag())).toList();
 
-        DomainEventPublisher.sendAsyncDomainEvent(new AssignOrderEvent().setDetails(orderDetails));
+        DomainEventPublisher.sendAsyncDomainEvent(new PutWallAssignOrderEvent().setDetails(orderDetails));
     }
 
     @Override
@@ -164,9 +164,10 @@ public class PutWallApiImpl implements IPutWallApi {
                 .map(k -> new PutWallSlotRemindSealedDTO()
                         .setPutWallSlotCode(k.getPutWallSlotCode())
                         .setWorkStationId(k.getWorkStationId())
+                        .setPickingOrderId(k.getPickingOrderId())
                         .setPtlTag(k.getPtlTag())).toList();
 
-        DomainEventPublisher.sendAsyncDomainEvent(new RemindSealContainerEvent().setDetails(sealContainerDetails));
+        DomainEventPublisher.sendAsyncDomainEvent(new PutWallRemindSealContainerEvent().setDetails(sealContainerDetails));
     }
 
     @Override

@@ -2,8 +2,6 @@ package org.openwes.common.utils.constants;
 
 public class RedisConstants {
 
-
-
     private RedisConstants() {
         throw new IllegalStateException("RedisConstants class");
     }
@@ -65,6 +63,8 @@ public class RedisConstants {
      */
     public static final String INBOUND_PLAN_ORDER_ADD_LOCK = "wms:inbound:plan:order:add:lock";
     public static final String INBOUND_ACCEPT_ADD_LOCK = "wms:inbound:accept:order:add:lock";
+    public static final String ACCEPT_ORDER_COMPLETE_LOCK = "wms:accept:order:complete:lock";
+
 
     /**
      * Outbound module lock

@@ -1,5 +1,6 @@
 package org.openwes.wes.api.basic.event;
 
+import lombok.NoArgsConstructor;
 import org.openwes.domain.event.api.DomainEvent;
 import org.openwes.wes.api.basic.dto.PutWallSlotRemindSealedDTO;
 import lombok.Data;
@@ -11,7 +12,8 @@ import java.util.List;
 @Data
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = true)
-public class RemindSealContainerEvent extends DomainEvent {
+@NoArgsConstructor
+public class PutWallRemindSealContainerEvent extends DomainEvent {
 
     private List<PutWallSlotRemindSealedDTO> details;
 

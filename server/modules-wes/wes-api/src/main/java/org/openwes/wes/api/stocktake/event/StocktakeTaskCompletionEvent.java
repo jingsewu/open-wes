@@ -11,21 +11,17 @@ import org.openwes.domain.event.api.DomainEvent;
 @Data
 @Accessors(chain = true)
 @NoArgsConstructor
-public class StocktakeRecordSubmitEvent extends DomainEvent {
-
-    @NotNull
-    private Long stocktakeTaskDetailId;
+public class StocktakeTaskCompletionEvent extends DomainEvent {
 
     @NotNull
     private Long stocktakeTaskId;
 
     @NotNull
-    private Long stocktakeRecordId;
+    private Long stocktakeOrderId;
 
-    public StocktakeRecordSubmitEvent(Long stocktakeTaskDetailId, Long stocktakeTaskId, Long stocktakeRecordId) {
-        super(stocktakeRecordId);
-        this.stocktakeTaskDetailId = stocktakeTaskDetailId;
+    public StocktakeTaskCompletionEvent(Long stocktakeTaskId, Long stockTakeOrderId) {
+        super(stocktakeTaskId);
         this.stocktakeTaskId = stocktakeTaskId;
-        this.stocktakeRecordId = stocktakeRecordId;
+        this.stocktakeOrderId = stockTakeOrderId;
     }
 }

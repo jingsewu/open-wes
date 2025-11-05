@@ -7,10 +7,10 @@ import org.openwes.wes.stock.domain.repository.ContainerStockRepository;
 import org.openwes.wes.stock.infrastructure.persistence.mapper.ContainerStockPORepository;
 import org.openwes.wes.stock.infrastructure.persistence.po.ContainerStockPO;
 import org.openwes.wes.stock.infrastructure.persistence.transfer.ContainerStockPOTransfer;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
@@ -28,6 +28,7 @@ public class ContainerStockRepositoryImpl implements ContainerStockRepository {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void saveAll(List<ContainerStock> containerStocks) {
         containerStockPORepository.saveAll(containerStockPOTransfer.toPOs(containerStocks));
     }
