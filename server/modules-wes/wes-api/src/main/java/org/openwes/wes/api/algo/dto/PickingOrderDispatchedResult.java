@@ -16,23 +16,16 @@ public class PickingOrderDispatchedResult {
 
     private List<PickingOrderAssignedResult> assignedResults;
 
-    private List<OperationTaskDTO> operationTaskDTOS;
-
     public void validate(PickingOrderHandlerContext pickingOrderHandlerContext) {
-
-        if (ObjectUtils.isEmpty(operationTaskDTOS)) {
-            return;
-        }
 
         Map<Long, PickingOrderDTO> pickingOrderDTOMap = pickingOrderHandlerContext.getPickingOrders().stream().collect(Collectors.toMap(PickingOrderDTO::getId, v -> v));
 
-        operationTaskDTOS.stream().collect(Collectors.groupingBy(OperationTaskDTO::getOrderId))
-                .forEach((pickingOrderId, pickingOrderTaskDTOS) -> {
-                    PickingOrderDTO pickingOrderDTO = pickingOrderDTOMap.get(pickingOrderId);
-                    if (!orderRequirementFullFilled(pickingOrderDTO, pickingOrderTaskDTOS)) {
-                        throw new IllegalStateException("order requirement not full filled");
-                    }
-                });
+        assignedResults.forEach(assignedResult -> {
+            PickingOrderDTO pickingOrderDTO = pickingOrderDTOMap.get(assignedResult.getPickingOrderId());
+            if (!orderRequirementFullFilled(pickingOrderDTO, assignedResult.getOperationTasks())) {
+                throw new IllegalStateException("order requirement not full filled");
+            }
+        });
 
     }
 

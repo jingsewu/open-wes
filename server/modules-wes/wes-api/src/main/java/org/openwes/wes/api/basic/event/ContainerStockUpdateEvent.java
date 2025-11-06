@@ -18,4 +18,10 @@ public class ContainerStockUpdateEvent extends DomainEvent {
 
     private String containerCode;
     private String warehouseCode;
+
+    public ContainerStockUpdateEvent(Long containerId, String containerCode, String warehouseCode) {
+        super(containerId);
+        this.containerCode = containerCode;
+        this.warehouseCode = warehouseCode;
+    }
 }

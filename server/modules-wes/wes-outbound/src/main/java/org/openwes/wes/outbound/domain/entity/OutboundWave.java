@@ -36,7 +36,8 @@ public class OutboundWave extends AggregatorRoot {
         this.outboundPlanOrderIds = orders.stream().map(OutboundPlanOrder::getId).toList();
         this.waveStatus = OutboundWaveStatusEnum.NEW;
 
-        this.addLifecycleEvent(new OutboundWaveCreatedEvent(this.id, this.waveNo));
+        log.info("outbound wave id: {} waveNo: {} new.", this.id, this.waveNo);
+        this.addAsynchronousDomainEvents(new OutboundWaveCreatedEvent(this.id, this.waveNo));
     }
 
     public void process() {

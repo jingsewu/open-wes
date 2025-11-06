@@ -105,13 +105,6 @@ public class PutWallApiImpl implements IPutWallApi {
         }));
         putWallSlotRepository.saveAll(updatePutWallSlots);
 
-        List<PutWallSlotAssignedDTO> orderDetails = putWallSlots.stream().map(v ->
-                new PutWallSlotAssignedDTO()
-                        .setWorkStationId(v.getWorkStationId())
-                        .setPutWallSlotCode(v.getPutWallSlotCode())
-                        .setPtlTag(v.getPtlTag())).toList();
-
-        DomainEventPublisher.sendAsyncDomainEvent(new PutWallAssignOrderEvent().setDetails(orderDetails));
     }
 
     @Override
@@ -160,14 +153,6 @@ public class PutWallApiImpl implements IPutWallApi {
         putWallSlots.forEach(putWallSlot -> putWallSlot.remindToSealContainer(pickingOrderId));
         putWallSlotRepository.saveAll(putWallSlots);
 
-        List<PutWallSlotRemindSealedDTO> sealContainerDetails = putWallSlots.stream()
-                .map(k -> new PutWallSlotRemindSealedDTO()
-                        .setPutWallSlotCode(k.getPutWallSlotCode())
-                        .setWorkStationId(k.getWorkStationId())
-                        .setPickingOrderId(k.getPickingOrderId())
-                        .setPtlTag(k.getPtlTag())).toList();
-
-        DomainEventPublisher.sendAsyncDomainEvent(new PutWallRemindSealContainerEvent().setDetails(sealContainerDetails));
     }
 
     @Override

@@ -47,28 +47,26 @@ public class PickingOrderTaskAggregate {
     private final RedisUtils redisUtils;
 
     @Transactional(rollbackFor = Exception.class)
-    public void dispatchPickingOrders(List<OperationTaskDTO> operationTaskDTOS, List<PickingOrder> pickingOrders,
-                                      List<PickingOrderAssignedResult> pickingOrderAssignedResults) {
+    public void dispatchPickingOrders(List<OperationTaskDTO> operationTaskDTOS, PickingOrder pickingOrder,
+                                      Map<Long, String> assignedSlots) {
 
         List<OperationTaskDTO> operationTasks = this.createOperationTasks(operationTaskDTOS);
 
-        if (pickingOrderAssignedResults == null) {
-            pickingOrders.forEach(v -> v.dispatch(null));
-            pickingOrderRepository.saveAllOrders(pickingOrders);
+        if (assignedSlots == null) {
+            pickingOrder.dispatch(null);
+            pickingOrderRepository.saveOrder(pickingOrder);
             return;
         }
 
-        Map<Long, Map<Long, String>> assignedMap = pickingOrderAssignedResults.stream()
-                .collect(Collectors.toMap(PickingOrderAssignedResult::getPickingOrderId, v -> MapUtils.emptyIfNull(v.getAssignedStationSlot())));
-        pickingOrders.forEach(v -> v.dispatch(assignedMap.get(v.getId())));
-        pickingOrderRepository.saveAllOrders(pickingOrders);
+        pickingOrder.dispatch(assignedSlots);
+        pickingOrderRepository.saveOrder(pickingOrder);
 
         List<AssignOrdersDTO.AssignDetail> assignDetails = Lists.newArrayList();
-        pickingOrders.forEach(v -> v.getAssignedStationSlot().forEach((key, value) -> {
+        assignedSlots.forEach((key, value) -> {
             AssignOrdersDTO.AssignDetail assignDetail = new AssignOrdersDTO.AssignDetail().
-                    setOrderId(v.getId()).setPutWallSlotCode(value).setWorkStationId(key);
+                    setOrderId(pickingOrder.getId()).setPutWallSlotCode(value).setWorkStationId(key);
             assignDetails.add(assignDetail);
-        }));
+        });
 
         if (CollectionUtils.isNotEmpty(assignDetails)) {
             putWallApi.assignOrders(new AssignOrdersDTO().setAssignDetails(assignDetails));

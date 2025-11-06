@@ -6,6 +6,9 @@ import jakarta.persistence.OptimisticLockException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.openwes.common.utils.constants.RedisConstants;
+import org.openwes.distribute.lock.DistributeLock;
+import org.openwes.distribute.lock.impl.RedisDistributeLock;
 import org.openwes.wes.api.basic.event.ContainerLocationUpdateEvent;
 import org.openwes.wes.api.basic.event.ContainerStockUpdateEvent;
 import org.openwes.wes.api.stock.IStockApi;
@@ -19,6 +22,8 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Component
@@ -27,12 +32,17 @@ public class ContainerEventSubscriber {
 
     private final ContainerRepository containerRepository;
     private final IStockApi stockApi;
+    private final DistributeLock distributeLock;
 
     @Subscribe
-    @Retryable(retryFor = {OptimisticLockingFailureException.class, ObjectOptimisticLockingFailureException.class}, maxAttempts = 3, backoff = @Backoff(delay = 200))
     public void onContainerStockUpdate(@Valid ContainerStockUpdateEvent event) {
         log.info("receive container stock update event: {}", event);
 
+        boolean acquireLock = distributeLock.acquireLock(RedisConstants.CONTAINER_STOCK_UPDATE_LOCK
+                + event.getContainerCode() + ":" + event.getWarehouseCode(), 0);
+        if (!acquireLock) {
+            return;
+        }
         List<ContainerStockDTO> containerStocks = stockApi.getContainerStocks(
                 Lists.newArrayList(event.getContainerCode()), event.getWarehouseCode());
 
@@ -52,7 +62,8 @@ public class ContainerEventSubscriber {
 
         Container container = containerRepository.findByContainerCode(event.getContainerCode(), event.getWarehouseCode());
         if (container == null) {
-            log.warn("no container found with containerCode: {}, warehouseCode: {} when update container location", event.getContainerCode(), event.getWarehouseCode());
+            log.warn("no container found with containerCode: {}, warehouseCode: {} when update container location",
+                    event.getContainerCode(), event.getWarehouseCode());
             return;
         }
 

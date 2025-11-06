@@ -1,5 +1,7 @@
 package org.openwes.wes.inbound.infrastructure.repository.impl;
 
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.openwes.wes.api.inbound.constants.AcceptOrderStatusEnum;
 import org.openwes.wes.inbound.domain.entity.AcceptOrder;
 import org.openwes.wes.inbound.domain.entity.AcceptOrderDetail;
@@ -9,8 +11,6 @@ import org.openwes.wes.inbound.infrastructure.persistence.mapper.AcceptOrderPORe
 import org.openwes.wes.inbound.infrastructure.persistence.po.AcceptOrderDetailPO;
 import org.openwes.wes.inbound.infrastructure.persistence.po.AcceptOrderPO;
 import org.openwes.wes.inbound.infrastructure.persistence.transfer.AcceptOrderPOTransfer;
-import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +30,7 @@ public class AcceptOrderRepositoryImpl implements AcceptOrderRepository {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveOrderAndDetail(AcceptOrder acceptOrder) {
+        acceptOrder.sendAndClearEvents();
         AcceptOrderPO acceptOrderPO = acceptOrderPORepository.save(acceptOrderPOTransfer.toPO(acceptOrder));
         List<AcceptOrderDetail> modifiedDetails = acceptOrder.getDetails().stream().filter(AcceptOrderDetail::isModified).toList();
         modifiedDetails.forEach(v -> v.setAcceptOrderId(acceptOrderPO.getId()));
@@ -38,6 +39,7 @@ public class AcceptOrderRepositoryImpl implements AcceptOrderRepository {
 
     @Override
     public void saveOrder(AcceptOrder acceptOrder) {
+        acceptOrder.sendAndClearEvents();
         acceptOrderPORepository.save(acceptOrderPOTransfer.toPO(acceptOrder));
     }
 

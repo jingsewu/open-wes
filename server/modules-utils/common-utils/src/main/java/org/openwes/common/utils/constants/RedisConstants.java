@@ -30,6 +30,7 @@ public class RedisConstants {
     public static final String OUTBOUND_WAVE_SCHEDULE_EXECUTE_LOCK = "distributed:execute:lock:outbound_wave";
     public static final String PICKING_ORDER_DISPATCH_SCHEDULE_EXECUTE_LOCK = "distributed:execute:lock:picking_order_dispatch";
     public static final String TRANSFER_CONTAINER_UNLOCK_SCHEDULE_EXECUTE_LOCK = "distributed:execute:lock:transfer_container_unlock";
+    public static final String CONTAINER_STOCK_UPDATE_LOCK = "distributed:execute:lock:container:stock:update";
 
     /**
      * Common module data

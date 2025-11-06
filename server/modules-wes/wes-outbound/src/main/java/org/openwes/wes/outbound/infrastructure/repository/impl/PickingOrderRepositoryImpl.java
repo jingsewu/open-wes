@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,25 +31,35 @@ public class PickingOrderRepositoryImpl implements PickingOrderRepository {
     private final PickingOrderDetailPOTransfer pickingOrderDetailPOTransfer;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void saveOrderAndDetail(PickingOrder pickingOrder) {
-        PickingOrderPO savedPickingOrderPO = pickingOrderPORepository.save(pickingOrderPOTransfer.toPO(pickingOrder));
-        pickingOrderDetailPORepository.saveAll(pickingOrderDetailPOTransfer
-                .toPOs(pickingOrder.getDetails().stream().filter(PickingOrderDetail::isModified).toList()));
-
         pickingOrder.sendAndClearEvents();
 
-        pickingOrderPOTransfer.toDO(savedPickingOrderPO);
+        List<PickingOrderDetail> details = pickingOrder.getDetails().stream().filter(PickingOrderDetail::isModified).toList();
+        pickingOrderPORepository.save(pickingOrderPOTransfer.toPO(pickingOrder));
+        pickingOrderDetailPORepository.saveAll(pickingOrderDetailPOTransfer.toPOs(details));
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void saveOrder(PickingOrder pickingOrder) {
+        pickingOrder.sendAndClearEvents();
+        pickingOrderPORepository.save(pickingOrderPOTransfer.toPO(pickingOrder));
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
     public void saveAllOrders(List<PickingOrder> pickingOrders) {
-        pickingOrderPORepository.saveAll(pickingOrderPOTransfer.toPOs(pickingOrders));
         pickingOrders.forEach(PickingOrder::sendAndClearEvents);
+
+        pickingOrderPORepository.saveAll(pickingOrderPOTransfer.toPOs(pickingOrders));
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public List<PickingOrder> saveAllOrderAndDetails(List<PickingOrder> pickingOrders) {
+        pickingOrders.forEach(PickingOrder::sendAndClearEvents);
+
         List<PickingOrderPO> pickingOrderPOS = pickingOrderPORepository
                 .saveAll(pickingOrderPOTransfer.toPOs(pickingOrders));
 
@@ -58,9 +67,6 @@ public class PickingOrderRepositoryImpl implements PickingOrderRepository {
                 .flatMap(v -> v.getDetails().stream().filter(PickingOrderDetail::isModified))
                 .toList();
         pickingOrderDetailPORepository.saveAll(pickingOrderDetailPOTransfer.toPOs(pickingOrderDetails));
-
-        pickingOrders.forEach(PickingOrder::sendAndClearEvents);
-
         return pickingOrderPOTransfer.toDOs(pickingOrderPOS);
     }
 

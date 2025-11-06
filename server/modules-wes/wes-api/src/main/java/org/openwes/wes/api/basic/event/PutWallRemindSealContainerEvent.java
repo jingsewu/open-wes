@@ -15,6 +15,20 @@ import java.util.List;
 @NoArgsConstructor
 public class PutWallRemindSealContainerEvent extends DomainEvent {
 
-    private List<PutWallSlotRemindSealedDTO> details;
+    private Long putWallSlotId;
+    private Long workStationId;
+    private String putWallSlotCode;
+    private Long pickingOrderId;
+    private String ptlTag;
+
+    public PutWallRemindSealContainerEvent(Long putWallSlotId,Long workStationId,
+                                           String putWallSlotCode,Long pickingOrderId,String ptlTag) {
+        super(putWallSlotId);
+        this.pickingOrderId = pickingOrderId;
+        this.putWallSlotId = putWallSlotId;
+        this.putWallSlotCode = putWallSlotCode;
+        this.workStationId = workStationId;
+        this.ptlTag = ptlTag;
+    }
 
 }

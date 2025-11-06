@@ -131,7 +131,12 @@ public class RobotAreaPickingOrderAlgoApiImpl implements IPickingOrderAlgoApi {
 
             List<OperationTaskDTO> operationTaskDTOS = allocateStocks(pickingOrderHandlerContext);
 
-            return new PickingOrderDispatchedResult().setAssignedResults(pickingOrderAssignedResults).setOperationTaskDTOS(operationTaskDTOS);
+            for (PickingOrderAssignedResult pickingOrderAssignedResult : pickingOrderAssignedResults) {
+                pickingOrderAssignedResult.setOperationTasks(operationTaskDTOS.stream()
+                        .filter(v -> v.getOrderId().equals(pickingOrderAssignedResult.getPickingOrderId())).toList());
+            }
+
+            return new PickingOrderDispatchedResult().setAssignedResults(pickingOrderAssignedResults);
         }
 
         return null;

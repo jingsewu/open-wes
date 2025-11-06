@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.openwes.domain.event.DomainEventPublisher;
 import org.openwes.wes.api.basic.event.ContainerStockUpdateEvent;
+import org.openwes.wes.api.stock.dto.StockCreateDTO;
 import org.openwes.wes.api.stock.dto.StockTransferDTO;
 import org.openwes.wes.api.stock.event.StockClearEvent;
 import org.openwes.wes.api.stock.event.StockCreateEvent;
@@ -50,10 +51,9 @@ public class StockEventSubscriber {
             skuBatchContainerStockAggregate.transferStock(stockTransferDTO, containerStock, event.getEventId());
         }
 
-        DomainEventPublisher.sendAsyncDomainEvent(new ContainerStockUpdateEvent()
-                .setContainerCode(containerStock.getContainerCode())
-                .setWarehouseCode(containerStock.getWarehouseCode())
-        );
+        ContainerStockUpdateEvent containerStockUpdateEvent = new ContainerStockUpdateEvent(
+                containerStock.getContainerId(), containerStock.getContainerCode(), containerStock.getWarehouseCode());
+        DomainEventPublisher.sendAsyncDomainEvent(containerStockUpdateEvent);
     }
 
     /**
@@ -70,10 +70,11 @@ public class StockEventSubscriber {
 
         skuBatchContainerStockAggregate.createStock(event.getStockCreateDTO(), event.getEventId());
 
-        DomainEventPublisher.sendAsyncDomainEvent(new ContainerStockUpdateEvent()
-                .setContainerCode(event.getStockCreateDTO().getTargetContainerCode())
-                .setWarehouseCode(event.getStockCreateDTO().getWarehouseCode())
-        );
+        StockCreateDTO stockCreateDTO = event.getStockCreateDTO();
+
+        ContainerStockUpdateEvent containerStockUpdateEvent = new ContainerStockUpdateEvent(
+                stockCreateDTO.getTargetContainerId(), stockCreateDTO.getTargetContainerCode(), stockCreateDTO.getWarehouseCode());
+        DomainEventPublisher.sendAsyncDomainEvent(containerStockUpdateEvent);
     }
 
     @Subscribe

@@ -1,12 +1,17 @@
 package org.openwes.wes.basic.work_station.domain.entity;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
+import org.openwes.domain.event.AggregatorRoot;
 import org.openwes.wes.api.basic.constants.PutWallSlotStatusEnum;
+import org.openwes.wes.api.basic.event.PutWallAssignOrderEvent;
+import org.openwes.wes.api.basic.event.PutWallRemindSealContainerEvent;
 
+@EqualsAndHashCode(callSuper = true)
 @Slf4j
 @Data
-public class PutWallSlot {
+public class PutWallSlot extends AggregatorRoot {
 
     private Long id;
     private Long workStationId;
@@ -58,6 +63,8 @@ public class PutWallSlot {
 
         this.pickingOrderId = orderId;
         this.putWallSlotStatus = PutWallSlotStatusEnum.WAITING_BINDING;
+
+        this.addSynchronizationEvents(new PutWallAssignOrderEvent(this.id, orderId, this.putWallCode, this.workStationId, this.putWallSlotCode, this.ptlTag));
     }
 
     public void bindContainer(String containerCode, Long transferContainerRecordId) {
@@ -104,6 +111,9 @@ public class PutWallSlot {
         }
 
         this.putWallSlotStatus = PutWallSlotStatusEnum.WAITING_SEAL;
+
+        this.addSynchronizationEvents(new PutWallRemindSealContainerEvent(this.id, this.workStationId, this.putWallSlotCode,
+                pickingOrderId, this.ptlTag));
     }
 
     public void splitContainer() {

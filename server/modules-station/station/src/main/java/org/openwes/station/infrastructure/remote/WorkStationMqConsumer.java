@@ -2,7 +2,6 @@ package org.openwes.station.infrastructure.remote;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.openwes.common.utils.base.BaseWebsocketMessage;
 import org.openwes.common.utils.constants.RedisConstants;
 import org.openwes.common.utils.utils.JsonUtils;
@@ -15,16 +14,14 @@ import org.openwes.station.controller.websocket.controller.StationWebSocketContr
 import org.openwes.station.domain.entity.WorkStationCache;
 import org.openwes.station.domain.repository.WorkStationCacheRepository;
 import org.openwes.station.domain.service.WorkStationService;
-import org.openwes.wes.api.basic.dto.PutWallSlotAssignedDTO;
-import org.openwes.wes.api.basic.dto.PutWallSlotRemindSealedDTO;
 import org.openwes.wes.api.basic.dto.WorkStationConfigDTO;
+import org.openwes.wes.api.basic.event.PutWallAssignOrderEvent;
+import org.openwes.wes.api.basic.event.PutWallRemindSealContainerEvent;
 import org.openwes.wes.api.ems.proxy.dto.ContainerArrivedEvent;
 import org.openwes.wes.api.print.dto.PrintContentDTO;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -68,43 +65,37 @@ public class WorkStationMqConsumer<T extends WorkStationCache> {
     }
 
     @RedisListener(topic = RedisConstants.STATION_LISTEN_ORDER_ASSIGNED, type = List.class)
-    public void listenOrderAssigned(String topic, List<PutWallSlotAssignedDTO> putWallSlotDTOS) {
+    public void listenOrderAssigned(String topic, PutWallAssignOrderEvent event) {
 
-        if (CollectionUtils.isEmpty(putWallSlotDTOS)) {
+        if (event == null) {
             return;
         }
 
-        Map<Long, List<PutWallSlotAssignedDTO>> stationCodeMap = putWallSlotDTOS.stream().collect(Collectors.groupingBy(PutWallSlotAssignedDTO::getWorkStationId));
+        WorkStationCache workStation = workStationService.getWorkStation(event.getWorkStationId());
+        if (workStation == null) {
+            return;
+        }
 
-        stationCodeMap.forEach((workStationId, values) -> {
-            WorkStationCache workStation = workStationService.getWorkStation(workStationId);
-            if (workStation == null) {
-                return;
-            }
+        ptlService.reminderBind(event.getWorkStationId(), event.getPtlTag());
 
-            values.forEach(v -> ptlService.reminderBind(workStationId, v.getPtlTag()));
-
-            sseMessageListenerUtils.noticeWorkStationVOChanged(workStationId);
-        });
+        sseMessageListenerUtils.noticeWorkStationVOChanged(event.getWorkStationId());
     }
 
     @RedisListener(topic = RedisConstants.STATION_LISTEN_REMIND_TO_SEAL_CONTAINER)
-    public void listenRemindToSealContainer(String topic, List<PutWallSlotRemindSealedDTO> putWallSlots) {
+    public void listenRemindToSealContainer(String topic, PutWallRemindSealContainerEvent event) {
 
-        if (CollectionUtils.isEmpty(putWallSlots)) {
+        if (event == null) {
             return;
         }
 
-        putWallSlots.forEach(putWallSlot -> {
-            WorkStationCache workStation = workStationService.getWorkStation(putWallSlot.getWorkStationId());
-            if (workStation == null) {
-                return;
-            }
+        WorkStationCache workStation = workStationService.getWorkStation(event.getWorkStationId());
+        if (workStation == null) {
+            return;
+        }
 
-            ptlService.reminderSeal(workStation.getId(), putWallSlot.getPtlTag());
+        ptlService.reminderSeal(workStation.getId(), event.getPtlTag());
 
-            sseMessageListenerUtils.noticeWorkStationVOChanged(workStation.getId());
-        });
+        sseMessageListenerUtils.noticeWorkStationVOChanged(workStation.getId());
     }
 
     /**

@@ -15,7 +15,6 @@ import java.util.List;
 public class OutboundPreAllocatedRecordRepositoryImpl implements OutboundPreAllocatedRecordRepository {
 
     private final OutboundPreAllocatedRecordPORepository outboundPreAllocatedRecordPORepository;
-
     private final OutboundPreAllocatedRecordPOTransfer outboundPreAllocatedRecordPOTransfer;
 
     @Override

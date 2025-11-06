@@ -5,9 +5,6 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import org.openwes.domain.event.api.DomainEvent;
-import org.openwes.wes.api.basic.dto.PutWallSlotAssignedDTO;
-
-import java.util.List;
 
 @Data
 @Accessors(chain = true)
@@ -15,11 +12,22 @@ import java.util.List;
 @NoArgsConstructor
 public class PutWallAssignOrderEvent extends DomainEvent {
 
-    private List<PutWallSlotAssignedDTO> details;
-
-    public PutWallAssignOrderEvent(Long id, List<PutWallSlotAssignedDTO> details) {
-        super(id);
-        this.details = details;
+    public PutWallAssignOrderEvent(Long putWallSlotId, Long pickingOrderId, String putWallCode,
+                                   Long workStationId, String putWallSlotCode, String ptlTag) {
+        super(putWallSlotId);
+        this.putWallSlotId = putWallSlotId;
+        this.pickingOrderId = pickingOrderId;
+        this.putWallCode = putWallCode;
+        this.workStationId = workStationId;
+        this.putWallSlotCode = putWallSlotCode;
+        this.ptlTag = ptlTag;
     }
+
+    private Long putWallSlotId;
+    private Long pickingOrderId;
+    private String putWallCode;
+    private Long workStationId;
+    private String putWallSlotCode;
+    private String ptlTag;
 
 }

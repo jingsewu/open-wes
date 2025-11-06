@@ -1,6 +1,7 @@
 package org.openwes.wes.outbound.application.scheduler;
 
 import com.alibaba.ttl.TtlRunnable;
+import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -44,12 +45,11 @@ public class PickingOrderHandleScheduler {
     private final PickingOrderRepository pickingOrderRepository;
     private final PickingOrderService pickingOrderService;
 
-    private final Executor pickingOrderHandleExecutor;
     private final Executor pickingOrderReallocateExecutor;
 
     private static final int MAX_SIZE_PER_TIME = 1000;
 
-    @DistributedScheduled(cron = "*/5 * * * * *", name = "PickingOrderHandleScheduler#pickingOrderHandle")
+    @DistributedScheduled(fixedDelayString = "10000", name = "PickingOrderHandleScheduler#pickingOrderHandle")
     public void pickingOrderHandle() {
         log.debug("schedule start execute picking order handler.");
 
@@ -60,14 +60,12 @@ public class PickingOrderHandleScheduler {
                 return;
             }
 
-            CompletableFuture.runAsync(Objects.requireNonNull(TtlRunnable.get(() ->
-                            this.tryHandlePickingOrders(pickingOrderIds, key))), pickingOrderHandleExecutor)
-                    .exceptionally(e -> {
-                        log.error("handle picking order failed.", e);
-                        return null;
-                    }).thenRun(() -> log.debug("schedule end execute picking order handler."));
+            try {
+                this.tryHandlePickingOrders(pickingOrderIds, key);
+            } catch (Exception e) {
+                log.error("picking order handle error", e);
+            }
         });
-
     }
 
     private void tryHandlePickingOrders(List<Long> pickingOrderIds, String key) {
@@ -103,7 +101,8 @@ public class PickingOrderHandleScheduler {
         }
     }
 
-    private void handleRobotAreaPickingOrders(List<PickingOrder> robotPickingOrders, String warehouseCode, String key) {
+    private void handleRobotAreaPickingOrders(List<PickingOrder> robotPickingOrders, String
+            warehouseCode, String key) {
 
         PickingOrderHandlerContext pickingOrderHandlerContext = pickingOrderService.prepareFullContext(warehouseCode, robotPickingOrders);
         if (pickingOrderHandlerContext == null) {
@@ -117,24 +116,29 @@ public class PickingOrderHandleScheduler {
         }
 
         List<PickingOrderAssignedResult> pickingOrderAssignedResults = pickingOrderDispatchedResult.getAssignedResults();
-        List<OperationTaskDTO> operationTaskDTOS = pickingOrderDispatchedResult.getOperationTaskDTOS();
+        Map<Long, PickingOrder> assignedPickingOrders = robotPickingOrders.stream().collect(Collectors.toMap(PickingOrder::getId, Function.identity()));
 
-        List<PickingOrder> assignedPickingOrders = robotPickingOrders.stream()
-                .filter(v -> pickingOrderAssignedResults.stream().anyMatch(r -> r.getPickingOrderId().equals(v.getId()))).toList();
-        pickingOrderTaskAggregate.dispatchPickingOrders(operationTaskDTOS, assignedPickingOrders, pickingOrderAssignedResults);
+        pickingOrderAssignedResults.forEach(pickingOrderAssignedResult -> {
+            pickingOrderTaskAggregate.dispatchPickingOrders(pickingOrderAssignedResult.getOperationTasks(),
+                    assignedPickingOrders.get(pickingOrderAssignedResult.getPickingOrderId()), pickingOrderAssignedResult.getAssignedStationSlot());
+            redisUtils.removeListByPureKey(key, Lists.newArrayList(pickingOrderAssignedResult.getPickingOrderId()));
+        });
 
-        redisUtils.removeListByPureKey(key, assignedPickingOrders.stream().map(PickingOrder::getId).toList());
     }
 
-    private void handleManualAreaPickingOrders(List<PickingOrder> manualPickingOrders, String warehouseCode, String key) {
+    private void handleManualAreaPickingOrders(List<PickingOrder> manualPickingOrders, String
+            warehouseCode, String key) {
 
         PickingOrderHandlerContext pickingOrderHandlerContext = pickingOrderService.prepareStockContext(warehouseCode, manualPickingOrders);
-
         List<OperationTaskDTO> operationTaskDTOS = pickingOrderService.allocateStocks(pickingOrderHandlerContext);
 
-        pickingOrderTaskAggregate.dispatchPickingOrders(operationTaskDTOS, manualPickingOrders, null);
+        for (PickingOrder manualPickingOrder : manualPickingOrders) {
+            List<OperationTaskDTO> operationTasks = operationTaskDTOS.stream()
+                    .filter(v -> v.getOrderId().equals(manualPickingOrder.getId())).toList();
+            pickingOrderTaskAggregate.dispatchPickingOrders(operationTasks, manualPickingOrder, null);
+            redisUtils.removeListByPureKey(key, Lists.newArrayList(manualPickingOrder.getId()));
+        }
 
-        redisUtils.removeListByPureKey(key, manualPickingOrders.stream().map(PickingOrder::getId).toList());
     }
 
     @DistributedScheduled(cron = "0 0/5 * * * *", name = "PickingOrderHandleScheduler#handleAbnormalOrders")

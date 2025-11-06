@@ -9,6 +9,8 @@ public interface PickingOrderRepository {
 
     void saveOrderAndDetail(PickingOrder pickingOrder);
 
+    void saveOrder(PickingOrder pickingOrder);
+
     void saveAllOrders(List<PickingOrder> pickingOrders);
 
     List<PickingOrder> saveAllOrderAndDetails(List<PickingOrder> pickingOrders);

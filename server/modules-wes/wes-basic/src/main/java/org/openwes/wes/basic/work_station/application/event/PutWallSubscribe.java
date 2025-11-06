@@ -18,11 +18,11 @@ public class PutWallSubscribe {
 
     @Subscribe
     public void onAssignOrderEvent(@Valid PutWallAssignOrderEvent assignOrderEvent) {
-        stationCallbackFacade.assignOrder(assignOrderEvent.getDetails());
+        stationCallbackFacade.assignOrder(assignOrderEvent);
     }
 
     @Subscribe
     public void onRemindSealContainerEvent(@Valid PutWallRemindSealContainerEvent remindSealContainerEvent) {
-        stationCallbackFacade.remindSealContainer(remindSealContainerEvent.getDetails());
+        stationCallbackFacade.remindSealContainer(remindSealContainerEvent);
     }
 }

@@ -21,7 +21,7 @@ public class UserFilter implements Filter {
         String username;
         try {
             username = ((HttpServletRequest) request).getHeader(AuthConstants.USERNAME);
-            log.debug("receive outside request: username is {}", username);
+            log.trace("receive outside request: username is {}", username);
         } catch (Exception e) {
             log.error("resolve the request error", e);
             username = AuthConstants.ANONYMOUS_USER;
