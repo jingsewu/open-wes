@@ -15,7 +15,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
         name = "d_domain_event",
         indexes = {
                 @Index(name = "idx_create_time", columnList = "createTime"),
-                @Index(name = "idx_aggregator_id", columnList = "aggregatorId")
+                @Index(name = "idx_aggregator_id", columnList = "aggregatorId"),
+                @Index(name = "idx_status", columnList = "status")
         }
 )
 public class DomainEventPO {

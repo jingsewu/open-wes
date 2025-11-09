@@ -1,8 +1,8 @@
 package org.openwes.api.platform.infrastructure;
 
 import com.google.common.collect.Lists;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.dubbo.config.annotation.DubboReference;
 import org.openwes.wes.api.basic.IContainerApi;
 import org.openwes.wes.api.basic.ITransferContainerApi;
 import org.openwes.wes.api.basic.dto.ContainerLocationReportDTO;
@@ -15,7 +15,6 @@ import org.openwes.wes.api.outbound.IOutboundPlanOrderApi;
 import org.openwes.wes.api.outbound.dto.OutboundPlanOrderCancelDTO;
 import org.openwes.wes.api.outbound.dto.OutboundPlanOrderDTO;
 import org.openwes.wes.api.task.dto.TransferContainerReleaseDTO;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
@@ -27,21 +26,15 @@ import java.util.concurrent.Executor;
 @Service
 @EnableAsync
 @Slf4j
+@RequiredArgsConstructor
 public class WmsClientServiceImpl implements WmsClientService {
 
-    @DubboReference
-    private ISkuMainDataApi skuMainDataApi;
-    @DubboReference
-    private IInboundPlanOrderApi inboundPlanOrderApi;
-    @DubboReference
-    private IOutboundPlanOrderApi outboundPlanOrderApi;
-    @DubboReference
-    private IContainerApi containerApi;
-    @DubboReference
-    private ITransferContainerApi transferContainerApi;
-
-    @Autowired
-    private Executor requestExecutor;
+    private final ISkuMainDataApi skuMainDataApi;
+    private final IInboundPlanOrderApi inboundPlanOrderApi;
+    private final IOutboundPlanOrderApi outboundPlanOrderApi;
+    private final IContainerApi containerApi;
+    private final ITransferContainerApi transferContainerApi;
+    private final Executor requestExecutor;
 
     @Override
     public void createInboundOrder(List<InboundPlanOrderDTO> param) {

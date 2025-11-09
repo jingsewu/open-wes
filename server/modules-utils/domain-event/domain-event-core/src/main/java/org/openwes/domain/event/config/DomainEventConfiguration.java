@@ -29,7 +29,7 @@ public class DomainEventConfiguration {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(CORE_POOL_SIZE);
         executor.setMaxPoolSize(MAX_POOL_SIZE * 4);
-        executor.setQueueCapacity(512);
+        executor.setQueueCapacity(1000);
         executor.setThreadNamePrefix("async-event-bus-executor");
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
         executor.initialize();

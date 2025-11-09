@@ -30,6 +30,23 @@ spring:
         environment: aped-4627-b74a
         index-name: chatbot
         project-id: 5k87fkv
+
+  jpa:
+    database: mysql
+    show-sql: false
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+        jdbc:
+          batch_size: 500
+          batch_versioned_data: true
+        order_inserts: true
+        order_updates: true
+        batch_versioned_data: true
+
 server:
   port: 9010
 
@@ -55,6 +72,7 @@ management:
           - metrics
           - env
           - scheduledtasks
+          - threadpool
 
   endpoint:
     health:

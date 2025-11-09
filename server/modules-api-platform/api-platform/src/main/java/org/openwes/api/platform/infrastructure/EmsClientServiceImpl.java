@@ -1,10 +1,10 @@
 package org.openwes.api.platform.infrastructure;
 
+import lombok.RequiredArgsConstructor;
 import org.openwes.wes.api.ems.proxy.IContainerOperatorApi;
 import org.openwes.wes.api.ems.proxy.IContainerTaskApi;
 import org.openwes.wes.api.ems.proxy.dto.ContainerArrivedEvent;
 import org.openwes.wes.api.ems.proxy.dto.UpdateContainerTaskDTO;
-import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -12,12 +12,11 @@ import java.util.List;
 
 @Service
 @Validated
+@RequiredArgsConstructor
 public class EmsClientServiceImpl implements EmsClientService {
 
-    @DubboReference
-    private IContainerTaskApi containerTaskApi;
-    @DubboReference
-    private IContainerOperatorApi containerArriveApi;
+    private final IContainerTaskApi containerTaskApi;
+    private final IContainerOperatorApi containerArriveApi;
 
     @Override
     public void containerArrive(ContainerArrivedEvent containerArrivedEvent) {

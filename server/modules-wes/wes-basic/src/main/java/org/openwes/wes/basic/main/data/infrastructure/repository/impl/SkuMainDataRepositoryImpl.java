@@ -21,9 +21,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -87,7 +85,18 @@ public class SkuMainDataRepositoryImpl implements SkuMainDataRepository {
 
     @Override
     public List<SkuMainData> findAllSkuBySkuCodesAndOwnerCode(Collection<String> skuCodes, String ownerCode) {
-        return skuMainDataPOTransfer.toDOS(skuMainDataPORepository.findAllBySkuCodeInAndOwnerCode(skuCodes, ownerCode));
+        if (skuCodes == null || skuCodes.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        int batchSize = 500;
+
+        return Lists.partition(new ArrayList<>(skuCodes.stream().distinct().toList()), batchSize)
+                .stream()
+                .map(batch -> skuMainDataPORepository.findAllBySkuCodeInAndOwnerCode(batch, ownerCode))
+                .flatMap(List::stream)
+                .map(skuMainDataPOTransfer::toDO)
+                .collect(Collectors.toList());
     }
 
     @Override

@@ -127,11 +127,13 @@ public class PickingOrderServiceImpl implements PickingOrderService {
         Set<Long> skuBatchStockIds = Stream.concat(pickingOrders.stream(), undoAssignedPickingOrders.stream())
                 .flatMap(v -> v.getDetails().stream()).map(PickingOrderDetail::getSkuBatchStockId).collect(Collectors.toSet());
 
-        List<ContainerStockDTO> allContainerStockDTOS = stockApi.getContainerStockBySkuBatchStockIds(skuBatchStockIds);
+        List<ContainerStockDTO> allContainerStockDTOS = stockApi.getContainerStockBySkuBatchStockIds(skuBatchStockIds)
+                .stream().filter(v -> v.getAvailableQty() > 0).toList();
         Set<String> allContainerCodes = allContainerStockDTOS.stream().map(ContainerStockDTO::getContainerCode).collect(Collectors.toSet());
         List<LocationDTO> locations = locationApi.getByShelfCodes(allContainerCodes);
 
-        Set<Pair<String, String>> containerAndFaceSet = undoOperationTasks.stream().map(v -> Pair.of(v.getSourceContainerCode(), v.getSourceContainerFace())).collect(Collectors.toSet());
+        Set<Pair<String, String>> containerAndFaceSet = undoOperationTasks.stream()
+                .map(v -> Pair.of(v.getSourceContainerCode(), v.getSourceContainerFace())).collect(Collectors.toSet());
         List<ContainerStockDTO> undoOperationTaskContainerStocks = allContainerStockDTOS.stream()
                 .filter(v -> containerAndFaceSet.contains(Pair.of(v.getContainerCode(), v.getContainerFace()))).toList();
 

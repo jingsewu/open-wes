@@ -1,14 +1,20 @@
 package org.openwes.wes.stock.infrastructure.repository.impl;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.openwes.wes.stock.domain.entity.SkuBatchAttribute;
 import org.openwes.wes.stock.domain.repository.SkuBatchAttributeRepository;
 import org.openwes.wes.stock.infrastructure.persistence.mapper.SkuBatchAttributePORepository;
 import org.openwes.wes.stock.infrastructure.persistence.transfer.SkuBatchAttributePOTransfer;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +35,19 @@ public class SkuBatchAttributeRepositoryImpl implements SkuBatchAttributeReposit
 
     @Override
     public List<SkuBatchAttribute> findAllByIds(Collection<Long> skuBatchAttributeIds) {
-        return skuBatchAttributePOTransfer.toDOs(skuBatchAttributePORepository.findAllById(skuBatchAttributeIds));
+
+        if (skuBatchAttributeIds == null || skuBatchAttributeIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        int batchSize = 500;
+
+        return Lists.partition(new ArrayList<>(skuBatchAttributeIds.stream().distinct().toList()), batchSize)
+                .stream()
+                .map(skuBatchAttributePORepository::findAllById)
+                .flatMap(List::stream)
+                .map(skuBatchAttributePOTransfer::toDO)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -39,6 +57,18 @@ public class SkuBatchAttributeRepositoryImpl implements SkuBatchAttributeReposit
 
     @Override
     public List<SkuBatchAttribute> findAllBySkuIds(Collection<Long> skuIds) {
-        return skuBatchAttributePOTransfer.toDOs(skuBatchAttributePORepository.findAllBySkuIdIn(skuIds));
+
+        if (ObjectUtils.isEmpty(skuIds)) {
+            return Collections.emptyList();
+        }
+
+        int batchSize = 500;
+
+        return Lists.partition(new ArrayList<>(skuIds.stream().distinct().toList()), batchSize)
+                .stream()
+                .map(skuBatchAttributePORepository::findAllBySkuIdIn)
+                .flatMap(List::stream)
+                .map(skuBatchAttributePOTransfer::toDO)
+                .collect(Collectors.toList());
     }
 }

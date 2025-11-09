@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="change_a_api_log_column_type" author="Kinser">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="a_api_log"/>
+            </and>
+        </preConditions>
+        <comment>change api log column type</comment>
+        <sql>
+            alter table a_api_log
+                modify column request_data mediumtext null comment '请求参数';
+            alter table a_api_log
+                modify column response_data mediumtext null comment '请求参数';
+        </sql>
+    </changeSet>
+
+
+</databaseChangeLog>

@@ -28,34 +28,30 @@ public class OutboundPlanOrderRepositoryImpl implements OutboundPlanOrderReposit
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveOrderAndDetail(OutboundPlanOrder outboundPlanOrder) {
-        OutboundPlanOrderPO outboundPlanOrderPO = outboundPlanOrderPORepository.save(outboundPlanOrderPOTransfer.toPO(outboundPlanOrder));
-
-        List<OutboundPlanOrderDetailPO> outboundPlanOrderDetailPOS = outboundPlanOrderPOTransfer.toDetailPOs(outboundPlanOrder.getDetails());
-
-        List<OutboundPlanOrderDetailPO> details = outboundPlanOrderDetailPORepository.saveAll(outboundPlanOrderDetailPOS);
-
         outboundPlanOrder.sendAndClearEvents();
 
-        outboundPlanOrderPOTransfer.toDO(outboundPlanOrderPO, details);
+        outboundPlanOrderPORepository.save(outboundPlanOrderPOTransfer.toPO(outboundPlanOrder));
+        List<OutboundPlanOrderDetailPO> outboundPlanOrderDetailPOS = outboundPlanOrderPOTransfer.toDetailPOs(outboundPlanOrder.getDetails());
+        outboundPlanOrderDetailPORepository.saveAll(outboundPlanOrderDetailPOS);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveAllOrders(List<OutboundPlanOrder> outboundPlanOrders) {
-        outboundPlanOrderPORepository.saveAll(outboundPlanOrderPOTransfer.toPOs(outboundPlanOrders));
         outboundPlanOrders.forEach(AggregatorRoot::sendAndClearEvents);
+
+        outboundPlanOrderPORepository.saveAll(outboundPlanOrderPOTransfer.toPOs(outboundPlanOrders));
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveAllOrderAndDetails(List<OutboundPlanOrder> outboundPlanOrders) {
-        outboundPlanOrderPORepository.saveAll(outboundPlanOrderPOTransfer.toPOs(outboundPlanOrders));
+        outboundPlanOrders.forEach(AggregatorRoot::sendAndClearEvents);
 
+        outboundPlanOrderPORepository.saveAll(outboundPlanOrderPOTransfer.toPOs(outboundPlanOrders));
         List<OutboundPlanOrderDetail> outboundPlanOrderDetails = outboundPlanOrders.stream()
                 .flatMap(v -> v.getDetails().stream()).toList();
         outboundPlanOrderDetailPORepository.saveAll(outboundPlanOrderPOTransfer.toDetailPOs(outboundPlanOrderDetails));
-
-        outboundPlanOrders.forEach(AggregatorRoot::sendAndClearEvents);
     }
 
     @Override
