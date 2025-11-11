@@ -73,6 +73,7 @@ public class ScanBarcodeHandler<T extends WorkStationCache> implements IBusiness
             BarcodeParseResult result = barcodeService.parse(requestDTO);
 
             if (ObjectUtils.isEmpty(result.getSkus())) {
+                log.error("work station: {} parse barcode: {} error", getApiCode(), barcode);
                 throw WmsException.throwWmsException(OperationTaskErrorDescEnum.INCORRECT_BARCODE);
             }
 

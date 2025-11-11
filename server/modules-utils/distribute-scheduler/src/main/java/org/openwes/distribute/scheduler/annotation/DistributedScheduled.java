@@ -32,10 +32,10 @@ public @interface DistributedScheduled {
 
     // Override lock durations if needed
     @AliasFor(annotation = SchedulerLock.class, attribute = "lockAtMostFor")
-    String lockAtMostFor() default "10m";
+    String lockAtMostFor() default "5m";
 
     @AliasFor(annotation = SchedulerLock.class, attribute = "lockAtLeastFor")
-    String lockAtLeastFor() default "3s";
+    String lockAtLeastFor() default "1s";
 
     // Add this: Specify the scheduler bean name
     @AliasFor(annotation = Scheduled.class, attribute = "scheduler")

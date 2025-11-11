@@ -43,9 +43,6 @@ public class OutboundScanBarcodeHandlerExtension implements ScanBarcodeHandler.E
         }
 
         workStationCache.processTasks(skuCode);
-        if (CollectionUtils.isEmpty(workStationCache.getProcessingOperationTasks())) {
-            throw WmsException.throwWmsException(OperationTaskErrorDescEnum.INCORRECT_BARCODE);
-        }
         workStationCacheRepository.save(workStationCache);
 
         outboundPtlHelper.send(SCAN_BARCODE, workStationCache);

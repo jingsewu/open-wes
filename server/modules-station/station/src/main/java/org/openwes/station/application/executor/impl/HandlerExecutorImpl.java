@@ -30,9 +30,8 @@ public class HandlerExecutorImpl implements HandlerExecutor {
     @Override
     public void execute(ApiCodeEnum apiCode, String body, Long workStationId) {
 
-        log.info("work station: {} received eventType: {} body: {}", workStationId, apiCode, body);
-
         distributeLock.acquireLockIfThrows(RedisConstants.WORK_STATION_OPERATE_SYNC_LOCK + workStationId, 3000L);
+        log.info("work station: {} received eventType: {} body: {}", workStationId, apiCode, body);
         try {
             IBusinessHandler<Object> businessHandler = BusinessHandlerFactory.getHandler(apiCode);
 

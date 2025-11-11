@@ -40,7 +40,7 @@ public class StocktakeWorkStationCache extends WorkStationCache {
             List<OperationTaskVO> operationTaskDTOS = containerOperationTaskMap.get(undoContainer.getContainerCode());
             if (CollectionUtils.isEmpty(operationTaskDTOS)
                     || operationTaskDTOS.stream().allMatch(v -> v.getOperationTaskDTO().getTaskStatus() == OperationTaskStatusEnum.PROCESSED)) {
-                undoContainer.setProcessStatus(ProcessStatusEnum.PROCEED);
+                undoContainer.proceed();
             }
         });
 

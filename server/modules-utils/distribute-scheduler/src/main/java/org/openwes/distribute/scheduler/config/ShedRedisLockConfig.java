@@ -10,7 +10,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @Configuration
 @EnableScheduling
-@EnableSchedulerLock(defaultLockAtMostFor = "10m")
+@EnableSchedulerLock(defaultLockAtMostFor = "5m")
 public class ShedRedisLockConfig {
     @Bean
     public LockProvider lockProvider(RedisConnectionFactory redisConnectionFactory) {

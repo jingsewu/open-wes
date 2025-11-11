@@ -3,8 +3,10 @@ package org.openwes.station.application.business.handler.common;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.openwes.station.api.constants.ApiCodeEnum;
+import org.openwes.station.api.constants.ProcessStatusEnum;
 import org.openwes.station.application.business.handler.IBusinessHandler;
 import org.openwes.station.application.business.handler.common.extension.ExtensionFactory;
 import org.openwes.station.domain.entity.ArrivedContainerCache;
@@ -69,8 +71,15 @@ public class ContainerArrivedHandler<T extends WorkStationCache> implements IBus
             return;
         }
 
-        workStation.addArrivedContainers(arrivedContainers);
+        if (workStation.getArrivedContainers() != null
+                && ObjectUtils.isNotEmpty(workStation.getArrivedContainers()
+                .stream().anyMatch(v -> v.getProcessStatus() != ProcessStatusEnum.PROCEED))) {
+            workStation.addArrivedContainers(arrivedContainers);
+            workStationRepository.save(workStation);
+            return;
+        }
 
+        workStation.addArrivedContainers(arrivedContainers);
         OperationTaskRefreshHandler.Extension<T> extension = extensionFactory.getExtension(workStation.getWorkStationMode(),
                 ApiCodeEnum.CONTAINER_REFRESH);
         if (extension != null) {

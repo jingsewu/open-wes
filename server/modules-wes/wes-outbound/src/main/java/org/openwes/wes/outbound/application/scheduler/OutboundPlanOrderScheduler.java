@@ -23,7 +23,8 @@ public class OutboundPlanOrderScheduler {
 
     private final OutboundPlanOrderRepository outboundPlanOrderRepository;
 
-    @DistributedScheduled(cron = "${wms.schedule.config.handleShortWaitingOrders:0 0/5 * * * *}", name = "OutboundPlanOrderScheduler#handleShortWaitingOrders")
+    @DistributedScheduled(cron = "${wms.schedule.config.handleShortWaitingOrders:0 0/5 * * * *}",
+            name = "OutboundPlanOrderScheduler#handleShortWaitingOrders", lockAtLeastFor = "30s")
     public void handleShortWaitingOrders() {
 
         CompletableFuture.runAsync(Objects.requireNonNull(TtlRunnable.get(this::doHandleShortWaitingOrders)))

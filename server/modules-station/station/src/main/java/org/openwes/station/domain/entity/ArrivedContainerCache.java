@@ -1,15 +1,13 @@
 package org.openwes.station.domain.entity;
 
-import org.openwes.station.api.constants.ProcessStatusEnum;
-import org.openwes.wes.api.basic.dto.ContainerSpecDTO;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.openwes.station.api.constants.ProcessStatusEnum;
+import org.openwes.wes.api.basic.dto.ContainerSpecDTO;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 
 /**
@@ -69,5 +67,13 @@ public class ArrivedContainerCache {
 
     public void init() {
         this.processStatus = ProcessStatusEnum.UNDO;
+    }
+
+    public void proceed() {
+        this.processStatus = ProcessStatusEnum.PROCEED;
+    }
+
+    public void processing() {
+        this.processStatus = ProcessStatusEnum.PROCESSING;
     }
 }

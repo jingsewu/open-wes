@@ -150,8 +150,19 @@ public class WorkStationCache {
     }
 
     public List<ArrivedContainerCache> getUndoContainers() {
-        return arrivedContainers.stream()
+        if (this.arrivedContainers == null) {
+            return Collections.emptyList();
+        }
+        return this.arrivedContainers.stream()
                 .filter(v -> v.getProcessStatus() == ProcessStatusEnum.PROCESSING || v.getProcessStatus() == ProcessStatusEnum.UNDO).toList();
+    }
+
+    public List<ArrivedContainerCache> getProcessingContainers() {
+        if (this.arrivedContainers == null) {
+            return Collections.emptyList();
+        }
+        return this.arrivedContainers.stream()
+                .filter(v -> v.getProcessStatus() == ProcessStatusEnum.PROCESSING).toList();
     }
 
     public void updateConfiguration(WorkStationConfigDTO workStationConfigDTO) {
@@ -219,24 +230,26 @@ public class WorkStationCache {
         this.scannedBarcode = skuCode;
 
         if (ObjectUtils.isEmpty(this.arrivedContainers)) {
-            log.info("work station: {} code: {} no arrived containers", this.id, this.stationCode);
+            log.error("work station: {} code: {} no arrived containers", this.id, this.stationCode);
             throw WmsException.throwWmsException(STATION_NO_ARRIVED_CONTAINER);
         }
 
         if (CollectionUtils.isEmpty(this.operateTasks)) {
-            log.info("work station: {} code: {} don't contains any operation tasks. maybe something error", this.id, this.stationCode);
+            log.error("work station: {} code: {} don't contains any operation tasks. maybe something error", this.id, this.stationCode);
             return;
         }
 
-        ArrivedContainerCache arrivedContainerCache = this.arrivedContainers.iterator().next();
+        ArrivedContainerCache arrivedContainerCache = this.getProcessingContainers().iterator().next();
 
         List<OperationTaskVO> processingTasks = this.operateTasks.stream()
                 .filter(vo -> skuCode.equals(vo.getSkuMainDataDTO().getSkuCode())
                         && Objects.equals(arrivedContainerCache.getContainerCode(), vo.getOperationTaskDTO().getSourceContainerCode())
-                        && (arrivedContainerCache.getFace() == null || Objects.equals(arrivedContainerCache.getFace(), vo.getOperationTaskDTO().getSourceContainerFace())))
+                        && (StringUtils.isEmpty(arrivedContainerCache.getFace())
+                        || Objects.equals(arrivedContainerCache.getFace(), vo.getOperationTaskDTO().getSourceContainerFace())))
                 .toList();
 
         if (ObjectUtils.isEmpty(processingTasks)) {
+            log.error("work station: {} code: {} no processing tasks when scanning barcode: {}", this.id, this.stationCode, skuCode);
             throw WmsException.throwWmsException(INCORRECT_BARCODE);
         }
 
@@ -245,7 +258,8 @@ public class WorkStationCache {
             // scan another barcode. ensure only one sku operation task be processing once.
             operateTask.getOperationTaskDTO().setTaskStatus(OperationTaskStatusEnum.NEW);
         }
-        processingTasks.forEach(operateTaskVO -> operateTaskVO.getOperationTaskDTO().setTaskStatus(OperationTaskStatusEnum.PROCESSING));
+        processingTasks.forEach(operateTaskVO ->
+                operateTaskVO.getOperationTaskDTO().setTaskStatus(OperationTaskStatusEnum.PROCESSING));
 
         resetActivePutWall(skuCode);
     }

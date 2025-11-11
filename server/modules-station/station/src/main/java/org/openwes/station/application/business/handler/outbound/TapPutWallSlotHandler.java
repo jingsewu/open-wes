@@ -118,9 +118,13 @@ public class TapPutWallSlotHandler implements IBusinessHandler<TapPutWallSlotEve
             ptlService.off(workStationId, putWallSlot.getPtlTag());
 
         } catch (WmsException e) {
-            log.error("complete task failed and let container ", e);
+            log.error("work station: {} code: {} complete task failed: {}.", workStationId, workStationCache.getStationCode(), e.getMessage());
+
             if (OperationTaskErrorDescEnum.OPERATION_TASK_IS_PROCESSED.getCode().equals(e.getCode())) {
+                workStationCache.clearOperateTasks();
                 ArrivedContainerCache arrivedContainerCache = workStationCache.getUndoContainers().get(0);
+                log.info("work station: {} code: {} task is processed, refresh task with container: {}", workStationId,
+                        workStationCache.getStationCode(), arrivedContainerCache.getContainerCode());
                 containerTaskRefreshHandler.execute(new OperationTaskRefreshEvent()
                         .setContainerCode(arrivedContainerCache.getContainerCode())
                         .setFace(arrivedContainerCache.getFace()), workStationCache.getId());

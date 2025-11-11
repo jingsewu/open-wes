@@ -28,7 +28,7 @@ public class UserFilter implements Filter {
         }
 
         if (StringUtils.isEmpty(username)) {
-            log.warn("request:{} has no username.", ((HttpServletRequest) request).getRequestURI());
+            log.trace("request:{} has no username.", ((HttpServletRequest) request).getRequestURI());
         }
 
         try {

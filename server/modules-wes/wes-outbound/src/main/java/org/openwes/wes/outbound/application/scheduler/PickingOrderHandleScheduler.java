@@ -49,7 +49,8 @@ public class PickingOrderHandleScheduler {
 
     private static final int MAX_SIZE_PER_TIME = 1000;
 
-    @DistributedScheduled(fixedDelayString = "10000", name = "PickingOrderHandleScheduler#pickingOrderHandle")
+    @DistributedScheduled(fixedDelayString = "10000", name = "PickingOrderHandleScheduler#pickingOrderHandle",
+            lockAtLeastFor = "9s")
     public void pickingOrderHandle() {
         log.debug("schedule start execute picking order handler.");
 

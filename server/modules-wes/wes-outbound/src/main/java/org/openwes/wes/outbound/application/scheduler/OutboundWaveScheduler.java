@@ -32,7 +32,8 @@ public class OutboundWaveScheduler {
     private final OutboundPlanOrderRepository outboundPlanOrderRepository;
     private final Executor wavePickingExecutor;
 
-    @DistributedScheduled(cron = "${wms.schedule.config.wavePicking:0 0/5 * * * *}", name = "OutboundWaveScheduler#wavePicking")
+    @DistributedScheduled(cron = "${wms.schedule.config.wavePicking:0/1 * * * * *}",
+            name = "OutboundWaveScheduler#wavePicking", lockAtLeastFor = "30s")
     public void wavePicking() {
         List<String> keys = redisUtils.keys(RedisUtils.generateKeysPatten("", OUTBOUND_PLAN_ORDER_ASSIGNED_IDS));
         keys.forEach(key -> {

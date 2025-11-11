@@ -1,13 +1,5 @@
 package org.openwes.station.domain.entity;
 
-import org.openwes.station.api.constants.ProcessStatusEnum;
-import org.openwes.station.infrastructure.remote.TaskService;
-import org.openwes.wes.api.basic.dto.PutWallSlotDTO;
-import org.openwes.wes.api.task.constants.OperationTaskStatusEnum;
-import org.openwes.wes.api.task.constants.OperationTaskTypeEnum;
-import org.openwes.wes.api.task.dto.OperationTaskDTO;
-import org.openwes.wes.api.task.dto.OperationTaskVO;
-import org.openwes.wes.api.task.dto.ReportAbnormalDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -16,6 +8,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.openwes.station.api.constants.ProcessStatusEnum;
+import org.openwes.station.infrastructure.remote.TaskService;
+import org.openwes.wes.api.basic.dto.PutWallSlotDTO;
+import org.openwes.wes.api.task.constants.OperationTaskStatusEnum;
+import org.openwes.wes.api.task.constants.OperationTaskTypeEnum;
+import org.openwes.wes.api.task.dto.OperationTaskDTO;
+import org.openwes.wes.api.task.dto.OperationTaskVO;
+import org.openwes.wes.api.task.dto.ReportAbnormalDTO;
 
 import java.util.*;
 import java.util.function.Function;
@@ -87,28 +87,19 @@ public class OutboundWorkStationCache extends WorkStationCache {
             return Collections.emptyList();
         }
 
-        List<OperationTaskVO> containerOperateTasks = undoContainers.stream()
-                .flatMap(undoContainer ->
-                        taskService.queryTasks(this.id, undoContainer.getContainerCode(), undoContainer.getFace(), OperationTaskTypeEnum.PICKING).stream())
-                .toList();
+        for (ArrivedContainerCache arrivedContainerCache : undoContainers) {
+            List<OperationTaskVO> operationTaskVOS = taskService.queryTasks(this.id, arrivedContainerCache.getContainerCode(), arrivedContainerCache.getFace(), OperationTaskTypeEnum.PICKING);
 
-        this.addOperateTasks(containerOperateTasks);
+            if (ObjectUtils.isEmpty(operationTaskVOS)
+                    || operationTaskVOS.stream().allMatch(v -> v.getOperationTaskDTO().getTaskStatus() == OperationTaskStatusEnum.PROCESSED)) {
+                arrivedContainerCache.proceed();
+                continue;
+            }
 
-        if (this.operateTasks == null) {
-            undoContainers.forEach(undoContainer -> undoContainer.setProcessStatus(ProcessStatusEnum.PROCEED));
-        } else {
-            Map<String, List<OperationTaskVO>> containerOperationTaskMap =
-                    this.operateTasks.stream().collect(Collectors.groupingBy(v -> v.getOperationTaskDTO().getSourceContainerCode()));
-            undoContainers.forEach(undoContainer -> {
-                List<OperationTaskVO> operationTaskDTOS = containerOperationTaskMap.get(undoContainer.getContainerCode());
-                if (CollectionUtils.isEmpty(operationTaskDTOS)
-                        || operationTaskDTOS.stream().allMatch(v -> v.getOperationTaskDTO().getTaskStatus() == OperationTaskStatusEnum.PROCESSED)) {
-                    undoContainer.setProcessStatus(ProcessStatusEnum.PROCEED);
-                }
-            });
+            this.addOperateTasks(operationTaskVOS);
+            arrivedContainerCache.processing();
+            break;
         }
-
-        setUndoContainersProcessing(undoContainers.stream().filter(v -> v.getProcessStatus() == ProcessStatusEnum.UNDO).toList());
 
         return removeProceedContainers();
     }

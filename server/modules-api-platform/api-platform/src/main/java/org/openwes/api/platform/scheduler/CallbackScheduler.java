@@ -43,7 +43,8 @@ public class CallbackScheduler {
     private final DistributeLock distributeLock;
     private final ApiLogService apiLogService;
 
-    @DistributedScheduled(fixedDelayString = "${api.fail.callback.fixedDelay:20000}", name = "CallbackScheduler#callbackSchedule")
+    @DistributedScheduled(fixedDelayString = "${api.fail.callback.fixedDelay:20000}",
+            lockAtLeastFor = "19s", name = "CallbackScheduler#callbackSchedule")
     public void callbackSchedule() {
 
         log.debug("callback start...");
@@ -102,7 +103,7 @@ public class CallbackScheduler {
         }
     }
 
-    @DistributedScheduled(cron = "0 0 2 * * *", name = "CallbackScheduler#cleanApiLog")
+    @DistributedScheduled(cron = "0 0 2 * * *", name = "CallbackScheduler#cleanApiLog",lockAtLeastFor = "30s")
     public void cleanApiLog() {
 
         log.debug("clean api log start...");

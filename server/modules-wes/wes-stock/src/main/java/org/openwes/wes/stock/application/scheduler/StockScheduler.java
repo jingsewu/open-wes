@@ -21,7 +21,8 @@ public class StockScheduler {
     private final SkuBatchStockRepository skuBatchStockRepository;
     private final ContainerStockRepository containerStockRepository;
 
-    @DistributedScheduled(cron = "0 1 0 * * *", name = "StockScheduler#cleanZeroQtyStocks")
+    @DistributedScheduled(cron = "0 1 0 * * *", name = "StockScheduler#cleanZeroQtyStocks",
+            lockAtLeastFor = "60s")
     public void cleanZeroQtyStocks() {
 
         SystemConfigDTO.StockConfigDTO stockConfig = systemConfigApi.getStockConfig();

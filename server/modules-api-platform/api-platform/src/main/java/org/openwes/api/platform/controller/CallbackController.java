@@ -21,7 +21,7 @@ public class CallbackController {
     @PostMapping(produces = "application/json")
     @Operation(summary = "接收回调")
     public Response<Object> executeCallback(@Parameter(description = "回调内容") @RequestBody String body) {
-        log.debug("receive call back: {}", body);
+        log.trace("receive call back: {}", body);
         return Response.success();
     }
 }

@@ -12,7 +12,6 @@ import org.openwes.wes.api.config.constants.TransferContainerReleaseMethodEnum;
 import org.openwes.wes.api.config.dto.SystemConfigDTO;
 import org.openwes.wes.basic.container.domain.entity.TransferContainer;
 import org.openwes.wes.basic.container.domain.repository.TransferContainerRepository;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -31,7 +30,8 @@ public class TransferContainerScheduler {
 
     private static final int LIMIT_SIZE_PER_TIME = 100;
 
-    @DistributedScheduled(cron = "0 0/10 * * * *", name = "TransferContainerScheduler#handleTransferContainer")
+    @DistributedScheduled(cron = "0 0/10 * * * *", name = "TransferContainerScheduler#handleTransferContainer",
+            lockAtLeastFor = "30s")
     public void handleTransferContainer() {
 
         CompletableFuture
