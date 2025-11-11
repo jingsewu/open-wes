@@ -86,6 +86,8 @@ public class ApiPO extends UpdateUserPO {
 
     private boolean enabled;
 
+    private boolean enableLog;
+
     public static String generateCode(CallbackApiTypeEnum callbackType, String bizType) {
         return callbackType + MarkConstant.HYPHEN_CHARACTER + bizType;
     }

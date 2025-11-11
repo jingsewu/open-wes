@@ -31,7 +31,8 @@ public class OutboundPlanOrderRepositoryImpl implements OutboundPlanOrderReposit
         outboundPlanOrder.sendAndClearEvents();
 
         outboundPlanOrderPORepository.save(outboundPlanOrderPOTransfer.toPO(outboundPlanOrder));
-        List<OutboundPlanOrderDetailPO> outboundPlanOrderDetailPOS = outboundPlanOrderPOTransfer.toDetailPOs(outboundPlanOrder.getDetails());
+        List<OutboundPlanOrderDetailPO> outboundPlanOrderDetailPOS = outboundPlanOrderPOTransfer
+                .toDetailPOs(outboundPlanOrder.getDetails().stream().filter(OutboundPlanOrderDetail::isModified).toList());
         outboundPlanOrderDetailPORepository.saveAll(outboundPlanOrderDetailPOS);
     }
 
@@ -50,7 +51,7 @@ public class OutboundPlanOrderRepositoryImpl implements OutboundPlanOrderReposit
 
         outboundPlanOrderPORepository.saveAll(outboundPlanOrderPOTransfer.toPOs(outboundPlanOrders));
         List<OutboundPlanOrderDetail> outboundPlanOrderDetails = outboundPlanOrders.stream()
-                .flatMap(v -> v.getDetails().stream()).toList();
+                .flatMap(v -> v.getDetails().stream().filter(OutboundPlanOrderDetail::isModified)).toList();
         outboundPlanOrderDetailPORepository.saveAll(outboundPlanOrderPOTransfer.toDetailPOs(outboundPlanOrderDetails));
     }
 

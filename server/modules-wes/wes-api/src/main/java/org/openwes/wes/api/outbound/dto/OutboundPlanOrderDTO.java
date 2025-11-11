@@ -32,6 +32,7 @@ public class OutboundPlanOrderDTO implements Serializable {
     private String customerWaveNo;
 
     @Schema(title = "波次号")
+    @Hidden
     private String waveNo;
 
     @NotEmpty

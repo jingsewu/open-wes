@@ -3,7 +3,6 @@ package org.openwes.wes.outbound.application;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboService;
-import org.openwes.common.utils.constants.RedisConstants;
 import org.openwes.distribute.lock.DistributeLock;
 import org.openwes.wes.api.main.data.dto.SkuMainDataDTO;
 import org.openwes.wes.api.outbound.IOutboundPlanOrderApi;
@@ -55,13 +54,14 @@ public class OutboundPlanOrderApiImpl implements IOutboundPlanOrderApi {
             return outboundPlanOrder;
         }).toList();
 
-        distributionLock.acquireLockIfThrows(RedisConstants.OUTBOUND_PLAN_ORDER_ADD_LOCK);
+        List<String> customerOrderNos = outboundPlanOrderDTOs.stream().map(OutboundPlanOrderDTO::getCustomerOrderNo).toList();
+        distributionLock.acquireLockIfThrows(customerOrderNos, 3000L);
 
         try {
             outboundPlanOrderService.syncValidate(outboundPlanOrders);
             outboundPlanOrderRepository.saveAllOrderAndDetails(outboundPlanOrders);
         } finally {
-            distributionLock.releaseLock(RedisConstants.OUTBOUND_PLAN_ORDER_ADD_LOCK);
+            distributionLock.releaseLock(customerOrderNos);
         }
 
         outboundPlanOrders.forEach(outboundPlanOrderService::afterDoCreation);

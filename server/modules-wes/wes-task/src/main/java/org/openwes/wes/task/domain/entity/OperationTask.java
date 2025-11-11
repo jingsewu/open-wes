@@ -21,7 +21,7 @@ import org.openwes.wes.api.task.dto.HandleTaskDTO;
 import org.openwes.wes.api.task.dto.OperationTaskPickingDTO;
 import org.openwes.wes.api.task.event.OperationTaskAbnormalEvent;
 import org.openwes.wes.api.task.event.OperationTaskPickedEvent;
-import org.openwes.wes.common.constants.WmsCommonConstants;
+import org.openwes.wes.common.constants.WesCommonConstants;
 
 import java.util.Collections;
 import java.util.List;
@@ -186,7 +186,7 @@ public class OperationTask extends AggregatorRoot {
     public Long transferToWarehouseAreaId(List<WarehouseAreaDTO> warehouseAreaDTOS) {
 
         if (CollectionUtils.isEmpty(warehouseAreaDTOS)) {
-            return WmsCommonConstants.PICKING_CACHE_STORAGE_WAREHOUSE_ID;
+            return WesCommonConstants.PICKING_CACHE_STORAGE_WAREHOUSE_ID;
         }
 
         if (this.taskType == OperationTaskTypeEnum.PICKING
@@ -197,12 +197,12 @@ public class OperationTask extends AggregatorRoot {
                     .filter(v -> v.getWarehouseAreaType() == WarehouseAreaTypeEnum.PICKING_STORAGE_CACHE)
                     .findFirst();
             if (optional.isEmpty()) {
-                return WmsCommonConstants.PICKING_CACHE_STORAGE_WAREHOUSE_ID;
+                return WesCommonConstants.PICKING_CACHE_STORAGE_WAREHOUSE_ID;
             }
             return optional.get().getId();
         }
 
-        return WmsCommonConstants.PUT_AWAY_CACHE_STORAGE_WAREHOUSE_ID;
+        return WesCommonConstants.PUT_AWAY_CACHE_STORAGE_WAREHOUSE_ID;
     }
 
     private void sendStockTransferEvent(int operatedQty) {

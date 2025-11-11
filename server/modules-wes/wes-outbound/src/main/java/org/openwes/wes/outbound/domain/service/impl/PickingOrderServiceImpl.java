@@ -96,6 +96,7 @@ public class PickingOrderServiceImpl implements PickingOrderService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PickingOrderHandlerContext prepareFullContext(String warehouseCode, List<PickingOrder> pickingOrders) {
 
         List<WorkStationDTO> workStationDTOS = workStationApi.getByWarehouseCode(warehouseCode).stream()

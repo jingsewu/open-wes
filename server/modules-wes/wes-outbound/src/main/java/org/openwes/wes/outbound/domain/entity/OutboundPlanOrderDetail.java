@@ -1,15 +1,14 @@
 package org.openwes.wes.outbound.domain.entity;
 
-import org.openwes.wes.api.outbound.constants.OutboundPlanOrderDetailStatusEnum;
 import lombok.Data;
-import lombok.experimental.Accessors;
+import org.openwes.common.utils.jpa.ModificationAware;
+import org.openwes.wes.api.outbound.constants.OutboundPlanOrderDetailStatusEnum;
 
 import java.util.Map;
 import java.util.Set;
 
 @Data
-@Accessors(chain = true)
-public class OutboundPlanOrderDetail {
+public class OutboundPlanOrderDetail implements ModificationAware {
 
     private Long id;
     private Long outboundPlanOrderId;
@@ -31,11 +30,14 @@ public class OutboundPlanOrderDetail {
 
     private Long version;
 
+    private boolean modified;
+
     public void cancel() {
         if (this.outboundPlanOrderDetailStatus != OutboundPlanOrderDetailStatusEnum.NEW) {
             throw new IllegalArgumentException("Outbound Plan Order Detail is not NEW, can not cancel");
         }
         this.outboundPlanOrderDetailStatus = OutboundPlanOrderDetailStatusEnum.CANCELED;
+        this.modified = true;
     }
 
     public void picking(Integer operatedQty) {
@@ -46,10 +48,12 @@ public class OutboundPlanOrderDetail {
         if (this.qtyActual.equals(this.qtyAllocated)) {
             this.outboundPlanOrderDetailStatus = OutboundPlanOrderDetailStatusEnum.PICKED;
         }
+        this.modified = true;
     }
 
     public void shortComplete() {
         this.outboundPlanOrderDetailStatus = OutboundPlanOrderDetailStatusEnum.PICKED;
+        this.modified = true;
     }
 
     public void preAllocate(OutboundPreAllocatedRecord planPreAllocatedRecord) {
@@ -58,5 +62,11 @@ public class OutboundPlanOrderDetail {
         if (this.qtyAllocated > this.qtyRequired) {
             throw new IllegalArgumentException("allocate quantity exceeds the required quantity");
         }
+        this.modified = true;
+    }
+
+    public void initialize(Long outboundPlanOrderId) {
+        this.outboundPlanOrderId = outboundPlanOrderId;
+        this.modified = true;
     }
 }

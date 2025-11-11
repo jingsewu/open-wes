@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import org.openwes.common.utils.exception.WmsException;
 import org.openwes.common.utils.exception.code_enum.OutboundErrorDescEnum;
+import org.openwes.wes.api.outbound.constants.PickingOrderStatusEnum;
 import org.openwes.wes.outbound.domain.entity.PickingOrder;
 import org.openwes.wes.outbound.domain.entity.PickingOrderDetail;
 import org.openwes.wes.outbound.domain.repository.PickingOrderRepository;
@@ -175,5 +176,10 @@ public class PickingOrderRepositoryImpl implements PickingOrderRepository {
     public List<PickingOrder> findAllOrderByOutboundPlanOrderIds(List<Long> outboundPlanOrderIds) {
         List<Long> pickingOrderIds = pickingOrderDetailPORepository.findPickingOrderIdsByOutboundOrderPlanIdIn(outboundPlanOrderIds);
         return pickingOrderPOTransfer.toDOs(pickingOrderPORepository.findAllById(pickingOrderIds));
+    }
+
+    @Override
+    public List<Long> findAllIdsByStatus(PickingOrderStatusEnum pickingOrderStatusEnum) {
+        return pickingOrderPORepository.findAllIdsByPickingOrderStatus(pickingOrderStatusEnum);
     }
 }

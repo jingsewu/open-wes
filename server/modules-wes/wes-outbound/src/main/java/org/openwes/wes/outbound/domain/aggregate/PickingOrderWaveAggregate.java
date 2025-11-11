@@ -11,8 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import static org.openwes.common.utils.constants.RedisConstants.NEW_PICKING_ORDER_IDS;
 
@@ -33,12 +31,6 @@ public class PickingOrderWaveAggregate {
         outboundWave.process();
         outboundWaveRepository.save(outboundWave);
 
-        Map<String, List<PickingOrder>> warehousePickingOrderMap = savePickingOrders.stream().collect(Collectors.groupingBy(PickingOrder::getWarehouseCode));
-
-        warehousePickingOrderMap.forEach((warehouseCode, subPickingOrders) -> {
-            String redisKey = NEW_PICKING_ORDER_IDS + "_" + warehouseCode;
-            redisUtils.pushAll(redisKey, subPickingOrders.stream().map(PickingOrder::getId).toList());
-        });
-
+        redisUtils.pushAll(NEW_PICKING_ORDER_IDS, savePickingOrders.stream().map(PickingOrder::getId).toList());
     }
 }

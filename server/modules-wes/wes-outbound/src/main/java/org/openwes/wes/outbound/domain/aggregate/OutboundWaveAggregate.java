@@ -25,7 +25,7 @@ public class OutboundWaveAggregate {
         Integer maxPriority = outboundPlanOrders.stream().map(OutboundPlanOrder::getPriority).reduce(Integer::max).orElse(0);
         outboundWaveRepository.save(new OutboundWave(waveNo, maxPriority, outboundPlanOrders));
 
-        outboundPlanOrders.forEach(v -> v.setWaveNo(waveNo));
+        outboundPlanOrders.forEach(v -> v.wave(waveNo));
         outboundPlanOrderRepository.saveAllOrders(outboundPlanOrders);
     }
 

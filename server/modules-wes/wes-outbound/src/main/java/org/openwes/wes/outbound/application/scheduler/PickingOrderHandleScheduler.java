@@ -49,40 +49,55 @@ public class PickingOrderHandleScheduler {
 
     private static final int MAX_SIZE_PER_TIME = 1000;
 
+    @DistributedScheduled(fixedDelayString = "300000", name = "PickingOrderHandleScheduler#updateNewPickingOrderIds",
+            lockAtLeastFor = "60s")
+    public void refreshNewPickingOrderIds() {
+        log.debug("schedule refresh new picking order ids.");
+        List<String> keys = redisUtils.keys(RedisUtils.generateKeysPatten("", NEW_PICKING_ORDER_IDS));
+        if (CollectionUtils.isNotEmpty(keys)) {
+            return;
+        }
+        List<Long> ids = pickingOrderRepository.findAllIdsByStatus(PickingOrderStatusEnum.NEW);
+        if (CollectionUtils.isEmpty(ids)) {
+            return;
+        }
+
+        redisUtils.pushAll(RedisConstants.NEW_PICKING_ORDER_IDS, ids);
+    }
+
     @DistributedScheduled(fixedDelayString = "10000", name = "PickingOrderHandleScheduler#pickingOrderHandle",
             lockAtLeastFor = "9s")
     public void pickingOrderHandle() {
         log.debug("schedule start execute picking order handler.");
 
-        List<String> keys = redisUtils.keys(RedisUtils.generateKeysPatten("", NEW_PICKING_ORDER_IDS));
-        keys.forEach(key -> {
-            List<Long> pickingOrderIds = redisUtils.getListByPureKey(key, MAX_SIZE_PER_TIME);
-            if (CollectionUtils.isEmpty(pickingOrderIds)) {
-                return;
-            }
+        List<Long> pickingOrderIds = redisUtils.getList(NEW_PICKING_ORDER_IDS, MAX_SIZE_PER_TIME);
+        if (CollectionUtils.isEmpty(pickingOrderIds)) {
+            return;
+        }
 
-            try {
-                this.tryHandlePickingOrders(pickingOrderIds, key);
-            } catch (Exception e) {
-                log.error("picking order handle error", e);
-            }
-        });
+        try {
+            this.tryHandlePickingOrders(pickingOrderIds);
+        } catch (Exception e) {
+            log.error("picking order handle error", e);
+        }
     }
 
-    private void tryHandlePickingOrders(List<Long> pickingOrderIds, String key) {
-        String warehouseCode = key.substring(key.lastIndexOf("_") + 1);
+    private void tryHandlePickingOrders(List<Long> pickingOrderIds) {
         List<PickingOrder> pickingOrders = pickingOrderRepository.findOrderAndDetailsByPickingOrderIds(pickingOrderIds)
                 .stream().filter(v -> v.getPickingOrderStatus() == PickingOrderStatusEnum.NEW).toList();
         if (CollectionUtils.isEmpty(pickingOrders)) {
             log.warn("can not find new picking orders, may be short completed, picking order ids : {}", pickingOrderIds);
-            redisUtils.removeListByPureKey(key, pickingOrderIds);
+            redisUtils.removeList(NEW_PICKING_ORDER_IDS, pickingOrderIds);
             return;
         }
 
-        handlePickingOrders(pickingOrders, warehouseCode, key);
+        pickingOrders.stream().collect(Collectors.groupingBy(PickingOrder::getWarehouseCode))
+                .forEach((warehouseCode, subPickingOrders) -> {
+                    handlePickingOrders(subPickingOrders, warehouseCode);
+                });
     }
 
-    private void handlePickingOrders(List<PickingOrder> pickingOrders, String warehouseCode, String key) {
+    private void handlePickingOrders(List<PickingOrder> pickingOrders, String warehouseCode) {
 
         List<Long> warehouseAreaIds = pickingOrders.stream().map(PickingOrder::getWarehouseAreaId).distinct().toList();
         Map<Long, WarehouseAreaDTO> warehouseAreaMap = warehouseAreaApi.getByIds(warehouseAreaIds).stream()
@@ -93,17 +108,16 @@ public class PickingOrderHandleScheduler {
 
         List<PickingOrder> robotPickingOrders = pickingOrderMap.get(WarehouseAreaWorkTypeEnum.ROBOT);
         if (CollectionUtils.isNotEmpty(robotPickingOrders)) {
-            handleRobotAreaPickingOrders(robotPickingOrders, warehouseCode, key);
+            handleRobotAreaPickingOrders(robotPickingOrders, warehouseCode);
         }
 
         List<PickingOrder> manualPickingOrders = pickingOrderMap.get(WarehouseAreaWorkTypeEnum.MANUAL);
         if (CollectionUtils.isNotEmpty(manualPickingOrders)) {
-            handleManualAreaPickingOrders(manualPickingOrders, warehouseCode, key);
+            handleManualAreaPickingOrders(manualPickingOrders, warehouseCode);
         }
     }
 
-    private void handleRobotAreaPickingOrders(List<PickingOrder> robotPickingOrders, String
-            warehouseCode, String key) {
+    private void handleRobotAreaPickingOrders(List<PickingOrder> robotPickingOrders, String warehouseCode) {
 
         PickingOrderHandlerContext pickingOrderHandlerContext = pickingOrderService.prepareFullContext(warehouseCode, robotPickingOrders);
         if (pickingOrderHandlerContext == null) {
@@ -122,13 +136,12 @@ public class PickingOrderHandleScheduler {
         pickingOrderAssignedResults.forEach(pickingOrderAssignedResult -> {
             pickingOrderTaskAggregate.dispatchPickingOrders(pickingOrderAssignedResult.getOperationTasks(),
                     assignedPickingOrders.get(pickingOrderAssignedResult.getPickingOrderId()), pickingOrderAssignedResult.getAssignedStationSlot());
-            redisUtils.removeListByPureKey(key, Lists.newArrayList(pickingOrderAssignedResult.getPickingOrderId()));
+            redisUtils.removeList(RedisConstants.NEW_PICKING_ORDER_IDS, Lists.newArrayList(pickingOrderAssignedResult.getPickingOrderId()));
         });
 
     }
 
-    private void handleManualAreaPickingOrders(List<PickingOrder> manualPickingOrders, String
-            warehouseCode, String key) {
+    private void handleManualAreaPickingOrders(List<PickingOrder> manualPickingOrders, String warehouseCode) {
 
         PickingOrderHandlerContext pickingOrderHandlerContext = pickingOrderService.prepareStockContext(warehouseCode, manualPickingOrders);
         List<OperationTaskDTO> operationTaskDTOS = pickingOrderService.allocateStocks(pickingOrderHandlerContext);
@@ -137,7 +150,7 @@ public class PickingOrderHandleScheduler {
             List<OperationTaskDTO> operationTasks = operationTaskDTOS.stream()
                     .filter(v -> v.getOrderId().equals(manualPickingOrder.getId())).toList();
             pickingOrderTaskAggregate.dispatchPickingOrders(operationTasks, manualPickingOrder, null);
-            redisUtils.removeListByPureKey(key, Lists.newArrayList(manualPickingOrder.getId()));
+            redisUtils.removeList(NEW_PICKING_ORDER_IDS, Lists.newArrayList(manualPickingOrder.getId()));
         }
 
     }

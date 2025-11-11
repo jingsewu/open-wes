@@ -32,19 +32,19 @@ public class OutboundWaveScheduler {
     private final OutboundPlanOrderRepository outboundPlanOrderRepository;
     private final Executor wavePickingExecutor;
 
-    @DistributedScheduled(cron = "${wms.schedule.config.wavePicking:0/1 * * * * *}",
+    @DistributedScheduled(cron = "${wms.schedule.config.wavePicking:0 0/1 * * * *}",
             name = "OutboundWaveScheduler#wavePicking", lockAtLeastFor = "30s")
     public void wavePicking() {
         List<String> keys = redisUtils.keys(RedisUtils.generateKeysPatten("", OUTBOUND_PLAN_ORDER_ASSIGNED_IDS));
-        keys.forEach(key -> {
-            List<Long> orderIds = redisUtils.getListByPureKey(key);
+        keys.forEach(warehouseCode -> {
+            List<Long> orderIds = redisUtils.getListByPureKey(warehouseCode);
             if (CollectionUtils.isEmpty(orderIds)) {
                 return;
             }
 
             CompletableFuture
                     .runAsync(Objects.requireNonNull(TtlRunnable.get(()
-                            -> this.wavePickingSingleWarehouse(orderIds, key))), wavePickingExecutor)
+                            -> this.wavePickingSingleWarehouse(orderIds, warehouseCode))), wavePickingExecutor)
                     .exceptionally(e -> {
                         log.error("handle waving order failed.", e);
                         return null;

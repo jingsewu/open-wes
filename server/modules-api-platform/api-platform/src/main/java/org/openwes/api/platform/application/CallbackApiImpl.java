@@ -50,6 +50,10 @@ public class CallbackApiImpl implements ICallbackApi {
             return null;
         }
 
+        if (!apiPO.isEnableLog()) {
+            return handlerExecutor.executeCallbackWithoutLog(handler, apiPO, sourceData);
+        }
+
         if (apiPO.isSyncCallback()) {
             return handlerExecutor.synchronizeExecuteCallback(handler, apiPO, sourceData);
         }

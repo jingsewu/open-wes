@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.openwes.api.platform.api.constants.CallbackApiTypeEnum;
 import org.openwes.common.utils.utils.RedisUtils;
 import org.openwes.wes.api.outbound.constants.OutboundPlanOrderStatusEnum;
-import org.openwes.wes.api.outbound.constants.PickingOrderStatusEnum;
 import org.openwes.wes.api.outbound.dto.OutboundAllocateSkuBatchContext;
 import org.openwes.wes.api.outbound.event.*;
 import org.openwes.wes.common.facade.CallbackApiFacade;
@@ -92,18 +91,18 @@ public class OutboundPlanOrderSubscribe {
     }
 
     @Subscribe
+    public void onCompleteEvent(@Valid OutboundPlanOrderCompletionEvent event) {
+        OutboundPlanOrder outboundPlanOrder = outboundPlanOrderRepository.findById(event.getAggregatorId());
+        callbackApiFacade.callback(CallbackApiTypeEnum.OUTBOUND_PLAN_ORDER_COMPLETE, outboundPlanOrder.getCustomerOrderType(),
+                outboundPlanOrderTransfer.toDTO(outboundPlanOrder));
+    }
+
+    @Subscribe
     public void onOutboundWaveCompletionEvent(@Valid OutboundWaveCompletionEvent event) {
         List<OutboundPlanOrder> outboundPlanOrders = outboundPlanOrderRepository.findAllByIds(event.getOutboundPlanOrderIds());
         outboundPlanOrders.stream().filter(v -> v.getOutboundPlanOrderStatus() != OutboundPlanOrderStatusEnum.PICKED)
                 .forEach(OutboundPlanOrder::shortComplete);
         outboundPlanOrderRepository.saveAllOrderAndDetails(outboundPlanOrders);
-    }
-
-    @Subscribe
-    public void onCompleteEvent(@Valid OutboundPlanOrderCompletionEvent event) {
-        OutboundPlanOrder outboundPlanOrder = outboundPlanOrderRepository.findById(event.getAggregatorId());
-        callbackApiFacade.callback(CallbackApiTypeEnum.OUTBOUND_PLAN_ORDER_COMPLETE, outboundPlanOrder.getCustomerOrderType(),
-                outboundPlanOrderTransfer.toDTO(outboundPlanOrder));
     }
 
 }

@@ -73,7 +73,7 @@ public abstract class AbstractCallbackHandler implements CallbackHandlerService 
             log.error("execute callback error:", e);
             response = Response.builder().code(CommonErrorDescEnum.SYSTEM_EXEC_ERROR.getCode()).msg(e.getMessage()).build();
         }
-        log.debug("external request:\napiPo is {}\ntarget obj is {}\nresponse obj is {}", apiPO, targetObj, response);
+        log.trace("external request apiPo is: {}\ntarget obj is: {}\nresponse obj is: {}", apiPO, targetObj, response);
         return response;
     }
 

@@ -47,12 +47,20 @@ public class ContainerTaskRepositoryImpl implements ContainerTaskRepository {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ContainerTask> findAllByTaskCodes(Collection<String> taskCodes) {
         List<ContainerTaskPO> containerTaskPOS = containerTaskPORepository.findAllByTaskCodeIn(taskCodes);
-        return containerTaskPOTransfer.toDOs(containerTaskPOS);
+        List<Long> taskIds = containerTaskPOS.stream().map(ContainerTaskPO::getId).toList();
+        List<ContainerTaskAndBusinessTaskRelationPO> relationPOS = containerTaskAndBusinessTaskRelationPORepository.findByTaskIdIn(taskIds);
+
+        Map<Long, List<ContainerTaskAndBusinessTaskRelationPO>> relationMap = relationPOS.stream()
+                .collect(Collectors.groupingBy(ContainerTaskAndBusinessTaskRelationPO::getTaskId));
+        return containerTaskPOS.stream().map(containerTaskPO ->
+                containerTaskPOTransfer.toDO(containerTaskPO, relationMap.get(containerTaskPO.getId()))).toList();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ContainerTask> findAllByCustomerTaskIds(List<Long> customerTaskIds) {
         List<ContainerTaskAndBusinessTaskRelationPO> relationPOs = containerTaskAndBusinessTaskRelationPORepository
                 .findByCustomerTaskIdIn(customerTaskIds);

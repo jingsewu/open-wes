@@ -1,7 +1,7 @@
 package org.openwes.common.utils.utils;
 
-import org.openwes.common.utils.constants.MarkConstant;
 import lombok.RequiredArgsConstructor;
+import org.openwes.common.utils.constants.MarkConstant;
 import org.redisson.api.*;
 import org.redisson.api.listener.MessageListener;
 import org.redisson.codec.JsonJacksonCodec;
@@ -108,6 +108,11 @@ public class RedisUtils {
     public <T> List<T> getList(String key) {
         RList<T> rList = redissonClient.getList(generateKey(key));
         return rList.range(rList.size());
+    }
+
+    public <T> List<T> getList(String key, int size) {
+        RList<T> rList = redissonClient.getList(generateKey(key));
+        return rList.range(size);
     }
 
     public <T> List<T> getListByPureKey(String key) {

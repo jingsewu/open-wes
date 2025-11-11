@@ -1,6 +1,7 @@
 package org.openwes.wes.outbound.domain.entity;
 
 import com.google.common.collect.Sets;
+import io.micrometer.common.util.StringUtils;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
@@ -12,9 +13,9 @@ import org.openwes.plugin.api.dto.event.LifeCycleStatusChangeEvent;
 import org.openwes.wes.api.main.data.dto.SkuMainDataDTO;
 import org.openwes.wes.api.outbound.constants.OutboundPlanOrderDetailStatusEnum;
 import org.openwes.wes.api.outbound.constants.OutboundPlanOrderStatusEnum;
-import org.openwes.wes.api.outbound.event.OutboundPlanOrderCreatedEvent;
 import org.openwes.wes.api.outbound.event.OutboundPlanOrderAssignedEvent;
 import org.openwes.wes.api.outbound.event.OutboundPlanOrderCompletionEvent;
+import org.openwes.wes.api.outbound.event.OutboundPlanOrderCreatedEvent;
 import org.openwes.wes.api.outbound.event.OutboundPlanOrderImprovedPriorityEvent;
 
 import java.util.List;
@@ -73,7 +74,7 @@ public class OutboundPlanOrder extends AggregatorRoot {
         for (OutboundPlanOrderDetail orderDetail : this.details) {
             skuSet.add(orderDetail.getSkuCode());
             total += orderDetail.getQtyRequired();
-            orderDetail.setOutboundPlanOrderId(this.id);
+            orderDetail.initialize(this.id);
         }
         this.totalQty = total;
         this.skuKindNum = skuSet.size();
@@ -208,7 +209,17 @@ public class OutboundPlanOrder extends AggregatorRoot {
     }
 
     public void improvePriority(int priority) {
+        log.info("outbound plan order id: {}, orderNo: {} improve priority with priority: {}", this.id, this.orderNo, priority);
         this.priority += priority * 10000;
         this.addAsynchronousDomainEvents(new OutboundPlanOrderImprovedPriorityEvent(this.id, this.priority));
+    }
+
+    public void wave(String waveNo) {
+        log.info("outbound plan order id: {}, orderNo: {} wave with waveNo: {}", this.id, this.orderNo, waveNo);
+        if (StringUtils.isNotEmpty(this.waveNo)) {
+            throw new IllegalStateException(String.format("outbound plan order id: %s waveNo:" +
+                    " %s wave but it's waveNo is not null", this.id, waveNo));
+        }
+        this.waveNo = waveNo;
     }
 }

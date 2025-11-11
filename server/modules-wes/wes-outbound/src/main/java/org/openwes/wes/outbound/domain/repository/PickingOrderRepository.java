@@ -1,5 +1,6 @@
 package org.openwes.wes.outbound.domain.repository;
 
+import org.openwes.wes.api.outbound.constants.PickingOrderStatusEnum;
 import org.openwes.wes.outbound.domain.entity.PickingOrder;
 
 import java.util.Collection;
@@ -36,4 +37,6 @@ public interface PickingOrderRepository {
     List<PickingOrder> findAllByOutboundPlanOrderId(Long outboundPlanOrderId);
 
     List<PickingOrder> findAllOrderByOutboundPlanOrderIds(List<Long> outboundPlanOrderIds);
+
+    List<Long> findAllIdsByStatus(PickingOrderStatusEnum pickingOrderStatusEnum);
 }

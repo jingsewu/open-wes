@@ -1,12 +1,13 @@
 package org.openwes.wes.outbound.infrastructure.repository.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.openwes.wes.outbound.domain.entity.OutboundPreAllocatedRecord;
 import org.openwes.wes.outbound.domain.repository.OutboundPreAllocatedRecordRepository;
 import org.openwes.wes.outbound.infrastructure.persistence.mapper.OutboundPreAllocatedRecordPORepository;
 import org.openwes.wes.outbound.infrastructure.persistence.po.OutboundPreAllocatedRecordPO;
 import org.openwes.wes.outbound.infrastructure.persistence.transfer.OutboundPreAllocatedRecordPOTransfer;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -18,6 +19,7 @@ public class OutboundPreAllocatedRecordRepositoryImpl implements OutboundPreAllo
     private final OutboundPreAllocatedRecordPOTransfer outboundPreAllocatedRecordPOTransfer;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void saveAll(List<OutboundPreAllocatedRecord> planPreAllocatedRecords) {
         outboundPreAllocatedRecordPORepository.saveAll(outboundPreAllocatedRecordPOTransfer.toPOs(planPreAllocatedRecords));
     }

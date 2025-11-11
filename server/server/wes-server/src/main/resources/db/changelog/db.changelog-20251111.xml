@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="a_api_add_column_enable_log" author="Kinser">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="a_api"/>
+            </and>
+            <not>
+                <columnExists tableName="a_api" columnName="enable_log"/>
+            </not>
+        </preConditions>
+        <comment>add column enable_log to table a_api</comment>
+        <sql>
+            ALTER table a_api
+                ADD COLUMN enable_log tinyint(1) NOT NULL DEFAULT 1 COMMENT 'Whether to enable log';
+
+            update a_api
+            set enable_log=0
+            where id = 540927462910070784;
+        </sql>
+    </changeSet>
+</databaseChangeLog>
