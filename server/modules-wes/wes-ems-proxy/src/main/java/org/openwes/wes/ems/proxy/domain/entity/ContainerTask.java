@@ -69,6 +69,12 @@ public class ContainerTask extends AggregatorRoot implements Serializable {
 
         log.info("container task id: {} task code: {} update task status to: {}", this.id, this.taskCode, taskStatus);
 
+        if (this.taskStatus != ContainerTaskStatusEnum.PROCESSING && this.taskStatus != ContainerTaskStatusEnum.NEW) {
+            log.warn("container task id: {} task code: {} task status is not processing, can not update task status to: {}",
+                    this.id, this.taskCode, this.taskStatus);
+            return;
+        }
+
         this.finalDestination = locationCode;
         if ((ContainerTaskTypeEnum.INBOUND == this.containerTaskType
                 || BusinessTaskTypeEnum.EMPTY_CONTAINER_OUTBOUND == this.businessTaskType)

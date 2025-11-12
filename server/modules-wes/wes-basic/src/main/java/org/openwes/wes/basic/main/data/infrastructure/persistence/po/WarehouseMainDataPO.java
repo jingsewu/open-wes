@@ -20,7 +20,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
                 @Index(unique = true, name = "uk_warehouse_code", columnList = "warehouseCode")
         }
 )
-@Comment("Warehouse Main Data Management Table - Stores detailed information about warehouses, including their attributes, location, and contact details.")
+@Comment("Warehouse Main Data Management Table - Stores detailed information about warehouses, " +
+        "including their attributes, location, and contact details.")
 public class WarehouseMainDataPO extends UpdateUserPO {
 
     @Id

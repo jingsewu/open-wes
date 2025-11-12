@@ -28,7 +28,7 @@ public class DomainEventScheduler {
     private final Executor asyncEventBusExecutor;
 
     private static final long DELAY_TIME_IN_MILLIS = 600 * 1000L;
-    private static final int MAX_SIZE_PER_TIME = 100;
+    private static final int MAX_SIZE_PER_TIME = 300;
 
     @DistributedScheduled(cron = "0/30 * * * * *", name = "DomainEventScheduler#handleFailedDomainEvent",
             lockAtLeastFor = "29s")

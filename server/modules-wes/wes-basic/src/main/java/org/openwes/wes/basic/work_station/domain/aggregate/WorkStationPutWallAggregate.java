@@ -23,7 +23,7 @@ public class WorkStationPutWallAggregate {
         if (workStation.getWorkStationMode() == WorkStationModeEnum.PICKING
                 || workStation.getWorkStationMode() == WorkStationModeEnum.TWO_STEP_RELOCATION) {
             putWalls.forEach(PutWall::occupy);
-            putWallRepository.saveAll(putWalls, workStation.getId());
+            putWallRepository.saveAll(putWalls);
         }
         workStationRepository.save(workStation);
     }
@@ -34,7 +34,7 @@ public class WorkStationPutWallAggregate {
         if (workStation.getWorkStationMode() == WorkStationModeEnum.PICKING
                 || workStation.getWorkStationMode() == WorkStationModeEnum.TWO_STEP_RELOCATION) {
             putWalls.forEach(PutWall::release);
-            putWallRepository.saveAll(putWalls, workStation.getId());
+            putWallRepository.saveAll(putWalls);
         }
 
         workStation.offline();

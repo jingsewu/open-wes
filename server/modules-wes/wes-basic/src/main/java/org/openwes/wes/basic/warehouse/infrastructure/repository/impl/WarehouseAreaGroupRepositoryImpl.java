@@ -6,6 +6,7 @@ import org.openwes.wes.basic.warehouse.infrastructure.persistence.mapper.Warehou
 import org.openwes.wes.basic.warehouse.infrastructure.persistence.transfer.WarehouseAreaGroupPOTransfer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -15,6 +16,7 @@ public class WarehouseAreaGroupRepositoryImpl implements WarehouseAreaGroupRepos
     private final WarehouseAreaGroupPOTransfer warehouseAreaGroupPOTransfer;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void save(WarehouseAreaGroup warehouseAreaGroup) {
         warehouseAreaGroupPORepository.save(warehouseAreaGroupPOTransfer.toPO(warehouseAreaGroup));
     }

@@ -19,6 +19,7 @@ public class ContainerRepositoryImpl implements ContainerRepository {
     private final ContainerPOTransfer containerPOTransfer;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void save(Container container) {
         containerPORepository.save(containerPOTransfer.toPO(container));
     }

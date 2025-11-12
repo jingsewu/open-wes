@@ -19,7 +19,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
                 @Index(unique = true, name = "uk_sku_owner_warehouse", columnList = "skuCode,ownerCode,warehouseCode")
         }
 )
-@Comment("SKU Main Data Management Table - Stores detailed information about SKUs, including their attributes, dimensions, and classification.")
+@Comment("SKU Main Data Management Table - Stores detailed information about SKUs, " +
+        "including their attributes, dimensions, and classification.")
 public class SkuMainDataPO extends UpdateUserPO {
 
     @Id

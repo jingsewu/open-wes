@@ -39,8 +39,8 @@ public class TransferContainerRecord extends AggregatorRoot implements Serializa
         this.transferContainerStatus = TransferContainerRecordStatusEnum.BOUNDED;
     }
 
-    public TransferContainerRecord(String transferContainerCode, Long workStationId, String putWallSlotCode, String warehouseCode,
-                                   Long pickingOrderId, String destination) {
+    public TransferContainerRecord(String transferContainerCode, Long workStationId, String putWallSlotCode,
+                                   String warehouseCode, Long pickingOrderId, String destination) {
 
         this.transferContainerCode = transferContainerCode;
         this.putWallSlotCode = putWallSlotCode;

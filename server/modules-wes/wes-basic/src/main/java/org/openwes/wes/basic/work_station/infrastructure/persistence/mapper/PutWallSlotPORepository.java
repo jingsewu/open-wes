@@ -18,5 +18,7 @@ public interface PutWallSlotPORepository extends JpaRepository<PutWallSlotPO, Lo
 
     List<PutWallSlotPO> findAllByPutWallSlotCodeInAndWorkStationId(Collection<String> putWallSlotCodes, Long workStationId);
 
-    List<PutWallSlotPO> findAllByWorkStationIdIn(List<Long> workStationIds);
+    List<PutWallSlotPO> findAllByWorkStationIdIn(Collection<Long> workStationIds);
+
+    List<PutWallSlotPO> findAllByWorkStationId(Long workStationId);
 }

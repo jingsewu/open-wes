@@ -1,22 +1,16 @@
 package org.openwes.domain.event;
 
-import org.openwes.common.utils.exception.CommonException;
-import org.openwes.domain.event.api.DomainEvent;
-import org.openwes.domain.event.domain.entity.DomainEventPO;
-import org.openwes.domain.event.domain.repository.DomainEventPORepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.openwes.domain.event.api.DomainEvent;
+import org.openwes.domain.event.domain.entity.DomainEventPO;
+import org.openwes.domain.event.domain.repository.DomainEventPORepository;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.Optional;
 
@@ -28,7 +22,7 @@ import java.util.Optional;
 public class DomainTransactionAspect {
 
     private final DomainEventPORepository domainEventPORepository;
-    private final PlatformTransactionManager transactionManager;
+    private final DomainEventExecutor domainEventExecutor;
 
     @Around("@annotation(com.google.common.eventbus.Subscribe)")
     public Object updateDomainTransactionStatus(ProceedingJoinPoint joinPoint) throws Throwable {
@@ -51,31 +45,7 @@ public class DomainTransactionAspect {
 
         DomainEventPO domainEventPO = optional.get();
 
-        return executeWithTransaction(joinPoint, domainEventPO);
+        return domainEventExecutor.executeWithTransaction(joinPoint, domainEventPO);
     }
 
-    private Object executeWithTransaction(ProceedingJoinPoint joinPoint, DomainEventPO domainEventPO) throws Throwable {
-
-        DefaultTransactionDefinition def = new DefaultTransactionDefinition();
-        def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-        def.setName("EventProcessing-" + domainEventPO.getId());
-        TransactionStatus status = transactionManager.getTransaction(def);
-        try {
-
-            Object result = joinPoint.proceed();
-
-            domainEventPO.succeed();
-            domainEventPORepository.save(domainEventPO);
-
-            transactionManager.commit(status);
-
-            return result;
-        } catch (Exception e) {
-            log.error("proceed error:", e);
-            if (TransactionSynchronizationManager.isActualTransactionActive()) {
-                transactionManager.rollback(status);
-            }
-            throw new CommonException(e.getMessage());
-        }
-    }
 }

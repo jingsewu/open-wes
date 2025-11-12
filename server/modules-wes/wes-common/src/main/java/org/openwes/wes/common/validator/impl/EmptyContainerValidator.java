@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -26,6 +27,7 @@ public class EmptyContainerValidator implements IValidator<List<EmptyContainerVa
 
 
     @Override
+    @Transactional(readOnly = true)
     public List<ContainerDTO> validate(List<ContainerValidatorObject> validateObjects) {
         Map<String, List<EmptyContainerValidator.ContainerValidatorObject>> validateObjectMap
                 = validateObjects.stream().collect(Collectors.groupingBy(EmptyContainerValidator.ContainerValidatorObject::getWarehouseCode));

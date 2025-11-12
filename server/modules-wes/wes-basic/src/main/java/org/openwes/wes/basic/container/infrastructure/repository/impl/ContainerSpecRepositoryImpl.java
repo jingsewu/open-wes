@@ -7,6 +7,7 @@ import org.openwes.wes.basic.container.infrastructure.persistence.po.ContainerSp
 import org.openwes.wes.basic.container.infrastructure.persistence.transfer.ContainerSpecPOTransfer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
@@ -19,14 +20,15 @@ public class ContainerSpecRepositoryImpl implements ContainerSpecRepository {
     private final ContainerSpecPOTransfer containerSpecPOTransfer;
 
     @Override
-    public ContainerSpec findByContainerSpecCode(String containerSpecCode, String warehouseCode) {
-        return containerSpecPOTransfer.toDO(containerSpecPORepository
-                .findByContainerSpecCodeAndWarehouseCode(containerSpecCode, warehouseCode));
+    @Transactional(rollbackFor = Exception.class)
+    public void save(ContainerSpec containerSpec) {
+        containerSpecPORepository.save(containerSpecPOTransfer.toPO(containerSpec));
     }
 
     @Override
-    public void save(ContainerSpec containerSpec) {
-        containerSpecPORepository.save(containerSpecPOTransfer.toPO(containerSpec));
+    public ContainerSpec findByContainerSpecCode(String containerSpecCode, String warehouseCode) {
+        return containerSpecPOTransfer.toDO(containerSpecPORepository
+                .findByContainerSpecCodeAndWarehouseCode(containerSpecCode, warehouseCode));
     }
 
     @Override
@@ -52,6 +54,7 @@ public class ContainerSpecRepositoryImpl implements ContainerSpecRepository {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void delete(ContainerSpec containerSpec) {
         containerSpecPORepository.delete(containerSpecPOTransfer.toPO(containerSpec));
     }

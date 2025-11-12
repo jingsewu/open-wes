@@ -7,6 +7,7 @@ import org.openwes.wes.api.main.data.dto.WarehouseMainDataDTO;
 import org.openwes.wes.common.validator.IValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Set;
@@ -19,6 +20,7 @@ public class WarehouseValidator implements IValidator<List<String>, Void> {
     private final IWarehouseMainDataApi warehouseMainDataApi;
 
     @Override
+    @Transactional(readOnly = true)
     public Void validate(List<String> warehouseCodes) {
         final Set<String> dataWarehouseCodes = warehouseMainDataApi.getWarehouses(warehouseCodes)
                 .stream()

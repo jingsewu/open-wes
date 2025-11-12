@@ -1,12 +1,12 @@
 package org.openwes.wes.basic.warehouse.infrastructure.repository.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.openwes.wes.basic.warehouse.domain.entity.Aisle;
 import org.openwes.wes.basic.warehouse.domain.entity.Location;
 import org.openwes.wes.basic.warehouse.domain.repository.LocationRepository;
 import org.openwes.wes.basic.warehouse.infrastructure.persistence.mapper.AislePORepository;
 import org.openwes.wes.basic.warehouse.infrastructure.persistence.mapper.LocationPORepository;
 import org.openwes.wes.basic.warehouse.infrastructure.persistence.transfer.LocationPOTransfer;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,19 +27,20 @@ public class LocationRepositoryImpl implements LocationRepository {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void save(List<Aisle> aisles, List<Location> locations) {
         aislePORepository.saveAll(locationPOTransfer.toAislePOs(aisles));
         locationPORepository.saveAll(locationPOTransfer.toPOs(locations));
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void save(Location location) {
         locationPORepository.save(locationPOTransfer.toPO(location));
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void saveAll(List<Location> locations) {
         locationPORepository.saveAll(locationPOTransfer.toPOs(locations));
     }
@@ -55,6 +56,7 @@ public class LocationRepositoryImpl implements LocationRepository {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void deleteAll(List<Location> locations) {
         locationPORepository.deleteAll(locationPOTransfer.toPOs(locations));
     }

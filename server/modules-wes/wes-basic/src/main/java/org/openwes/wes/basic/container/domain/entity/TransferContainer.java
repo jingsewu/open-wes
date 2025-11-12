@@ -105,6 +105,8 @@ public class TransferContainer extends AggregatorRoot implements Serializable {
     }
 
     public void updateLocation(Long warehouseAreaId, String locationCode) {
+        log.info("transfer container id: {}, transfer container code: {} updateLocation warehouseAreaId: {}, location: {}",
+                this.id, this.transferContainerCode, this.warehouseAreaId, this.locationCode);
         this.warehouseAreaId = warehouseAreaId;
         this.locationCode = locationCode;
     }

@@ -78,6 +78,14 @@ services:
     image: mysql:8.0
     environment:
       MYSQL_ROOT_PASSWORD: root
+      # 性能相关环境变量
+      MYSQL_INNODB_BUFFER_POOL_SIZE: 2G
+      MYSQL_INNODB_LOG_FILE_SIZE: 512M
+      MYSQL_INNODB_FLUSH_LOG_AT_TRX_COMMIT: 2
+      MYSQL_SYNC_BINLOG: 0
+      MYSQL_INNODB_FLUSH_METHOD: O_DIRECT
+      MYSQL_MAX_CONNECTIONS: 1000
+      MYSQL_INNODB_BUFFER_POOL_INSTANCES: 4
     ports:
       - "3306:3306"
     volumes:

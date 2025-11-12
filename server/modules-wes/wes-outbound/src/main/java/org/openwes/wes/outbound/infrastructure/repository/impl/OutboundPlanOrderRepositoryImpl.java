@@ -1,6 +1,7 @@
 package org.openwes.wes.outbound.infrastructure.repository.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.openwes.domain.event.AggregatorRoot;
 import org.openwes.wes.api.outbound.constants.OutboundPlanOrderStatusEnum;
 import org.openwes.wes.outbound.domain.entity.OutboundPlanOrder;
@@ -31,9 +32,13 @@ public class OutboundPlanOrderRepositoryImpl implements OutboundPlanOrderReposit
         outboundPlanOrder.sendAndClearEvents();
 
         outboundPlanOrderPORepository.save(outboundPlanOrderPOTransfer.toPO(outboundPlanOrder));
-        List<OutboundPlanOrderDetailPO> outboundPlanOrderDetailPOS = outboundPlanOrderPOTransfer
-                .toDetailPOs(outboundPlanOrder.getDetails().stream().filter(OutboundPlanOrderDetail::isModified).toList());
-        outboundPlanOrderDetailPORepository.saveAll(outboundPlanOrderDetailPOS);
+        List<OutboundPlanOrderDetail> outboundPlanOrderDetails =
+                outboundPlanOrder.getDetails().stream().filter(OutboundPlanOrderDetail::isModified).toList();
+
+        if (ObjectUtils.isEmpty(outboundPlanOrderDetails)) {
+            return;
+        }
+        outboundPlanOrderDetailPORepository.saveAll(outboundPlanOrderPOTransfer.toDetailPOs(outboundPlanOrderDetails));
     }
 
     @Override
@@ -52,6 +57,10 @@ public class OutboundPlanOrderRepositoryImpl implements OutboundPlanOrderReposit
         outboundPlanOrderPORepository.saveAll(outboundPlanOrderPOTransfer.toPOs(outboundPlanOrders));
         List<OutboundPlanOrderDetail> outboundPlanOrderDetails = outboundPlanOrders.stream()
                 .flatMap(v -> v.getDetails().stream().filter(OutboundPlanOrderDetail::isModified)).toList();
+
+        if (ObjectUtils.isEmpty(outboundPlanOrderDetails)) {
+            return;
+        }
         outboundPlanOrderDetailPORepository.saveAll(outboundPlanOrderPOTransfer.toDetailPOs(outboundPlanOrderDetails));
     }
 

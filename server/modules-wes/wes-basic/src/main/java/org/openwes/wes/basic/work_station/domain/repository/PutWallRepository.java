@@ -10,7 +10,7 @@ public interface PutWallRepository {
 
     PutWall save(PutWall putWall);
 
-    void saveAll(List<PutWall> putWalls, @NotNull Long workStationId);
+    void saveAll(List<PutWall> putWalls);
 
     PutWall findById(Long id);
 

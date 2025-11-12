@@ -6,6 +6,7 @@ import org.openwes.wes.basic.warehouse.infrastructure.persistence.mapper.Warehou
 import org.openwes.wes.basic.warehouse.infrastructure.persistence.transfer.WarehouseLogicPOTransfer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -17,6 +18,7 @@ public class WarehouseLogicRepositoryImpl implements WarehouseLogicRepository {
     private final WarehouseLogicPOTransfer warehouseLogicPOTransfer;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void save(WarehouseLogic warehouseLogic) {
         warehouseLogicPORepository.save(warehouseLogicPOTransfer.toPO(warehouseLogic));
     }
@@ -37,6 +39,7 @@ public class WarehouseLogicRepositoryImpl implements WarehouseLogicRepository {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void saveAll(List<WarehouseLogic> warehouseLogics) {
         warehouseLogicPORepository.saveAll(warehouseLogicPOTransfer.toPOs(warehouseLogics));
     }

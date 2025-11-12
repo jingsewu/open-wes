@@ -2,28 +2,20 @@ package org.openwes.wes.basic.container.application.event;
 
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
-import jakarta.persistence.OptimisticLockException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.openwes.common.utils.constants.RedisConstants;
 import org.openwes.distribute.lock.DistributeLock;
-import org.openwes.distribute.lock.impl.RedisDistributeLock;
 import org.openwes.wes.api.basic.event.ContainerLocationUpdateEvent;
 import org.openwes.wes.api.basic.event.ContainerStockUpdateEvent;
 import org.openwes.wes.api.stock.IStockApi;
 import org.openwes.wes.api.stock.dto.ContainerStockDTO;
 import org.openwes.wes.basic.container.domain.entity.Container;
 import org.openwes.wes.basic.container.domain.repository.ContainerRepository;
-import org.springframework.dao.OptimisticLockingFailureException;
-import org.springframework.orm.ObjectOptimisticLockingFailureException;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Component
@@ -38,8 +30,9 @@ public class ContainerEventSubscriber {
     public void onContainerStockUpdate(@Valid ContainerStockUpdateEvent event) {
         log.info("receive container stock update event: {}", event);
 
+        //default lock 3 seconds when received the same container update event to avoid duplicate update
         boolean acquireLock = distributeLock.acquireLock(RedisConstants.CONTAINER_STOCK_UPDATE_LOCK
-                + event.getContainerCode() + ":" + event.getWarehouseCode(), 0);
+                + event.getContainerCode() + ":" + event.getWarehouseCode(), 0, 5000L);
         if (!acquireLock) {
             return;
         }
@@ -60,6 +53,13 @@ public class ContainerEventSubscriber {
     public void onContainerLocationUpdate(@Valid ContainerLocationUpdateEvent event) {
         log.info("receive container location update event: {}", event);
 
+        //default lock 3 seconds when received the same container update event to avoid duplicate update
+        boolean acquireLock = distributeLock.acquireLock(RedisConstants.CONTAINER_LOCATION_UPDATE_LOCK
+                + event.getContainerCode() + ":" + event.getWarehouseCode(), 0, 5000L);
+        if (!acquireLock) {
+            return;
+        }
+
         Container container = containerRepository.findByContainerCode(event.getContainerCode(), event.getWarehouseCode());
         if (container == null) {
             log.warn("no container found with containerCode: {}, warehouseCode: {} when update container location",
@@ -70,5 +70,6 @@ public class ContainerEventSubscriber {
         container.changeLocation(event.getWarehouseCode(), event.getWarehouseAreaId(), event.getLocationCode(), "");
         container.moveInside(event.getWarehouseCode(), event.getWarehouseAreaId(), event.getLocationCode());
         containerRepository.save(container);
+
     }
 }

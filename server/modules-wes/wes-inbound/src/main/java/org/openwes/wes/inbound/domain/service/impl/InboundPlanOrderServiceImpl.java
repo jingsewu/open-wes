@@ -31,6 +31,7 @@ import org.openwes.wes.inbound.domain.repository.AcceptOrderRepository;
 import org.openwes.wes.inbound.domain.repository.InboundPlanOrderRepository;
 import org.openwes.wes.inbound.domain.service.InboundPlanOrderService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
@@ -52,6 +53,7 @@ public class InboundPlanOrderServiceImpl implements InboundPlanOrderService {
     private final ISystemConfigApi systemConfigApi;
 
     @Override
+    @Transactional(readOnly = true)
     public ValidateResult<Set<SkuMainDataDTO>> validateCreation(List<InboundPlanOrder> inboundPlanOrders) {
         ValidateResult<Set<SkuMainDataDTO>> result = new ValidateResult<>();
         Set<SkuMainDataDTO> skuMainDataDTOS = Sets.newHashSet();
@@ -113,6 +115,7 @@ public class InboundPlanOrderServiceImpl implements InboundPlanOrderService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public void validateAccept(AcceptRecordDTO acceptRecord, Long skuId) {
 
         containerValidator.validate(new ContainerValidator.ContainerValidatorObject()

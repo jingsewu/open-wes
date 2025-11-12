@@ -1,16 +1,19 @@
 package org.openwes.domain.event.domain.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.Comment;
+import org.hibernate.annotations.DynamicUpdate;
 import org.openwes.domain.event.constants.DomainEventStatusEnum;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-@Data
+@Getter
+@Setter
 @Entity
-@EntityListeners(AuditingEntityListener.class)
 @Table(
         name = "d_domain_event",
         indexes = {
@@ -19,6 +22,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
                 @Index(name = "idx_status", columnList = "status")
         }
 )
+@EntityListeners(AuditingEntityListener.class)
+@Slf4j
+@DynamicUpdate
 public class DomainEventPO {
 
     @Id
@@ -52,7 +58,9 @@ public class DomainEventPO {
     private DomainEventStatusEnum status = DomainEventStatusEnum.NEW;
 
     public void succeed() {
+        log.info("domain event: {} succeed.", this.id);
         if (this.status == DomainEventStatusEnum.SUCCESS) {
+            log.error("domain event: {} status is SUCCESS,can't succeed.", this.id);
             throw new IllegalStateException("domain event status is SUCCESS,can't succeed.");
         }
         this.status = DomainEventStatusEnum.SUCCESS;

@@ -44,8 +44,9 @@ public class TransferContainerPutWallAggregate {
         }
     }
 
-    @Transactional
-    public void unBindContainer(UnBindContainerDTO unBindContainerDTO, TransferContainer transferContainer, Long transferContainerRecord) {
+    @Transactional(rollbackFor = Exception.class)
+    public void unBindContainer(UnBindContainerDTO unBindContainerDTO, TransferContainer transferContainer,
+                                Long transferContainerRecord) {
 
         transferContainer.unOccupy();
         transferContainerRepository.save(transferContainer);

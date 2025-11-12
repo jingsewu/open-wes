@@ -19,7 +19,7 @@ public class TransferContainerRecordRepositoryImpl implements TransferContainerR
     private final TransferContainerRecordPORepository transferContainerPORepository;
     private final TransferContainerRecordPOTransfer transferContainerPOTransfer;
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public TransferContainerRecord save(TransferContainerRecord transferContainerRecord) {
         TransferContainerRecordPO transferContainerPO = transferContainerPORepository.save(transferContainerPOTransfer.toPO(transferContainerRecord));
@@ -27,6 +27,7 @@ public class TransferContainerRecordRepositoryImpl implements TransferContainerR
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void delete(Long id) {
         transferContainerPORepository.deleteById(id);
     }
@@ -60,8 +61,10 @@ public class TransferContainerRecordRepositoryImpl implements TransferContainerR
 
     @Override
     public List<TransferContainerRecord> findAllBoundedRecordsByPickingOrderId(Long pickingOrderId) {
-        List<TransferContainerRecordPO> transferContainerRecordPOs = transferContainerPORepository.findAllByPickingOrderId(pickingOrderId)
-                .stream().filter(v -> v.getTransferContainerStatus() == TransferContainerRecordStatusEnum.BOUNDED)
+        List<TransferContainerRecordPO> transferContainerRecordPOs = transferContainerPORepository
+                .findAllByPickingOrderId(pickingOrderId)
+                .stream()
+                .filter(v -> v.getTransferContainerStatus() == TransferContainerRecordStatusEnum.BOUNDED)
                 .toList();
         return transferContainerPOTransfer.toDOs(transferContainerRecordPOs);
     }

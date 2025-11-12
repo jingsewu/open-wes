@@ -92,8 +92,11 @@ public class InboundPlanOrder extends AggregatorRoot {
 
     public void accept(AcceptRecordDTO acceptRecord) {
 
-        log.info("inbound order: {} detail: {} accept qty: {} abnormal qty: {}",
-                this.orderNo, acceptRecord.getInboundPlanOrderDetailId(), acceptRecord.getQtyAccepted(), acceptRecord.getQtyAbnormal());
+        log.info("inbound order: {} detail: {} accept qty: {} abnormal qty: {} container id: {} container code: {} container slot: {}",
+                this.orderNo, acceptRecord.getInboundPlanOrderDetailId(), acceptRecord.getQtyAccepted(),
+                acceptRecord.getQtyAbnormal() == null ? 0 : acceptRecord.getQtyAbnormal(),
+                acceptRecord.getTargetContainerId(), acceptRecord.getTargetContainerCode(), acceptRecord.getTargetContainerSlotCode());
+
         this.details.stream()
                 .filter(v -> Objects.equals(v.getId(), acceptRecord.getInboundPlanOrderDetailId()))
                 .forEach(v -> v.accept(acceptRecord.getQtyAccepted(), acceptRecord.getQtyAbnormal()));

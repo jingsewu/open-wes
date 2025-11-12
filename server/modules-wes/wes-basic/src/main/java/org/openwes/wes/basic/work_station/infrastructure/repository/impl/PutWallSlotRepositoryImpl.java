@@ -1,12 +1,12 @@
 package org.openwes.wes.basic.work_station.infrastructure.repository.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.openwes.domain.event.AggregatorRoot;
 import org.openwes.wes.basic.work_station.domain.entity.PutWallSlot;
 import org.openwes.wes.basic.work_station.domain.repository.PutWallSlotRepository;
 import org.openwes.wes.basic.work_station.infrastructure.persistence.mapper.PutWallSlotPORepository;
 import org.openwes.wes.basic.work_station.infrastructure.persistence.po.PutWallSlotPO;
 import org.openwes.wes.basic.work_station.infrastructure.persistence.transfer.PutWallSlotPOTransfer;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -70,6 +70,4 @@ public class PutWallSlotRepositoryImpl implements PutWallSlotRepository {
         List<PutWallSlotPO> putWallSlotPOs = putWallSlotPORepository.findAllByWorkStationIdIn(workStationIds);
         return putWallSlotPOTransfer.toDOs(putWallSlotPOs);
     }
-
-
 }

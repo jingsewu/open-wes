@@ -28,6 +28,17 @@ public class RedisDistributeLock implements DistributeLock {
     }
 
     @Override
+    public boolean acquireLock(String lockKey, long waitTimeInMillis, long leaseTimeInMillis) {
+        RLock lock = redisUtils.getLock(lockKey);
+        try {
+            return lock.tryLock(waitTimeInMillis, leaseTimeInMillis, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return false;
+        }
+    }
+
+    @Override
     public boolean acquireLock(List<String> lockKeys, long waitTimeInMillis) {
         RLock lock = redisUtils.getLock(lockKeys);
         try {

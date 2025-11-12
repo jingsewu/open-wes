@@ -55,6 +55,7 @@ public class SkuMainDataRepositoryImpl implements SkuMainDataRepository {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<SkuMainData> findAllSkuByBarcodeOrSkuCode(String barcode, String skuCode) {
         List<SkuMainDataPO> skuMainDataList = Lists.newArrayList();
         if (ObjectUtils.isNotEmpty(skuCode)) {
@@ -84,6 +85,7 @@ public class SkuMainDataRepositoryImpl implements SkuMainDataRepository {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<SkuMainData> findAllSkuBySkuCodesAndOwnerCode(Collection<String> skuCodes, String ownerCode) {
         if (skuCodes == null || skuCodes.isEmpty()) {
             return Collections.emptyList();
@@ -105,6 +107,7 @@ public class SkuMainDataRepositoryImpl implements SkuMainDataRepository {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public SkuMainData findById(Long id) {
         SkuMainData skuMainData = skuMainDataPOTransfer.toDO(skuMainDataPORepository.findById(id).orElseThrow());
         List<SkuBarCodeDataPO> barCodeDataPOS = skuBarCodeDataPORepository.findAllBySkuId(id);
@@ -116,6 +119,7 @@ public class SkuMainDataRepositoryImpl implements SkuMainDataRepository {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<SkuMainData> findAllByIds(Collection<Long> skuMainDataIds) {
         List<SkuMainData> skuMainDataList = skuMainDataPOTransfer.toDOS(skuMainDataPORepository.findAllById(skuMainDataIds));
 

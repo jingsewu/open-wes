@@ -3,7 +3,11 @@ package org.openwes.distribute.lock;
 import java.util.List;
 
 public interface DistributeLock {
+
     boolean acquireLock(String lockKey, long waitTimeInMillis);
+
+    boolean acquireLock(String lockKey, long waitTimeInMillis, long
+            leaseTimeInMillis);
 
     boolean acquireLock(List<String> lockKeys, long waitTimeInMillis);
 

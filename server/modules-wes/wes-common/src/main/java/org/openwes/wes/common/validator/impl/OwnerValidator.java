@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.Set;
@@ -23,6 +24,7 @@ public class OwnerValidator implements IValidator<OwnerValidator.OwnerValidatorO
     private final IOwnerMainDataApi ownerMainDataApi;
 
     @Override
+    @Transactional(readOnly = true)
     public Void validate(OwnerValidatorObject ownerValidatorObject) {
         if (CollectionUtils.isEmpty(ownerValidatorObject.getOwnerCodes())) {
             throw WmsException.throwWmsException(BasicErrorDescEnum.OWNER_CODE_NOT_EXIST, ownerValidatorObject.getOwnerCodes());

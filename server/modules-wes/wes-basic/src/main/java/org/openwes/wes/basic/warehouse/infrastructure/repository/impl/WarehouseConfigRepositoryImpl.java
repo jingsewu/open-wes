@@ -6,6 +6,7 @@ import org.openwes.wes.basic.warehouse.infrastructure.persistence.mapper.Warehou
 import org.openwes.wes.basic.warehouse.infrastructure.persistence.transfer.WarehouseConfigPOTransfer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -15,6 +16,7 @@ public class WarehouseConfigRepositoryImpl implements WarehouseConfigRepository 
     private final WarehouseConfigPOTransfer warehouseConfigPOTransfer;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void save(WarehouseConfig warehouseConfig) {
         warehouseConfigPORepository.save(warehouseConfigPOTransfer.toPO(warehouseConfig));
     }

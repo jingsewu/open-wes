@@ -49,12 +49,13 @@ public class PutAwayTask extends AggregatorRoot {
         if (ObjectUtils.isEmpty(this.putAwayTaskDetails)) {
             throw new IllegalArgumentException("putAwayTaskDetails is empty");
         }
+        log.info("put away task id: {} taskNo: {} initialize", this.id, this.taskNo);
         this.putAwayTaskDetails.forEach(detail -> detail.setPutAwayTaskId(this.id));
     }
 
     public void complete(String locationCode) {
 
-        log.info("put away task: {} complete and location: {}", this.taskNo, locationCode);
+        log.info("put away task id: {} taskNo: {} complete and location: {}", this.id, this.taskNo, locationCode);
 
         if (this.taskStatus == PutAwayTaskStatusEnum.PUTTED_AWAY) {
             throw new IllegalStateException("put away task has been completed");

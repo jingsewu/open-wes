@@ -52,6 +52,9 @@ public class OutboundPlanOrderDetail implements ModificationAware {
     }
 
     public void shortComplete() {
+        if (this.outboundPlanOrderDetailStatus == OutboundPlanOrderDetailStatusEnum.PICKED) {
+            return;
+        }
         this.outboundPlanOrderDetailStatus = OutboundPlanOrderDetailStatusEnum.PICKED;
         this.modified = true;
     }

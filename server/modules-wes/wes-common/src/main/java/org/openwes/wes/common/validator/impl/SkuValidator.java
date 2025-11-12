@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -20,6 +21,7 @@ public class SkuValidator implements IValidator<SkuValidator.SkuValidatorObject,
     private final ISkuMainDataApi skuMainDataApi;
 
     @Override
+    @Transactional(readOnly = true)
     public Set<SkuMainDataDTO> validate(SkuValidatorObject skuValidatorObject) {
         String ownerCode = skuValidatorObject.getOwnerCode();
         Set<SkuMainDataDTO> skuMainDataDTOS = skuMainDataApi.getSkuMainData(skuValidatorObject.getSkuCodes(), ownerCode)

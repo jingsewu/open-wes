@@ -201,7 +201,8 @@ public class OutboundPlanOrder extends AggregatorRoot {
         this.abnormal = true;
         this.abnormalReason = "short complete";
 
-        this.details.stream().filter(v -> v.getOutboundPlanOrderDetailStatus() != OutboundPlanOrderDetailStatusEnum.PICKED)
+        this.details.stream()
+                .filter(v -> v.getOutboundPlanOrderDetailStatus() != OutboundPlanOrderDetailStatusEnum.PICKED)
                 .forEach(OutboundPlanOrderDetail::shortComplete);
 
         this.addAsynchronousDomainEvents(new OutboundPlanOrderCompletionEvent(this.id));

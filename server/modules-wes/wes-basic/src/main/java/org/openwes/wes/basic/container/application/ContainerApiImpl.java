@@ -19,6 +19,7 @@ import org.openwes.wes.basic.warehouse.domain.entity.Location;
 import org.openwes.wes.basic.warehouse.domain.repository.LocationRepository;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.Collection;
@@ -101,6 +102,7 @@ public class ContainerApiImpl implements IContainerApi {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ContainerSpecDTO queryContainerLayout(String containerCode, String warehouseCode, String face) {
         Container container = containerRepository.findByContainerCode(containerCode, warehouseCode);
         if (container == null) {
