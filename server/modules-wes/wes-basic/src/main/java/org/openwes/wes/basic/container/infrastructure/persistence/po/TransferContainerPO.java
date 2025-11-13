@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.Comment;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.openwes.common.utils.base.UpdateUserPO;
@@ -27,6 +28,7 @@ import static org.hibernate.type.SqlTypes.JSON;
         }
 )
 @Comment("Transfer Container Management Table - Stores details of transfer containers, including their status, location, and related records.")
+@DynamicUpdate
 public class TransferContainerPO extends UpdateUserPO {
 
     @Id

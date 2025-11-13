@@ -1,5 +1,6 @@
 package org.openwes.wes.stock.infrastructure.persistence.po;
 
+import org.hibernate.annotations.DynamicUpdate;
 import org.openwes.common.utils.base.UpdateUserPO;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -21,6 +22,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
                 @Index(name = "idx_update_time",columnList = "updateTime")
         }
 )
+@DynamicUpdate
 public class ContainerStockPO extends UpdateUserPO {
 
     @Id

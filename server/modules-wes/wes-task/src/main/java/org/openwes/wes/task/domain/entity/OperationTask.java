@@ -127,7 +127,7 @@ public class OperationTask extends AggregatorRoot {
 
         OperationTaskPickingDTO operationTaskPickingDTO = new OperationTaskPickingDTO().setOperatedQty(operatedQty)
                 .setDetailId(this.detailId).setOrderId(this.orderId).setTaskType(this.taskType);
-        this.addSynchronizationEvents(new OperationTaskPickedEvent(this.id, operationTaskPickingDTO));
+        this.addAsynchronousDomainEvents(new OperationTaskPickedEvent(this.id, operationTaskPickingDTO));
     }
 
     private void split(Integer operatedQty) {
@@ -164,7 +164,7 @@ public class OperationTask extends AggregatorRoot {
         this.abnormalQty += abnormalQty;
         validateQty();
 
-        this.addAsynchronousDomainEvents(new OperationTaskAbnormalEvent(this.id, this.orderId, this.detailId, abnormalQty));
+        this.addSynchronizationEvents(new OperationTaskAbnormalEvent(this.id, this.orderId, this.detailId, abnormalQty));
     }
 
     public void setActualWorkStation(Long workStationId) {

@@ -15,6 +15,7 @@ import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.Objects;
+import java.util.concurrent.Executor;
 
 @Slf4j
 @Component

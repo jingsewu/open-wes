@@ -1,5 +1,6 @@
 package org.openwes.wes.config.infrastructure.persistence.po;
 
+import org.hibernate.annotations.DynamicUpdate;
 import org.openwes.common.utils.base.UpdateUserPO;
 import org.openwes.common.utils.id.IdGenerator;
 import org.openwes.wes.api.config.dto.BatchAttributeConfigDTO;
@@ -23,6 +24,7 @@ import java.util.List;
         @Index(unique = true, name = "uk_batch_attribute_config_code", columnList = "code")
     }
 )
+@DynamicUpdate
 public class BatchAttributeConfigPO extends UpdateUserPO {
 
     @Id

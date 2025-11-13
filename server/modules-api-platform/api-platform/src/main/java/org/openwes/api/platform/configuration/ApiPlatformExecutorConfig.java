@@ -13,6 +13,18 @@ import java.util.concurrent.ThreadPoolExecutor;
 @Configuration
 public class ApiPlatformExecutorConfig {
 
+    @Bean("logExecutor")
+    public Executor logExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(Runtime.getRuntime().availableProcessors() * 2 + 1);
+        executor.setMaxPoolSize(executor.getCorePoolSize() * 2);
+        executor.setQueueCapacity(1000);
+        executor.setThreadNamePrefix("log-executor-");
+        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+        executor.initialize();
+        return TtlExecutors.getTtlExecutor(executor);
+    }
+
     @Bean("callbackExecutor")
     public Executor callbackExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();

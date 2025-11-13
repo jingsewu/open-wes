@@ -3,7 +3,9 @@ package org.openwes.wes.basic.main.data.infrastructure.persistence.po;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Comment;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.SQLRestriction;
 import org.openwes.common.utils.base.UpdateUserPO;
 import org.openwes.common.utils.id.IdGenerator;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -23,6 +25,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
         }
 )
 @Comment("SKU Barcode Data Management Table - Stores barcode information associated with SKUs.")
+@DynamicUpdate
 public class SkuBarCodeDataPO extends UpdateUserPO {
 
     @Id

@@ -1,5 +1,6 @@
 package org.openwes.wes.config.infrastructure.persistence.po;
 
+import org.hibernate.annotations.DynamicUpdate;
 import org.openwes.common.utils.base.UpdateUserPO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -24,6 +25,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
         @Index(unique = true, name = "uk_c_p_c_d", columnList = "country,province,city,district")
     }
 )
+@DynamicUpdate
 public class AddressPO extends UpdateUserPO {
 
     @Id

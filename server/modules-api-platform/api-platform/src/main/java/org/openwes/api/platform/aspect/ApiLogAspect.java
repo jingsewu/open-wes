@@ -8,7 +8,7 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.openwes.api.platform.api.constants.ApiLogStatusEnum;
 import org.openwes.api.platform.domain.entity.ApiLogPO;
-import org.openwes.api.platform.domain.repository.ApiLogPORepository;
+import org.openwes.api.platform.domain.service.ApiLogService;
 import org.openwes.api.platform.utils.SpringExpressionUtils;
 import org.openwes.common.utils.http.Response;
 import org.openwes.common.utils.id.SnowflakeUtils;
@@ -21,57 +21,91 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class ApiLogAspect {
 
-    private final ApiLogPORepository apiLogPORepository;
+    private final ApiLogService apiLogService;
+    private static final int MAX_STRING_LENGTH = 65535;
 
     @Around("@annotation(apiLog)")
-    public Object around(ProceedingJoinPoint joinPoint, ApiLog apiLog) throws Throwable {
-
-        Object[] args = joinPoint.getArgs();
-
-        ApiLogPO apiLogPO = new ApiLogPO();
-        apiLogPO.setApiCode(SpringExpressionUtils.generateKeyBySpEL(apiLog.apiCode(), joinPoint));
-        String messageId = SpringExpressionUtils.generateKeyBySpEL(apiLog.messageId(), joinPoint);
-        apiLogPO.setMessageId(StringUtils.isEmpty(messageId) || StringUtils.equals("null", messageId)
-                ? SnowflakeUtils.generateId() : Long.parseLong(messageId));
-
-        if (args.length > 0) {
-            apiLogPO.setRequestData(subString(JsonUtils.obj2String(args[args.length - 1]), 65535));
-        }
-
+    public Object around(ProceedingJoinPoint joinPoint, org.openwes.api.platform.aspect.ApiLog apiLog) throws Throwable {
+        // Pre-process: Prepare basic log info
+        ApiLogPO apiLogPO = prepareApiLog(joinPoint, apiLog);
         long startTime = System.currentTimeMillis();
+
         Object result = null;
+        Throwable exception = null;
+
         try {
             result = joinPoint.proceed();
-        } catch (Exception e) {
-            String targetClass = joinPoint.getTarget().getClass().getSimpleName();
-            String methodName = joinPoint.getSignature().getName();
-            log.error("api log Aspect happened error,targetClass: {},methodName: {},args: {}",
-                    targetClass, methodName, args, e);
+            return result;
+        } catch (Throwable e) {
+            exception = e;
             throw e;
         } finally {
             long endTime = System.currentTimeMillis();
-            apiLogPO.setResponseData(subString(JsonUtils.obj2String(result), 65535));
-            apiLogPO.setCostTime(endTime - startTime);
+            // Complete log info in finally block to ensure it's always executed
+            completeApiLogInfo(apiLogPO, result, exception, startTime, endTime);
+            // Save log asynchronously
+            apiLogService.saveApiLogAsync(apiLogPO);
+        }
+    }
+
+    private ApiLogPO prepareApiLog(ProceedingJoinPoint joinPoint, org.openwes.api.platform.aspect.ApiLog apiLog) {
+        Object[] args = joinPoint.getArgs();
+
+        ApiLogPO apiLogPO = new ApiLogPO();
+
+        // Set API code
+        String apiCode = SpringExpressionUtils.generateKeyBySpEL(apiLog.apiCode(), joinPoint);
+        apiLogPO.setApiCode(apiCode);
+
+        // Set message ID
+        String messageId = SpringExpressionUtils.generateKeyBySpEL(apiLog.messageId(), joinPoint);
+        if (StringUtils.isEmpty(messageId) || StringUtils.equals("null", messageId)) {
+            apiLogPO.setMessageId(SnowflakeUtils.generateId());
+        } else {
+            try {
+                apiLogPO.setMessageId(Long.parseLong(messageId));
+            } catch (NumberFormatException e) {
+                log.warn("Invalid messageId format: {}, using snowflake ID instead", messageId);
+                apiLogPO.setMessageId(SnowflakeUtils.generateId());
+            }
+        }
+
+        // Set request data
+        if (args.length > 0) {
+            String requestData = JsonUtils.obj2String(args[args.length - 1]);
+            apiLogPO.setRequestData(truncateString(requestData, MAX_STRING_LENGTH));
+        }
+
+        return apiLogPO;
+    }
+
+    private void completeApiLogInfo(ApiLogPO apiLogPO, Object result, Throwable exception,
+                                    long startTime, long endTime) {
+        apiLogPO.setCostTime(endTime - startTime);
+
+        // Set response data and status
+        if (exception != null) {
+            String errorMsg = exception.getMessage();
+            apiLogPO.setResponseData(truncateString(errorMsg, MAX_STRING_LENGTH));
+            apiLogPO.setStatus(ApiLogStatusEnum.FAIL);
+        } else {
+            String responseData = JsonUtils.obj2String(result);
+            apiLogPO.setResponseData(truncateString(responseData, MAX_STRING_LENGTH));
 
             if (result instanceof Response response) {
-                apiLogPO.setStatus(Response.SUCCESS_CODE.equals(response.getCode()) ? ApiLogStatusEnum.SUCCESS : ApiLogStatusEnum.FAIL);
+                apiLogPO.setStatus(Response.SUCCESS_CODE.equals(response.getCode())
+                        ? ApiLogStatusEnum.SUCCESS
+                        : ApiLogStatusEnum.FAIL);
             } else {
                 apiLogPO.setStatus(ApiLogStatusEnum.SUCCESS);
             }
-            try {
-                apiLogPORepository.save(apiLogPO);
-            } catch (Exception e) {
-                log.error("Failed to save log: {}", apiLogPO, e);
-            }
         }
-        return result;
     }
 
-    private String subString(String str, int length) {
-
-        if (StringUtils.isBlank(str) || str.length() <= length) {
+    private String truncateString(String str, int maxLength) {
+        if (StringUtils.isBlank(str) || str.length() <= maxLength) {
             return str;
         }
-        return str.substring(0, length - 1);
+        return str.substring(0, maxLength);
     }
 }

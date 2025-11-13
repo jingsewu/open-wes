@@ -116,7 +116,8 @@ public class InboundPlanOrder extends AggregatorRoot {
     public void close() {
 
         log.info("inbound order: {} close", this.orderNo);
-        if (this.inboundPlanOrderStatus != InboundPlanOrderStatusEnum.NEW && this.inboundPlanOrderStatus != InboundPlanOrderStatusEnum.ACCEPTING) {
+        if (this.inboundPlanOrderStatus != InboundPlanOrderStatusEnum.NEW
+                && this.inboundPlanOrderStatus != InboundPlanOrderStatusEnum.ACCEPTING) {
             throw WmsException.throwWmsException(INBOUND_STATUS_ERROR, this.inboundPlanOrderStatus);
         }
 

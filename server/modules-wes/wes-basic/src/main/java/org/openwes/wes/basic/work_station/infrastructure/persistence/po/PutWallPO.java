@@ -1,12 +1,11 @@
 package org.openwes.wes.basic.work_station.infrastructure.persistence.po;
 
 import jakarta.persistence.*;
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.hibernate.annotations.Comment;
-import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.*;
 import org.openwes.common.utils.base.UpdateUserPO;
 import org.openwes.common.utils.id.IdGenerator;
 import org.openwes.wes.api.basic.constants.PutWallStatusEnum;
@@ -24,7 +23,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
         }
 )
 @DynamicUpdate
-@Where(clause = "deleted=false")
+@SQLRestriction("deleted=false")
 @Comment("Put Wall Management Table - Stores detailed information about put walls and their statuses.")
 public class PutWallPO extends UpdateUserPO {
 

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.Comment;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 import org.openwes.common.utils.base.UpdateUserPO;
 import org.openwes.common.utils.id.IdGenerator;
@@ -21,6 +22,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 )
 @Comment("SKU Main Data Management Table - Stores detailed information about SKUs, " +
         "including their attributes, dimensions, and classification.")
+@DynamicUpdate
 public class SkuMainDataPO extends UpdateUserPO {
 
     @Id

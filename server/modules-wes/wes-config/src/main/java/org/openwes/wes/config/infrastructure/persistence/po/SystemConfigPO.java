@@ -3,6 +3,7 @@ package org.openwes.wes.config.infrastructure.persistence.po;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.openwes.common.utils.base.UpdateUserPO;
@@ -22,6 +23,7 @@ import static org.hibernate.type.SqlTypes.JSON;
                 @Index(unique = true, name = "uk_singleton_key", columnList = "singletonKey")
         }
 )
+@DynamicUpdate
 public class SystemConfigPO extends UpdateUserPO {
 
     @Id

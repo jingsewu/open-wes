@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.Comment;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 import org.openwes.common.utils.base.UpdateUserPO;
 import org.openwes.common.utils.id.IdGenerator;
@@ -22,6 +23,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 )
 @Comment("Owner Main Data Management Table - Stores detailed information about warehouse owners, " +
         "including contact details and address information.")
+@DynamicUpdate
 public class OwnerMainDataPO extends UpdateUserPO {
 
     @Id

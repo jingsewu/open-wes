@@ -122,7 +122,7 @@ public class PickingOrder extends AggregatorRoot {
                 .setOutboundOrderDetailId(pickingOrderDetail.getOutboundOrderPlanDetailId())
                 .setOutboundOrderId(pickingOrderDetail.getOutboundOrderPlanId());
 
-        this.addSynchronizationEvents(new PickingOrderPickedEvent(this.id, pickingDetail));
+        this.addAsynchronousDomainEvents(new PickingOrderPickedEvent(this.id, pickingDetail));
 
         if (this.details.stream().allMatch(v -> v.getPickingOrderDetailStatus() == PickingOrderDetailStatusEnum.PICKED)) {
             this.pickingOrderStatus = PickingOrderStatusEnum.PICKED;

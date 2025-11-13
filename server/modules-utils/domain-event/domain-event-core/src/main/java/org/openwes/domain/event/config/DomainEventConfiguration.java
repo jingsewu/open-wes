@@ -23,13 +23,16 @@ public class DomainEventConfiguration {
     private static final int CORE_POOL_SIZE = Runtime.getRuntime().availableProcessors();
     private static final int MAX_POOL_SIZE = CORE_POOL_SIZE * 2 + 1;
 
-    @Bean
+    @Bean(name = "asyncEventBusExecutor")
     public Executor asyncEventBusExecutor() {
 
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(CORE_POOL_SIZE);
-        executor.setMaxPoolSize(MAX_POOL_SIZE * 4);
+//        executor.setCorePoolSize(CORE_POOL_SIZE);
+//        executor.setMaxPoolSize(MAX_POOL_SIZE * 4);
+        executor.setCorePoolSize(100);
+        executor.setMaxPoolSize(300);
         executor.setQueueCapacity(1000);
+
         executor.setThreadNamePrefix("async-event-bus-executor");
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
         executor.initialize();

@@ -31,6 +31,9 @@ public class ContainerTaskEventSubscribe {
             case PUT_AWAY:
                 putAwayTaskApi.complete(event.getRelationTaskIds(), event.getLocationCode());
                 break;
+            case PICKING:
+                log.debug("Picking task completed: {}", event.getRelationTaskIds());
+                break;
             default:
                 log.warn("Unknown business task type: {}", event.getBusinessTaskType());
                 break;

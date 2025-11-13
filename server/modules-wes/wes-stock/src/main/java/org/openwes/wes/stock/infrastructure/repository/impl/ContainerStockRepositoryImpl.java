@@ -1,6 +1,7 @@
 package org.openwes.wes.stock.infrastructure.repository.impl;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import org.openwes.wes.stock.domain.entity.ContainerStock;
 import org.openwes.wes.stock.domain.repository.ContainerStockRepository;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -53,9 +55,17 @@ public class ContainerStockRepositoryImpl implements ContainerStockRepository {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ContainerStock> findAllBySkuBatchStockIds(Collection<Long> skuBatchStockIds) {
 
-        int limitSize = 500;
+        return Lists.partition(new ArrayList<>(Sets.newHashSet(skuBatchStockIds)), 200)
+                .stream()
+                .flatMap(subSkuBatchStockIds ->
+                        findAllByPageSkuBatchStockIds(subSkuBatchStockIds, 1000).stream()).toList();
+    }
+
+    private List<ContainerStock> findAllByPageSkuBatchStockIds(Collection<Long> skuBatchStockIds, int limitSize) {
+
         List<ContainerStock> containerStocks = Lists.newArrayList();
         PageRequest pageRequest = PageRequest.of(0, limitSize);
         while (true) {
@@ -71,12 +81,14 @@ public class ContainerStockRepositoryImpl implements ContainerStockRepository {
         return containerStocks;
     }
 
+
     @Override
     public List<ContainerStock> findAllByContainerCodesAndWarehouseCode(Collection<String> containerCodes, String warehouseCode) {
         return containerStockPOTransfer.toDOs(containerStockPORepository.findAllByContainerCodeInAndWarehouseCode(containerCodes, warehouseCode));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ContainerStock> findAllBySkuIds(Collection<Long> skuIds) {
 
         int limitSize = 500;

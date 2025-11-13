@@ -1,5 +1,6 @@
 package org.openwes.wes.config.infrastructure.persistence.po;
 
+import org.hibernate.annotations.DynamicUpdate;
 import org.openwes.common.utils.base.UpdateUserPO;
 import org.openwes.common.utils.id.IdGenerator;
 import org.openwes.common.utils.language.MultiLanguage;
@@ -25,6 +26,7 @@ import java.util.List;
                 @Index(unique = true, name = "uk_dictionary_code", columnList = "code")
         }
 )
+@DynamicUpdate
 public class DictionaryPO extends UpdateUserPO {
 
     @Id

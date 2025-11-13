@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.Comment;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 import org.openwes.common.utils.base.UpdateUserPO;
 import org.openwes.common.utils.id.IdGenerator;
@@ -22,6 +23,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
         }
 )
 @Comment("Transfer Container Record Management Table - Tracks records of transfer containers, including their status, destination, and related order information.")
+@DynamicUpdate
 public class TransferContainerRecordPO extends UpdateUserPO {
 
     @Id
