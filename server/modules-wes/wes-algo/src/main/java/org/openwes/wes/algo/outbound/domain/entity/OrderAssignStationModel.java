@@ -27,36 +27,22 @@ public class OrderAssignStationModel {
         stationOperationContainers = Maps.newHashMap();
         stationContainerStocks = Maps.newHashMap();
 
-        operationTasks.forEach(operationTask ->
-            operationTask.getAssignedStationSlot().forEach((workStationId, putWallSlotCode) -> {
-                if (stationOperationTasks.containsKey(workStationId)) {
-                    stationOperationTasks.get(workStationId).add(operationTask);
-                } else {
-                    stationOperationTasks.put(workStationId, Sets.newHashSet(operationTask));
-                }
-
-                if (stationOperationSkuBatches.containsKey(workStationId)) {
-                    stationOperationSkuBatches.get(workStationId).add(operationTask.getSkuBatchStockId());
-                } else {
-                    stationOperationSkuBatches.put(workStationId, Sets.newHashSet(operationTask.getSkuBatchStockId()));
-                }
-
-                if (stationOperationContainers.containsKey(workStationId)) {
-                    stationOperationContainers.get(workStationId).add(operationTask.getSourceContainerCode());
-                } else {
-                    stationOperationContainers.put(workStationId, Sets.newHashSet(operationTask.getSourceContainerCode()));
-                }
-            }));
-
-        containerStocks.forEach(containerStock -> stationOperationContainers.forEach((workStationId, containerCodes) -> {
-            if (containerCodes.contains(containerStock.getContainerCode())) {
-                if (stationContainerStocks.containsKey(workStationId)) {
-                    stationContainerStocks.get(workStationId).add(containerStock);
-                } else {
-                    stationContainerStocks.put(workStationId, Sets.newHashSet(containerStock));
-                }
+        operationTasks.forEach(operationTask -> {
+            if (operationTask.getAssignedStationSlot() != null) {
+                operationTask.getAssignedStationSlot().forEach((workStationId, putWallSlotCode) -> {
+                    stationOperationTasks.computeIfAbsent(workStationId, k -> Sets.newHashSet()).add(operationTask);
+                    stationOperationSkuBatches.computeIfAbsent(workStationId, k -> Sets.newHashSet()).add(operationTask.getSkuBatchStockId());
+                    stationOperationContainers.computeIfAbsent(workStationId, k -> Sets.newHashSet()).add(operationTask.getSourceContainerCode());
+                });
             }
-        }));
+        });
+
+        containerStocks.forEach(containerStock -> stationOperationContainers
+                .forEach((workStationId, containerCodes) -> {
+                    if (containerCodes.contains(containerStock.getContainerCode())) {
+                        stationContainerStocks.computeIfAbsent(workStationId, k -> Sets.newHashSet()).add(containerStock);
+                    }
+                }));
 
     }
 }

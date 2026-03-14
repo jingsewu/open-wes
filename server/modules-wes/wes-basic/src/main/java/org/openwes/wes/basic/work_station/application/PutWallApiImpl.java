@@ -5,11 +5,10 @@ import lombok.RequiredArgsConstructor;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.openwes.common.utils.exception.WmsException;
 import org.openwes.common.utils.validate.ValidationSequence;
-import org.openwes.domain.event.DomainEventPublisher;
 import org.openwes.wes.api.basic.IPutWallApi;
-import org.openwes.wes.api.basic.dto.*;
-import org.openwes.wes.api.basic.event.PutWallAssignOrderEvent;
-import org.openwes.wes.api.basic.event.PutWallRemindSealContainerEvent;
+import org.openwes.wes.api.basic.dto.AssignOrdersDTO;
+import org.openwes.wes.api.basic.dto.PutWallDTO;
+import org.openwes.wes.api.basic.dto.PutWallSlotDTO;
 import org.openwes.wes.api.task.dto.BindContainerDTO;
 import org.openwes.wes.api.task.dto.UnBindContainerDTO;
 import org.openwes.wes.basic.work_station.domain.aggregate.PutWallAggregate;
@@ -29,6 +28,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @Primary
@@ -103,20 +103,25 @@ public class PutWallApiImpl implements IPutWallApi {
                 updatePutWallSlots.add(putWallSlot);
             }
         }));
-        putWallSlotRepository.saveAll(updatePutWallSlots);
 
+        updatePutWallSlots.stream().collect(Collectors.groupingBy(PutWallSlot::getWorkStationId))
+                .forEach((workStationId, subPutWallSlots) -> {
+                    putWallSlotRepository.saveAll(subPutWallSlots, workStationId);
+                });
     }
 
     @Override
     public void bindContainer(BindContainerDTO bindContainerDTO, Long transferContainerRecordId) {
-        PutWallSlot putWallSlot = putWallSlotRepository.findBySlotCodeAndWorkStationId(bindContainerDTO.getPutWallSlotCode(), bindContainerDTO.getWorkStationId());
+        PutWallSlot putWallSlot = putWallSlotRepository
+                .findBySlotCodeAndWorkStationId(bindContainerDTO.getPutWallSlotCode(), bindContainerDTO.getWorkStationId());
         putWallSlot.bindContainer(bindContainerDTO.getContainerCode(), transferContainerRecordId);
         putWallSlotRepository.save(putWallSlot);
     }
 
     @Override
     public void unBindContainer(UnBindContainerDTO unBindContainerDTO) {
-        PutWallSlot putWallSlot = putWallSlotRepository.findBySlotCodeAndWorkStationId(unBindContainerDTO.getPutWallSlotCode(), unBindContainerDTO.getWorkStationId());
+        PutWallSlot putWallSlot = putWallSlotRepository
+                .findBySlotCodeAndWorkStationId(unBindContainerDTO.getPutWallSlotCode(), unBindContainerDTO.getWorkStationId());
         putWallSlot.unBindContainer();
         putWallSlotRepository.save(putWallSlot);
     }
@@ -151,8 +156,11 @@ public class PutWallApiImpl implements IPutWallApi {
         }
 
         putWallSlots.forEach(putWallSlot -> putWallSlot.remindToSealContainer(pickingOrderId));
-        putWallSlotRepository.saveAll(putWallSlots);
 
+        putWallSlots.stream().collect(Collectors.groupingBy(PutWallSlot::getWorkStationId))
+                .forEach((workStationId, subPutWallSlots) -> {
+                    putWallSlotRepository.saveAll(subPutWallSlots, workStationId);
+                });
     }
 
     @Override

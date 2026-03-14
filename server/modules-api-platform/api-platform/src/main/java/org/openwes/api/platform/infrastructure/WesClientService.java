@@ -10,7 +10,7 @@ import org.openwes.wes.api.task.dto.TransferContainerReleaseDTO;
 
 import java.util.List;
 
-public interface WmsClientService {
+public interface WesClientService {
 
 
     /**

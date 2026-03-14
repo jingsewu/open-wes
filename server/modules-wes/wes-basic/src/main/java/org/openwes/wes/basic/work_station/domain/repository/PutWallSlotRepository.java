@@ -9,9 +9,9 @@ public interface PutWallSlotRepository {
 
     void save(PutWallSlot putWallSlot);
 
-    void saveAll(List<PutWallSlot> putWallSlots);
+    void saveAll(List<PutWallSlot> putWallSlots, Long workStationId);
 
-    void deleteAll(Long putWallId, List<PutWallSlot> deleteSlots);
+    void deleteAll(Long workStationId, List<PutWallSlot> deleteSlots);
 
     PutWallSlot findBySlotCodeAndWorkStationId(String putWallSlotCode, Long workStationId);
 
@@ -21,5 +21,8 @@ public interface PutWallSlotRepository {
 
     List<PutWallSlot> findAllByPickingOrderId(Long pickingOrderId);
 
-    List<PutWallSlot> findAllByWorkStationIds(List<Long> workStationIds);
+    List<PutWallSlot> findAllByWorkStationIds(Collection<Long> workStationIds);
+
+    List<PutWallSlot> findAllByWorkStationId(Long workStationId);
+
 }

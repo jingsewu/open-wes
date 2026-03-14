@@ -4,8 +4,10 @@ import com.google.common.collect.Sets;
 import io.micrometer.common.util.StringUtils;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.jetbrains.annotations.NotNull;
 import org.openwes.common.utils.id.OrderNoGenerator;
 import org.openwes.common.utils.id.SnowflakeUtils;
 import org.openwes.domain.event.AggregatorRoot;
@@ -59,6 +61,7 @@ public class OutboundPlanOrder extends AggregatorRoot {
 
     private Map<String, String> extendFields;
 
+    @NotNull
     private List<OutboundPlanOrderDetail> details;
 
     private Set<String> destinations;
@@ -102,7 +105,7 @@ public class OutboundPlanOrder extends AggregatorRoot {
     }
 
     public boolean preAllocate(List<OutboundPreAllocatedRecord> planPreAllocatedRecords) {
-        Integer totalPreAllocated = planPreAllocatedRecords
+        int totalPreAllocated = planPreAllocatedRecords
                 .stream().map(OutboundPreAllocatedRecord::getQtyPreAllocated).reduce(Integer::sum).orElse(0);
 
         this.details.forEach(detail -> planPreAllocatedRecords.forEach(planPreAllocatedRecord -> {
@@ -111,13 +114,13 @@ public class OutboundPlanOrder extends AggregatorRoot {
             }
         }));
 
-        Integer totalRequired = this.details.stream().map(OutboundPlanOrderDetail::getQtyRequired).reduce(Integer::sum).orElse(0);
+        int totalRequired = this.details.stream().map(OutboundPlanOrderDetail::getQtyRequired).reduce(Integer::sum).orElse(0);
 
         if (totalPreAllocated > totalRequired) {
             throw new IllegalArgumentException("pre allocated qty is bigger than total required");
         }
 
-        if (totalRequired.equals(totalPreAllocated)) {
+        if (totalRequired == totalPreAllocated) {
             log.info("outbound plan order id: {} orderNo: {} assigned", this.id, this.orderNo);
             this.outboundPlanOrderStatus = OutboundPlanOrderStatusEnum.ASSIGNED;
             this.addAsynchronousDomainEvents(new OutboundPlanOrderAssignedEvent(this.id, this.warehouseCode));

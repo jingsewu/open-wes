@@ -8,7 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.openwes.api.platform.api.dto.request.RequestHandleContext;
 import org.openwes.api.platform.application.service.RequestHandlerService;
 import org.openwes.api.platform.domain.transfer.ApiConfigTransfer;
-import org.openwes.api.platform.infrastructure.WmsClientService;
+import org.openwes.api.platform.infrastructure.WesClientService;
 import org.openwes.api.platform.utils.CommonUtils;
 import org.openwes.api.platform.utils.ConverterHelper;
 import org.openwes.common.utils.utils.JsonUtils;
@@ -29,7 +29,7 @@ import java.util.Objects;
 public abstract class AbstractRequestHandler implements RequestHandlerService {
 
     @Autowired
-    protected WmsClientService coreClientService;
+    protected WesClientService coreClientService;
 
     @Autowired
     protected ApiConfigTransfer apiConfigTransfer;

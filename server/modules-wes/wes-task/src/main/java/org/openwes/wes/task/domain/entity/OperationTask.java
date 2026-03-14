@@ -172,7 +172,11 @@ public class OperationTask extends AggregatorRoot {
         log.info("operation task: {} set actual work station:{} ", this.id, workStationId);
 
         this.workStationId = workStationId;
-        this.targetLocationCode = assignedStationSlot.get(workStationId);
+        String locationCode = assignedStationSlot.get(workStationId);
+        if (locationCode == null) {
+            throw new IllegalStateException("No assigned slot for workstation: " + workStationId);
+        }
+        this.targetLocationCode = locationCode;
     }
 
     public StockLockTypeEnum transferToLockType() {

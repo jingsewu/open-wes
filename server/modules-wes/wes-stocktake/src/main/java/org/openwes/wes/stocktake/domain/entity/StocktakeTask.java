@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Stream;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -54,8 +55,10 @@ public class StocktakeTask extends AggregatorRoot {
         Assert.notNull(stocktakeOrder, "stocktake order must not be null");
         Assert.notEmpty(containerFaceMap, "container face map must not be empty");
 
-        List<StocktakeTaskDetail> stocktakeTaskDetails = subContainerCodes.stream().flatMap(containerCode ->
-                containerFaceMap.get(containerCode).stream().map(containerFace -> {
+        List<StocktakeTaskDetail> stocktakeTaskDetails = subContainerCodes.stream().flatMap(containerCode -> {
+
+            if (containerFaceMap.get(containerCode) != null) {
+                return containerFaceMap.get(containerCode).stream().map(containerFace -> {
                     StocktakeTaskDetail stocktakeTaskDetail = new StocktakeTaskDetail();
                     stocktakeTaskDetail.setContainerCode(containerCode);
                     stocktakeTaskDetail.setStocktakeOrderId(stocktakeOrder.getId());
@@ -63,7 +66,11 @@ public class StocktakeTask extends AggregatorRoot {
                     stocktakeTaskDetail.setStocktakeTaskDetailStatus(StocktakeTaskDetailStatusEnum.NEW);
                     stocktakeTaskDetail.setWarehouseCode(stocktakeOrder.getWarehouseCode());
                     return stocktakeTaskDetail;
-                }).toList().stream()).toList();
+                }).toList().stream();
+            } else {
+                return Stream.empty();
+            }
+        }).toList();
         return buildStocktakeTask(stocktakeOrder, stocktakeTaskDetails);
     }
 

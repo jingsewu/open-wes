@@ -20,6 +20,7 @@ import org.openwes.common.utils.constants.RedisConstants;
 import org.openwes.common.utils.http.Response;
 import org.openwes.distribute.lock.DistributeLock;
 import org.openwes.distribute.scheduler.annotation.DistributedScheduled;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -68,7 +69,7 @@ public class CallbackScheduler {
             int retryCount = 10;
             Date date = DateUtils.addDays(new Date(), -2);
             List<ApiLogPO> apiLogPOS = apiLogPORepository.findAllByStatusAndRetryCountLessThanAndCreateTimeAfter(
-                    ApiLogStatusEnum.FAIL, retryCount, date.getTime());
+                    ApiLogStatusEnum.FAIL, retryCount, date.getTime(), Pageable.ofSize(100));
 
             Map<String, ApiPO> apiPOMap = Maps.newHashMap();
             apiLogPOS.forEach(apiLogPO -> {
@@ -103,7 +104,7 @@ public class CallbackScheduler {
         }
     }
 
-    @DistributedScheduled(cron = "0 0 2 * * *", name = "CallbackScheduler#cleanApiLog",lockAtLeastFor = "30s")
+    @DistributedScheduled(cron = "0 0 2 * * *", name = "CallbackScheduler#cleanApiLog", lockAtLeastFor = "30s")
     public void cleanApiLog() {
 
         log.debug("clean api log start...");

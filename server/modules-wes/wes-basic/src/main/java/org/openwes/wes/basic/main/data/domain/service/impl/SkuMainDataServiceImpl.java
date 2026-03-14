@@ -34,13 +34,14 @@ public class SkuMainDataServiceImpl implements SkuMainDataService {
             throw WmsException.throwWmsException(BasicErrorDescEnum.WAREHOUSE_CODE_NOT_EXIST, warehouseCodes);
         }
 
-        skuMainDataList.stream().collect(Collectors.groupingBy(SkuMainData::getWarehouseCode)).forEach((warehouseCode, subSkuMainDataList) -> {
-            Set<String> ownerCodes = subSkuMainDataList.stream().map(SkuMainData::getOwnerCode).collect(Collectors.toSet());
-            Collection<OwnerMainData> ownerMainData = ownerMainDataRepository.findAllByOwnerCodes(ownerCodes, warehouseCode);
+        skuMainDataList.stream().collect(Collectors.groupingBy(SkuMainData::getWarehouseCode))
+                .forEach((warehouseCode, subSkuMainDataList) -> {
+                    Set<String> ownerCodes = subSkuMainDataList.stream().map(SkuMainData::getOwnerCode).collect(Collectors.toSet());
+                    Collection<OwnerMainData> ownerMainData = ownerMainDataRepository.findAllByOwnerCodes(ownerCodes, warehouseCode);
 
-            if (ownerCodes.size() != ownerMainData.size()) {
-                throw WmsException.throwWmsException(BasicErrorDescEnum.OWNER_CODE_NOT_EXIST, ownerCodes);
-            }
-        });
+                    if (ownerCodes.size() != ownerMainData.size()) {
+                        throw WmsException.throwWmsException(BasicErrorDescEnum.OWNER_CODE_NOT_EXIST, ownerCodes);
+                    }
+                });
     }
 }

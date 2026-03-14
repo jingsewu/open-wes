@@ -1,5 +1,7 @@
 package org.openwes.wes.basic.work_station.application;
 
+import lombok.RequiredArgsConstructor;
+import org.apache.dubbo.config.annotation.DubboService;
 import org.openwes.wes.api.basic.IWorkStationApi;
 import org.openwes.wes.api.basic.constants.WorkStationModeEnum;
 import org.openwes.wes.api.basic.dto.WorkStationDTO;
@@ -14,8 +16,6 @@ import org.openwes.wes.basic.work_station.domain.service.WorkStationService;
 import org.openwes.wes.basic.work_station.domain.transfer.PutWallTransfer;
 import org.openwes.wes.basic.work_station.domain.transfer.WorkStationConfigTransfer;
 import org.openwes.wes.basic.work_station.domain.transfer.WorkStationTransfer;
-import lombok.RequiredArgsConstructor;
-import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 

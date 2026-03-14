@@ -53,7 +53,7 @@ public class OutboundWorkStationCache extends WorkStationCache {
         });
 
         if (ObjectUtils.isNotEmpty(this.getProcessingOperationTasks())) {
-            this.operateTasks.stream().map(OperationTaskVO::getSkuMainDataDTO).findFirst()
+            this.operateTasks.stream().map(OperationTaskVO::getSkuMainDataDTO).filter(Objects::nonNull).findFirst()
                     .ifPresent(task -> resetActivePutWall(task.getSkuCode()));
         }
     }
@@ -108,7 +108,8 @@ public class OutboundWorkStationCache extends WorkStationCache {
         return Optional.ofNullable(this.operateTasks)
                 .stream()
                 .flatMap(Collection::stream)
-                .filter(k -> k.getOperationTaskDTO() != null && k.getOperationTaskDTO().getTaskStatus() == OperationTaskStatusEnum.PROCESSING)
+                .filter(k -> k.getOperationTaskDTO() != null
+                        && k.getOperationTaskDTO().getTaskStatus() == OperationTaskStatusEnum.PROCESSING)
                 .toList();
     }
 

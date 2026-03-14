@@ -95,7 +95,7 @@ public class RedisConstants {
     public static final String WORK_STATION_CACHE = "wms:basic:work:station:cache";
     public static final String WORK_STATION_CONFIG_CACHE = "station:work:config:cache";
     public static final String WORK_STATION_PUT_WALL_CACHE = "station:work:put:wall:cache";
-    public static final String WORK_STATION_PUT_WALL_SLOT_CACHE = "station:work:put:wall:cache";
+    public static final String WORK_STATION_PUT_WALL_SLOT_CACHE = "station:work:put:wall:slot:cache";
 
     /**
      * Api-platform module

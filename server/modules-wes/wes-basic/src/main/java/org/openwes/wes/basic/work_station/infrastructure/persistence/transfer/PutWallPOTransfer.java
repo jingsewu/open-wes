@@ -1,11 +1,11 @@
 package org.openwes.wes.basic.work_station.infrastructure.persistence.transfer;
 
-import org.openwes.wes.basic.work_station.domain.entity.PutWall;
-import org.openwes.wes.basic.work_station.infrastructure.persistence.po.PutWallPO;
-import org.openwes.wes.basic.work_station.infrastructure.persistence.po.PutWallSlotPO;
 import org.mapstruct.Mapper;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
+import org.openwes.wes.basic.work_station.domain.entity.PutWall;
+import org.openwes.wes.basic.work_station.domain.entity.PutWallSlot;
+import org.openwes.wes.basic.work_station.infrastructure.persistence.po.PutWallPO;
 
 import java.util.List;
 
@@ -25,6 +25,7 @@ public interface PutWallPOTransfer {
 
     PutWall toDO(PutWallPO putWallPO);
 
-    PutWall toDO(PutWallPO putWallPO, List<PutWallSlotPO> putWallSlots);
+    PutWall toDO(PutWallPO putWallPO, List<PutWallSlot> putWallSlots);
 
+    List<PutWall> toDOs(List<PutWallPO> putWallPOs);
 }

@@ -22,21 +22,24 @@ public class PutWallAggregate {
     @Transactional(rollbackFor = Exception.class)
     public void save(PutWall putWall) {
         PutWall savePutWall = putWallRepository.save(putWall);
-        putWall.getPutWallSlots().forEach(slot -> slot.initPutWallSlot(savePutWall.getId(), putWall.getPutWallCode(), putWall.getWorkStationId()));
-        putWallSlotRepository.saveAll(putWall.getPutWallSlots());
+        putWall.getPutWallSlots().forEach(slot ->
+                slot.initPutWallSlot(savePutWall.getId(), putWall.getPutWallCode(), putWall.getWorkStationId()));
+        putWallSlotRepository.saveAll(putWall.getPutWallSlots(), putWall.getWorkStationId());
     }
 
     @Transactional(rollbackFor = Exception.class)
     public void update(PutWall putWall, List<PutWallSlot> exitSlots) {
 
         PutWall savePutWall = putWallRepository.save(putWall);
-        putWall.getPutWallSlots().forEach(slot -> slot.initPutWallSlot(savePutWall.getId(), putWall.getPutWallCode(), putWall.getWorkStationId()));
+        putWall.getPutWallSlots()
+                .forEach(slot -> slot.initPutWallSlot(savePutWall.getId(), putWall.getPutWallCode(), putWall.getWorkStationId()));
 
-        putWallSlotRepository.saveAll(putWall.getPutWallSlots());
+        putWallSlotRepository.saveAll(putWall.getPutWallSlots(), putWall.getWorkStationId());
 
         Set<String> putWallSlotCodes = putWall.getPutWallSlots().stream().map(PutWallSlot::getPutWallSlotCode).collect(Collectors.toSet());
-        List<PutWallSlot> deleteSlots = exitSlots.stream().filter(slot -> !putWallSlotCodes.contains(slot.getPutWallSlotCode())).toList();
+        List<PutWallSlot> deleteSlots = exitSlots.stream()
+                .filter(slot -> !putWallSlotCodes.contains(slot.getPutWallSlotCode())).toList();
 
-        putWallSlotRepository.deleteAll(putWall.getId(), deleteSlots);
+        putWallSlotRepository.deleteAll(putWall.getWorkStationId(), deleteSlots);
     }
 }

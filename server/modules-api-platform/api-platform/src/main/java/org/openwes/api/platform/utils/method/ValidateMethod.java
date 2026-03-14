@@ -30,7 +30,7 @@ public class ValidateMethod implements TemplateMethodModelEx {
 
     @Override
     public Object exec(List args) throws TemplateModelException {
-        if (CollectionUtils.isEmpty(args)) {
+        if (CollectionUtils.isEmpty(args) || args.size() < 3) {
             return null;
         }
         try {

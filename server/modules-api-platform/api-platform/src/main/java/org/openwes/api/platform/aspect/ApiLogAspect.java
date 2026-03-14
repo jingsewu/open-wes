@@ -73,7 +73,7 @@ public class ApiLogAspect {
         // Set request data
         if (args.length > 0) {
             String requestData = JsonUtils.obj2String(args[args.length - 1]);
-            apiLogPO.setRequestData(truncateString(requestData, MAX_STRING_LENGTH));
+            apiLogPO.setRequestData(requestData);
         }
 
         return apiLogPO;

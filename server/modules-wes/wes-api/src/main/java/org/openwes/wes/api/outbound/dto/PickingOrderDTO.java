@@ -4,8 +4,8 @@ import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import org.jetbrains.annotations.NotNull;
 import org.openwes.wes.api.outbound.constants.PickingOrderStatusEnum;
-import org.openwes.wes.api.outbound.constants.PickingOrderTaskTypeEnum;
 
 import java.io.Serializable;
 import java.util.List;
@@ -46,6 +46,7 @@ public class PickingOrderDTO implements Serializable {
      * Value is the put wall slot code
      */
     @Schema(description = "任务分配情况")
+    @NotNull
     private Map<Long, String> assignedStationSlot;
 
     @Schema(description = "已领操作员账号")

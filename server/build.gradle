@@ -46,6 +46,7 @@ subprojects {
 
         testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
+        compileOnly('org.jetbrains:annotations')
         compileOnly 'org.projectlombok:lombok'
         annotationProcessor 'org.projectlombok:lombok'
         testCompileOnly 'org.projectlombok:lombok'
@@ -158,6 +159,8 @@ subprojects {
             dependency("org.jsoup:jsoup:1.17.2")
 
             dependency("com.google.code.gson:gson:2.10.1")
+
+            dependency("org.jetbrains:annotations:26.0.2-1")
         }
     }
 

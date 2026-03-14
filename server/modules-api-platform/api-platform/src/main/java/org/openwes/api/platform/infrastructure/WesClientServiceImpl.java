@@ -27,7 +27,7 @@ import java.util.concurrent.Executor;
 @EnableAsync
 @Slf4j
 @RequiredArgsConstructor
-public class WmsClientServiceImpl implements WmsClientService {
+public class WesClientServiceImpl implements WesClientService {
 
     private final ISkuMainDataApi skuMainDataApi;
     private final IInboundPlanOrderApi inboundPlanOrderApi;
@@ -102,11 +102,11 @@ public class WmsClientServiceImpl implements WmsClientService {
     }
 
     @Override
-    public void asyncCreateOrUpdateSku(List<SkuMainDataDTO> ksSkuDTOS) {
+    public void asyncCreateOrUpdateSku(List<SkuMainDataDTO> skus) {
 
-        int numThreads = Math.max(1, ksSkuDTOS.size() / 300);
+        int numThreads = Math.max(1, skus.size() / 300);
 
-        List<List<SkuMainDataDTO>> partitions = Lists.partition(ksSkuDTOS, numThreads);
+        List<List<SkuMainDataDTO>> partitions = Lists.partition(skus, numThreads);
 
         List<CompletableFuture<Void>> futures = partitions.stream()
                 .map(partition ->
@@ -116,10 +116,10 @@ public class WmsClientServiceImpl implements WmsClientService {
         try {
             CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
         } catch (CompletionException e) {
-            log.error("async create or update SKU error. ksSkuDTOS: {}", ksSkuDTOS, e.getCause());
+            log.error("async create or update SKU error. skus: {}", skus, e.getCause());
             Thread.currentThread().interrupt();
         } catch (Exception e) {
-            log.error("async create or update SKU error. ksSkuDTOS: {}", ksSkuDTOS, e);
+            log.error("async create or update SKU error. skus: {}", skus, e);
             Thread.currentThread().interrupt();
         }
     }

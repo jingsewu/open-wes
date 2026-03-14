@@ -22,7 +22,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
         indexes = {
                 @Index(name = "uk_message_id", columnList = "messageId", unique = true),
                 @Index(name = "idx_api_code", columnList = "apiCode"),
-                @Index(name = "idx_create_time", columnList = "createTime")
+                @Index(name = "idx_create_time", columnList = "createTime"),
+                @Index(name = "idx_status", columnList = "status")
         })
 public class ApiLogPO extends CreateUserPO {
     @Id
@@ -36,7 +37,7 @@ public class ApiLogPO extends CreateUserPO {
     @Column(length = 128, nullable = false)
     private String apiCode;
 
-    @Column(length = 65535)
+    @Column(length = 655350)
     @Comment("请求参数")
     private String requestData;
 

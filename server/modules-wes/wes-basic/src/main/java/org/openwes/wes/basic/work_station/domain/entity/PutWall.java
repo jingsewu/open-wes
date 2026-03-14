@@ -48,6 +48,7 @@ public class PutWall {
     }
 
     public void delete() {
+        log.info("work station: {} put wall: {} delete", this.workStationId, this.putWallCode);
         if (this.putWallStatus != PutWallStatusEnum.IDLE) {
             throw new IllegalStateException("put wall status is not IDLE, cannot delete it");
         }
