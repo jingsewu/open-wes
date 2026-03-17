@@ -33,9 +33,8 @@ import java.util.List;
 public class WorkStationPO extends UpdateUserPO {
 
     @Id
-    @GeneratedValue(generator = "databaseIdGenerator")
-    @GenericGenerator(name = "databaseIdGenerator", type = IdGenerator.class)
-    @Comment("Unique identifier for the workstation record")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Comment("Unique identifier for the workstation record (sequential integer ID)")
     private Long id;
 
     @Column(nullable = false, length = 64)
