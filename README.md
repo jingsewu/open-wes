@@ -95,8 +95,9 @@ This project is licensed under the [MIT License](LICENSE).
 
 ## Contact
 
-If you have any questions or need assistance, feel free to reach out to us on
-our [GitHub Issues](https://github.com/jingsewu/open-wes/issues) page.
+If you have any questions or need assistance, feel free to reach out to us:
+- **GitHub Issues**: Report bugs or request features
+- **QQ Group**: [Click to join OpenWES](https://qm.qq.com/q/qNSg4RmnmM) - For discussions and real-time support
 
 Thank you for using and contributing !
 
