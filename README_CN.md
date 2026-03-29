@@ -90,8 +90,8 @@ HOST_IP=$(hostname -I | awk '{print $1}') docker-compose up -d
 ### 联系我们
 
 如有任何问题或需要帮助，请通过以下方式联系我们：
-
-*   **GitHub Issues**：提交问题或请求功能。
+- **GitHub Issues**：报告Bug或请求新功能
+- **QQ群**：[点击加入 OpenWES 交流群](https://qm.qq.com/q/qNSg4RmnmM) - 用于技术交流与实时支持
 
 感谢您使用和贡献 Open WES！
 
