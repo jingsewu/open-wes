@@ -5,7 +5,8 @@
       "Bash(openspec status:*)",
       "Bash(openspec instructions:*)",
       "Bash(openspec list:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(grep:*)"
     ]
   }
 }

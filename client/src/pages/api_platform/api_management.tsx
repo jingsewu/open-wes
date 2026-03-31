@@ -2,6 +2,7 @@ import schema2component from "@/utils/schema2component"
 import {
     api_api_add,
     api_api_config_get,
+    api_api_config_test_converter,
     api_api_config_update,
     api_api_delete,
     api_api_update,
@@ -178,6 +179,50 @@ const configForm = [
         editorDidMount: editorDidMount
     },
     {
+        type: "container",
+        visibleOn: "${paramConverterType == 'JS'}",
+        body: [
+            {
+                type: "textarea",
+                label: "interfacePlatform.interfaceManagement.form.testInputJson",
+                name: "testParamInput",
+                placeholder: "Enter input JSON to test the param converter script"
+            },
+            {
+                type: "button",
+                label: "interfacePlatform.interfaceManagement.button.testConverter",
+                actionType: "ajax",
+                api: {
+                    method: "post",
+                    url: api_api_config_test_converter,
+                    data: {
+                        jsScript: "${jsParamConverter}",
+                        inputJson: "${testParamInput}"
+                    }
+                },
+                onEvent: {
+                    success: {
+                        actions: [
+                            {
+                                actionType: "setValue",
+                                componentId: "testParamOutput",
+                                args: {
+                                    value: "${event.data.data}"
+                                }
+                            }
+                        ]
+                    }
+                }
+            },
+            {
+                type: "static",
+                id: "testParamOutput",
+                label: "interfacePlatform.interfaceManagement.form.testOutputJson",
+                name: "testParamOutput"
+            }
+        ]
+    },
+    {
         label: "interfacePlatform.interfaceManagement.form.requestTransformationScript",
         type: "textarea",
         name: "templateParamConverter",
@@ -216,6 +261,50 @@ const configForm = [
             wordWrap: "on",
         },
         editorDidMount: editorDidMount
+    },
+    {
+        type: "container",
+        visibleOn: "${responseConverterType == 'JS'}",
+        body: [
+            {
+                type: "textarea",
+                label: "interfacePlatform.interfaceManagement.form.testInputJson",
+                name: "testResponseInput",
+                placeholder: "Enter input JSON to test the response converter script"
+            },
+            {
+                type: "button",
+                label: "interfacePlatform.interfaceManagement.button.testConverter",
+                actionType: "ajax",
+                api: {
+                    method: "post",
+                    url: api_api_config_test_converter,
+                    data: {
+                        jsScript: "${jsResponseConverter}",
+                        inputJson: "${testResponseInput}"
+                    }
+                },
+                onEvent: {
+                    success: {
+                        actions: [
+                            {
+                                actionType: "setValue",
+                                componentId: "testResponseOutput",
+                                args: {
+                                    value: "${event.data.data}"
+                                }
+                            }
+                        ]
+                    }
+                }
+            },
+            {
+                type: "static",
+                id: "testResponseOutput",
+                label: "interfacePlatform.interfaceManagement.form.testOutputJson",
+                name: "testResponseOutput"
+            }
+        ]
     },
     {
         label: "interfacePlatform.interfaceManagement.form.responseTransformationScripts",

@@ -1,10 +1,14 @@
 package org.openwes.api.platform.controller;
 
+import org.openwes.api.platform.api.constants.ConverterTypeEnum;
+import org.openwes.api.platform.controller.param.apiconfig.ApiConfigTestConverterParam;
 import org.openwes.api.platform.controller.param.apiconfig.ApiConfigUpdateParam;
 import org.openwes.api.platform.controller.param.apiconfig.ApiConfigVO;
 import org.openwes.api.platform.domain.entity.ApiConfigPO;
 import org.openwes.api.platform.domain.service.ApiConfigService;
+import org.openwes.api.platform.utils.ConverterHelper;
 import org.openwes.common.utils.http.Response;
+import org.openwes.common.utils.utils.JsonUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -39,5 +43,20 @@ public class ApiConfigManagementController {
     public Response update(@RequestBody @Valid ApiConfigUpdateParam param) {
         apiConfigService.updateConfig(param);
         return Response.success();
+    }
+
+    @PostMapping("/test-converter")
+    @Operation(summary = "测试 JS 参数转换脚本")
+    public Response<String> testConverter(@RequestBody @Valid ApiConfigTestConverterParam param) {
+        try {
+            Object input = JsonUtils.string2MapObject(param.getInputJson());
+            ApiConfigPO apiConfigPO = new ApiConfigPO();
+            apiConfigPO.setParamConverterType(ConverterTypeEnum.JS);
+            apiConfigPO.setJsParamConverter(param.getJsScript());
+            Object result = ConverterHelper.convertParam(apiConfigPO, input);
+            return Response.success(JsonUtils.obj2String(result));
+        } catch (Exception e) {
+            return Response.<String>builder().code("1").msg(e.getMessage()).build();
+        }
     }
 }
