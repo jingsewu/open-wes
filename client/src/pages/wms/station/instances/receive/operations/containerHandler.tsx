@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import { Button, Col, Divider, Input, InputNumber, message, Radio, Row } from "antd"
 import { MinusOutlined, PlusOutlined } from "@ant-design/icons"
 import type { RadioChangeEvent } from "antd"
@@ -61,10 +61,10 @@ const ContainerHandler = (props: ContainerHandlerProps) => {
     const [containerCode, setContainerCode] = useState<string>("")
 
     // API错误处理
-    const apiHandler = createApiHandler((error) => {
+    const apiHandler = useMemo(() => createApiHandler((error) => {
         console.error("Container operation failed:", error)
         message.error(error.message)
-    })
+    }), [])
 
     // 初始化容器规格数据
     useEffect(() => {
@@ -84,7 +84,7 @@ const ContainerHandler = (props: ContainerHandlerProps) => {
         }
 
         initialize()
-    }, [propContainerCode])
+    }, [propContainerCode, initializeSpecs])
 
     // 焦点由 useFocusManagement 统一管理，此处只做状态清理
     useEffect(() => {
@@ -92,7 +92,7 @@ const ContainerHandler = (props: ContainerHandlerProps) => {
             setContainerCode("")
             resetQuantity()
         }
-    }, [focusValue])
+    }, [focusValue, resetQuantity])
 
     const onSpecChange = (e: RadioChangeEvent) => {
         updateContainerSpec(e.target.value, specOptions)
@@ -122,7 +122,7 @@ const ContainerHandler = (props: ContainerHandlerProps) => {
                 setContainerSlotSpec(JSON.parse(slotSpec))
                 changeFocusValue("count")
             } else {
-                message.error("Container is not exits")
+                message.error(t("receive.station.containerArea.containerNotExist"))
             }
         })
     }

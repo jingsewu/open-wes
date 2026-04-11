@@ -1,13 +1,11 @@
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import type { InputRef } from 'antd'
-import { useEffect, useRef } from 'react'
 import { message } from 'antd'
 import { useTranslation } from 'react-i18next'
 
 import { useWorkStation } from '@/pages/wms/station/state'
 import { MessageType } from '@/pages/wms/station/widgets/message'
 
-import type { SkuInfo, OrderDetail } from '../types'
 import { receiveApiService, createApiHandler } from '../services/api'
 import { utils } from '../utils'
 import { WAREHOUSE_CODE } from '../constants'
@@ -92,7 +90,7 @@ export const useContainerSpecs = () => {
     const [containerSlotSpec, setContainerSlotSpec] = useState<any>("")
     const [activeSlot, setActiveSlot] = useState<string[]>([])
 
-    const initializeSpecs = async (warehouseCode: string, containerType: string) => {
+    const initializeSpecs = useCallback(async (warehouseCode: string, containerType: string) => {
         try {
             const options = await receiveApiService.getContainerSpecs(warehouseCode, containerType)
             setSpecOptions(options)
@@ -107,7 +105,7 @@ export const useContainerSpecs = () => {
             console.error("Failed to initialize container specs:", error)
             return []
         }
-    }
+    }, [])
 
     const updateContainerSpec = (specCode: string, specOptions: any[]) => {
         setContainerSpec((prev: any) => ({ ...prev, containerSpecCode: specCode }))
