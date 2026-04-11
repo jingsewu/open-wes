@@ -75,24 +75,22 @@ const ContainerHandler = (props: ContainerHandlerProps) => {
 
         const initialize = async () => {
             const options = await initializeSpecs(WAREHOUSE_CODE!, CONTAINER_TYPE)
-            
+
             // 处理预设容器代码
-            if (propContainerCode && propContainerCode !== containerCode) {
+            if (propContainerCode) {
                 setContainerCode(propContainerCode)
                 setTimeout(() => onPressEnterLocal(propContainerCode, options), 0)
             }
         }
 
         initialize()
-    }, [propContainerCode, containerCode])
+    }, [propContainerCode])
 
+    // 焦点由 useFocusManagement 统一管理，此处只做状态清理
     useEffect(() => {
         if (focusValue === "container") {
             setContainerCode("")
             resetQuantity()
-            containerRef.current?.focus()
-        } else if (focusValue === "count") {
-            countRef.current?.focus()
         }
     }, [focusValue])
 
