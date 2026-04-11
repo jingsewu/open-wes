@@ -1,23 +1,87 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import type { InputRef } from 'antd'
+import { useEffect, useRef } from 'react'
 import { message } from 'antd'
 import { useTranslation } from 'react-i18next'
-import type { SkuInfo, OrderDetail } from '../types'
-import { receiveApiService } from '../services/api'
-import { utils } from '../utils'
 
-// 接收状态管理Hook
-export const useReceiveState = () => {
+import { useWorkStation } from '@/pages/wms/station/state'
+import { MessageType } from '@/pages/wms/station/widgets/message'
+
+import type { SkuInfo, OrderDetail } from '../types'
+import { receiveApiService, createApiHandler } from '../services/api'
+import { utils } from '../utils'
+import { WAREHOUSE_CODE } from '../constants'
+
+// 接收工作流Hook — 拥有所有本地状态和业务 handler
+export const useReceiveWorkflow = () => {
     const [orderNo, setOrderNo] = useState("")
     const [orderInfo, setOrderInfo] = useState<any>()
     const [currentSkuInfo, setCurrentSkuInfo] = useState<any>({})
     const [focusValue, setFocusValue] = useState("")
 
+    const { store, message: showMessage, onActionDispatch } = useWorkStation()
+
+    const apiHandler = useMemo(
+        () => createApiHandler((error: any) => {
+            showMessage?.({ type: MessageType.ERROR, content: error.message })
+        }),
+        [showMessage]
+    )
+
+    const onScanSubmit = useCallback(async () => {
+        await apiHandler(async () => {
+            const orderData = await receiveApiService.queryPlan(orderNo, WAREHOUSE_CODE!)
+            setOrderInfo(orderData)
+            setFocusValue("sku")
+        })
+    }, [apiHandler, orderNo])
+
+    const onSkuChange = useCallback((detail: any) => {
+        setCurrentSkuInfo(detail)
+        setFocusValue("container")
+    }, [])
+
+    const onConfirm = useCallback(async ({
+        containerCode,
+        containerSpecCode,
+        containerId,
+        activeSlot,
+        inputValue
+    }: any) => {
+        const workStationEvent = store.workStationEvent
+        await apiHandler(async () => {
+            const res = await receiveApiService.acceptPlan({
+                inboundPlanOrderId: orderInfo.id,
+                inboundPlanOrderDetailId: currentSkuInfo.id,
+                warehouseCode: WAREHOUSE_CODE!,
+                qtyAccepted: inputValue,
+                skuId: currentSkuInfo.skuId,
+                targetContainerCode: containerCode,
+                targetContainerSpecCode: containerSpecCode,
+                targetContainerSlotCode: activeSlot[0],
+                batchAttributes: {},
+                targetContainerId: containerId,
+                workStationId: workStationEvent!.workStationId
+            })
+            if (res.status === 200) {
+                if (workStationEvent?.hasOrder) await onScanSubmit()
+                setCurrentSkuInfo({})
+                setFocusValue("sku")
+            }
+        })
+    }, [apiHandler, orderInfo, currentSkuInfo, store, onScanSubmit])
+
     return {
         orderNo, setOrderNo,
-        orderInfo, setOrderInfo,
-        currentSkuInfo, setCurrentSkuInfo,
-        focusValue, setFocusValue
+        orderInfo,
+        currentSkuInfo,
+        focusValue,
+        setFocusValue,
+        onScanSubmit,
+        onSkuChange,
+        onConfirm,
+        store,
+        onActionDispatch
     }
 }
 
@@ -32,12 +96,12 @@ export const useContainerSpecs = () => {
         try {
             const options = await receiveApiService.getContainerSpecs(warehouseCode, containerType)
             setSpecOptions(options)
-            
+
             if (options.length > 0) {
                 setContainerSpec({ containerSpecCode: options[0].value })
                 setContainerSlotSpec(JSON.parse(options[0].containerSlotSpecs || "[]"))
             }
-            
+
             return options
         } catch (error) {
             console.error("Failed to initialize container specs:", error)
@@ -95,7 +159,6 @@ export const useSkuScanner = (onSkuChange: (detail: any) => void) => {
     const scanSku = async (details?: any[]) => {
         try {
             if (details && details.length > 0) {
-                // 从订单详情中查找SKU
                 const detail = utils.findSkuInOrderDetails(details, skuCode)
                 if (!detail) {
                     setSkuCode("")
@@ -106,7 +169,6 @@ export const useSkuScanner = (onSkuChange: (detail: any) => void) => {
                 return
             }
 
-            // 从基础数据中查找SKU
             const sku = await receiveApiService.getSkuByCode(skuCode)
             onSkuChange({
                 skuId: sku.id,
@@ -122,12 +184,7 @@ export const useSkuScanner = (onSkuChange: (detail: any) => void) => {
 
     const resetSkuCode = () => setSkuCode("")
 
-    return {
-        skuCode,
-        setSkuCode,
-        scanSku,
-        resetSkuCode
-    }
+    return { skuCode, setSkuCode, scanSku, resetSkuCode }
 }
 
 // 数量控制Hook
@@ -146,11 +203,5 @@ export const useQuantityControl = () => {
 
     const resetQuantity = () => setInputValue("")
 
-    return {
-        inputValue,
-        setInputValue,
-        handleQuantityChange,
-        resetQuantity
-    }
+    return { inputValue, setInputValue, handleQuantityChange, resetQuantity }
 }
-
