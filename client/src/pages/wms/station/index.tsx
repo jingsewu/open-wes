@@ -5,13 +5,11 @@ import React, { useEffect, useState, useRef, useMemo } from "react"
 import type { RouteComponentProps } from "react-router"
 import { Spin } from "antd"
 import { workStationStore } from "./state/WorkStationStore"
-import WorkStationEventLoop from "./event-loop/index"
+import { workStationEventLoop } from "./event-loop/eventLoopInstance"
 import Layout from "./layout"
 import WorkStationCard from "./WorkStationCard"
 import SelectStation from "./SelectStation"
 import { request_work_station_view } from "@/pages/wms/station/constants/constant"
-
-const workStationEventLoop = new WorkStationEventLoop()
 
 const STATION_STATUS_NOT_CONFIGURED = "SAT010001"
 const WORK_STATION_TYPE_CARD = "card"

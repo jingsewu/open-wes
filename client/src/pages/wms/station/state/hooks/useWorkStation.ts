@@ -1,16 +1,13 @@
-import React, { useMemo, useCallback, useRef } from 'react'
+import React, { useMemo, useCallback } from 'react'
 import { observer } from 'mobx-react-lite'
 import { workStationStore } from '../WorkStationStore'
 import type { WorkStationView } from '../../event-loop/types'
 import Message from '../../widgets/message'
-import WorkStationEventLoop from '../../event-loop/index'
-
-const globalEventLoopInstance = new WorkStationEventLoop()
+import { workStationEventLoop } from '../../event-loop/eventLoopInstance'
 
 export const useWorkStation = () => {
     const store = workStationStore
-    const eventLoopRef = useRef(globalEventLoopInstance)
-    
+
     const actions = {
         setOperationMap: store.setOperationMap.bind(store),
         updateWorkStationState: store.updateWorkStationState.bind(store),
@@ -18,7 +15,7 @@ export const useWorkStation = () => {
     }
     
     const actionDispatch = useCallback((payload: any) => {
-        return eventLoopRef.current.actionDispatch(payload)
+        return workStationEventLoop.actionDispatch(payload)
     }, [])
     
     return useMemo(() => ({

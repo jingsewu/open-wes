@@ -4,7 +4,8 @@
 import classNames from "classnames/bind"
 import { debounce } from "lodash"
 import type { FunctionComponent, ReactNode } from "react"
-import React, { useEffect, useRef, memo, useMemo, useCallback } from "react"
+import React, { useEffect, useRef, useMemo, useCallback } from "react"
+import { observer } from "mobx-react-lite"
 
 import { DEBOUNCE_TIME } from "@/pages/wms/station/constants/constant"
 import { useWorkStation } from "@/pages/wms/station/state"
@@ -96,4 +97,4 @@ function Wrapper(props: {
     )
 }
 
-export default memo(Wrapper)
+export default observer(Wrapper)
