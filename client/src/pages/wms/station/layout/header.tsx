@@ -1,4 +1,4 @@
-import React from "react"
+import React, {useEffect} from "react"
 import {useHistory} from "react-router"
 import {useTranslation} from "react-i18next"
 import classNames from "classnames/bind"
@@ -22,13 +22,19 @@ const WorkStationLayoutHeader = (props: HeaderProps) => {
     const {title, extraTitleInfo} = props
     const {store} = useWorkStation()
     const {workStationEvent} = store
+    const workStationStatus = workStationEvent?.workStationStatus
 
-    if (workStationEvent?.workStationStatus === WorkStationStatus.OFFLINE) {
-        console.log(
-            "%c =====> 当前工作站已下线,重定向回卡片页",
-            "color:red;font-size:20px;"
-        )
-        history.push(STATION_MENU_PATH)
+    useEffect(() => {
+        if (workStationStatus === WorkStationStatus.OFFLINE) {
+            console.log(
+                "%c =====> 当前工作站已下线,重定向回卡片页",
+                "color:red;font-size:20px;"
+            )
+            history.push(STATION_MENU_PATH)
+        }
+    }, [workStationStatus, history])
+
+    if (workStationStatus === WorkStationStatus.OFFLINE) {
         return null
     }
 

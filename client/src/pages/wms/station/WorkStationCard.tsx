@@ -157,12 +157,14 @@ const Station = observer((props: any) => {
     console.log("WorkStationCard - workStationMode:", workStationMode)
 
     useEffect(() => {
-        const path = workStationStatus !== "OFFLINE" && workStationMode
+        const targetPath = workStationStatus !== "OFFLINE" && workStationMode
             ? `${WORK_STATION_PATH_PREFIX}/${
                 StationTypes[workStationMode as keyof typeof StationTypes]
             }`
             : WORK_STATION_PATH_PREFIX
-        history.replace(path)
+        if (history.location.pathname !== targetPath) {
+            history.replace(targetPath)
+        }
     }, [workStationMode, workStationStatus, history])
 
     const handleCardClick = useCallback((workStationMode: string, hasOrder: boolean) => {

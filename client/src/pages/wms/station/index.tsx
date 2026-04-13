@@ -60,10 +60,16 @@ const WorkStation = (props: WorkStationProps) => {
         layout: InstanceLayout,
         stepsDescribe,
         title,
-        debugType = false,
-        mockData = {},
         extraTitleInfo
     } = workStationConfig
+
+    // Extract scalar/reference values inside useMemo so deps stay stable.
+    // `mockData = {}` in destructuring would create a new object on every render.
+    const debugType = workStationConfig.debugType ?? false
+    const mockData = useMemo(
+        () => workStationConfig.mockData ?? [],
+        [workStationConfig]
+    )
 
     useEffect(() => {
         let isMounted = true
