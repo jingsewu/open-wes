@@ -69,60 +69,54 @@ const Header = ({
     }
 
     return (
-        <div>
-            <div className={`cxd-Layout-brandBar`}>
-                <button
-                    onClick={store.toggleOffScreen}
-                    className="pull-right visible-xs"
-                >
-                    <i className="fa fa-bars text-white" />
-                </button>
+        <>
+            {/* brandBar is hidden via CSS (display:none) — kept so AMIS layout structure is intact */}
+            <div className="cxd-Layout-brandBar" />
+
+            <div className="cxd-Layout-headerBar">
+                {/* ── Logo zone — visually aligns with sidebar width ── */}
                 <div
-                    className={`cxd-Layout-brand d-flex juftify-center items-center shadow`}
-                    style={{ height: 50 }}
+                    style={{
+                        width: 180,
+                        height: "100%",
+                        display: "flex",
+                        alignItems: "center",
+                        padding: "0 16px",
+                        gap: 8,
+                        flexShrink: 0,
+                        borderRight: "1px solid #e5e7eb"
+                    }}
                 >
                     <Icon
                         component={() => <LogoSvg />}
-                        style={{
-                            fontSize: "32px",
-                            color: "#fff"
-                        }}
+                        style={{ fontSize: "22px", color: "#2563eb" }}
                     />
-                    <span className="text-xl font-bold pl-3">OPEN-WES</span>
-                </div>
-            </div>
-            <div className={`cxd-Layout-headerBar pt-2`}>
-                <div className="nav navbar-nav hidden-xs pull-left ">
-                    <Button
-                        className="no-shadow navbar-btn"
-                        type="link"
-                        onClick={store.toggleAsideFolded}
-                    >
-                        <i
-                            className={
-                                store.asideFolded
-                                    ? "fa fa-indent"
-                                    : "fa fa-outdent"
-                            }
-                        />
-                    </Button>
+                    <span style={{ fontSize: 14, fontWeight: 700, color: "#111827", whiteSpace: "nowrap" }}>
+                        OPEN-WES
+                    </span>
                 </div>
 
-                <div className="nav navbar-nav hidden-xs pull-left">
-                    <Menu
-                        onClick={onApplicationChange}
-                        selectedKeys={[selectedApp]}
-                        mode="horizontal"
-                        items={applications}
-                        style={{
-                            // background: "#fff",
-                            marginTop: "-5px",
-                            borderBottom: "none"
-                        }}
-                    />
-                </div>
+                {/* ── Collapse toggle ── */}
+                <Button
+                    className="no-shadow navbar-btn"
+                    type="text"
+                    style={{ marginLeft: 8 }}
+                    onClick={store.toggleAsideFolded}
+                >
+                    <i className={store.asideFolded ? "fa fa-indent" : "fa fa-outdent"} />
+                </Button>
 
-                <div className="m-l-auto hidden-xs pull-right">
+                {/* ── App navigation ── */}
+                <Menu
+                    onClick={onApplicationChange}
+                    selectedKeys={[selectedApp]}
+                    mode="horizontal"
+                    items={applications}
+                    style={{ borderBottom: "none", background: "transparent", marginTop: 0 }}
+                />
+
+                {/* ── Right controls ── */}
+                <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 8, paddingRight: 16 }}>
                     {selectedApp === "wms" && (
                         <Select
                             placeholder="select warehouse"
@@ -134,10 +128,7 @@ const Header = ({
                     )}
                     <Language onLanguageChange={onLanguageChange} />
                     <Dropdown
-                        menu={{
-                            items,
-                            onClick: handleMenuClick
-                        }}
+                        menu={{ items, onClick: handleMenuClick }}
                         trigger={["click"]}
                     >
                         <Button type="primary" shape="round">
@@ -153,7 +144,7 @@ const Header = ({
                     />
                 </div>
             </div>
-        </div>
+        </>
     )
 }
 
