@@ -350,16 +350,8 @@ export default class Admin extends React.Component<AdminProps, State> {
                             shape="circle"
                             icon={<RobotSvg style={{ fontSize: 20 }} />}
                             onClick={this.handleClick}
-                            style={{
-                                width: 40,
-                                height: 40,
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                boxShadow: "0 4px 14px rgba(37, 99, 235, 0.4)"
-                            }}
                         />
-                        <span className="tooltip">
+                        <span className={cx("tooltip")}>
                             <Translation>{(t) => t("ai.chat.span")}</Translation>
                         </span>
                     </Affix>

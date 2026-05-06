@@ -45,3 +45,12 @@
     visibility: visible;
     opacity: 1;
 }
+
+.fixButton :global(.ant-btn) {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+}
