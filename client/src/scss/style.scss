@@ -6,32 +6,69 @@
     height: 100%;
 }
 
-.cxd-Layout-headerBar {
-    display: block !important;
-    background-color: #fff;
+/* ─── Unified Header ─────────────────────────────── */
+.cxd-Layout-brandBar {
+    display: none !important;
 }
 
+.cxd-Layout-headerBar {
+    display: flex !important;
+    align-items: center !important;
+    height: 52px !important;
+    padding: 0 !important;
+    background-color: #fff;
+    border-bottom: 1px solid #e5e7eb;
+    box-shadow: 0 1px 4px rgb(0 0 0 / 6%);
+}
+
+/* ─── Sidebar ─────────────────────────────────────── */
 .cxd-Layout-aside {
-    background: #1890ff !important;
+    background: #fff !important;
+    border-right: 1px solid #e5e7eb;
 }
 
 .cxd-AsideNav-item.is-active > a {
-    background: #3b82f6 !important;
-    color: #fff !important;
+    background: #eff6ff !important;
+    color: #2563eb !important;
+    position: relative;
+
+    &::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 3px;
+        height: 16px;
+        background: #2563eb;
+        border-radius: 2px;
+    }
+
+    .cxd-AsideNav-itemLabel {
+        color: #2563eb !important;
+    }
+
+    i {
+        color: #2563eb !important;
+    }
 }
 
 .cxd-AsideNav-subList {
-    background-color: #1890ff !important;
-    color: #fff !important;
+    background-color: #fff !important;
+    color: #374151 !important;
 }
 
 .cxd-AsideNav-item a:hover {
-    background: #3b82f6 !important;
-    color: #fff !important;
+    background: #f9fafb !important;
+    color: #374151 !important;
+
+    .cxd-AsideNav-itemLabel {
+        color: #374151 !important;
+    }
 }
 
-.cxd-Layout-brandBar {
-    background: #1890ff !important;
+.cxd-AsideNav-itemLabel {
+    color: #374151 !important;
 }
 
 .login-page-container {
@@ -221,7 +258,7 @@
 }
 
 .cxd-Layout-content {
-    background-color: #f4f4f5;
+    background-color: #f9fafb;
 }
 
 .cxd-Layout-body {
@@ -354,4 +391,32 @@
     .ant-form-item-label > label {
         font-weight: 700;
     }
+}
+
+/* ─── Tab bar (Ant Design v4 editable-card) ─────── */
+.ant-tabs-card > .ant-tabs-nav .ant-tabs-tab {
+    background: #f9fafb !important;
+    border: 1px solid #f3f4f6 !important;
+    border-bottom: none !important;
+    border-radius: 6px 6px 0 0 !important;
+    color: #6b7280;
+    margin: 0 2px 0 0 !important;
+    transition: background 0.15s;
+}
+
+.ant-tabs-card > .ant-tabs-nav .ant-tabs-tab-active {
+    background: #f0f9ff !important;
+    border: 1px solid #bae6fd !important;
+    border-bottom: 2px solid #0284c7 !important;
+    margin-bottom: -1px !important;
+    border-radius: 6px 6px 0 0 !important;
+
+    .ant-tabs-tab-btn {
+        color: #0284c7 !important;
+        font-weight: 500;
+    }
+}
+
+.ant-tabs-card > .ant-tabs-nav .ant-tabs-tab .ant-tabs-tab-btn {
+    color: #6b7280;
 }
