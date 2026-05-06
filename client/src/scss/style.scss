@@ -1,5 +1,9 @@
 @use "./default.scss";
 
+:root {
+    --layout-aside-width: 180px;
+}
+
 .routes-wrapper {
     position: absolute;
     width: 100%;

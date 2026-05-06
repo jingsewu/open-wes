@@ -12,6 +12,8 @@ import LogoSvg from "@/icon/icon_logo/wes.svg"
 import Language from "@/pages/components/Language"
 import ChangePasswordForm from "@/pages/components/ChangePassword"
 
+const LogoIcon = () => <LogoSvg />
+
 const items: MenuProps["items"] = [
     {
         label: <Translation>{(t) => t("button.changePassword")}</Translation>,
@@ -77,7 +79,7 @@ const Header = ({
                 {/* ── Logo zone — visually aligns with sidebar width ── */}
                 <div
                     style={{
-                        width: 180,
+                        width: "var(--layout-aside-width)",
                         height: "100%",
                         display: "flex",
                         alignItems: "center",
@@ -88,7 +90,7 @@ const Header = ({
                     }}
                 >
                     <Icon
-                        component={() => <LogoSvg />}
+                        component={LogoIcon}
                         style={{ fontSize: "22px", color: "#2563eb" }}
                     />
                     <span style={{ fontSize: 14, fontWeight: 700, color: "#111827", whiteSpace: "nowrap" }}>
