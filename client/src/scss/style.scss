@@ -25,6 +25,15 @@
     box-shadow: 0 1px 4px rgb(0 0 0 / 6%) !important;
 }
 
+/* AMIS pushes headerBar right by sidebar width when brandBar is shown — reset since we hide brandBar */
+.cxd-Layout--withAside .cxd-Layout-headerBar {
+    margin-left: 0 !important;
+}
+
+.cxd-Layout--folded.cxd-Layout--withAside .cxd-Layout-headerBar {
+    margin-left: 0 !important;
+}
+
 /* ─── Sidebar ─────────────────────────────────────── */
 .cxd-Layout-aside {
     background: #fff !important;
