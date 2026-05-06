@@ -4,15 +4,11 @@ import { useHistory } from "react-router"
 import { Button, Dropdown, Menu, Space, Select } from "antd"
 import { DownOutlined } from "@ant-design/icons"
 import type { MenuProps } from "antd"
-import Icon from "@ant-design/icons"
 
 import store from "@/stores"
-import LogoSvg from "@/icon/icon_logo/wes.svg"
 
 import Language from "@/pages/components/Language"
 import ChangePasswordForm from "@/pages/components/ChangePassword"
-
-const LogoIcon = () => <LogoSvg />
 
 const items: MenuProps["items"] = [
     {
@@ -89,12 +85,19 @@ const Header = ({
                         borderRight: "1px solid #e5e7eb"
                     }}
                 >
-                    <Icon
-                        component={LogoIcon}
-                        style={{ fontSize: "22px", color: "#2563eb" }}
-                    />
-                    <span style={{ fontSize: 14, fontWeight: 700, color: "#111827", whiteSpace: "nowrap" }}>
-                        OPEN-WES
+                    <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="logoGrad" x1="0" y1="0" x2="1" y2="1">
+                                <stop offset="0%" stopColor="#2563eb" />
+                                <stop offset="100%" stopColor="#4f46e5" />
+                            </linearGradient>
+                        </defs>
+                        <rect width="34" height="34" rx="9" fill="url(#logoGrad)" />
+                        <text x="17" y="23.5" textAnchor="middle" fill="white" fontSize="17" fontWeight="900" fontFamily="Arial,sans-serif">W</text>
+                    </svg>
+                    <span style={{ fontSize: 15, whiteSpace: "nowrap" }}>
+                        <span style={{ fontWeight: 500, color: "#374151" }}>Open</span>
+                        <span style={{ fontWeight: 800, color: "#2563eb" }}>WES</span>
                     </span>
                 </div>
 
