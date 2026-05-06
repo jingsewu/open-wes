@@ -70,7 +70,6 @@ const RenderAside = ({ navigations, iframeShow, iframeMenuClick }: any) => {
                         <i
                             key="icon"
                             className={cx(`AsideNav-itemIcon`, link.icon)}
-                            style={{ color: "#fff" }}
                         />
                     )
                 } else if (store.asideFolded && depth === 1) {
@@ -81,7 +80,6 @@ const RenderAside = ({ navigations, iframeShow, iframeMenuClick }: any) => {
                                 `AsideNav-itemIcon`,
                                 hasChildren ? "fa fa-folder" : "fa fa-info"
                             )}
-                            style={{ color: "#fff" }}
                         />
                     )
                 }
@@ -90,9 +88,6 @@ const RenderAside = ({ navigations, iframeShow, iframeMenuClick }: any) => {
                     <span
                         key="label"
                         className={cx("AsideNav-itemLabel")}
-                        style={{
-                            color: "#fff"
-                        }}
                     >
                         {link.languageValueMappings?.[store.locale] || t(link.title)}
                     </span>
