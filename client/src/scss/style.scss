@@ -37,7 +37,10 @@
 /* ─── Sidebar ─────────────────────────────────────── */
 .cxd-Layout-aside {
     background: #fff !important;
-    border-right: 1px solid #e5e7eb !important;
+}
+
+.cxd-Layout-body {
+    border-left: 1px solid #e5e7eb !important;
 }
 
 .cxd-AsideNav-item.is-active > a {
