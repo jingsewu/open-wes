@@ -16,15 +16,15 @@
     align-items: center !important;
     height: 52px !important;
     padding: 0 !important;
-    background-color: #fff;
-    border-bottom: 1px solid #e5e7eb;
-    box-shadow: 0 1px 4px rgb(0 0 0 / 6%);
+    background-color: #fff !important;
+    border-bottom: 1px solid #e5e7eb !important;
+    box-shadow: 0 1px 4px rgb(0 0 0 / 6%) !important;
 }
 
 /* ─── Sidebar ─────────────────────────────────────── */
 .cxd-Layout-aside {
     background: #fff !important;
-    border-right: 1px solid #e5e7eb;
+    border-right: 1px solid #e5e7eb !important;
 }
 
 .cxd-AsideNav-item.is-active > a {
@@ -63,6 +63,10 @@
     color: #374151 !important;
 
     .cxd-AsideNav-itemLabel {
+        color: #374151 !important;
+    }
+
+    i {
         color: #374151 !important;
     }
 }
