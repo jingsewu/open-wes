@@ -1,50 +1,35 @@
-//.fixButton {
-//    position: fixed;
-//    right: 0;
-//    bottom: 5%;
-//
-//    &:hover {
-//        right: 28px;
-//    }
-//}
-
 .fixButton {
     position: fixed;
-    bottom: 6%;
-    right: 70px;
+    bottom: 24px;
+    right: 24px;
     z-index: 1000;
-    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    transition: transform 0.2s ease;
+
+    &:hover {
+        transform: scale(1.08);
+    }
 }
 
-.fixButton.hidden {
-    transform: translateX(100%);
-    opacity: 0;
-}
-
-/* 新增悬停样式 */
-.fixButton:hover {
-    transform: scale(1.1); /* 放大按钮 */
-}
-
-/* 提示信息样式 */
+/* Tooltip */
 .fixButton .tooltip {
     visibility: hidden;
     width: 120px;
-    background-color: black;
+    background-color: #1e293b;
     color: #fff;
     text-align: center;
     border-radius: 6px;
     padding: 5px;
     position: absolute;
     z-index: 1;
-    bottom: 125%; /* 从按钮下方偏移 */
+    bottom: 125%;
     left: 50%;
     margin-left: -60px;
     opacity: 0;
-    transition: opacity 0.3s;
+    transition: opacity 0.2s;
+    font-size: 12px;
+    white-space: nowrap;
 }
 
-/* 提示信息箭头 */
 .fixButton .tooltip::after {
     content: "";
     position: absolute;
@@ -53,10 +38,9 @@
     margin-left: -5px;
     border-width: 5px;
     border-style: solid;
-    border-color: black transparent transparent transparent;
+    border-color: #1e293b transparent transparent transparent;
 }
 
-/* 当鼠标悬停在按钮上时显示提示信息 */
 .fixButton:hover .tooltip {
     visibility: visible;
     opacity: 1;
