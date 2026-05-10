@@ -1,0 +1,102 @@
+<h2>右侧控件设计方向</h2>
+<p class="subtitle">选仓库 · 语言切换 · 用户菜单 — 你倾向哪种整体风格？</p>
+
+<div class="cards">
+
+  <!-- Option A -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding:16px 12px; background:#f9fafb;">
+      <!-- Simulated header bar - Option A: Icon-Compact -->
+      <div style="display:flex;align-items:center;gap:6px;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:6px 12px;box-shadow:0 1px 3px rgba(0,0,0,.06);">
+        <!-- Warehouse -->
+        <div style="display:flex;align-items:center;gap:5px;padding:4px 10px;border:1px solid #e5e7eb;border-radius:6px;font-size:13px;color:#374151;background:#fff;cursor:pointer;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <span style="font-weight:500;">仓库 A</span>
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+
+        <div style="width:1px;height:18px;background:#e5e7eb;margin:0 2px;"></div>
+
+        <!-- Language icon button -->
+        <div style="display:flex;align-items:center;gap:4px;padding:4px 8px;border-radius:6px;font-size:12px;font-weight:600;color:#374151;cursor:pointer;background:#f3f4f6;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg>
+          EN
+        </div>
+
+        <div style="width:1px;height:18px;background:#e5e7eb;margin:0 2px;"></div>
+
+        <!-- User avatar -->
+        <div style="display:flex;align-items:center;gap:6px;padding:3px 8px;border-radius:6px;cursor:pointer;">
+          <div style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#2563eb,#4f46e5);display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;">A</div>
+          <span style="font-size:13px;font-weight:500;color:#374151;">Admin</span>
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — 图标紧凑型</h3>
+      <p>仓库选择带 icon，语言用 globe 图标 + 代码，用户改为头像 + 姓名。轻量、现代，信息密度高。</p>
+    </div>
+  </div>
+
+  <!-- Option B -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding:16px 12px; background:#f9fafb;">
+      <div style="display:flex;align-items:center;gap:6px;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:6px 12px;box-shadow:0 1px 3px rgba(0,0,0,.06);">
+        <!-- Warehouse ghost select -->
+        <div style="display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:6px;font-size:13px;color:#374151;background:#eff6ff;cursor:pointer;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <span style="font-weight:500;color:#2563eb;">仓库 A</span>
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+
+        <!-- Language toggle pills -->
+        <div style="display:flex;align-items:center;border-radius:20px;border:1px solid #e5e7eb;overflow:hidden;font-size:12px;">
+          <span style="padding:3px 10px;background:#2563eb;color:#fff;font-weight:600;cursor:pointer;">EN</span>
+          <span style="padding:3px 10px;background:#fff;color:#6b7280;cursor:pointer;">中</span>
+        </div>
+
+        <!-- User: just avatar + dropdown -->
+        <div style="display:flex;align-items:center;gap:6px;padding:3px 8px;border-radius:6px;cursor:pointer;">
+          <div style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#2563eb,#4f46e5);display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;">A</div>
+          <span style="font-size:13px;font-weight:500;color:#374151;">Admin</span>
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — 主色强调型</h3>
+      <p>仓库用蓝色浅底高亮，语言切换改为双段 pill 切换，用户头像 + 名字。视觉重心明确，交互清晰。</p>
+    </div>
+  </div>
+
+  <!-- Option C -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding:16px 12px; background:#f9fafb;">
+      <div style="display:flex;align-items:center;gap:4px;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:6px 12px;box-shadow:0 1px 3px rgba(0,0,0,.06);">
+
+        <!-- Warehouse: minimal text + icon, no border -->
+        <div style="display:flex;align-items:center;gap:5px;padding:5px 8px;border-radius:6px;font-size:13px;color:#374151;cursor:pointer;transition:background .15s;" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='transparent'">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <span>仓库 A</span>
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+
+        <!-- Language: icon only, ghost -->
+        <div style="width:30px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:6px;cursor:pointer;color:#6b7280;" title="语言">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg>
+        </div>
+
+        <div style="width:1px;height:18px;background:#e5e7eb;margin:0 2px;"></div>
+
+        <!-- User: only avatar, no text -->
+        <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#2563eb,#4f46e5);display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;cursor:pointer;">A</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — 极简图标型</h3>
+      <p>语言只保留 globe 图标，用户只显示头像（悬停/点击展开更多）。最节省空间，适合内容优先的布局。</p>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,90 @@
+<h2>Section 3（修订）— 退出后跳转到卡片页</h2>
+<p class="subtitle">EXIT → OFFLINE → 自动跳到 /wms/workStation → 卡片页顶部出现解绑 banner</p>
+
+<div class="section">
+  <h3>3a — 工作站 Header：作业中</h3>
+  <p class="subtitle">Header 右侧新增"退出工作站"按钮（替代 toolbar 的 EXIT），其余保持不变</p>
+
+  <div class="mockup">
+    <div class="mockup-header">工作站作业 Header</div>
+    <div class="mockup-body">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid #e4e4e4;background:#fff">
+        <span style="font-weight:700;font-size:15px;color:#111827;display:flex;align-items:center;gap:12px">
+          <span style="color:#6b7280;font-weight:400;font-size:13px">作业工作站</span>
+          <span style="color:#2563eb">WS-001</span>
+          <span style="color:#374151">拣选作业</span>
+          <span style="font-size:12px;background:#dcfce7;color:#16a34a;padding:2px 8px;border-radius:10px;font-weight:500">● 作业中</span>
+        </span>
+        <button style="padding:6px 14px;background:#fff;border:1px solid #d1d5db;border-radius:6px;font-size:13px;color:#374151;cursor:pointer">
+          退出工作站
+        </button>
+      </div>
+      <div style="padding:10px 20px;font-size:12px;color:#9ca3af">点击"退出工作站" → 确认弹窗 → 发送 OFFLINE 给服务端 → OFFLINE 检测 → 自动跳回卡片页</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>3b — 工作站卡片页：解绑 Banner</h3>
+  <p class="subtitle">从工作站退出后跳到此页，若 localStorage 中有 stationId 则在顶部显示解绑 banner</p>
+
+  <div class="mockup">
+    <div class="mockup-header">/wms/workStation 卡片页（刚从 WS-001 退出）</div>
+    <div class="mockup-body" style="background:#f9fafb">
+
+      <!-- Unbind banner -->
+      <div style="background:#fff7ed;border-bottom:1px solid #fed7aa;padding:10px 20px;display:flex;align-items:center;justify-content:space-between">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:16px">🔔</span>
+          <div>
+            <span style="font-size:13px;font-weight:600;color:#92400e">工作站 WS-001 已退出</span>
+            <span style="font-size:12px;color:#b45309;margin-left:8px">当前仍绑定此工作站，下次进入将自动连接</span>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button style="padding:5px 12px;background:#fff;border:1px solid #d97706;border-radius:5px;font-size:12px;color:#b45309;cursor:pointer">
+            保留绑定
+          </button>
+          <button style="padding:5px 12px;background:#d97706;border:none;border-radius:5px;font-size:12px;color:#fff;cursor:pointer;font-weight:600">
+            解绑工作站
+          </button>
+        </div>
+      </div>
+
+      <!-- Station cards -->
+      <div style="padding:20px;display:flex;gap:12px;flex-wrap:wrap">
+        <div style="background:#fff;border:2px solid #bfdbfe;border-radius:10px;padding:16px;width:160px;cursor:pointer">
+          <div style="font-size:20px;margin-bottom:8px">🔄</div>
+          <div style="font-weight:600;font-size:13px;color:#1e40af">WS-001</div>
+          <div style="font-size:11px;color:#60a5fa;margin-top:2px">拣选站 A · 已绑定</div>
+        </div>
+        <div style="background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:16px;width:160px;cursor:pointer">
+          <div style="font-size:20px;margin-bottom:8px">📦</div>
+          <div style="font-weight:600;font-size:13px;color:#374151">WS-002</div>
+          <div style="font-size:11px;color:#10b981;margin-top:2px">拣选站 B · 空闲</div>
+        </div>
+        <div style="background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:16px;width:160px;opacity:0.5">
+          <div style="font-size:20px;margin-bottom:8px">🔒</div>
+          <div style="font-weight:600;font-size:13px;color:#374151">WS-003</div>
+          <div style="font-size:11px;color:#f59e0b;margin-top:2px">拣选站 C · 占用中</div>
+        </div>
+      </div>
+
+      <div style="padding:0 20px 16px;font-size:12px;color:#6b7280">
+        点"解绑工作站" → clearStation() → banner 消失 → 下次点卡片进入绑定页<br>
+        点"保留绑定"或忽略 → banner 消失 → 下次点 WS-001 直接进入作业（跳过绑定页）
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>完整流程（修订版）</h3>
+  <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:16px;font-size:13px;line-height:2.2;color:#374151">
+    <div><strong>首次进入（未绑定）：</strong>进入工作站路由 → isStationSelected=false → 显示绑定页 → 选择 → 确认 → 进入作业</div>
+    <div><strong>再次进入（已绑定）：</strong>进入工作站路由 → isStationSelected=true → 直接进入作业（跳过绑定页）</div>
+    <div><strong>退出：</strong>Header "退出工作站" → 确认 → OFFLINE → 自动跳回卡片页 → 出现解绑 banner</div>
+    <div><strong>解绑：</strong>Banner "解绑工作站" → clearStation() → banner 消失 → 下次进入显示绑定页</div>
+    <div><strong>保留绑定：</strong>Banner "保留绑定" / 忽略 → 下次点同一台直接进入作业</div>
+  </div>
+</div>

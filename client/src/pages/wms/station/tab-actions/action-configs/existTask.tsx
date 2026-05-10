@@ -29,15 +29,17 @@ const taskConfig: TabAction = {
         )
     },
     emitter: async (props) => {
-        const { history, message, onActionDispatch } = props
+        const { message, onActionDispatch } = props
         const { code, msg } = await onActionDispatch({
             eventCode: CustomActionType.OFFLINE
         })
         if (code === "-1") {
             message?.({ type: MessageType.ERROR, content: msg })
-        } else {
-            history.push("/wms/workStation")
         }
+        // Navigation is driven by the WebSocket DATA_CHANGED message:
+        // server sends DATA_CHANGED → getApiData() returns OFFLINE →
+        // workStationStore updates → header.useEffect detects OFFLINE →
+        // navigates to /wms/workStation.
     }
 }
 

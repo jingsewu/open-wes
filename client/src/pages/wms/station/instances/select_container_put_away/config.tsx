@@ -44,7 +44,7 @@ const config: WorkStationConfig<string> = {
             name: "信息录入"
         }
     ],
-    actions: [TaskDetail, CallContainer, TabActionType.EXIT],
+    actions: [TaskDetail, CallContainer],
     operationMap: OPERATION_MAP,
     layout: InstanceLayout,
     debugType: DebugType.STATIC,

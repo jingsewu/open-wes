@@ -23,7 +23,7 @@ const config: WorkStationConfig<string> = {
     type: "stocktake",
     title: <Translation>{(t) => t("inventory.title")}</Translation>,
     stepsDescribe: [],
-    actions: [ReceiveTask, TabActionType.EXIT],
+    actions: [ReceiveTask],
     operationMap: OPERATION_MAP,
     layout: InstanceLayout,
     debugType: DebugType.NONE,

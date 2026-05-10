@@ -78,6 +78,7 @@
     "confirm.stocktake.order.execute": "确定要执行盘点单?",
 
     "modal.confirmExit": "确定退出吗？",
+    "modal.confirmExitStation": "确认退出工作站？",
     "modal.clickSlotToBeUnlocked": "请点选需要解绑的播种位周转箱!",
     "modal.confirmWholeBox": "确定切换成整箱上架模式吗？",
     "modal.confirmNormalMode": "确定切换成普通上架模式吗？",
@@ -691,6 +692,19 @@
 
     "station.home.div.selectStation": "请选择工作站",
     "station.home.button.confirm": "确定",
+
+    "station.bind.title": "选择要绑定的工作站",
+    "station.bind.subtitle": "绑定后方可开始作业，退出作业后可解绑",
+    "station.bind.fetchError": "获取工作站列表失败",
+    "station.bind.noStations": "暂无可用工作站",
+    "station.bind.confirm": "绑定工作站",
+    "station.bind.retry": "重试",
+    "station.bind.boundNotice": "已绑定工作站 {{code}}",
+    "station.bind.autoConnect": "下次进入将自动连接",
+    "station.bind.keepBinding": "保留绑定",
+    "station.bind.unbind": "解绑工作站",
+    "station.exitStation": "退出工作站",
+    "button.confirmExit": "确认退出",
 
     "outbound.station.sealContainer.remainder.title": "封箱提示",
     "outbound.station.sealContainer.remainder.transferContainer.code": "周转容器号",

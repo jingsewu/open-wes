@@ -78,6 +78,7 @@
     "confirm.stocktake.order.execute": "Are you sure to execute the inventory order?",
 
     "modal.confirmExit": "Are you sure to exit?",
+    "modal.confirmExitStation": "Confirm exit workstation?",
     "modal.clickSlotToBeUnlocked": "Please select the turnover box to be unbound!",
     "modal.confirmWholeBox": "Are you sure to switch to whole box shelving mode?",
     "modal.confirmNormalMode": "Are you sure to switch to normal shelving mode?",
@@ -691,6 +692,19 @@
 
     "station.home.div.selectStation": "Please select work station",
     "station.home.button.confirm": "Confirm",
+
+    "station.bind.title": "Select Workstation to Bind",
+    "station.bind.subtitle": "Bind a workstation to start working. You can unbind after exiting.",
+    "station.bind.fetchError": "Failed to fetch workstation list",
+    "station.bind.noStations": "No workstations available",
+    "station.bind.confirm": "Bind Workstation",
+    "station.bind.retry": "Retry",
+    "station.bind.boundNotice": "Bound to workstation {{code}}",
+    "station.bind.autoConnect": "Will auto-connect on next entry",
+    "station.bind.keepBinding": "Keep Binding",
+    "station.bind.unbind": "Unbind Workstation",
+    "station.exitStation": "Exit Workstation",
+    "button.confirmExit": "Confirm Exit",
 
     "outbound.station.sealContainer.remainder.title": "Sealing container reminder",
     "outbound.station.sealContainer.remainder.transferContainer.code": "Transfer container code",

@@ -1,28 +1,20 @@
 package org.openwes.api.platform.utils;
 
+import lombok.extern.slf4j.Slf4j;
+import org.graalvm.polyglot.Context;
 import org.openwes.api.platform.api.constants.ConverterTypeEnum;
 import org.openwes.api.platform.domain.entity.ApiConfigPO;
 import org.openwes.common.utils.utils.JsonUtils;
-import org.openwes.distribute.file.client.FastdfsClient;
-import lombok.extern.slf4j.Slf4j;
-import org.graalvm.polyglot.Context;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 @Slf4j
 @Lazy
 @Component
 public class ConverterHelper {
-    private static FastdfsClient fastdfsClient;
-
-
-    @Autowired
-    public ConverterHelper(FastdfsClient fastdfsClient) {
-        ConverterHelper.fastdfsClient = fastdfsClient;
-    }
 
     public static Object convertParam(ApiConfigPO apiConfigPO, Object dataObj) {
         if (apiConfigPO == null) {
@@ -66,9 +58,8 @@ public class ConverterHelper {
 
     }
 
-    private static Object convertParamWithTemplateConverter(String templateUrl, Object dataObj) {
-        byte[] templateFile = fastdfsClient.download(templateUrl);
-        return FreeMarkerHelper.convertByTemplate(templateFile, dataObj, (Map<String, Object>) null);
+    private static Object convertParamWithTemplateConverter(String templateContext, Object dataObj) {
+        return FreeMarkerHelper.convertByTemplate( templateContext.getBytes(StandardCharsets.UTF_8), dataObj, (Map<String, Object>) null);
     }
 
     /**

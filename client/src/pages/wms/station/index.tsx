@@ -8,7 +8,7 @@ import { workStationStore } from "./state/WorkStationStore"
 import { workStationEventLoop } from "./event-loop/eventLoopInstance"
 import Layout from "./layout"
 import WorkStationCard from "./WorkStationCard"
-import SelectStation from "./SelectStation"
+import BindStation from "./BindStation"
 import { request_work_station_view } from "@/pages/wms/station/constants/constant"
 import { useStationSession } from "./state/hooks/useStationSession"
 
@@ -51,7 +51,7 @@ const WorkStation = (props: WorkStationProps) => {
     // Owned entirely by useStationSession (localStorage-backed).
     // The server call below populates MobX store data but does NOT
     // override this value.
-    const { isStationSelected, selectStation } = useStationSession()
+    const { isStationSelected, selectStation, clearStation } = useStationSession()
 
     const workStationConfig = useMemo(
         () => WorkStationFactor[type] || {},
@@ -171,11 +171,11 @@ const WorkStation = (props: WorkStationProps) => {
     }
 
     if (!isStationSelected) {
-        return <SelectStation onStationSelected={selectStation} />
+        return <BindStation onStationSelected={selectStation} />
     }
 
     return type === WORK_STATION_TYPE_CARD ? (
-        <WorkStationCard />
+        <WorkStationCard clearStation={clearStation} />
     ) : (
         <Layout
             extraTitleInfo={extraTitleInfo}

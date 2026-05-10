@@ -9,6 +9,7 @@ import org.openwes.wes.basic.work_station.domain.repository.PutWallSlotRepositor
 import org.openwes.wes.basic.work_station.infrastructure.persistence.mapper.PutWallPORepository;
 import org.openwes.wes.basic.work_station.infrastructure.persistence.po.PutWallPO;
 import org.openwes.wes.basic.work_station.infrastructure.persistence.transfer.PutWallPOTransfer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -30,8 +31,13 @@ public class PutWallRepositoryImpl implements PutWallRepository {
     private final PutWallSlotRepository putWallSlotRepository;
     private final PutWallPOTransfer putWallPOTransfer;
 
+    private PutWallRepositoryImpl self;
+
+    @Autowired
     @Lazy
-    private final PutWallRepositoryImpl self;
+    public void setSelf(PutWallRepositoryImpl self) {
+        this.self = self;
+    }
 
     @Override
     @Transactional(rollbackFor = Exception.class)

@@ -74,7 +74,6 @@ const config: WorkStationConfig<any> = {
         }
     ],
     actions: [
-        TabActionType.EXIT,
         createTaskAction(CustomActionType.RESUME, TabActionType.START_TASK),
         createTaskAction(CustomActionType.PAUSE, TabActionType.STOP_TASK),
         taskDetail,

@@ -1,0 +1,99 @@
+<h2>最终设计方案</h2>
+<p class="subtitle">右侧控件：仓库 · 语言 · 用户 — 完整预览，请确认</p>
+
+<!-- Full header mockup -->
+<div class="mockup" style="margin-bottom:28px;">
+  <div class="mockup-header">Header 完整预览 (52px 高)</div>
+  <div class="mockup-body" style="padding:0;">
+    <div style="display:flex;align-items:center;height:52px;background:#fff;border-bottom:1px solid #e5e7eb;box-shadow:0 1px 4px rgba(0,0,0,.06);padding:0;">
+
+      <!-- Logo zone -->
+      <div style="width:180px;height:100%;display:flex;align-items:center;padding:0 16px;gap:8px;flex-shrink:0;border-right:1px solid #e5e7eb;">
+        <div style="width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#2563eb,#4f46e5);display:flex;align-items:center;justify-content:center;color:#fff;font-size:17px;font-weight:900;">W</div>
+        <span style="font-size:15px;white-space:nowrap;"><span style="font-weight:500;color:#374151;">Open</span><span style="font-weight:800;color:#2563eb;">WES</span></span>
+      </div>
+
+      <!-- Collapse toggle -->
+      <div style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;margin-left:8px;border-radius:6px;color:#6b7280;cursor:pointer;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </div>
+
+      <!-- App nav -->
+      <div style="display:flex;align-items:center;height:100%;margin-left:4px;gap:2px;">
+        <div style="padding:0 14px;height:100%;display:flex;align-items:center;font-size:14px;font-weight:500;color:#2563eb;border-bottom:2px solid #2563eb;cursor:pointer;">WMS</div>
+        <div style="padding:0 14px;height:100%;display:flex;align-items:center;font-size:14px;color:#6b7280;cursor:pointer;">运营</div>
+      </div>
+
+      <!-- RIGHT CONTROLS -->
+      <div style="margin-left:auto;display:flex;align-items:center;gap:2px;padding-right:16px;">
+
+        <!-- 1. Warehouse: borderless with icon -->
+        <div style="display:flex;align-items:center;gap:6px;padding:5px 10px;border-radius:6px;font-size:13px;color:#374151;cursor:pointer;background:transparent;transition:background .15s;" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='transparent'">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <span style="font-weight:500;">仓库 A</span>
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+
+        <!-- divider -->
+        <div style="width:1px;height:18px;background:#e5e7eb;margin:0 4px;flex-shrink:0;"></div>
+
+        <!-- 2. Language: globe icon only, tooltip on hover -->
+        <div title="切换语言" style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:6px;cursor:pointer;color:#6b7280;background:transparent;transition:background .15s;" onmouseover="this.style.background='#f3f4f6';this.style.color='#374151'" onmouseout="this.style.background='transparent';this.style.color='#6b7280'">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg>
+        </div>
+
+        <!-- divider -->
+        <div style="width:1px;height:18px;background:#e5e7eb;margin:0 4px;flex-shrink:0;"></div>
+
+        <!-- 3. User: avatar + name + chevron -->
+        <div style="display:flex;align-items:center;gap:7px;padding:4px 8px;border-radius:6px;cursor:pointer;background:transparent;transition:background .15s;" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='transparent'">
+          <div style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#2563eb,#4f46e5);display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;flex-shrink:0;">A</div>
+          <span style="font-size:13px;font-weight:500;color:#374151;">Admin</span>
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Design breakdown -->
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:8px;">
+
+  <div style="background:#f9fafb;border-radius:8px;padding:14px;border:1px solid #e5e7eb;">
+    <div style="font-size:11px;font-weight:700;color:#2563eb;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">① 仓库选择</div>
+    <div style="font-size:13px;color:#374151;line-height:1.6;">
+      • 去掉边框，透明背景<br>
+      • 蓝色 warehouse icon 前缀<br>
+      • 仓库名常驻显示<br>
+      • hover 出现浅灰背景<br>
+      • Ant Design <code>bordered={false}</code>
+    </div>
+  </div>
+
+  <div style="background:#f9fafb;border-radius:8px;padding:14px;border:1px solid #e5e7eb;">
+    <div style="font-size:11px;font-weight:700;color:#2563eb;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">② 语言切换</div>
+    <div style="font-size:13px;color:#374151;line-height:1.6;">
+      • 仅保留 globe 图标按钮<br>
+      • Tooltip 显示"切换语言"<br>
+      • 替换 AMIS Select → Ant Design Dropdown<br>
+      • 统一组件库，消除视觉不一致
+    </div>
+  </div>
+
+  <div style="background:#f9fafb;border-radius:8px;padding:14px;border:1px solid #e5e7eb;">
+    <div style="font-size:11px;font-weight:700;color:#2563eb;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">③ 用户菜单</div>
+    <div style="font-size:13px;color:#374151;line-height:1.6;">
+      • 渐变头像（姓名首字母）<br>
+      • 常驻显示姓名 + 小箭头<br>
+      • 替换 primary round Button<br>
+      • 下拉菜单不变（改密码/退出）
+    </div>
+  </div>
+</div>
+
+<div style="margin-top:20px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:14px;">
+  <div style="font-size:12px;font-weight:600;color:#1d4ed8;margin-bottom:6px;">贯穿三者的设计原则</div>
+  <div style="font-size:13px;color:#374151;line-height:1.7;">
+    三个区块用 <strong>1px 竖线分隔符</strong>界定边界 · 全部使用 <strong>hover 浅灰背景</strong>代替默认边框 · 颜色系统复用现有 <code>#2563eb / #374151 / #e5e7eb</code> · <strong>Language.tsx 改用 Ant Design</strong>，彻底消除 AMIS/Antd 混用问题
+  </div>
+</div>
