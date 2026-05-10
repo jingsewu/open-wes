@@ -122,10 +122,8 @@ const WorkStation = (props: WorkStationProps) => {
             }
         })
 
-        if (
-            type === WORK_STATION_TYPE_CARD &&
-            !workStationEventLoop.getCurrentEvent()
-        ) {
+        // start() is idempotent — reuses existing WebSocket, always refreshes data.
+        if (type === WORK_STATION_TYPE_CARD) {
             workStationEventLoop.start()
         }
 
@@ -135,7 +133,7 @@ const WorkStation = (props: WorkStationProps) => {
                 !currentPath.startsWith("/wms/workStation/")
 
             if (isLeavingWorkStation) {
-                workStationEventLoop.stop()
+                workStationEventLoop.pause()
 
                 try {
                     const resizeObserverManager = (window as any)
