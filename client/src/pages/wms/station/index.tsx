@@ -10,8 +10,8 @@ import Layout from "./layout"
 import WorkStationCard from "./WorkStationCard"
 import SelectStation from "./SelectStation"
 import { request_work_station_view } from "@/pages/wms/station/constants/constant"
+import { useStationSession } from "./state/hooks/useStationSession"
 
-const STATION_STATUS_NOT_CONFIGURED = "SAT010001"
 const WORK_STATION_TYPE_CARD = "card"
 
 type WorkStationProps = RouteComponentProps & {
@@ -46,9 +46,12 @@ const WorkStation = (props: WorkStationProps) => {
     const { type } = props
     const isInitialized = useRef(false)
     const [isLoadingStatus, setIsLoadingStatus] = useState(true)
-    const [isConfigStationId, setIsConfigStationId] = useState(
-        !!localStorage.getItem("stationId")
-    )
+
+    // Station-session layer: "which workstation am I at?"
+    // Owned entirely by useStationSession (localStorage-backed).
+    // The server call below populates MobX store data but does NOT
+    // override this value.
+    const { isStationSelected, selectStation } = useStationSession()
 
     const workStationConfig = useMemo(
         () => WorkStationFactor[type] || {},
@@ -63,8 +66,6 @@ const WorkStation = (props: WorkStationProps) => {
         extraTitleInfo
     } = workStationConfig
 
-    // Extract scalar/reference values inside useMemo so deps stay stable.
-    // `mockData = {}` in destructuring would create a new object on every render.
     const debugType = workStationConfig.debugType ?? false
     const mockData = useMemo(
         () => workStationConfig.mockData ?? [],
@@ -74,25 +75,22 @@ const WorkStation = (props: WorkStationProps) => {
     useEffect(() => {
         let isMounted = true
 
-        const getStationStatus = async () => {
+        const loadInitialStationData = async () => {
             try {
                 setIsLoadingStatus(true)
                 const res: any = await request_work_station_view()
 
                 if (!isMounted) return
 
-                const isConfigured =
-                    res?.data?.status !== STATION_STATUS_NOT_CONFIGURED
-                setIsConfigStationId(isConfigured)
-
+                // Populate MobX store with initial data.
+                // NOTE: we do NOT call selectStation here.
+                // isStationSelected is owned by useStationSession.
                 if (res?.data) {
                     workStationStore.setWorkStationEvent(res.data)
                 }
             } catch (error) {
                 if (!isMounted) return
-
                 console.error("获取工作站状态失败:", error)
-                setIsConfigStationId(false)
             } finally {
                 if (isMounted) {
                     setIsLoadingStatus(false)
@@ -100,7 +98,7 @@ const WorkStation = (props: WorkStationProps) => {
             }
         }
 
-        getStationStatus()
+        loadInitialStationData()
 
         return () => {
             isMounted = false
@@ -108,7 +106,7 @@ const WorkStation = (props: WorkStationProps) => {
     }, [])
 
     useEffect(() => {
-        if (isLoadingStatus || (isInitialized.current && !isConfigStationId))
+        if (isLoadingStatus || (isInitialized.current && !isStationSelected))
             return
         isInitialized.current = true
 
@@ -145,37 +143,32 @@ const WorkStation = (props: WorkStationProps) => {
                 }
             }
 
-            // 清理所有定时器（包括 debounce/throttle）
-            // 这可以减少热更新时的 MST 生命周期错误
             if (process.env.NODE_ENV === "development") {
                 try {
-                    // 清理高 ID 的定时器（通常是组件内的定时器）
                     const maxTimerId = setTimeout(() => {}, 0)
                     for (let i = maxTimerId; i > maxTimerId - 100; i--) {
                         clearTimeout(i)
                     }
                 } catch (error) {
-                    // 忽略清理错误
+                    // ignore
                 }
             }
         }
-    }, [debugType, mockData, type, isConfigStationId, isLoadingStatus])
+    }, [debugType, mockData, type, isStationSelected, isLoadingStatus])
 
     if (isLoadingStatus) {
         return (
-            <div className="w-full h-full d-flex justify-center items-center">
+            <div
+                className="w-full h-full d-flex justify-center items-center"
+                style={{ backgroundColor: "#fff" }}
+            >
                 <Spin size="large" tip="正在加载工作站信息..." />
             </div>
         )
     }
 
-    if (!isConfigStationId) {
-        return (
-            <SelectStation
-                isConfigStationId={isConfigStationId}
-                setIsConfigStationId={setIsConfigStationId}
-            />
-        )
+    if (!isStationSelected) {
+        return <SelectStation onStationSelected={selectStation} />
     }
 
     return type === WORK_STATION_TYPE_CARD ? (
