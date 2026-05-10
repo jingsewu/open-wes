@@ -1,8 +1,8 @@
 import React, { useState } from "react"
-import { Translation } from "react-i18next"
 import { useHistory } from "react-router"
-import { Button, Dropdown, Menu, Space, Select } from "antd"
-import { DownOutlined } from "@ant-design/icons"
+import { useTranslation } from "react-i18next"
+import { Button, Dropdown, Menu, Select } from "antd"
+import { DownOutlined, KeyOutlined, LogoutOutlined } from "@ant-design/icons"
 import type { MenuProps } from "antd"
 
 import store from "@/stores"
@@ -11,16 +11,99 @@ import { workStationEventLoop } from "@/pages/wms/station/event-loop/eventLoopIn
 import Language from "@/pages/components/Language"
 import ChangePasswordForm from "@/pages/components/ChangePassword"
 
-const items: MenuProps["items"] = [
-    {
-        label: <Translation>{(t) => t("button.changePassword")}</Translation>,
-        key: "changePassword"
-    },
-    {
-        label: <Translation>{(t) => t("button.exit")}</Translation>,
-        key: "logout"
-    }
-]
+const Divider = () => (
+    <div style={{ width: 1, height: 18, background: "#e5e7eb", margin: "0 4px", flexShrink: 0 }} />
+)
+
+const WarehouseSelect = ({
+    value,
+    options,
+    onChange
+}: {
+    value: string
+    options: { value: string; label: string }[]
+    onChange: (v: any) => void
+}) => {
+    const [hovered, setHovered] = useState(false)
+    return (
+        <div
+            style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+                padding: "4px 10px",
+                borderRadius: 6,
+                background: hovered ? "#f3f4f6" : "transparent",
+                transition: "background 0.15s",
+                cursor: "pointer"
+            }}
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
+        >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2">
+                <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                <polyline points="9 22 9 12 15 12 15 22" />
+            </svg>
+            <Select
+                bordered={false}
+                value={value}
+                options={options}
+                onChange={onChange}
+                dropdownMatchSelectWidth={false}
+                suffixIcon={<DownOutlined style={{ fontSize: 10, color: "#9ca3af" }} />}
+                style={{ fontSize: 13, fontWeight: 500, color: "#374151", padding: 0 }}
+                dropdownStyle={{
+                    borderRadius: 8,
+                    boxShadow: "0 8px 24px rgba(0,0,0,.12)",
+                    padding: "4px 0",
+                    minWidth: 180
+                }}
+            />
+        </div>
+    )
+}
+
+const UserTrigger = ({ name, ...rest }: { name: string } & React.HTMLAttributes<HTMLDivElement>) => {
+    const [hovered, setHovered] = useState(false)
+    const initial = name?.[0]?.toUpperCase() ?? "U"
+    return (
+        <div
+            {...rest}
+            style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 7,
+                padding: "4px 8px",
+                borderRadius: 6,
+                background: hovered ? "#f3f4f6" : "transparent",
+                transition: "background 0.15s",
+                cursor: "pointer"
+            }}
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
+        >
+            <div
+                style={{
+                    width: 26,
+                    height: 26,
+                    borderRadius: "50%",
+                    flexShrink: 0,
+                    background: "linear-gradient(135deg, #2563eb, #4f46e5)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "#fff",
+                    fontSize: 11,
+                    fontWeight: 700
+                }}
+            >
+                {initial}
+            </div>
+            <span style={{ fontSize: 13, fontWeight: 500, color: "#374151" }}>{name}</span>
+            <DownOutlined style={{ fontSize: 10, color: "#9ca3af" }} />
+        </div>
+    )
+}
 
 interface Option {
     value: string
@@ -47,6 +130,7 @@ const Header = ({
     onLanguageChange
 }: HeaderProps) => {
     const history = useHistory()
+    const { t } = useTranslation()
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
 
     const logout = () => {
@@ -55,18 +139,60 @@ const Header = ({
         history.replace(`/login`)
     }
 
-    const handleMenuClick: MenuProps["onClick"] = (e) => {
-        if (e.key === "logout") {
-            logout()
-        }
-        if (e.key === "changePassword") {
-            setIsModalOpen(true)
-        }
-    }
-
     const handleModalCancel = () => {
         setIsModalOpen(false)
     }
+
+    const userDropdownPanel = (
+        <div
+            style={{
+                background: "#fff",
+                borderRadius: 8,
+                boxShadow: "0 8px 24px rgba(0,0,0,.12)",
+                overflow: "hidden",
+                minWidth: 168
+            }}
+        >
+            {/* User info header */}
+            <div
+                style={{
+                    padding: "12px 16px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10,
+                    borderBottom: "1px solid #f3f4f6"
+                }}
+            >
+                <div
+                    style={{
+                        width: 32,
+                        height: 32,
+                        borderRadius: "50%",
+                        flexShrink: 0,
+                        background: "linear-gradient(135deg, #2563eb, #4f46e5)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        color: "#fff",
+                        fontSize: 13,
+                        fontWeight: 700
+                    }}
+                >
+                    {store.user.name?.[0]?.toUpperCase() ?? "U"}
+                </div>
+                <span style={{ fontSize: 13, fontWeight: 500, color: "#374151" }}>{store.user.name}</span>
+            </div>
+            {/* Actions */}
+            <div style={{ padding: "4px 0" }}>
+                <DropdownItem icon={<KeyOutlined />} onClick={() => setIsModalOpen(true)}>
+                    {t("button.changePassword")}
+                </DropdownItem>
+                <DropdownItem icon={<LogoutOutlined />} onClick={logout} danger>
+                    {t("button.exit")}
+                </DropdownItem>
+            </div>
+        </div>
+    )
 
     return (
         <>
@@ -123,27 +249,21 @@ const Header = ({
                 />
 
                 {/* ── Right controls ── */}
-                <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 8, paddingRight: 16 }}>
+                <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 2, paddingRight: 16 }}>
                     {selectedApp === "wms" && (
-                        <Select
-                            placeholder="select warehouse"
-                            optionFilterProp="children"
-                            onChange={onWarehouseChange}
-                            value={selectedWarehouse}
-                            options={warehouses}
-                        />
+                        <>
+                            <WarehouseSelect
+                                value={selectedWarehouse}
+                                options={warehouses}
+                                onChange={onWarehouseChange}
+                            />
+                            <Divider />
+                        </>
                     )}
                     <Language onLanguageChange={onLanguageChange} />
-                    <Dropdown
-                        menu={{ items, onClick: handleMenuClick }}
-                        trigger={["click"]}
-                    >
-                        <Button type="primary" shape="round">
-                            <Space>
-                                {store.user.name}
-                                <DownOutlined />
-                            </Space>
-                        </Button>
+                    <Divider />
+                    <Dropdown dropdownRender={() => userDropdownPanel} trigger={["click"]}>
+                        <UserTrigger name={store.user.name} />
                     </Dropdown>
                     <ChangePasswordForm
                         isModalOpen={isModalOpen}
@@ -152,6 +272,43 @@ const Header = ({
                 </div>
             </div>
         </>
+    )
+}
+
+const DropdownItem = ({
+    icon,
+    children,
+    onClick,
+    danger
+}: {
+    icon: React.ReactNode
+    children: React.ReactNode
+    onClick?: () => void
+    danger?: boolean
+}) => {
+    const [hovered, setHovered] = useState(false)
+    const color = danger ? "#ef4444" : "#374151"
+    const hoverBg = danger ? "#fef2f2" : "#f9fafb"
+    return (
+        <div
+            onClick={onClick}
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
+            style={{
+                padding: "8px 16px",
+                fontSize: 13,
+                color,
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                background: hovered ? hoverBg : "transparent",
+                transition: "background 0.15s"
+            }}
+        >
+            <span style={{ fontSize: 14, color: danger ? "#ef4444" : "#9ca3af" }}>{icon}</span>
+            {children}
+        </div>
     )
 }
 
