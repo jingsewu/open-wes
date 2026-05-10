@@ -1,26 +1,23 @@
-import React, {memo, useEffect, useState} from "react"
-import {Button, message, Select, Typography, Spin, Alert} from "antd"
+import React, { memo, useEffect, useState } from "react"
+import { Button, message, Select, Typography, Spin, Alert } from "antd"
 import store from "@/stores"
-import {useTranslation} from "react-i18next"
-import {request_work_station} from "@/pages/wms/station/constants/constant"
+import { useTranslation } from "react-i18next"
+import { request_work_station } from "@/pages/wms/station/constants/constant"
 
-const {Title} = Typography
+const { Title } = Typography
 
 interface SelectStationProps {
-    isConfigStationId: boolean
-    setIsConfigStationId: (value: boolean) => void
+    onStationSelected: (id: string) => void
 }
 
-const SelectStation = ({isConfigStationId, setIsConfigStationId}: SelectStationProps) => {
-    const {t} = useTranslation()
+const SelectStation = ({ onStationSelected }: SelectStationProps) => {
+    const { t } = useTranslation()
     const [stationId, setStationId] = useState("")
     const [options, setOptions] = useState<any[]>([])
     const [loading, setLoading] = useState(false)
     const [fetchError, setFetchError] = useState("")
 
     useEffect(() => {
-        if (isConfigStationId) return
-
         let isMounted = true
 
         const fetchStations = async () => {
@@ -28,13 +25,13 @@ const SelectStation = ({isConfigStationId, setIsConfigStationId}: SelectStationP
                 setLoading(true)
                 setFetchError("")
                 const res: any = await request_work_station(store.warehouse.code)
-                
+
                 if (!isMounted) return
-                
+
                 setOptions(res?.data?.items || [])
             } catch (error: any) {
                 if (!isMounted) return
-                
+
                 console.error("获取工作站列表失败:", error)
                 const errorMsg = error?.message || "获取工作站列表失败"
                 setFetchError(errorMsg)
@@ -51,7 +48,7 @@ const SelectStation = ({isConfigStationId, setIsConfigStationId}: SelectStationP
         return () => {
             isMounted = false
         }
-    }, [store.warehouse.code, isConfigStationId])
+    }, [store.warehouse.code])
 
     const handleChange = (val: string) => {
         setStationId(val)
@@ -62,8 +59,7 @@ const SelectStation = ({isConfigStationId, setIsConfigStationId}: SelectStationP
             message.error(t("station.home.div.selectStation"))
             return
         }
-        localStorage.setItem("stationId", stationId)
-        setIsConfigStationId(true)
+        onStationSelected(stationId)
     }
 
     const handleRetry = () => {
@@ -73,7 +69,10 @@ const SelectStation = ({isConfigStationId, setIsConfigStationId}: SelectStationP
     const isDisabled = loading || !!fetchError
 
     return (
-        <div className="w-full h-full d-flex flex-col justify-center items-center">
+        <div
+            className="w-full h-full d-flex flex-col justify-center items-center"
+            style={{ backgroundColor: "#fff" }}
+        >
             <Title level={4} className="mb-3">
                 {t("station.home.div.selectStation")}
             </Title>
@@ -84,7 +83,7 @@ const SelectStation = ({isConfigStationId, setIsConfigStationId}: SelectStationP
                     description={fetchError}
                     type="error"
                     showIcon
-                    style={{width: 300, marginBottom: 16}}
+                    style={{ width: 300, marginBottom: 16 }}
                     action={
                         <Button size="small" onClick={handleRetry}>
                             重试
@@ -95,11 +94,11 @@ const SelectStation = ({isConfigStationId, setIsConfigStationId}: SelectStationP
 
             <Spin spinning={loading}>
                 <Select
-                    style={{width: 300}}
+                    style={{ width: 300 }}
                     value={stationId}
                     onChange={handleChange}
                     options={options}
-                    fieldNames={{label: "stationName", value: "id"}}
+                    fieldNames={{ label: "stationName", value: "id" }}
                     disabled={isDisabled}
                     placeholder="请选择工作站"
                     notFoundContent="暂无工作站"
