@@ -1,11 +1,12 @@
 import { useState } from "react"
+import { workStationEventLoop } from "../../event-loop/eventLoopInstance"
 
 /**
  * Owns the station-session layer:
  * "Which workstation am I at?"
  *
  * Persists stationId to localStorage. Never clears it on task exit —
- * only a future "change station" action would do that.
+ * only clearStation() (explicit station change) does that.
  *
  * Extension point: add autoSelectByIp() here for Phase 2 IP binding.
  */
@@ -19,5 +20,15 @@ export function useStationSession() {
         setIsStationSelected(true)
     }
 
-    return { isStationSelected, selectStation }
+    /**
+     * Full teardown: closes WebSocket, resets store, clears stationId.
+     * Call this when the user explicitly changes workstation or logs out.
+     */
+    const clearStation = () => {
+        workStationEventLoop.destroy()
+        localStorage.removeItem("stationId")
+        setIsStationSelected(false)
+    }
+
+    return { isStationSelected, selectStation, clearStation }
 }
