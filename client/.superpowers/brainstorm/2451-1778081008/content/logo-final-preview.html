@@ -1,0 +1,94 @@
+<h2>最终设计预览</h2>
+<p class="subtitle">方案二：内联 SVG，仅修改 LayoutHeader.tsx。这是实际 header 环境中的效果。</p>
+
+<!-- Header context mockup -->
+<div class="mockup">
+  <div class="mockup-header">Header 实际效果预览</div>
+  <div class="mockup-body" style="padding:0;">
+    <!-- Simulated header bar -->
+    <div style="display:flex;align-items:center;height:56px;background:#ffffff;border-bottom:1px solid #e5e7eb;overflow:hidden;">
+
+      <!-- Logo zone (matches sidebar width) -->
+      <div style="width:220px;height:100%;display:flex;align-items:center;padding:0 16px;gap:10px;flex-shrink:0;border-right:1px solid #e5e7eb;">
+        <!-- Inline SVG: gradient circle + W -->
+        <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="wGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#4f46e5"/>
+              <stop offset="100%" stop-color="#7c3aed"/>
+            </linearGradient>
+            <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#4f46e5" flood-opacity="0.35"/>
+            </filter>
+          </defs>
+          <circle cx="18" cy="18" r="18" fill="url(#wGrad)" filter="url(#shadow)"/>
+          <text x="18" y="24" text-anchor="middle" fill="white" font-size="18" font-weight="900" font-family="Inter,Arial,sans-serif" letter-spacing="-0.5">W</text>
+        </svg>
+
+        <!-- Wordmark -->
+        <div style="display:flex;flex-direction:column;gap:1px;line-height:1;">
+          <div style="font-size:15px;font-family:'Inter',Arial,sans-serif;white-space:nowrap;">
+            <span style="font-weight:600;color:#1e293b;">Open</span><span style="font-weight:900;color:#4f46e5;">WES</span>
+          </div>
+          <div style="height:2px;width:80px;background:linear-gradient(90deg,#4f46e5,#a78bfa 65%,transparent);border-radius:2px;"></div>
+        </div>
+      </div>
+
+      <!-- Collapse toggle -->
+      <div style="width:36px;height:36px;margin-left:8px;display:flex;align-items:center;justify-content:center;border-radius:6px;background:#f1f5f9;">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="#64748b"><rect x="2" y="4" width="12" height="1.5" rx="1"/><rect x="2" y="7.25" width="8" height="1.5" rx="1"/><rect x="2" y="10.5" width="12" height="1.5" rx="1"/></svg>
+      </div>
+
+      <!-- Nav items placeholder -->
+      <div style="display:flex;gap:0;margin-left:4px;">
+        <div style="padding:0 16px;height:56px;display:flex;align-items:center;font-size:13px;color:#374151;font-family:sans-serif;border-bottom:2px solid transparent;">WMS</div>
+        <div style="padding:0 16px;height:56px;display:flex;align-items:center;font-size:13px;color:#4f46e5;font-family:sans-serif;border-bottom:2px solid #4f46e5;font-weight:600;">采购管理</div>
+        <div style="padding:0 16px;height:56px;display:flex;align-items:center;font-size:13px;color:#374151;font-family:sans-serif;border-bottom:2px solid transparent;">报表</div>
+      </div>
+
+      <!-- Right controls placeholder -->
+      <div style="margin-left:auto;display:flex;align-items:center;gap:8px;padding-right:16px;">
+        <div style="padding:4px 10px;border-radius:6px;background:#f1f5f9;font-size:12px;color:#64748b;font-family:sans-serif;">中文</div>
+        <div style="padding:4px 14px;border-radius:20px;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:white;font-size:12px;font-family:sans-serif;font-weight:600;">admin ▾</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Design spec breakdown -->
+<div class="section" style="margin-top:24px;">
+  <h3>设计规格</h3>
+  <table style="width:100%;border-collapse:collapse;font-size:13px;font-family:sans-serif;">
+    <tr style="background:#f8fafc;">
+      <td style="padding:8px 12px;border:1px solid #e2e8f0;font-weight:600;color:#475569;width:30%;">SVG 圆形徽标</td>
+      <td style="padding:8px 12px;border:1px solid #e2e8f0;color:#1e293b;">36×36px，圆形，渐变 #4f46e5 → #7c3aed，白色 "W" 字，带紫色阴影</td>
+    </tr>
+    <tr>
+      <td style="padding:8px 12px;border:1px solid #e2e8f0;font-weight:600;color:#475569;">"Open" 文字</td>
+      <td style="padding:8px 12px;border:1px solid #e2e8f0;color:#1e293b;">15px，font-weight 600，color #1e293b</td>
+    </tr>
+    <tr style="background:#f8fafc;">
+      <td style="padding:8px 12px;border:1px solid #e2e8f0;font-weight:600;color:#475569;">"WES" 文字</td>
+      <td style="padding:8px 12px;border:1px solid #e2e8f0;color:#1e293b;">15px，font-weight 900，color #4f46e5</td>
+    </tr>
+    <tr>
+      <td style="padding:8px 12px;border:1px solid #e2e8f0;font-weight:600;color:#475569;">渐变下划线</td>
+      <td style="padding:8px 12px;border:1px solid #e2e8f0;color:#1e293b;">高 2px，宽 80px，#4f46e5 → #a78bfa → transparent</td>
+    </tr>
+    <tr style="background:#f8fafc;">
+      <td style="padding:8px 12px;border:1px solid #e2e8f0;font-weight:600;color:#475569;">修改文件</td>
+      <td style="padding:8px 12px;border:1px solid #e2e8f0;color:#1e293b;">仅 src/components/LayoutHeader.tsx（logo 区域 div）</td>
+    </tr>
+  </table>
+</div>
+
+<div class="options" style="margin-top:20px;">
+  <div class="option" data-choice="approve" onclick="toggleSelect(this)">
+    <div class="letter">✓</div>
+    <div class="content"><h3>设计确认，继续</h3><p>写设计文档并生成实施计划</p></div>
+  </div>
+  <div class="option" data-choice="revise" onclick="toggleSelect(this)">
+    <div class="letter">✎</div>
+    <div class="content"><h3>需要调整</h3><p>在终端告诉我需要修改什么</p></div>
+  </div>
+</div>

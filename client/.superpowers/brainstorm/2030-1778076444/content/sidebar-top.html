@@ -1,0 +1,147 @@
+<h2>侧边栏左上角方案</h2>
+<p class="subtitle">统一头部后，侧边栏顶部的处理方式</p>
+
+<div class="cards">
+
+  <!-- Option A: Logo in sidebar top -->
+  <div class="card" data-choice="logo-in-sidebar" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#f9fafb;padding:0;overflow:hidden;height:220px;">
+      <div style="display:flex;height:100%;font-size:11px;font-family:-apple-system,sans-serif;">
+        <!-- sidebar with logo -->
+        <div style="width:150px;background:#fff;border-right:1px solid #e5e7eb;display:flex;flex-direction:column;">
+          <!-- Logo in sidebar -->
+          <div style="height:52px;display:flex;align-items:center;padding:0 14px;gap:8px;border-bottom:1px solid #f3f4f6;">
+            <div style="width:24px;height:24px;background:#2563eb;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <div style="width:10px;height:8px;background:#fff;border-radius:2px;"></div>
+            </div>
+            <span style="font-weight:700;color:#111827;font-size:12px;">OPEN-WES</span>
+          </div>
+          <div style="padding:8px 0;">
+            <div style="padding:5px 10px;background:#eff6ff;margin:2px 8px;border-radius:6px;display:flex;align-items:center;gap:6px;">
+              <div style="width:3px;height:14px;background:#2563eb;border-radius:2px;flex-shrink:0;"></div>
+              <span style="color:#2563eb;font-size:10px;font-weight:500;">收货管理</span>
+            </div>
+            <div style="padding:5px 10px;margin:2px 8px;border-radius:6px;display:flex;align-items:center;gap:6px;">
+              <div style="width:3px;height:14px;background:transparent;border-radius:2px;flex-shrink:0;"></div>
+              <span style="color:#6b7280;font-size:10px;">出库管理</span>
+            </div>
+          </div>
+        </div>
+        <!-- header without logo -->
+        <div style="flex:1;display:flex;flex-direction:column;">
+          <div style="height:52px;background:#fff;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;padding:0 14px;gap:8px;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+            <!-- collapse toggle -->
+            <div style="width:24px;height:24px;display:flex;flex-direction:column;gap:4px;justify-content:center;padding:2px;cursor:pointer;">
+              <div style="height:2px;background:#9ca3af;border-radius:2px;"></div>
+              <div style="height:2px;background:#9ca3af;border-radius:2px;width:70%;"></div>
+              <div style="height:2px;background:#9ca3af;border-radius:2px;"></div>
+            </div>
+            <!-- app tabs -->
+            <div style="display:flex;gap:4px;">
+              <div style="padding:4px 10px;background:#eff6ff;border-radius:6px;font-size:10px;color:#2563eb;font-weight:500;">仓储平台</div>
+              <div style="padding:4px 10px;font-size:10px;color:#6b7280;">接口平台</div>
+            </div>
+            <div style="flex:1;"></div>
+            <div style="padding:4px 10px;background:#2563eb;border-radius:6px;font-size:10px;color:#fff;">admin ▾</div>
+          </div>
+          <div style="flex:1;background:#f9fafb;"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Logo 放在侧边栏</h3>
+      <p>Logo 回到侧边栏顶部，Header 只放应用切换 + 折叠按钮 + 用户。左上角饱满，但 Logo 和应用名分布在两个区域</p>
+    </div>
+  </div>
+
+  <!-- Option B: Full-width header spanning across sidebar too -->
+  <div class="card" data-choice="fullwidth-header" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#f9fafb;padding:0;overflow:hidden;height:220px;">
+      <div style="display:flex;flex-direction:column;height:100%;font-family:-apple-system,sans-serif;">
+        <!-- Full width header spanning everything -->
+        <div style="height:52px;background:#fff;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;padding:0;box-shadow:0 1px 3px rgba(0,0,0,0.06);flex-shrink:0;">
+          <!-- Logo section (same width as sidebar) -->
+          <div style="width:150px;height:100%;display:flex;align-items:center;padding:0 14px;gap:8px;border-right:1px solid #e5e7eb;flex-shrink:0;">
+            <div style="width:24px;height:24px;background:#2563eb;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <div style="width:10px;height:8px;background:#fff;border-radius:2px;"></div>
+            </div>
+            <span style="font-weight:700;color:#111827;font-size:12px;">OPEN-WES</span>
+          </div>
+          <!-- rest of header -->
+          <div style="flex:1;display:flex;align-items:center;padding:0 16px;gap:8px;">
+            <div style="display:flex;gap:4px;">
+              <div style="padding:4px 10px;background:#eff6ff;border-radius:6px;font-size:10px;color:#2563eb;font-weight:500;">仓储平台</div>
+              <div style="padding:4px 10px;font-size:10px;color:#6b7280;">接口平台</div>
+            </div>
+            <div style="flex:1;"></div>
+            <div style="padding:4px 8px;background:#f3f4f6;border-radius:6px;font-size:10px;color:#374151;">中文</div>
+            <div style="padding:4px 10px;background:#2563eb;border-radius:6px;font-size:10px;color:#fff;">admin ▾</div>
+          </div>
+        </div>
+        <!-- body -->
+        <div style="flex:1;display:flex;">
+          <div style="width:150px;background:#fff;border-right:1px solid #e5e7eb;padding:8px 0;">
+            <div style="padding:5px 10px;background:#eff6ff;margin:2px 8px;border-radius:6px;display:flex;align-items:center;gap:6px;">
+              <div style="width:3px;height:14px;background:#2563eb;border-radius:2px;flex-shrink:0;"></div>
+              <span style="color:#2563eb;font-size:10px;font-weight:500;">收货管理</span>
+            </div>
+            <div style="padding:5px 10px;margin:2px 8px;display:flex;align-items:center;gap:6px;">
+              <div style="width:3px;height:14px;background:transparent;border-radius:2px;flex-shrink:0;"></div>
+              <span style="color:#6b7280;font-size:10px;">出库管理</span>
+            </div>
+          </div>
+          <div style="flex:1;background:#f9fafb;"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Header 横跨全宽（推荐）</h3>
+      <p>Header 完整覆盖左右，Logo 在 Header 最左侧（与侧边栏等宽区域），侧边栏顶部不再有空隙。结构最整齐</p>
+    </div>
+  </div>
+
+  <!-- Option C: Sidebar accent color at top -->
+  <div class="card" data-choice="sidebar-accent-top" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#f9fafb;padding:0;overflow:hidden;height:220px;">
+      <div style="display:flex;height:100%;font-family:-apple-system,sans-serif;">
+        <!-- sidebar with colored top -->
+        <div style="width:150px;background:#fff;border-right:1px solid #e5e7eb;display:flex;flex-direction:column;">
+          <!-- Colored accent block at top (same height as header) -->
+          <div style="height:52px;background:#2563eb;display:flex;align-items:center;padding:0 14px;gap:8px;">
+            <div style="width:24px;height:24px;background:rgba(255,255,255,0.25);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <div style="width:10px;height:8px;background:#fff;border-radius:2px;"></div>
+            </div>
+            <span style="font-weight:700;color:#fff;font-size:12px;">OPEN-WES</span>
+          </div>
+          <div style="padding:8px 0;">
+            <div style="padding:5px 10px;background:#eff6ff;margin:2px 8px;border-radius:6px;display:flex;align-items:center;gap:6px;">
+              <div style="width:3px;height:14px;background:#2563eb;border-radius:2px;"></div>
+              <span style="color:#2563eb;font-size:10px;font-weight:500;">收货管理</span>
+            </div>
+            <div style="padding:5px 10px;margin:2px 8px;display:flex;align-items:center;gap:6px;">
+              <div style="width:3px;height:14px;background:transparent;border-radius:2px;"></div>
+              <span style="color:#6b7280;font-size:10px;">出库管理</span>
+            </div>
+          </div>
+        </div>
+        <!-- white header on right -->
+        <div style="flex:1;display:flex;flex-direction:column;">
+          <div style="height:52px;background:#fff;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;padding:0 16px;gap:8px;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+            <div style="display:flex;gap:4px;flex:1;">
+              <div style="padding:4px 10px;background:#eff6ff;border-radius:6px;font-size:10px;color:#2563eb;font-weight:500;">仓储平台</div>
+              <div style="padding:4px 10px;font-size:10px;color:#6b7280;">接口平台</div>
+            </div>
+            <div style="padding:4px 8px;background:#f3f4f6;border-radius:6px;font-size:10px;color:#374151;">中文</div>
+            <div style="padding:4px 10px;background:#2563eb;border-radius:6px;font-size:10px;color:#fff;">admin ▾</div>
+          </div>
+          <div style="flex:1;background:#f9fafb;"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — 侧边栏顶部保留品牌色</h3>
+      <p>Logo 区域保留蓝色背景，侧边栏其余部分变为白色。用色彩区分品牌区域，有一定辨识度</p>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,65 @@
+<h2>文字排版方式</h2>
+<p class="subtitle">W 徽标 + 靛紫渐变已确定。选择文字部分的处理方式。</p>
+
+<div class="cards">
+
+  <!-- Option A: Open + WES two-tone -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#f8fafc;display:flex;align-items:center;justify-content:center;padding:32px;min-height:120px;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#4f46e5,#7c3aed);display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(79,70,229,0.4);">
+          <span style="color:white;font-size:20px;font-weight:900;font-family:sans-serif;">W</span>
+        </div>
+        <div>
+          <div style="font-size:17px;font-weight:700;color:#1e293b;font-family:sans-serif;letter-spacing:0.02em;">Open<span style="color:#4f46e5;font-weight:900;">WES</span></div>
+          <div style="width:100%;height:2px;background:linear-gradient(90deg,#4f46e5,#a78bfa 60%,transparent);border-radius:2px;margin-top:2px;"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A · Open + WES 双色</h3>
+      <p>"Open" 用深色，"WES" 用品牌紫。强调产品缩写，层次分明。</p>
+    </div>
+  </div>
+
+  <!-- Option B: OPEN-WES all caps with subtitle -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#f8fafc;display:flex;align-items:center;justify-content:center;padding:32px;min-height:120px;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#4f46e5,#7c3aed);display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(79,70,229,0.4);">
+          <span style="color:white;font-size:20px;font-weight:900;font-family:sans-serif;">W</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:1px;">
+          <div style="font-size:15px;font-weight:800;color:#1e293b;font-family:sans-serif;letter-spacing:0.12em;text-transform:uppercase;">OPEN-WES</div>
+          <div style="font-size:9px;letter-spacing:0.18em;color:#7c3aed;text-transform:uppercase;font-family:sans-serif;">智能仓储执行系统</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B · 全大写 + 中文副标题</h3>
+      <p>"OPEN-WES" 全大写加大字距，紫色中文副标题。更正式，适合国内企业客户。</p>
+    </div>
+  </div>
+
+  <!-- Option C: Pure wordmark no separator -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#f8fafc;display:flex;align-items:center;justify-content:center;padding:32px;min-height:120px;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#4f46e5,#7c3aed);display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(79,70,229,0.4);">
+          <span style="color:white;font-size:20px;font-weight:900;font-family:sans-serif;">W</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:2px;">
+          <div style="font-size:16px;font-weight:700;letter-spacing:0.05em;font-family:sans-serif;">
+            <span style="color:#4f46e5;">open</span><span style="color:#7c3aed;font-weight:900;">wes</span>
+          </div>
+          <div style="font-size:9px;letter-spacing:0.14em;color:#94a3b8;text-transform:uppercase;font-family:sans-serif;">Warehouse Execution</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C · 全小写 + 英文副标题</h3>
+      <p>"openwes" 全小写双紫色，配灰色英文副标题。更现代、扁平，偏开源社区风格。</p>
+    </div>
+  </div>
+
+</div>

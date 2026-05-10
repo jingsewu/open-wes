@@ -1,0 +1,87 @@
+<h2>最终设计确认</h2>
+<p class="subtitle">蓝靛渐变 · 圆角方形徽标 · 双色文字。请在 header 上下文中确认。</p>
+
+<div class="mockup">
+  <div class="mockup-header">Header 实际效果</div>
+  <div class="mockup-body" style="padding:0;">
+    <div style="display:flex;align-items:center;height:56px;background:#ffffff;border-bottom:1px solid #e5e7eb;overflow:hidden;">
+
+      <!-- Logo zone -->
+      <div style="width:220px;height:100%;display:flex;align-items:center;padding:0 16px;gap:10px;flex-shrink:0;border-right:1px solid #e5e7eb;">
+        <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="finalGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#2563eb"/>
+              <stop offset="100%" stop-color="#4f46e5"/>
+            </linearGradient>
+          </defs>
+          <rect width="34" height="34" rx="9" fill="url(#finalGrad)"/>
+          <text x="17" y="23.5" text-anchor="middle" fill="white" font-size="17" font-weight="900" font-family="Arial,sans-serif">W</text>
+        </svg>
+        <span style="font-size:15px;font-family:Arial,sans-serif;white-space:nowrap;line-height:1;">
+          <span style="font-weight:500;color:#374151;">Open</span><span style="font-weight:800;color:#2563eb;">WES</span>
+        </span>
+      </div>
+
+      <!-- Collapse toggle -->
+      <div style="width:32px;height:32px;margin-left:8px;display:flex;align-items:center;justify-content:center;border-radius:6px;background:#f1f5f9;">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="#64748b"><rect x="2" y="4" width="12" height="1.5" rx="1"/><rect x="2" y="7.25" width="8" height="1.5" rx="1"/><rect x="2" y="10.5" width="12" height="1.5" rx="1"/></svg>
+      </div>
+
+      <!-- Nav -->
+      <div style="display:flex;gap:0;margin-left:4px;">
+        <div style="padding:0 16px;height:56px;display:flex;align-items:center;font-size:13px;color:#374151;font-family:sans-serif;">WMS</div>
+        <div style="padding:0 16px;height:56px;display:flex;align-items:center;font-size:13px;color:#2563eb;font-family:sans-serif;border-bottom:2px solid #2563eb;font-weight:600;">采购管理</div>
+        <div style="padding:0 16px;height:56px;display:flex;align-items:center;font-size:13px;color:#374151;font-family:sans-serif;">报表</div>
+      </div>
+
+      <!-- Right controls -->
+      <div style="margin-left:auto;display:flex;align-items:center;gap:8px;padding-right:16px;">
+        <div style="padding:4px 10px;border-radius:6px;background:#f1f5f9;font-size:12px;color:#64748b;font-family:sans-serif;">中文</div>
+        <div style="padding:4px 14px;border-radius:20px;background:linear-gradient(135deg,#2563eb,#4f46e5);color:white;font-size:12px;font-family:sans-serif;font-weight:600;">admin ▾</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Spec -->
+<div class="section" style="margin-top:24px;">
+  <h3>最终规格</h3>
+  <table style="width:100%;border-collapse:collapse;font-size:13px;font-family:sans-serif;">
+    <tr style="background:#f8fafc;">
+      <td style="padding:8px 12px;border:1px solid #e2e8f0;font-weight:600;color:#475569;width:30%;">徽标形状</td>
+      <td style="padding:8px 12px;border:1px solid #e2e8f0;color:#1e293b;">34×34px 圆角矩形（rx=9），渐变填充</td>
+    </tr>
+    <tr>
+      <td style="padding:8px 12px;border:1px solid #e2e8f0;font-weight:600;color:#475569;">渐变色</td>
+      <td style="padding:8px 12px;border:1px solid #e2e8f0;color:#1e293b;">#2563eb → #4f46e5（左上至右下）</td>
+    </tr>
+    <tr style="background:#f8fafc;">
+      <td style="padding:8px 12px;border:1px solid #e2e8f0;font-weight:600;color:#475569;">W 字</td>
+      <td style="padding:8px 12px;border:1px solid #e2e8f0;color:#1e293b;">白色，17px，font-weight 900</td>
+    </tr>
+    <tr>
+      <td style="padding:8px 12px;border:1px solid #e2e8f0;font-weight:600;color:#475569;">"Open"</td>
+      <td style="padding:8px 12px;border:1px solid #e2e8f0;color:#1e293b;">15px，font-weight 500，color #374151</td>
+    </tr>
+    <tr style="background:#f8fafc;">
+      <td style="padding:8px 12px;border:1px solid #e2e8f0;font-weight:600;color:#475569;">"WES"</td>
+      <td style="padding:8px 12px;border:1px solid #e2e8f0;color:#1e293b;">15px，font-weight 800，color #2563eb</td>
+    </tr>
+    <tr>
+      <td style="padding:8px 12px;border:1px solid #e2e8f0;font-weight:600;color:#475569;">修改文件</td>
+      <td style="padding:8px 12px;border:1px solid #e2e8f0;color:#1e293b;">src/components/LayoutHeader.tsx（logo 区域 div）</td>
+    </tr>
+  </table>
+</div>
+
+<div class="options" style="margin-top:20px;">
+  <div class="option" data-choice="approve" onclick="toggleSelect(this)">
+    <div class="letter">✓</div>
+    <div class="content"><h3>确认，开始写文档</h3><p>这个设计就是我想要的</p></div>
+  </div>
+  <div class="option" data-choice="revise" onclick="toggleSelect(this)">
+    <div class="letter">✎</div>
+    <div class="content"><h3>还需要调整</h3><p>在终端说明需要改什么</p></div>
+  </div>
+</div>

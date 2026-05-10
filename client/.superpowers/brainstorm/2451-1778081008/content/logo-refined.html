@@ -1,0 +1,100 @@
+<h2>哪个感觉更舒服？</h2>
+<p class="subtitle">针对"丑"的几种常见原因做了调整，找找哪个方向更对。</p>
+
+<div class="cards">
+
+  <!-- Option A: 去掉下划线，更简洁 -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#f8fafc;display:flex;align-items:center;justify-content:center;padding:32px;min-height:130px;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#4f46e5"/>
+              <stop offset="100%" stop-color="#7c3aed"/>
+            </linearGradient>
+          </defs>
+          <circle cx="18" cy="18" r="18" fill="url(#g1)"/>
+          <text x="18" y="24" text-anchor="middle" fill="white" font-size="18" font-weight="900" font-family="Arial,sans-serif">W</text>
+        </svg>
+        <span style="font-size:16px;font-family:Arial,sans-serif;white-space:nowrap;">
+          <span style="font-weight:500;color:#374151;">Open</span><span style="font-weight:800;color:#4f46e5;">WES</span>
+        </span>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A · 去掉下划线，更干净</h3>
+      <p>只保留圆形徽标 + 双色文字，减少装饰，看起来更利落。</p>
+    </div>
+  </div>
+
+  <!-- Option B: 换成圆角方形，减少"游戏感" -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#f8fafc;display:flex;align-items:center;justify-content:center;padding:32px;min-height:130px;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="g2" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#4f46e5"/>
+              <stop offset="100%" stop-color="#7c3aed"/>
+            </linearGradient>
+          </defs>
+          <rect width="36" height="36" rx="10" fill="url(#g2)"/>
+          <text x="18" y="25" text-anchor="middle" fill="white" font-size="18" font-weight="900" font-family="Arial,sans-serif">W</text>
+        </svg>
+        <span style="font-size:16px;font-family:Arial,sans-serif;white-space:nowrap;">
+          <span style="font-weight:500;color:#374151;">Open</span><span style="font-weight:800;color:#4f46e5;">WES</span>
+        </span>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B · 圆角方形徽标，更稳重</h3>
+      <p>圆形改为圆角方形，少一点"app icon"感，更像企业系统 logo。</p>
+    </div>
+  </div>
+
+  <!-- Option C: 换蓝色，降低紫色饱和度 -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#f8fafc;display:flex;align-items:center;justify-content:center;padding:32px;min-height:130px;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="g3" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#2563eb"/>
+              <stop offset="100%" stop-color="#4f46e5"/>
+            </linearGradient>
+          </defs>
+          <rect width="36" height="36" rx="10" fill="url(#g3)"/>
+          <text x="18" y="25" text-anchor="middle" fill="white" font-size="18" font-weight="900" font-family="Arial,sans-serif">W</text>
+        </svg>
+        <span style="font-size:16px;font-family:Arial,sans-serif;white-space:nowrap;">
+          <span style="font-weight:500;color:#374151;">Open</span><span style="font-weight:800;color:#2563eb;">WES</span>
+        </span>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C · 回归蓝色系，降低紫色</h3>
+      <p>蓝→靛渐变，比纯紫更沉稳，接近项目原有配色 #2563eb，但更有层次。</p>
+    </div>
+  </div>
+
+  <!-- Option D: 用原始 wes.svg 图形，只改配色和文字 -->
+  <div class="card" data-choice="d" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#f8fafc;display:flex;align-items:center;justify-content:center;padding:32px;min-height:130px;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <!-- Use the original wes.svg shape as colored icon -->
+        <svg viewBox="0 0 1024 1024" width="32" height="32" fill="#4f46e5" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M110.28 764.028l404.348 236v-113.28L211.76 707.384v-67.652l302.868 179.356v-118.52l-303.128-179.36 0.524-65.552 302.604 178.832v-115.472L110.28 271.44zM529.572 10.404l-96.76 60.572 304.44 180.932-55.852 33.828-310.732-181.72-94.4 58.996L582.28 345.52l-57.428 35.4-309.944-185.656-94.4 57.428 405.92 246.228 409.848-245.44zM945.72 394.292V277.868L537.436 519.8l1.58 297.288 312.304-185.224v71.584l-311.164 181.724-0.784 116.424 406.348-237.568v-302.08l-309.16 184.08V579.16z"/>
+        </svg>
+        <span style="font-size:16px;font-family:Arial,sans-serif;white-space:nowrap;">
+          <span style="font-weight:500;color:#374151;">Open</span><span style="font-weight:800;color:#4f46e5;">WES</span>
+        </span>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>D · 保留原 wes 图形，只改文字</h3>
+      <p>保留现有仓储几何图标，只更新文字颜色和样式。改动最小，风险最低。</p>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,137 @@
+<h2>整体设计风格方向</h2>
+<p class="subtitle">选择一个你认为最适合 OPEN-WES 仓库管理系统的视觉风格</p>
+
+<div class="cards">
+
+  <!-- Option A: Modern Dark Sidebar -->
+  <div class="card" data-choice="dark-sidebar" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#f8fafc;padding:0;overflow:hidden;height:200px;position:relative;">
+      <!-- Mockup: Dark sidebar layout -->
+      <div style="display:flex;height:100%;font-size:11px;">
+        <div style="width:52px;background:#0f172a;display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:16px;">
+          <div style="width:28px;height:28px;background:#3b82f6;border-radius:6px;display:flex;align-items:center;justify-content:center;">
+            <div style="width:12px;height:10px;background:#fff;border-radius:2px;"></div>
+          </div>
+          <div style="width:20px;height:3px;background:#334155;border-radius:2px;"></div>
+          <div style="display:flex;flex-direction:column;gap:10px;align-items:center;">
+            <div style="width:18px;height:18px;background:#1e293b;border-radius:4px;"></div>
+            <div style="width:18px;height:18px;background:#3b82f6;border-radius:4px;"></div>
+            <div style="width:18px;height:18px;background:#1e293b;border-radius:4px;"></div>
+            <div style="width:18px;height:18px;background:#1e293b;border-radius:4px;"></div>
+          </div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;">
+          <div style="height:36px;background:#fff;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;padding:0 12px;gap:8px;">
+            <div style="width:60px;height:18px;background:#f1f5f9;border-radius:4px;"></div>
+            <div style="width:50px;height:18px;background:#3b82f6;border-radius:4px;"></div>
+            <div style="width:50px;height:18px;background:#f1f5f9;border-radius:4px;"></div>
+            <div style="flex:1;"></div>
+            <div style="width:60px;height:20px;background:#3b82f6;border-radius:10px;"></div>
+            <div style="width:20px;height:20px;background:#f1f5f9;border-radius:10px;"></div>
+          </div>
+          <div style="height:24px;background:#fff;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;padding:0 8px;gap:4px;">
+            <div style="padding:2px 8px;background:#f1f5f9;border-radius:4px 4px 0 0;font-size:9px;color:#64748b;border:1px solid #e2e8f0;">仪表盘</div>
+            <div style="padding:2px 8px;background:#fff;border-radius:4px 4px 0 0;font-size:9px;color:#3b82f6;border:1px solid #e2e8f0;border-bottom:2px solid #3b82f6;">收货单</div>
+          </div>
+          <div style="flex:1;background:#f8fafc;padding:8px;display:flex;flex-direction:column;gap:6px;">
+            <div style="height:10px;background:#e2e8f0;border-radius:4px;width:40%;"></div>
+            <div style="height:60px;background:#fff;border-radius:6px;border:1px solid #e2e8f0;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>深色侧边栏</h3>
+      <p>深色导航栏 + 白色顶栏，现代感强，视觉层次分明。参考：Ant Design Pro、Linear</p>
+    </div>
+  </div>
+
+  <!-- Option B: Modern Blue Gradient -->
+  <div class="card" data-choice="gradient-blue" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#f8fafc;padding:0;overflow:hidden;height:200px;position:relative;">
+      <!-- Mockup: Gradient blue sidebar -->
+      <div style="display:flex;height:100%;font-size:11px;">
+        <div style="width:110px;background:linear-gradient(180deg,#1a56db 0%,#1e40af 100%);display:flex;flex-direction:column;padding:10px 0;">
+          <div style="padding:8px 10px;display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+            <div style="width:20px;height:20px;background:rgba(255,255,255,0.3);border-radius:4px;"></div>
+            <span style="color:#fff;font-weight:bold;font-size:10px;">OPEN-WES</span>
+          </div>
+          <div style="height:1px;background:rgba(255,255,255,0.15);margin:0 10px 8px;"></div>
+          <div style="padding:4px 10px;font-size:9px;color:rgba(255,255,255,0.6);">入库管理</div>
+          <div style="padding:5px 10px;background:rgba(255,255,255,0.15);border-radius:4px;margin:2px 6px;font-size:9px;color:#fff;display:flex;align-items:center;gap:4px;">
+            <div style="width:8px;height:8px;background:rgba(255,255,255,0.8);border-radius:2px;"></div>收货单
+          </div>
+          <div style="padding:4px 10px;font-size:9px;color:rgba(255,255,255,0.7);display:flex;align-items:center;gap:4px;">
+            <div style="width:8px;height:8px;background:rgba(255,255,255,0.4);border-radius:2px;"></div>入库单
+          </div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;">
+          <div style="height:40px;background:linear-gradient(90deg,#1a56db,#2563eb);display:flex;align-items:center;padding:0 10px;gap:8px;">
+            <div style="flex:1;display:flex;gap:8px;">
+              <div style="padding:2px 8px;background:rgba(255,255,255,0.2);border-radius:4px;font-size:9px;color:#fff;">仓储平台</div>
+              <div style="padding:2px 8px;background:rgba(255,255,255,0.1);border-radius:4px;font-size:9px;color:rgba(255,255,255,0.7);">接口平台</div>
+            </div>
+            <div style="width:50px;height:20px;background:rgba(255,255,255,0.9);border-radius:10px;"></div>
+          </div>
+          <div style="height:26px;background:#fff;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;padding:0 8px;gap:4px;">
+            <div style="padding:2px 8px;background:#eff6ff;border-radius:4px 4px 0 0;font-size:9px;color:#1a56db;border:1px solid #bfdbfe;">收货单</div>
+          </div>
+          <div style="flex:1;background:#f3f4f6;padding:8px;display:flex;flex-direction:column;gap:6px;">
+            <div style="height:8px;background:#d1d5db;border-radius:4px;width:30%;"></div>
+            <div style="height:60px;background:#fff;border-radius:6px;box-shadow:0 1px 3px rgba(0,0,0,0.08);"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>渐变蓝主题</h3>
+      <p>在现有蓝色基础上升级，用渐变+层级感替代纯平色。改动最小，风险最低</p>
+    </div>
+  </div>
+
+  <!-- Option C: Clean Light -->
+  <div class="card" data-choice="clean-light" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#f8fafc;padding:0;overflow:hidden;height:200px;position:relative;">
+      <!-- Mockup: Clean light layout -->
+      <div style="display:flex;height:100%;font-size:11px;">
+        <div style="width:110px;background:#fff;border-right:1px solid #e5e7eb;display:flex;flex-direction:column;padding:10px 0;">
+          <div style="padding:8px 10px;display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+            <div style="width:22px;height:22px;background:#2563eb;border-radius:6px;display:flex;align-items:center;justify-content:center;">
+              <div style="width:10px;height:8px;background:#fff;border-radius:2px;"></div>
+            </div>
+            <span style="color:#111827;font-weight:bold;font-size:10px;">OPEN-WES</span>
+          </div>
+          <div style="height:1px;background:#f3f4f6;margin:0 10px 8px;"></div>
+          <div style="padding:2px 10px;font-size:9px;color:#9ca3af;font-weight:600;letter-spacing:0.5px;margin-bottom:4px;">入库管理</div>
+          <div style="padding:5px 8px;background:#eff6ff;border-radius:6px;margin:2px 6px;font-size:9px;color:#2563eb;font-weight:500;display:flex;align-items:center;gap:4px;">
+            <div style="width:3px;height:14px;background:#2563eb;border-radius:2px;"></div>收货单
+          </div>
+          <div style="padding:5px 8px;margin:2px 6px;font-size:9px;color:#6b7280;display:flex;align-items:center;gap:4px;">
+            <div style="width:3px;height:14px;background:transparent;border-radius:2px;"></div>入库单
+          </div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;">
+          <div style="height:40px;background:#fff;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;padding:0 12px;gap:8px;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+            <div style="flex:1;display:flex;gap:8px;">
+              <div style="padding:3px 10px;background:#eff6ff;border-radius:6px;font-size:9px;color:#2563eb;font-weight:500;">仓储平台</div>
+              <div style="padding:3px 10px;border-radius:6px;font-size:9px;color:#6b7280;">接口平台</div>
+            </div>
+            <div style="width:56px;height:22px;background:#2563eb;border-radius:6px;"></div>
+          </div>
+          <div style="height:32px;background:#fff;border-bottom:1px solid #f3f4f6;display:flex;align-items:center;padding:0 8px;gap:4px;">
+            <div style="padding:3px 10px;background:#f0f9ff;border-radius:6px;font-size:9px;color:#0284c7;border:1px solid #bae6fd;">收货单 ×</div>
+          </div>
+          <div style="flex:1;background:#f9fafb;padding:8px;display:flex;flex-direction:column;gap:6px;">
+            <div style="height:8px;background:#e5e7eb;border-radius:4px;width:30%;"></div>
+            <div style="height:60px;background:#fff;border-radius:8px;border:1px solid #f3f4f6;box-shadow:0 1px 2px rgba(0,0,0,0.04);"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>简洁亮色</h3>
+      <p>白色侧边栏 + 极简风格，现代 SaaS 感，视觉干净。参考：Vercel、Figma、Notion</p>
+    </div>
+  </div>
+
+</div>

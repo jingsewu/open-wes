@@ -1,0 +1,177 @@
+<h2>最终设计稿 ✓</h2>
+<p class="subtitle">简洁亮色 + 全宽 Header（Logo 左对齐侧边栏）</p>
+
+<div class="mockup" style="max-width:900px;margin:0 auto;">
+  <div class="mockup-header">OPEN-WES — 最终方案</div>
+  <div class="mockup-body" style="padding:0;overflow:hidden;height:520px;position:relative;">
+    <div style="display:flex;flex-direction:column;height:100%;font-size:12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+
+      <!-- ===== FULL-WIDTH UNIFIED HEADER ===== -->
+      <div style="height:52px;background:#fff;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;padding:0;box-shadow:0 1px 4px rgba(0,0,0,0.06);flex-shrink:0;z-index:10;">
+        <!-- Logo zone — same width as sidebar, acts as brand area -->
+        <div style="width:180px;height:100%;display:flex;align-items:center;padding:0 16px;gap:8px;border-right:1px solid #e5e7eb;flex-shrink:0;">
+          <div style="width:28px;height:28px;background:#2563eb;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <div style="width:12px;height:10px;background:#fff;border-radius:2px;"></div>
+          </div>
+          <span style="font-size:14px;font-weight:700;color:#111827;white-space:nowrap;">OPEN-WES</span>
+        </div>
+        <!-- App navigation + right controls -->
+        <div style="flex:1;display:flex;align-items:center;padding:0 20px;gap:10px;">
+          <!-- Collapse toggle -->
+          <div style="width:28px;height:28px;display:flex;flex-direction:column;gap:4px;justify-content:center;align-items:center;cursor:pointer;border-radius:6px;background:#f9fafb;">
+            <div style="width:14px;height:2px;background:#9ca3af;border-radius:2px;"></div>
+            <div style="width:10px;height:2px;background:#9ca3af;border-radius:2px;align-self:flex-start;"></div>
+            <div style="width:14px;height:2px;background:#9ca3af;border-radius:2px;"></div>
+          </div>
+          <!-- App tabs -->
+          <div style="display:flex;gap:2px;">
+            <div style="padding:5px 12px;background:#eff6ff;border-radius:7px;font-size:11px;color:#2563eb;font-weight:500;cursor:pointer;">仓储平台</div>
+            <div style="padding:5px 12px;border-radius:7px;font-size:11px;color:#6b7280;cursor:pointer;">接口平台</div>
+            <div style="padding:5px 12px;border-radius:7px;font-size:11px;color:#6b7280;cursor:pointer;">用户中心</div>
+          </div>
+          <div style="flex:1;"></div>
+          <!-- Warehouse -->
+          <div style="padding:5px 10px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;font-size:11px;color:#374151;display:flex;align-items:center;gap:4px;">
+            WH001 <span style="color:#9ca3af;font-size:9px;">▾</span>
+          </div>
+          <!-- Language -->
+          <div style="padding:5px 10px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;font-size:11px;color:#374151;">中文</div>
+          <!-- User -->
+          <div style="padding:5px 12px;background:#2563eb;border-radius:7px;font-size:11px;color:#fff;font-weight:500;display:flex;align-items:center;gap:4px;cursor:pointer;">
+            admin <span style="font-size:9px;">▾</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== BODY (sidebar + content) ===== -->
+      <div style="flex:1;display:flex;overflow:hidden;">
+
+        <!-- SIDEBAR -->
+        <div style="width:180px;background:#fff;border-right:1px solid #e5e7eb;display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;">
+          <div style="padding:10px 0;">
+            <div style="padding:5px 14px 3px;font-size:10px;font-weight:600;color:#9ca3af;letter-spacing:0.6px;">入库管理</div>
+            <div style="display:flex;align-items:center;gap:8px;padding:7px 10px;margin:2px 8px;background:#eff6ff;border-radius:6px;">
+              <div style="width:3px;height:16px;background:#2563eb;border-radius:2px;flex-shrink:0;"></div>
+              <span style="font-size:11px;color:#2563eb;font-weight:500;">收货管理</span>
+            </div>
+            <div style="display:flex;align-items:center;padding:6px 10px;margin:1px 8px 1px 22px;background:#dbeafe;border-radius:6px;">
+              <span style="font-size:11px;color:#1d4ed8;font-weight:500;">收货单</span>
+            </div>
+            <div style="display:flex;align-items:center;padding:6px 10px;margin:1px 8px 1px 22px;border-radius:6px;">
+              <span style="font-size:11px;color:#6b7280;">上架任务</span>
+            </div>
+            <div style="display:flex;align-items:center;padding:6px 10px;margin:1px 8px 1px 22px;border-radius:6px;">
+              <span style="font-size:11px;color:#6b7280;">空箱入库</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;padding:7px 10px;margin:2px 8px;border-radius:6px;cursor:pointer;">
+              <div style="width:3px;height:16px;background:transparent;border-radius:2px;flex-shrink:0;"></div>
+              <span style="font-size:11px;color:#374151;">出库管理</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;padding:7px 10px;margin:2px 8px;border-radius:6px;cursor:pointer;">
+              <div style="width:3px;height:16px;background:transparent;border-radius:2px;flex-shrink:0;"></div>
+              <span style="font-size:11px;color:#374151;">库存管理</span>
+            </div>
+            <div style="height:1px;background:#f3f4f6;margin:6px 14px;"></div>
+            <div style="padding:5px 14px 3px;font-size:10px;font-weight:600;color:#9ca3af;letter-spacing:0.6px;">配置中心</div>
+            <div style="display:flex;align-items:center;gap:8px;padding:7px 10px;margin:2px 8px;border-radius:6px;">
+              <div style="width:3px;height:16px;background:transparent;border-radius:2px;flex-shrink:0;"></div>
+              <span style="font-size:11px;color:#374151;">基础数据</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div style="flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden;">
+          <!-- Tab bar -->
+          <div style="height:36px;background:#fff;border-bottom:1px solid #f3f4f6;display:flex;align-items:flex-end;padding:0 16px;gap:2px;flex-shrink:0;">
+            <div style="padding:5px 14px;background:#f0f9ff;border-radius:6px 6px 0 0;font-size:11px;color:#0284c7;border:1px solid #bae6fd;border-bottom:2px solid #0284c7;margin-bottom:-1px;font-weight:500;">仪表盘</div>
+            <div style="padding:5px 14px;background:#f9fafb;border-radius:6px 6px 0 0;font-size:11px;color:#6b7280;border:1px solid #f3f4f6;border-bottom:none;display:flex;align-items:center;gap:6px;">操作台 <span style="font-size:9px;color:#d1d5db;">✕</span></div>
+            <div style="padding:5px 14px;background:#f9fafb;border-radius:6px 6px 0 0;font-size:11px;color:#6b7280;border:1px solid #f3f4f6;border-bottom:none;display:flex;align-items:center;gap:6px;">收货单 <span style="font-size:9px;color:#d1d5db;">✕</span></div>
+          </div>
+          <!-- Content -->
+          <div style="flex:1;background:#f9fafb;padding:16px;display:flex;flex-direction:column;gap:12px;overflow:hidden;">
+            <div style="font-size:14px;font-weight:600;color:#111827;">收货单</div>
+            <div style="background:#fff;border-radius:8px;border:1px solid #e5e7eb;padding:12px 16px;display:flex;align-items:center;gap:10px;box-shadow:0 1px 2px rgba(0,0,0,0.04);">
+              <span style="font-size:11px;color:#6b7280;white-space:nowrap;">容器编码</span>
+              <div style="flex:2;height:28px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;"></div>
+              <span style="font-size:11px;color:#6b7280;white-space:nowrap;">状态</span>
+              <div style="flex:1;height:28px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;display:flex;align-items:center;padding:0 8px;">
+                <span style="font-size:11px;color:#9ca3af;">请选择</span>
+              </div>
+              <div style="flex:1;"></div>
+              <div style="padding:5px 14px;background:#2563eb;border-radius:6px;font-size:11px;color:#fff;font-weight:500;white-space:nowrap;">搜索</div>
+              <div style="padding:5px 14px;background:#f3f4f6;border-radius:6px;font-size:11px;color:#6b7280;white-space:nowrap;">重置</div>
+            </div>
+            <div style="background:#fff;border-radius:8px;border:1px solid #e5e7eb;flex:1;box-shadow:0 1px 2px rgba(0,0,0,0.04);overflow:hidden;">
+              <div style="display:flex;border-bottom:1px solid #f3f4f6;padding:8px 16px;gap:10px;background:#fafafa;">
+                <div style="width:80px;height:12px;background:#e5e7eb;border-radius:3px;"></div>
+                <div style="width:60px;height:12px;background:#e5e7eb;border-radius:3px;"></div>
+                <div style="width:80px;height:12px;background:#e5e7eb;border-radius:3px;"></div>
+                <div style="width:60px;height:12px;background:#e5e7eb;border-radius:3px;"></div>
+                <div style="flex:1;"></div>
+                <div style="width:50px;height:12px;background:#e5e7eb;border-radius:3px;"></div>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:calc(100% - 38px);gap:8px;color:#9ca3af;">
+                <div style="width:40px;height:40px;background:#f3f4f6;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+                  <div style="width:20px;height:16px;background:#d1d5db;border-radius:3px;"></div>
+                </div>
+                <span style="font-size:11px;">暂无数据</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI floating button -->
+    <div style="position:absolute;bottom:20px;right:20px;width:40px;height:40px;background:#2563eb;border-radius:50%;box-shadow:0 4px 14px rgba(37,99,235,0.4);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+      <div style="width:18px;height:16px;background:#fff;border-radius:3px;"></div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:24px;">
+  <h3>设计规格</h3>
+  <table style="width:100%;border-collapse:collapse;font-size:13px;line-height:1.6;">
+    <thead>
+      <tr style="background:#f9fafb;">
+        <th style="text-align:left;padding:8px 12px;border:1px solid #e5e7eb;color:#374151;width:15%;">区域</th>
+        <th style="text-align:left;padding:8px 12px;border:1px solid #e5e7eb;color:#374151;width:30%;">改动说明</th>
+        <th style="text-align:left;padding:8px 12px;border:1px solid #e5e7eb;color:#374151;width:15%;">关键色值</th>
+        <th style="text-align:left;padding:8px 12px;border:1px solid #e5e7eb;color:#374151;">涉及文件</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="padding:8px 12px;border:1px solid #e5e7eb;font-weight:500;">全宽 Header</td>
+        <td style="padding:8px 12px;border:1px solid #e5e7eb;">横跨全屏，高度 52px。左侧 180px 为 Logo 区（与侧边栏等宽），右侧为折叠按钮 + 应用切换 + 仓库选择 + 语言 + 用户</td>
+        <td style="padding:8px 12px;border:1px solid #e5e7eb;font-family:monospace;font-size:11px;">bg: #fff<br>border: #e5e7eb<br>shadow: 0 1px 4px rgba(0,0,0,.06)</td>
+        <td style="padding:8px 12px;border:1px solid #e5e7eb;font-family:monospace;font-size:11px;">LayoutHeader.tsx</td>
+      </tr>
+      <tr style="background:#f9fafb;">
+        <td style="padding:8px 12px;border:1px solid #e5e7eb;font-weight:500;">侧边栏</td>
+        <td style="padding:8px 12px;border:1px solid #e5e7eb;">白底深色文字。分组标签 uppercase 小字。active 项：淡蓝背景 + 左侧 3px 蓝色竖条。hover：#f9fafb 背景</td>
+        <td style="padding:8px 12px;border:1px solid #e5e7eb;font-family:monospace;font-size:11px;">bg: #fff<br>active-bg: #eff6ff<br>active-bar: #2563eb<br>text: #374151</td>
+        <td style="padding:8px 12px;border:1px solid #e5e7eb;font-family:monospace;font-size:11px;">LayoutAside.tsx<br>style.scss</td>
+      </tr>
+      <tr>
+        <td style="padding:8px 12px;border:1px solid #e5e7eb;font-weight:500;">Tab 栏</td>
+        <td style="padding:8px 12px;border:1px solid #e5e7eb;">高度 36px，active tab 底部 2px 蓝色下划线 + 淡蓝背景，非激活 tab 灰色轻量风格</td>
+        <td style="padding:8px 12px;border:1px solid #e5e7eb;font-family:monospace;font-size:11px;">active: #0284c7<br>active-bg: #f0f9ff<br>border: #bae6fd</td>
+        <td style="padding:8px 12px;border:1px solid #e5e7eb;font-family:monospace;font-size:11px;">style.scss</td>
+      </tr>
+      <tr style="background:#f9fafb;">
+        <td style="padding:8px 12px;border:1px solid #e5e7eb;font-weight:500;">内容区</td>
+        <td style="padding:8px 12px;border:1px solid #e5e7eb;">浅灰背景，搜索栏/表格用白卡片 + 8px 圆角 + 细边框 + 极轻阴影</td>
+        <td style="padding:8px 12px;border:1px solid #e5e7eb;font-family:monospace;font-size:11px;">bg: #f9fafb<br>card: #fff<br>border: #e5e7eb</td>
+        <td style="padding:8px 12px;border:1px solid #e5e7eb;font-family:monospace;font-size:11px;">style.scss</td>
+      </tr>
+      <tr>
+        <td style="padding:8px 12px;border:1px solid #e5e7eb;font-weight:500;">AI 悬浮按钮</td>
+        <td style="padding:8px 12px;border:1px solid #e5e7eb;">60px 巨型 SVG → 40px 圆形蓝色按钮，带蓝色投影。hover 微放大</td>
+        <td style="padding:8px 12px;border:1px solid #e5e7eb;font-family:monospace;font-size:11px;">bg: #2563eb<br>size: 40px<br>shadow: rgba(37,99,235,.4)</td>
+        <td style="padding:8px 12px;border:1px solid #e5e7eb;font-family:monospace;font-size:11px;">index.module.scss<br>index.tsx</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
