@@ -6,6 +6,7 @@ import { DownOutlined } from "@ant-design/icons"
 import type { MenuProps } from "antd"
 
 import store from "@/stores"
+import { workStationEventLoop } from "@/pages/wms/station/event-loop/eventLoopInstance"
 
 import Language from "@/pages/components/Language"
 import ChangePasswordForm from "@/pages/components/ChangePassword"
@@ -49,6 +50,7 @@ const Header = ({
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
 
     const logout = () => {
+        workStationEventLoop.destroy()
         store.user.logout()
         history.replace(`/login`)
     }
