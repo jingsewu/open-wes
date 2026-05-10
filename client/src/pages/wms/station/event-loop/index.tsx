@@ -43,7 +43,7 @@ export default class WorkStationEventLoop {
             debugType === DebugType.DYNAMIC &&
             process.env.NODE_ENV === "development"
         ) {
-            await this.stop()
+            await this.destroy()
             await this.getMockEventData()
         }
     }
@@ -56,12 +56,18 @@ export default class WorkStationEventLoop {
     }
 
     public start: () => void = async () => {
+        // Always refresh data from the server on (re-)entry.
         await this.getApiData()
-        await this.initWebsocket()
+
+        // Only create a new WebSocket if one doesn't already exist.
+        // An existing websocketManager is either connected or self-reconnecting.
+        if (!this.websocketManager) {
+            await this.initWebsocket()
+        }
     }
 
-    public stop: () => Promise<void> = async () => {
-        console.log("%c =====> event loop stop", "color:red;font-size:20px;")
+    public destroy: () => Promise<void> = async () => {
+        console.log("%c =====> event loop destroy", "color:red;font-size:20px;")
 
         // Clear event listener
         this.eventListener = null
@@ -80,6 +86,14 @@ export default class WorkStationEventLoop {
         workStationStore.reset()
 
         return Promise.resolve()
+    }
+
+    public pause: () => void = () => {
+        console.log("%c =====> event loop pause", "color:orange;font-size:20px;")
+
+        // Detach React listener — component is unmounting.
+        // WebSocket and store are intentionally preserved.
+        this.eventListener = null
     }
 
     public actionDispatch: (payload: any) => Promise<any> = async (payload) => {
