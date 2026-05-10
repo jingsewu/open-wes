@@ -157,15 +157,21 @@ const Station = observer((props: any) => {
     console.log("WorkStationCard - workStationMode:", workStationMode)
 
     useEffect(() => {
-        const targetPath = workStationStatus !== "OFFLINE" && workStationMode
-            ? `${WORK_STATION_PATH_PREFIX}/${
-                StationTypes[workStationMode as keyof typeof StationTypes]
-            }`
-            : WORK_STATION_PATH_PREFIX
+        // Do not navigate while store is empty (e.g., immediately after
+        // eventLoop.stop() resets the store on exit).
+        if (!workStationEvent) return
+
+        const targetPath =
+            workStationStatus !== "OFFLINE" && workStationMode
+                ? `${WORK_STATION_PATH_PREFIX}/${
+                      StationTypes[workStationMode as keyof typeof StationTypes]
+                  }`
+                : WORK_STATION_PATH_PREFIX
+
         if (history.location.pathname !== targetPath) {
             history.replace(targetPath)
         }
-    }, [workStationMode, workStationStatus, history])
+    }, [workStationEvent, workStationMode, workStationStatus, history])
 
     const handleCardClick = useCallback((workStationMode: string, hasOrder: boolean) => {
         onActionDispatch({
@@ -178,7 +184,7 @@ const Station = observer((props: any) => {
     }, [onActionDispatch])
 
     return (
-        <div className="site-card-wrapper px-4 pt-4">
+        <div className="site-card-wrapper px-4 pt-4" style={{ backgroundColor: "#fff", minHeight: "100%" }}>
             {Object.entries(groupedCards).map(([category, cards]) => (
                 <div key={category} className="mb-6">
                     <h3 className="text-lg font-semibold mb-3 capitalize">
