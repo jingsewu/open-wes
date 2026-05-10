@@ -234,6 +234,15 @@ class WebSocketManager {
   }
 
   /**
+   * 重置销毁状态，允许重新连接
+   * 在 destroy() 后重新调用 start() 时使用
+   */
+  resume(): void {
+    this.isDestroyed = false
+    this.reconnectAttempts = 0
+  }
+
+  /**
    * 重置重连计数
    */
   resetReconnectAttempts(): void {
