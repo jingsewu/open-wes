@@ -63,18 +63,21 @@ export default class WorkStationEventLoop {
     public stop: () => Promise<void> = async () => {
         console.log("%c =====> event loop stop", "color:red;font-size:20px;")
 
-        // 清理事件监听器
+        // Clear event listener
         this.eventListener = null
 
-        // 断开 WebSocket 连接
+        // Disconnect WebSocket
         if (this.websocketManager) {
             this.websocketManager.disconnect()
             this.websocketManager = null
         }
 
-
-        // 重置当前事件
+        // Reset current event
         this.currentEvent = undefined
+
+        // Reset MobX store so stale workStationStatus/workStationMode
+        // don't trigger WorkStationCard's auto-navigation useEffect.
+        workStationStore.reset()
 
         return Promise.resolve()
     }
