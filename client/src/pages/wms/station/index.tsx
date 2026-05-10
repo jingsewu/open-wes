@@ -76,25 +76,30 @@ const WorkStation = (props: WorkStationProps) => {
         let isMounted = true
 
         const loadInitialStationData = async () => {
+            let res: any
             try {
                 setIsLoadingStatus(true)
-                const res: any = await request_work_station_view()
+                res = await request_work_station_view()
 
                 if (!isMounted) return
-
-                // Populate MobX store with initial data.
-                // NOTE: we do NOT call selectStation here.
-                // isStationSelected is owned by useStationSession.
-                if (res?.data) {
-                    workStationStore.setWorkStationEvent(res.data)
-                }
             } catch (error) {
                 if (!isMounted) return
                 console.error("获取工作站状态失败:", error)
             } finally {
                 if (isMounted) {
+                    // Set loading=false BEFORE updating the store so WorkStationCard
+                    // renders once with workStationEvent=undefined (guard fires → no
+                    // premature auto-navigation), then the store update triggers a
+                    // second render driven by actual server state.
                     setIsLoadingStatus(false)
                 }
+            }
+
+            // Update store AFTER loading=false so the guard in WorkStationCard fires
+            // on the first render (workStationEvent=undefined), protecting against
+            // stale or non-OFFLINE data causing immediate re-navigation.
+            if (isMounted && res?.data) {
+                workStationStore.setWorkStationEvent(res.data)
             }
         }
 
