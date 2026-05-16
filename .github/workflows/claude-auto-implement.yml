@@ -1,0 +1,35 @@
+name: Claude Auto-Implement
+
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  implement:
+    if: github.event.label.name == 'claude-auto'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.DEEPSEEK_API_KEY }}
+          model: deepseek-v4
+          prompt: |
+            Read the GitHub issue and implement the requested feature or fix.
+            Follow the coding standards in CLAUDE.md and server/Code Rule.md.
+            Create appropriate tests if applicable.
+            After implementation, summarize what was changed and why.
+          allowed_tools: "Bash(git:*),Bash(cd:*),Bash(./gradlew:*),Bash(npm:*),Edit,Write,Read,Grep,Glob"
+          max_turns: 25
+        env:
+          ANTHROPIC_BASE_URL: https://api.deepseek.com/anthropic/
+          API_TIMEOUT_MS: "3000000"
+          CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: "1"

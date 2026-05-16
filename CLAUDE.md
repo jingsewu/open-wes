@@ -1,0 +1,155 @@
+# Open WES - AI Coding Guidelines
+
+## Project Overview
+
+Open WES is a Warehouse Execution System. Monorepo structure:
+- `server/` — Java 17, Spring Boot 3.2.2, Gradle, DDD architecture
+- `client/` — React 17, TypeScript, MobX + AMIS framework
+- Infrastructure: Docker Compose, MySQL 8.0, Redis 7.2, Nacos 2.0, Kafka
+
+**Read `server/Code Rule.md` first** — it defines DDD rules, database standards, plugin patterns, and validation rules that all backend code must follow.
+
+## Project Structure
+
+### Server Modules (`server/`)
+```
+modules-wes/          # Core domain (inbound, outbound, stock, basic, config, task, stocktake, algo, ems-proxy, printer)
+modules-ai/           # AI integration (ai-core, ai-api)
+modules-user/         # Auth, user management
+modules-station/      # Workstation operations
+modules-gateway/      # API gateway
+modules-plugin/       # Plugin implementations
+modules-search/       # Search functionality
+modules-api-platform/ # External API platform
+modules-utils/        # Shared utilities (must NOT depend on other modules)
+server/               # Spring Boot runners (wes-server, station-server, gateway-server)
+```
+
+### Client (`client/src/`)
+```
+pages/        # Page components (wms/, api_platform/, data_platform/, user/)
+components/   # Shared React components
+stores/       # MobX state tree stores
+routes/       # React Router config + lazy-loaded route mapping
+locales/      # i18n translation files (en/zh/ja/ko)
+utils/        # HTTP client, helpers
+```
+
+## Architecture Patterns
+
+### DDD Layer Flow
+```
+Controller -> IEntityApi (interface) -> EntityApiImpl -> Domain Service -> Entity -> Repository -> JPA
+```
+
+### Package Convention
+```
+org.openwes.[module-group].[module].[domain].[layer]
+# Example: org.openwes.wes.outbound.domain.entity.OutboundPlanOrder
+```
+
+### Class Naming
+| Type | Pattern | Example |
+|------|---------|---------|
+| API interface | `I[Entity]Api` | `IInboundPlanOrderApi` |
+| API impl | `[Entity]ApiImpl` | `InboundPlanOrderApiImpl` |
+| Service | `[Entity]Service` / `[Entity]ServiceImpl` | `OutboundWaveService` |
+| Repository | `[Entity]Repository` / `[Entity]RepositoryImpl` | `ContainerRepository` |
+| DTO | `[Entity]DTO` | `ContainerDTO` |
+| Transfer | `[Entity]Transfer` | `InboundPlanOrderTransfer` |
+| Error enum | `[Module]ErrorDescEnum` | `InboundErrorDescEnum` |
+
+### API Implementation Annotations
+```java
+@Primary
+@Service
+@Validated
+@DubboService
+@RequiredArgsConstructor
+public class EntityApiImpl implements IEntityApi { }
+```
+
+### Domain Entity Rules
+- **No setters** — use lifecycle methods: `initialize()`, `complete()`, `cancel()`, `close()`
+- Extend `AggregatorRoot` for aggregate roots
+- Use `@Version` for optimistic locking
+- Publish events via `addAsynchronousDomainEvents()`
+
+### Repository Rules
+- Only `find*` and `save*` methods. **Never** `update*` methods.
+- Load entity -> mutate via lifecycle method -> save entire entity
+
+### Transactions
+- `@Transaction` only on Aggregates and Repositories
+- Pull queries **out** of transactions for performance
+- Prefer async domain events over big transactions
+
+## Backend Conventions
+
+- **Redis**: Use `RedisUtils`, not `RedisTemplate`
+- **Locking**: Use `DistributedLock` class
+- **Async (same server)**: `DomainEventPublisher.sendAsyncDomainEvent()`
+- **Async (cross server)**: `MqClient.sendAsyncMessage()`
+- **Validation**: `@Valid` on API interface params, `@Validated` on impl classes
+- **Logging**: English only, use `@Slf4j`
+- **Config**: Environment config in Nacos, business config in database
+- **DB columns**: Code=64, Name=128, Description=255, Remark=500, Enum=20 chars
+- **POJO**: Use `@Comment("...")` not `columnDefinition` for column comments
+- **Plugins**: One `IPlugin` interface per domain with before/after lifecycle hooks
+
+## Frontend Conventions
+
+- **AMIS pages**: Most CRUD/form pages are JSON schema definitions using `schema2component()`. Prefer this pattern for standard pages.
+- **State management**: MobX + mobx-state-tree (`src/stores/`). Use `@inject @observer` decorators.
+- **HTTP requests**: Always use `request` from `@/utils/requestInterceptor`. Never use raw `fetch` or `axios`.
+- **i18n**: Use `useTranslation()` hook or `t()` function. All user-facing strings must be translated.
+- **TypeScript**: Define proper interfaces. **Avoid `any` types.** Use `Record<string, unknown>` if type is truly unknown.
+- **React keys**: Use stable unique IDs, never array indexes.
+- **Styling**: Ant Design components + CSS classes. AMIS pages use AMIS built-in styling.
+
+## Security Guidelines
+
+These rules are non-negotiable:
+
+1. **NEVER** commit secrets, API keys, or passwords. Use `${ENV_VAR}` placeholders.
+2. **NEVER** use `dangerouslySetInnerHTML` without DOMPurify. Prefer `ReactMarkdown` with `rehype-sanitize`.
+3. **NEVER** execute dynamically generated SQL directly. Validate with SQL parser, use read-only DB user.
+4. **NEVER** use `.anyRequest().permitAll()` in Spring Security. Define explicit authorization rules.
+5. **NEVER** hardcode credentials (including as default form values).
+6. **Always** validate DTO inputs with Bean Validation annotations (`@Valid`, `@NotNull`, `@NotEmpty`, `@Size`).
+7. **Always** use parameterized queries for any user-influenced SQL.
+8. Store tokens with expiry handling. Prefer httpOnly cookies over localStorage for sensitive tokens.
+
+## Build and Run
+
+```bash
+# Backend (Java 17 required)
+cd server && ./gradlew build
+
+# Frontend
+cd client && npm install && npm run dev
+
+# Full stack (Docker)
+HOST_IP=$(hostname -I | awk '{print $1}') docker-compose up -d
+```
+
+### Server Ports
+| Service | Port |
+|---------|------|
+| Gateway | 8090 |
+| WES Server | 9010 |
+| Station Server | 9040 |
+| Frontend | 80 |
+
+## Key File Locations
+
+| Purpose | Path |
+|---------|------|
+| Coding standards | `server/Code Rule.md` |
+| Gradle build config | `server/build.gradle`, `server/settings.gradle` |
+| Backend entry points | `server/server/wes-server/`, `station-server/`, `gateway-server/` |
+| App config (Nacos) | `initdb.d/nacos_config.sql` |
+| Docker | `docker-compose.yml` |
+| DB init scripts | `initdb.d/` |
+| Frontend entry | `client/src/index.tsx` |
+| Route definitions | `client/src/routes/path2Compoment.tsx` |

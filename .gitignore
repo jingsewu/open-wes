@@ -1,2 +1,37 @@
+# IDE
 .idea
+*.iml
+.vscode
+*.swp
+*.swo
+
+# Java build
+target/
+build/
+out/
+*.class
+*.jar
+*.war
+.gradle/
+
+# Frontend build
+client/build/
+client/dist/
+node_modules/
+
+# Environment & secrets
+.env
+.env.*
+*.pem
+*.key
+*.p12
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Misc
 client/build/README.md
