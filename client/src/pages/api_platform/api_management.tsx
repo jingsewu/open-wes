@@ -179,7 +179,7 @@ const configForm = [
                                     type: "editor",
                                     size: "lg",
                                     name: "paramConverterScript",
-                                    language: "javascript",
+                                    language: "java",
                                     placeholder: "// param contains the parsed input object\nfunction convert(param) {\n    return {\n        result: param.name\n    };\n}",
                                     options: {automaticLayout: true, lineNumbers: true, autofocus: true, lineHeight: 24, theme: "vs-dark", fontFamily: "'Courier New', monospace", fontSize: 14, wordWrap: "on"},
                                     editorDidMount: editorDidMount
@@ -286,7 +286,7 @@ const configForm = [
                                     type: "editor",
                                     size: "lg",
                                     name: "responseConverterScript",
-                                    language: "javascript",
+                                    language: "java",
                                     placeholder: "// param contains the parsed input object\nfunction convert(param) {\n    return {\n        result: param.code\n    };\n}",
                                     options: {automaticLayout: true, lineNumbers: true, autofocus: true, lineHeight: 24, theme: "vs-dark", fontFamily: "'Courier New', monospace", fontSize: 14, wordWrap: "on"},
                                     editorDidMount: editorDidMount
