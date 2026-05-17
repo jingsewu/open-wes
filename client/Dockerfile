@@ -1,12 +1,12 @@
 # Stage 1: Install dependencies
-FROM node:18 AS deps
+FROM node:20 AS deps
 RUN corepack enable && corepack prepare pnpm@latest --activate
 WORKDIR /app
 COPY package*.json ./
 RUN pnpm install
 
 # Stage 2: Build (with more memory)
-FROM node:18 AS build
+FROM node:20 AS build
 RUN corepack enable && corepack prepare pnpm@latest --activate
 # Configure pnpm to use HTTPS for Git operations
 RUN pnpm config set git-checks false
