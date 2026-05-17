@@ -136,181 +136,309 @@ const baseform = [
 
 const configForm = [
     {
+        type: "hidden",
+        name: "id"
+    },
+    {
+        type: "hidden",
+        name: "version"
+    },
+    {
         label: "interfacePlatform.interfaceManagement.table.interfaceCode",
         type: "input-text",
         name: "code",
         readOnly: true
     },
     {
-        label: "interfacePlatform.interfaceManagement.form.converseScriptType",
-        type: "select",
-        name: "paramConverterType",
-        source: "${dictionary.ConverterType}",
-        required: true
-    },
-    {
-        label: "interfacePlatform.interfaceManagement.form.requestTransformationScript",
-        type: "editor",
-        size: "lg",
-        name: "jsParamConverter",
-        description:
-            "interfacePlatform.interfaceManagement.form.requestTransformationScript.description",
-        visibleOn: "${paramConverterType == 'JS'}",
-        language: "java",
-        placeholder: "Enter your java code here and named function as convert. for example: \n" +
-            "                //java:convert \n" +
-            "                public class MyClass { \n" +
-            "                    public Object convert(Object param) {\n" +
-            "                        Map<String, Object> input = (Map<String, Object>) param;\n" +
-            "                        return \"Hello,  \"+ input.get(\"name\");\n" +
-            "                    }\n" +
-            "                }\n" +
-            "                \"\"\"",
-        options: {
-            automaticLayout: true,
-            lineNumbers: true,
-            autofocus: true,
-            lineHeight: 24,
-            theme: "vs-dark", // Dark theme for the editor
-            fontFamily: "'Courier New', monospace",
-            fontSize: 14,
-            wordWrap: "on",
-        },
-        editorDidMount: editorDidMount
-    },
-    {
-        type: "container",
-        visibleOn: "${paramConverterType == 'JS'}",
-        body: [
+        type: "tabs",
+        tabs: [
+            // ── Tab 1: 请求转换脚本 ──────────────────────────────────────
             {
-                type: "textarea",
-                label: "interfacePlatform.interfaceManagement.form.testInputJson",
-                name: "testParamInput",
-                placeholder: "Enter input JSON to test the param converter script"
-            },
-            {
-                type: "button",
-                label: "interfacePlatform.interfaceManagement.button.testConverter",
-                actionType: "ajax",
-                api: {
-                    method: "post",
-                    url: api_api_config_test_converter,
-                    data: {
-                        jsScript: "${jsParamConverter}",
-                        inputJson: "${testParamInput}"
-                    }
-                },
-                onEvent: {
-                    success: {
-                        actions: [
+                title: "interfacePlatform.interfaceManagement.form.requestTransformationScript",
+                body: [
+                    {
+                        label: "interfacePlatform.interfaceManagement.form.converseScriptType",
+                        type: "select",
+                        name: "paramConverterType",
+                        source: "${dictionary.ConverterType}",
+                        required: true,
+                        description: "interfacePlatform.interfaceManagement.form.requestTransformationScript.description"
+                    },
+                    // 状态字段：存储测试状态和输出，供 tpl 读取
+                    {
+                        type: "hidden",
+                        name: "testParamStatus",
+                        id: "testParamStatusComp"
+                    },
+                    {
+                        type: "hidden",
+                        name: "testParamOutput",
+                        id: "testParamOutputComp"
+                    },
+                    // JS 模式：编辑器（左）+ 测试面板（右）
+                    {
+                        type: "grid",
+                        visibleOn: "${paramConverterType === 'JS'}",
+                        columns: [
                             {
-                                actionType: "setValue",
-                                componentId: "testParamOutput",
-                                args: {
-                                    value: "${event.data.data}"
-                                }
+                                md: 7,
+                                body: [
+                                    {
+                                        label: "interfacePlatform.interfaceManagement.form.requestTransformationScript",
+                                        type: "editor",
+                                        size: "lg",
+                                        name: "jsParamConverter",
+                                        language: "java",
+                                        placeholder: "Enter your java code here and named function as convert. for example: \n" +
+                                            "                //java:convert \n" +
+                                            "                public class MyClass { \n" +
+                                            "                    public Object convert(Object param) {\n" +
+                                            "                        Map<String, Object> input = (Map<String, Object>) param;\n" +
+                                            "                        return \"Hello,  \"+ input.get(\"name\");\n" +
+                                            "                    }\n" +
+                                            "                }\n" +
+                                            "                \"\"\"",
+                                        options: {
+                                            automaticLayout: true,
+                                            lineNumbers: true,
+                                            autofocus: true,
+                                            lineHeight: 24,
+                                            theme: "vs-dark",
+                                            fontFamily: "'Courier New', monospace",
+                                            fontSize: 14,
+                                            wordWrap: "on"
+                                        },
+                                        editorDidMount: editorDidMount
+                                    }
+                                ]
+                            },
+                            {
+                                md: 5,
+                                body: [
+                                    {
+                                        type: "textarea",
+                                        label: "interfacePlatform.interfaceManagement.form.testInputJson",
+                                        name: "testParamInput",
+                                        placeholder: "Enter input JSON to test the param converter script"
+                                    },
+                                    {
+                                        type: "button",
+                                        label: "interfacePlatform.interfaceManagement.button.testConverter",
+                                        actionType: "ajax",
+                                        api: {
+                                            method: "post",
+                                            url: api_api_config_test_converter,
+                                            data: {
+                                                jsScript: "${jsParamConverter}",
+                                                inputJson: "${testParamInput}"
+                                            }
+                                        },
+                                        onEvent: {
+                                            success: {
+                                                actions: [
+                                                    {
+                                                        actionType: "setValue",
+                                                        componentId: "testParamStatusComp",
+                                                        args: {value: "success"}
+                                                    },
+                                                    {
+                                                        actionType: "setValue",
+                                                        componentId: "testParamOutputComp",
+                                                        args: {value: "${event.data.data}"}
+                                                    }
+                                                ]
+                                            },
+                                            error: {
+                                                actions: [
+                                                    {
+                                                        actionType: "setValue",
+                                                        componentId: "testParamStatusComp",
+                                                        args: {value: "error"}
+                                                    },
+                                                    {
+                                                        actionType: "setValue",
+                                                        componentId: "testParamOutputComp",
+                                                        args: {value: "${event.data.msg}"}
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    // 成功输出（绿色）
+                                    {
+                                        type: "tpl",
+                                        visibleOn: "${testParamStatus === 'success'}",
+                                        tpl: "<div style='font-size:11px;color:#64748b;margin-bottom:4px'>输出结果 <span style='background:#dcfce7;color:#166534;border-radius:10px;padding:1px 7px;font-size:10px'>✓ 成功</span></div><pre style='background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px;padding:10px;font-family:monospace;font-size:12px;white-space:pre-wrap;word-break:break-all;color:#15803d;min-height:60px'>${testParamOutput}</pre>"
+                                    },
+                                    // 失败输出（红色）
+                                    {
+                                        type: "tpl",
+                                        visibleOn: "${testParamStatus === 'error'}",
+                                        tpl: "<div style='font-size:11px;color:#64748b;margin-bottom:4px'>输出结果 <span style='background:#fee2e2;color:#dc2626;border-radius:10px;padding:1px 7px;font-size:10px'>✗ 失败</span></div><pre style='background:#fef2f2;border:1px solid #fecaca;border-radius:6px;padding:10px;font-family:monospace;font-size:12px;white-space:pre-wrap;word-break:break-all;color:#dc2626;min-height:60px'>${testParamOutput}</pre>"
+                                    }
+                                ]
                             }
                         ]
+                    },
+                    // TEMPLATE 模式：全宽 textarea
+                    {
+                        label: "interfacePlatform.interfaceManagement.form.requestTransformationScript",
+                        type: "textarea",
+                        name: "templateParamConverter",
+                        visibleOn: "${paramConverterType === 'TEMPLATE'}"
+                    },
+                    // NONE 模式：空状态提示
+                    {
+                        type: "tpl",
+                        visibleOn: "${paramConverterType === 'NONE' || !paramConverterType}",
+                        tpl: "<div style='padding:40px;text-align:center;color:#9ca3af;font-size:13px;border:1px dashed #e2e8f0;border-radius:8px;margin-top:8px'>无需配置转换脚本</div>"
                     }
-                }
+                ]
             },
+
+            // ── Tab 2: 响应转换脚本 ──────────────────────────────────────
             {
-                type: "static",
-                id: "testParamOutput",
-                label: "interfacePlatform.interfaceManagement.form.testOutputJson",
-                name: "testParamOutput"
-            }
-        ]
-    },
-    {
-        label: "interfacePlatform.interfaceManagement.form.requestTransformationScript",
-        type: "textarea",
-        name: "templateParamConverter",
-        visibleOn: "${paramConverterType == 'TEMPLATE'}"
-    },
-    {
-        label: "interfacePlatform.interfaceManagement.form.responseTransformationScriptType",
-        type: "select",
-        name: "responseConverterType",
-        source: "${dictionary.ConverterType}",
-        required: true
-    },
-    {
-        label: "interfacePlatform.interfaceManagement.form.responseTransformationScripts",
-        type: "editor",
-        name: "jsResponseConverter",
-        visibleOn: "${responseConverterType == 'JS'}",
-        language: "java",
-        placeholder: "Enter your java code here and named function as convert. for example: \n" +
-            "                //java:convert \n" +
-            "                public class MyClass { \n" +
-            "                    public Object convert(Object param) {\n" +
-            "                        Map<String, Object> input = (Map<String, Object>) param;\n" +
-            "                        return \"Hello,  \"+ input.get(\"name\");\n" +
-            "                    }\n" +
-            "                }\n" +
-            "                \"\"\"",
-        options: {
-            automaticLayout: true,
-            lineNumbers: true,
-            autofocus: true,
-            lineHeight: 24,
-            theme: "vs-dark", // Dark theme for the editor
-            fontFamily: "'Courier New', monospace",
-            fontSize: 14,
-            wordWrap: "on",
-        },
-        editorDidMount: editorDidMount
-    },
-    {
-        type: "container",
-        visibleOn: "${responseConverterType == 'JS'}",
-        body: [
-            {
-                type: "textarea",
-                label: "interfacePlatform.interfaceManagement.form.testInputJson",
-                name: "testResponseInput",
-                placeholder: "Enter input JSON to test the response converter script"
-            },
-            {
-                type: "button",
-                label: "interfacePlatform.interfaceManagement.button.testConverter",
-                actionType: "ajax",
-                api: {
-                    method: "post",
-                    url: api_api_config_test_converter,
-                    data: {
-                        jsScript: "${jsResponseConverter}",
-                        inputJson: "${testResponseInput}"
-                    }
-                },
-                onEvent: {
-                    success: {
-                        actions: [
+                title: "interfacePlatform.interfaceManagement.form.responseTransformationScriptType",
+                body: [
+                    {
+                        label: "interfacePlatform.interfaceManagement.form.responseTransformationScriptType",
+                        type: "select",
+                        name: "responseConverterType",
+                        source: "${dictionary.ConverterType}",
+                        required: true
+                    },
+                    // 状态字段
+                    {
+                        type: "hidden",
+                        name: "testResponseStatus",
+                        id: "testResponseStatusComp"
+                    },
+                    {
+                        type: "hidden",
+                        name: "testResponseOutput",
+                        id: "testResponseOutputComp"
+                    },
+                    // JS 模式：编辑器（左）+ 测试面板（右）
+                    {
+                        type: "grid",
+                        visibleOn: "${responseConverterType === 'JS'}",
+                        columns: [
                             {
-                                actionType: "setValue",
-                                componentId: "testResponseOutput",
-                                args: {
-                                    value: "${event.data.data}"
-                                }
+                                md: 7,
+                                body: [
+                                    {
+                                        label: "interfacePlatform.interfaceManagement.form.responseTransformationScripts",
+                                        type: "editor",
+                                        size: "lg",
+                                        name: "jsResponseConverter",
+                                        language: "java",
+                                        placeholder: "Enter your java code here and named function as convert. for example: \n" +
+                                            "                //java:convert \n" +
+                                            "                public class MyClass { \n" +
+                                            "                    public Object convert(Object param) {\n" +
+                                            "                        Map<String, Object> input = (Map<String, Object>) param;\n" +
+                                            "                        return \"Hello,  \"+ input.get(\"name\");\n" +
+                                            "                    }\n" +
+                                            "                }\n" +
+                                            "                \"\"\"",
+                                        options: {
+                                            automaticLayout: true,
+                                            lineNumbers: true,
+                                            autofocus: true,
+                                            lineHeight: 24,
+                                            theme: "vs-dark",
+                                            fontFamily: "'Courier New', monospace",
+                                            fontSize: 14,
+                                            wordWrap: "on"
+                                        },
+                                        editorDidMount: editorDidMount
+                                    }
+                                ]
+                            },
+                            {
+                                md: 5,
+                                body: [
+                                    {
+                                        type: "textarea",
+                                        label: "interfacePlatform.interfaceManagement.form.testInputJson",
+                                        name: "testResponseInput",
+                                        placeholder: "Enter input JSON to test the response converter script"
+                                    },
+                                    {
+                                        type: "button",
+                                        label: "interfacePlatform.interfaceManagement.button.testConverter",
+                                        actionType: "ajax",
+                                        api: {
+                                            method: "post",
+                                            url: api_api_config_test_converter,
+                                            data: {
+                                                jsScript: "${jsResponseConverter}",
+                                                inputJson: "${testResponseInput}"
+                                            }
+                                        },
+                                        onEvent: {
+                                            success: {
+                                                actions: [
+                                                    {
+                                                        actionType: "setValue",
+                                                        componentId: "testResponseStatusComp",
+                                                        args: {value: "success"}
+                                                    },
+                                                    {
+                                                        actionType: "setValue",
+                                                        componentId: "testResponseOutputComp",
+                                                        args: {value: "${event.data.data}"}
+                                                    }
+                                                ]
+                                            },
+                                            error: {
+                                                actions: [
+                                                    {
+                                                        actionType: "setValue",
+                                                        componentId: "testResponseStatusComp",
+                                                        args: {value: "error"}
+                                                    },
+                                                    {
+                                                        actionType: "setValue",
+                                                        componentId: "testResponseOutputComp",
+                                                        args: {value: "${event.data.msg}"}
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    // 成功输出（绿色）
+                                    {
+                                        type: "tpl",
+                                        visibleOn: "${testResponseStatus === 'success'}",
+                                        tpl: "<div style='font-size:11px;color:#64748b;margin-bottom:4px'>输出结果 <span style='background:#dcfce7;color:#166534;border-radius:10px;padding:1px 7px;font-size:10px'>✓ 成功</span></div><pre style='background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px;padding:10px;font-family:monospace;font-size:12px;white-space:pre-wrap;word-break:break-all;color:#15803d;min-height:60px'>${testResponseOutput}</pre>"
+                                    },
+                                    // 失败输出（红色）
+                                    {
+                                        type: "tpl",
+                                        visibleOn: "${testResponseStatus === 'error'}",
+                                        tpl: "<div style='font-size:11px;color:#64748b;margin-bottom:4px'>输出结果 <span style='background:#fee2e2;color:#dc2626;border-radius:10px;padding:1px 7px;font-size:10px'>✗ 失败</span></div><pre style='background:#fef2f2;border:1px solid #fecaca;border-radius:6px;padding:10px;font-family:monospace;font-size:12px;white-space:pre-wrap;word-break:break-all;color:#dc2626;min-height:60px'>${testResponseOutput}</pre>"
+                                    }
+                                ]
                             }
                         ]
+                    },
+                    // TEMPLATE 模式：全宽 textarea
+                    {
+                        label: "interfacePlatform.interfaceManagement.form.responseTransformationScripts",
+                        type: "textarea",
+                        name: "templateResponseConverter",
+                        visibleOn: "${responseConverterType === 'TEMPLATE'}"
+                    },
+                    // NONE 模式：空状态提示
+                    {
+                        type: "tpl",
+                        visibleOn: "${responseConverterType === 'NONE' || !responseConverterType}",
+                        tpl: "<div style='padding:40px;text-align:center;color:#9ca3af;font-size:13px;border:1px dashed #e2e8f0;border-radius:8px;margin-top:8px'>无需配置转换脚本</div>"
                     }
-                }
-            },
-            {
-                type: "static",
-                id: "testResponseOutput",
-                label: "interfacePlatform.interfaceManagement.form.testOutputJson",
-                name: "testResponseOutput"
+                ]
             }
         ]
-    },
-    {
-        label: "interfacePlatform.interfaceManagement.form.responseTransformationScripts",
-        type: "textarea",
-        name: "templateResponseConverter",
-        visibleOn: "${responseConverterType == 'TEMPLATE'}"
     }
 ]
 
