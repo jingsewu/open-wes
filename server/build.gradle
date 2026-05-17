@@ -20,10 +20,12 @@ allprojects {
         options.compilerArgs += '-parameters'
     }
     repositories {
-        maven { url 'https://maven.aliyun.com/nexus/content/groups/public/' }
         mavenCentral()
         maven { url 'https://repo.spring.io/milestone' }
         maven { url 'https://repo.spring.io/snapshot' }
+        // Aliyun mirror omitted: it is inaccessible from GitHub Actions runners
+        // (non-China IPs are blocked / timed out). For local development in China,
+        // add it in ~/.gradle/init.d/mirrors.gradle instead.
     }
 }
 
