@@ -38,14 +38,12 @@ public class ApiConfigPO extends UpdateUserPO {
     @Comment("response convert type")
     private ConverterTypeEnum responseConverterType;
 
-    @Column(columnDefinition = "text comment '请求参数转换脚本'")
-    private String jsParamConverter;
-    @Column(columnDefinition = "text comment '响应参数转换脚本'")
-    private String jsResponseConverter;
+    @Column(columnDefinition = "text")
+    @Comment("参数转换脚本")
+    private String paramConverterScript;
 
-    @Column(columnDefinition = "text comment '请求参数转换模板'")
-    private String templateParamConverter;
-    @Column(columnDefinition = "text comment '响应参数转换模板'")
-    private String templateResponseConverter;
+    @Column(columnDefinition = "text")
+    @Comment("响应转换脚本")
+    private String responseConverterScript;
 
 }

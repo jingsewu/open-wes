@@ -21,19 +21,13 @@ public class ApiConfigUpdateParam {
     @Schema(title = "请求转换脚本的类型", requiredMode = Schema.RequiredMode.REQUIRED)
     private ConverterTypeEnum paramConverterType;
 
-    @Schema(title = "JS 类型的请求请求转换脚本")
-    private String jsParamConverter;
-
-    @Schema(title = "FreeMarker 类型的请求转换脚本")
-    private String templateParamConverter;
+    @Schema(title = "参数转换脚本")
+    private String paramConverterScript;
 
     @NotNull(message = "响应换脚本的类型不能为空")
     @Schema(title = "响应换脚本的类型", requiredMode = Schema.RequiredMode.REQUIRED)
     private ConverterTypeEnum responseConverterType;
 
-    @Schema(title = "JS 类型的请求响应转换脚本")
-    private String jsResponseConverter;
-
-    @Schema(title = "FreeMarker 类型的响应转换脚本")
-    private String templateResponseConverter;
+    @Schema(title = "响应转换脚本")
+    private String responseConverterScript;
 }

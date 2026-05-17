@@ -17,10 +17,7 @@ public class ApiConfigDTO extends UpdateUserPO {
 
     private ConverterTypeEnum responseConverterType;
 
-    private String jsParamConverter;
-    private String jsResponseConverter;
-
-    private String templateParamConverter;
-    private String templateResponseConverter;
+    private String paramConverterScript;
+    private String responseConverterScript;
 
 }
