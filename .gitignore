@@ -38,4 +38,4 @@ client/build/README.md
 
 # AI tooling artifacts (local only)
 .superpowers/
-.claude/settings.local.json
+**/.claude/settings.local.json
