@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <!-- Unify api_config converter script columns: 4 type-specific fields → 2 unified fields -->
+    <changeSet id="a_api_config_unify_converter_script_columns" author="Kinser">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="a_api_config"/>
+                <columnExists tableName="a_api_config" columnName="js_param_converter"/>
+            </and>
+        </preConditions>
+        <comment>Merge js_param_converter + template_param_converter into param_converter_script,
+            and js_response_converter + template_response_converter into response_converter_script</comment>
+        <sql>
+            ALTER TABLE a_api_config
+                ADD COLUMN param_converter_script    TEXT COMMENT '参数转换脚本',
+                ADD COLUMN response_converter_script TEXT COMMENT '响应转换脚本';
+
+            UPDATE a_api_config
+            SET param_converter_script    = COALESCE(js_param_converter, template_param_converter),
+                response_converter_script = COALESCE(js_response_converter, template_response_converter);
+
+            ALTER TABLE a_api_config
+                DROP COLUMN js_param_converter,
+                DROP COLUMN js_response_converter,
+                DROP COLUMN template_param_converter,
+                DROP COLUMN template_response_converter;
+        </sql>
+    </changeSet>
+
+    <!-- Add JAVA to ConverterType dictionary -->
+    <changeSet id="dictionary_converter_type_add_java" author="Kinser">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="m_dictionary"/>
+                <sqlCheck expectedResult="1">
+                    SELECT COUNT(*) FROM m_dictionary
+                    WHERE code = 'ConverterType'
+                    AND JSON_SEARCH(items, 'one', 'JAVA', NULL, '$[*].value') IS NULL
+                </sqlCheck>
+            </and>
+        </preConditions>
+        <comment>Add JAVA converter type to ConverterType dictionary</comment>
+        <sql>
+            UPDATE m_dictionary
+            SET items = JSON_ARRAY_INSERT(
+                items,
+                '$[2]',
+                JSON_OBJECT(
+                    'order', 0,
+                    'value', 'JAVA',
+                    'defaultItem', false,
+                    'description', JSON_OBJECT('languages', JSON_OBJECT('en-US', 'Java', 'zh-CN', NULL)),
+                    'showContext', JSON_OBJECT('languages', JSON_OBJECT('en-US', 'Java', 'zh-CN', 'java'))
+                )
+            )
+            WHERE code = 'ConverterType';
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>
