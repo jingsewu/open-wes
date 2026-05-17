@@ -137,8 +137,13 @@ jobs:
           script: |
             set -e
 
-            # Authenticate with GHCR so the server can pull private images
-            echo "${GHCR_TOKEN}" | docker login ghcr.io -u "${GITHUB_ACTOR}" --password-stdin
+            # Authenticate with GHCR.
+            # Write credentials directly to ~/.docker/config.json to avoid
+            # "Cannot perform an interactive login from a non TTY device" errors
+            # that occur when Docker on the server uses a credential store.
+            mkdir -p ~/.docker
+            AUTH=$(printf '%s:%s' "${GITHUB_ACTOR}" "${GHCR_TOKEN}" | base64 -w 0)
+            printf '{"auths":{"ghcr.io":{"auth":"%s"}}}\n' "${AUTH}" > ~/.docker/config.json
 
             # Navigate to the deploy directory (repo must be cloned here on first run)
             cd /opt/open-wes
