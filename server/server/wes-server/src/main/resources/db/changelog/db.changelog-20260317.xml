@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <!-- Rollback comment: Manual sequence reset can be done with ALTER TABLE w_work_station AUTO_INCREMENT = <desired_value>; -->
+    <changeSet id="configure_workstation_auto_increment_start_from_1" author="kang.nie">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="w_work_station"/>
+            </and>
+        </preConditions>
+        <comment>Configure WorkStation table auto-increment sequence to start from 1 for new records</comment>
+        <sql>
+            ALTER TABLE w_work_station AUTO_INCREMENT = 1;
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

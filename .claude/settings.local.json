@@ -3,6 +3,11 @@
     "allow": [
       "Bash(cd:*)",
       "Bash(curl:*)"
+      "Bash(openspec new:*)",
+      "Bash(openspec status:*)",
+      "Bash(openspec instructions:*)",
+      "Bash(openspec list:*)",
+      "Bash(find:*)"
     ]
   }
 }

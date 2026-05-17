@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(tree:*)",
+      "Bash(xargs:*)",
+      "WebSearch",
+      "Bash(find:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
