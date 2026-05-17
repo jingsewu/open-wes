@@ -106,6 +106,11 @@ public class EntityApiImpl implements IEntityApi { }
 - **TypeScript**: Define proper interfaces. **Avoid `any` types.** Use `Record<string, unknown>` if type is truly unknown.
 - **React keys**: Use stable unique IDs, never array indexes.
 - **Styling**: Ant Design components + CSS classes. AMIS pages use AMIS built-in styling.
+- **Logging**: All `console.*` and toast messages must be in **English**. **Never** commit debug `console.log` calls. **Never** suppress `console.error` globally.
+- **React props**: Props are read-only — never mutate them. `renderSchema()` (AMIS) returns a `ReactElement`, not a class instance; do not call `destroy()`/`dispose()` on it.
+- **SVG IDs**: Use namespaced module-scoped constants for gradient/clipPath IDs to prevent duplicates across renders.
+
+**Read `docs/standards/frontend.md`** for detailed rules, anti-patterns, and examples.
 
 ## Security Guidelines
 
@@ -141,11 +146,19 @@ HOST_IP=$(hostname -I | awk '{print $1}') docker-compose up -d
 | Station Server | 9040 |
 | Frontend | 80 |
 
+## Repository Hygiene
+
+**Never commit AI tooling artifacts**: `.superpowers/`, `.claude/settings.local.json`. These are covered by `.gitignore` — if you add new tooling, update `.gitignore` before the first commit.
+
+**Read `docs/standards/repository.md`** for full rules on gitignore management and CI/GitHub Actions standards.
+
 ## Key File Locations
 
 | Purpose | Path |
 |---------|------|
-| Coding standards | `server/Code Rule.md` |
+| Backend coding standards | `server/Code Rule.md` |
+| Frontend standards (detailed) | `docs/standards/frontend.md` |
+| Repository hygiene standards | `docs/standards/repository.md` |
 | Gradle build config | `server/build.gradle`, `server/settings.gradle` |
 | Backend entry points | `server/server/wes-server/`, `station-server/`, `gateway-server/` |
 | App config (Nacos) | `initdb.d/nacos_config.sql` |
