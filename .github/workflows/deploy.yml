@@ -145,23 +145,26 @@ jobs:
             AUTH=$(printf '%s:%s' "${GITHUB_ACTOR}" "${GHCR_TOKEN}" | base64 -w 0)
             printf '{"auths":{"ghcr.io":{"auth":"%s"}}}\n' "${AUTH}" > ~/.docker/config.json
 
-            # Navigate to the deploy directory (repo must be cloned here on first run)
-            cd /opt/open-wes
+            # First-time setup: clone the repo; otherwise just pull latest
+            if [ -d /data/workspace/open-wes ]; then
+              git -C /data/workspace/open-wes pull origin master
+            else
+              sudo git clone https://github.com/jingsewu/open-wes.git /data/workspace/open-wes
+              sudo chown -R "$(whoami)" /data/workspace/open-wes
+            fi
 
-            # Pull the latest compose config and initdb scripts
-            git pull origin master
+            cd /data/workspace/open-wes
 
-            # Write the .env file that docker-compose.prod.yml reads
+            # Write the .env file that docker-compose.prod.yml reads.
+            # Use printf to avoid heredoc indentation issues.
             HOST_IP=$(hostname -I | awk '{print $1}')
-            cat > .env << EOF
-            HOST_IP=${HOST_IP}
-            IMAGE_BASE=ghcr.io/${GITHUB_REPO}
-            IMAGE_TAG=${IMAGE_TAG}
-            EOF
+            printf 'HOST_IP=%s\nIMAGE_BASE=ghcr.io/%s\nIMAGE_TAG=%s\n' \
+              "${HOST_IP}" "${GITHUB_REPO}" "${IMAGE_TAG}" > .env
 
-            # Pull new images then recreate only changed containers
-            docker-compose -f docker-compose.prod.yml pull
-            docker-compose -f docker-compose.prod.yml up -d --remove-orphans
+            # Pull new images then recreate only changed containers.
+            # Use 'docker compose' (v2) — docker-compose (v1) is not installed.
+            sudo docker compose -f docker-compose.prod.yml pull
+            sudo docker compose -f docker-compose.prod.yml up -d --remove-orphans
 
             # Remove dangling images to reclaim disk space
-            docker image prune -f
+            sudo docker image prune -f
