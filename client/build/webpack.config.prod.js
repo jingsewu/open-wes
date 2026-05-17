@@ -78,8 +78,20 @@ module.exports = {
                 }
             },
             {
+                // Only process SVGs from our own source as React components.
+                // node_modules SVGs (e.g. amis/sdk/iconfont.svg) are huge icon
+                // fonts that svgo cannot parse — handle them as plain assets.
                 test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
+                exclude: /node_modules/,
                 use: [{ loader: "@svgr/webpack", options: { icon: true } }]
+            },
+            {
+                test: /\.svg$/,
+                include: /node_modules/,
+                type: "asset/resource",
+                generator: {
+                    filename: "assets/[name].[hash:8][ext]"
+                }
             }
         ]
     },
