@@ -19,3 +19,18 @@ ALTER TABLE a_api_config
   DROP COLUMN js_response_converter,
   DROP COLUMN template_param_converter,
   DROP COLUMN template_response_converter;
+
+-- Step 4: add JAVA to ConverterType dictionary (for existing installations)
+UPDATE m_dictionary
+SET items = JSON_ARRAY_INSERT(
+    items,
+    '$[2]',
+    JSON_OBJECT(
+        'order', 0,
+        'value', 'JAVA',
+        'defaultItem', false,
+        'description', JSON_OBJECT('languages', JSON_OBJECT('en-US', 'Java', 'zh-CN', NULL)),
+        'showContext', JSON_OBJECT('languages', JSON_OBJECT('en-US', 'Java', 'zh-CN', 'java'))
+    )
+)
+WHERE code = 'ConverterType';
