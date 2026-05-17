@@ -5,25 +5,50 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
-    <!-- Unify api_config converter script columns: 4 type-specific fields → 2 unified fields -->
-    <changeSet id="a_api_config_unify_converter_script_columns" author="Kinser">
+    <!-- Step 1: add unified columns (skip if already exist) -->
+    <changeSet id="a_api_config_add_unified_script_columns" author="Kinser">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="a_api_config"/>
+                <not>
+                    <columnExists tableName="a_api_config" columnName="param_converter_script"/>
+                </not>
+            </and>
+        </preConditions>
+        <comment>Add unified param_converter_script and response_converter_script columns to a_api_config</comment>
+        <sql>
+            ALTER TABLE a_api_config
+                ADD COLUMN param_converter_script    TEXT COMMENT '参数转换脚本',
+                ADD COLUMN response_converter_script TEXT COMMENT '响应转换脚本';
+        </sql>
+    </changeSet>
+
+    <!-- Step 2: migrate data from old columns (skip if old columns no longer exist) -->
+    <changeSet id="a_api_config_migrate_script_data" author="Kinser">
         <preConditions onFail="MARK_RAN">
             <and>
                 <tableExists tableName="a_api_config"/>
                 <columnExists tableName="a_api_config" columnName="js_param_converter"/>
             </and>
         </preConditions>
-        <comment>Merge js_param_converter + template_param_converter into param_converter_script,
-            and js_response_converter + template_response_converter into response_converter_script</comment>
+        <comment>Migrate data: js_param_converter/template_param_converter → param_converter_script</comment>
         <sql>
-            ALTER TABLE a_api_config
-                ADD COLUMN param_converter_script    TEXT COMMENT '参数转换脚本',
-                ADD COLUMN response_converter_script TEXT COMMENT '响应转换脚本';
-
             UPDATE a_api_config
             SET param_converter_script    = COALESCE(js_param_converter, template_param_converter),
                 response_converter_script = COALESCE(js_response_converter, template_response_converter);
+        </sql>
+    </changeSet>
 
+    <!-- Step 3: drop old columns (skip if already dropped) -->
+    <changeSet id="a_api_config_drop_old_script_columns" author="Kinser">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="a_api_config"/>
+                <columnExists tableName="a_api_config" columnName="js_param_converter"/>
+            </and>
+        </preConditions>
+        <comment>Drop legacy js_param_converter, js_response_converter, template_param_converter, template_response_converter columns</comment>
+        <sql>
             ALTER TABLE a_api_config
                 DROP COLUMN js_param_converter,
                 DROP COLUMN js_response_converter,
