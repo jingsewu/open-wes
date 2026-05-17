@@ -22,6 +22,7 @@ jobs:
       - uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.DEEPSEEK_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           model: deepseek-v4
           prompt: |
             Read the GitHub issue and implement the requested feature or fix.
