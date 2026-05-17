@@ -20,56 +20,46 @@ public class ConverterHelper {
         if (apiConfigPO == null) {
             return dataObj;
         }
-
-        if (apiConfigPO.getParamConverterType() == null || apiConfigPO.getParamConverterType() == ConverterTypeEnum.NONE) {
+        ConverterTypeEnum type = apiConfigPO.getParamConverterType();
+        if (type == null || type == ConverterTypeEnum.NONE) {
             return dataObj;
         }
-
-        if (apiConfigPO.getParamConverterType() == ConverterTypeEnum.JS) {
-            return convertParamWithJsConverter(apiConfigPO.getJsParamConverter(), dataObj);
-        }
-
-        return convertParamWithTemplateConverter(apiConfigPO.getTemplateParamConverter(), dataObj);
+        return convert(type, apiConfigPO.getParamConverterScript(), dataObj);
     }
 
     public static Object convertResponse(ApiConfigPO apiConfigPO, Object dataObj) {
-
         if (apiConfigPO == null) {
             return dataObj;
         }
-
-        if (apiConfigPO.getResponseConverterType() == null || apiConfigPO.getResponseConverterType() == ConverterTypeEnum.NONE) {
+        ConverterTypeEnum type = apiConfigPO.getResponseConverterType();
+        if (type == null || type == ConverterTypeEnum.NONE) {
             return dataObj;
         }
-
-        if (apiConfigPO.getResponseConverterType() == ConverterTypeEnum.JS) {
-            return convertParamWithJsConverter(apiConfigPO.getJsResponseConverter(), dataObj);
-        }
-
-        return convertParamWithTemplateConverter(apiConfigPO.getTemplateResponseConverter(), dataObj);
+        return convert(type, apiConfigPO.getResponseConverterScript(), dataObj);
     }
 
-    private static String convertParamWithJsConverter(String jsScript, Object obj) {
+    private static Object convert(ConverterTypeEnum type, String script, Object dataObj) {
+        return switch (type) {
+            case JS -> convertWithJs(script, dataObj);
+            case JAVA -> JavaScriptUtils.executeJava(script, dataObj);
+            case TEMPLATE -> convertWithTemplate(script, dataObj);
+            default -> dataObj;
+        };
+    }
 
+    private static String convertWithJs(String script, Object obj) {
         try (Context context = Context.create()) {
-            Object result = JavaScriptUtils.executeJs(context, jsScript, obj);
+            Object result = JavaScriptUtils.executeJs(context, script, obj);
             return JsonUtils.obj2String(result);
         }
-
     }
 
-    private static Object convertParamWithTemplateConverter(String templateContext, Object dataObj) {
-        return FreeMarkerHelper.convertByTemplate( templateContext.getBytes(StandardCharsets.UTF_8), dataObj, (Map<String, Object>) null);
+    private static Object convertWithTemplate(String script, Object dataObj) {
+        return FreeMarkerHelper.convertByTemplate(
+                script.getBytes(StandardCharsets.UTF_8), dataObj, (Map<String, Object>) null);
     }
 
-    /**
-     * 是否开启异步执行
-     *
-     * @param apiType
-     * @return
-     */
     public static boolean isAsyncApi(String apiType, Integer count) {
         return false;
     }
-
 }
