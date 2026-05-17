@@ -30,7 +30,6 @@ export const editorDidMount = (editor: any, monaco: any) => {
 
         monaco.languages.registerCompletionItemProvider("java", {
             provideCompletionItems: async function (model: any, position: any) {
-                console.log("Completion triggered");
                 const codeContext = model.getValue();
                 const lineContent = model.getLineContent(position.lineNumber);
                 const language = "Java"
@@ -45,7 +44,6 @@ export const editorDidMount = (editor: any, monaco: any) => {
                 if (response.data && typeof response.data === "string") {
                     let fullCode: string = response.data.trim();
                     fullCode = fullCode.split('\n').join('\n');
-                    console.log("Generated Code:", fullCode);
 
                     return {
                         suggestions: fullCode.split("\n").filter(line => line.trim()).map(s => ({
