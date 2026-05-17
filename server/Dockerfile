@@ -1,22 +1,15 @@
-# Build stage (compile all JARs)
-FROM gradle:8.3-jdk17 AS build
-WORKDIR /app
-COPY . .
-RUN gradle :server:station-server:bootJar \
-    :server:gateway-server:bootJar \
-    :server:wes-server:bootJar -x test
+# Runtime-only images.
+# JARs are compiled in the GitHub Actions runner before this Dockerfile is built.
+# See .github/workflows/deploy.yml build-backend job.
 
-# Stage for station-server
 FROM eclipse-temurin:17-jre-jammy AS station
-COPY --from=build /app/server/station-server/build/libs/station-server*.jar /app/station-server.jar
+COPY server/station-server/build/libs/station-server*.jar /app/station-server.jar
 CMD ["java", "-jar", "/app/station-server.jar"]
 
-# Stage for gateway-server
 FROM eclipse-temurin:17-jre-jammy AS gateway
-COPY --from=build /app/server/gateway-server/build/libs/gateway-server*.jar /app/gateway-server.jar
+COPY server/gateway-server/build/libs/gateway-server*.jar /app/gateway-server.jar
 CMD ["java", "-jar", "/app/gateway-server.jar"]
 
-# Stage for wes-server
 FROM eclipse-temurin:17-jre-jammy AS wes
-COPY --from=build /app/server/wes-server/build/libs/wes-server*.jar /app/wes-server.jar
+COPY server/wes-server/build/libs/wes-server*.jar /app/wes-server.jar
 CMD ["java", "-jar", "/app/wes-server.jar"]

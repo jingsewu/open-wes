@@ -48,6 +48,25 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Compile JARs in the runner (reliable Maven Central access + Gradle cache).
+      # The Dockerfile is a runtime-only image that COPYs these pre-built JARs.
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build JARs
+        run: |
+          cd server
+          ./gradlew :server:station-server:bootJar \
+                    :server:gateway-server:bootJar \
+                    :server:wes-server:bootJar \
+                    -x test --no-daemon
+
       - name: Log in to GHCR
         uses: docker/login-action@v3
         with:
@@ -58,9 +77,8 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # The 3 backend targets share the same Gradle build stage.
-      # Running them sequentially in the same job lets buildx reuse
-      # the cached Gradle layer across all 3 pushes.
+      # All 3 images share the same tiny eclipse-temurin runtime layer,
+      # so Docker layer cache is reused across all 3 pushes.
       - name: Build & push gateway
         uses: docker/build-push-action@v5
         with:
