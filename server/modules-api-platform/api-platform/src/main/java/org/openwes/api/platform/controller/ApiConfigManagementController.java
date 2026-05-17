@@ -1,6 +1,5 @@
 package org.openwes.api.platform.controller;
 
-import org.openwes.api.platform.api.constants.ConverterTypeEnum;
 import org.openwes.api.platform.controller.param.apiconfig.ApiConfigTestConverterParam;
 import org.openwes.api.platform.controller.param.apiconfig.ApiConfigUpdateParam;
 import org.openwes.api.platform.controller.param.apiconfig.ApiConfigVO;
@@ -46,13 +45,13 @@ public class ApiConfigManagementController {
     }
 
     @PostMapping("/test-converter")
-    @Operation(summary = "测试 JS 参数转换脚本")
+    @Operation(summary = "测试参数转换脚本")
     public Response<String> testConverter(@RequestBody @Valid ApiConfigTestConverterParam param) {
         try {
             Object input = JsonUtils.string2MapObject(param.getInputJson());
             ApiConfigPO apiConfigPO = new ApiConfigPO();
-            apiConfigPO.setParamConverterType(ConverterTypeEnum.JS);
-            apiConfigPO.setJsParamConverter(param.getJsScript());
+            apiConfigPO.setParamConverterType(param.getConverterType());
+            apiConfigPO.setParamConverterScript(param.getScript());
             Object result = ConverterHelper.convertParam(apiConfigPO, input);
             return Response.success(JsonUtils.obj2String(result));
         } catch (Exception e) {
