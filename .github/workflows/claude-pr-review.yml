@@ -20,14 +20,14 @@ jobs:
       - uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.DEEPSEEK_API_KEY }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          model: deepseek-v4
+          github_token: ${{ github.token }}
           prompt: |
             Review this PR. Follow the standards in CLAUDE.md and server/Code Rule.md.
             Focus on: correctness, security, DDD patterns, naming conventions, test coverage.
             Be concise. Only flag real issues, not style nitpicks.
           max_turns: 10
         env:
+          OVERRIDE_GITHUB_TOKEN: ${{ github.token }}
           ANTHROPIC_BASE_URL: https://api.deepseek.com/anthropic/
           API_TIMEOUT_MS: "3000000"
           CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: "1"
