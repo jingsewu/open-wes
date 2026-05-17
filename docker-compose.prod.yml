@@ -1,0 +1,138 @@
+version: '3.8'
+
+# Production compose — uses pre-built images from GHCR.
+# Required .env variables (written by the deploy workflow):
+#   IMAGE_BASE  e.g. ghcr.io/your-org/open-wes
+#   IMAGE_TAG   git SHA of the deployed commit
+#   HOST_IP     server's LAN IP (used by the frontend to reach the gateway)
+
+services:
+  frontend:
+    container_name: frontend
+    image: ${IMAGE_BASE}/frontend:${IMAGE_TAG:-latest}
+    ports:
+      - "80:80"
+    extra_hosts:
+      - "api-gateway:${HOST_IP}"
+    networks:
+      - my-network
+
+  gateway-server:
+    container_name: gateway
+    image: ${IMAGE_BASE}/gateway:${IMAGE_TAG:-latest}
+    ports:
+      - "8090:8090"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      nacos:
+        condition: service_healthy
+    networks:
+      - my-network
+
+  station-server:
+    container_name: station
+    image: ${IMAGE_BASE}/station:${IMAGE_TAG:-latest}
+    ports:
+      - "9040:9040"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      nacos:
+        condition: service_healthy
+    networks:
+      - my-network
+
+  wes-server:
+    container_name: wes
+    image: ${IMAGE_BASE}/wes:${IMAGE_TAG:-latest}
+    ports:
+      - "9010:9010"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      nacos:
+        condition: service_healthy
+    networks:
+      - my-network
+
+  mysql:
+    container_name: mysql
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_INNODB_BUFFER_POOL_SIZE: 2G
+      MYSQL_INNODB_LOG_FILE_SIZE: 512M
+      MYSQL_INNODB_FLUSH_LOG_AT_TRX_COMMIT: 2
+      MYSQL_SYNC_BINLOG: 0
+      MYSQL_INNODB_FLUSH_METHOD: O_DIRECT
+      MYSQL_MAX_CONNECTIONS: 1000
+      MYSQL_INNODB_BUFFER_POOL_INSTANCES: 4
+    ports:
+      - "3306:3306"
+    volumes:
+      - /data/mysql_data:/var/lib/mysql
+      - ./initdb.d:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+    networks:
+      my-network:
+        aliases:
+          - mysql.openwes.com
+
+  redis:
+    container_name: redis
+    image: redis:7.2
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+    networks:
+      my-network:
+        aliases:
+          - redis.openwes.com
+
+  nacos:
+    container_name: nacos
+    image: nacos/nacos-server:2.0.0
+    ports:
+      - "8848:8848"
+      - "9848:9848"
+      - "9849:9849"
+    environment:
+      MODE: standalone
+      SPRING_DATASOURCE_PLATFORM: mysql
+      MYSQL_SERVICE_HOST: mysql
+      MYSQL_SERVICE_DB_NAME: nacos_config
+      MYSQL_SERVICE_USER: root
+      MYSQL_SERVICE_PASSWORD: root
+    depends_on:
+      - mysql
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8848/nacos/"]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+    networks:
+      my-network:
+        aliases:
+          - nacos.openwes.com
+
+networks:
+  my-network:
+    driver: bridge
