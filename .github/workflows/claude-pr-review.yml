@@ -25,7 +25,7 @@ jobs:
             Review this PR. Follow the standards in CLAUDE.md and server/Code Rule.md.
             Focus on: correctness, security, DDD patterns, naming conventions, test coverage.
             Be concise. Only flag real issues, not style nitpicks.
-          max_turns: 10
+          claude_args: "--max-turns 10"
         env:
           OVERRIDE_GITHUB_TOKEN: ${{ github.token }}
           ANTHROPIC_BASE_URL: https://api.deepseek.com/anthropic/

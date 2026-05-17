@@ -28,8 +28,7 @@ jobs:
             Follow the coding standards in CLAUDE.md and server/Code Rule.md.
             Create appropriate tests if applicable.
             After implementation, summarize what was changed and why.
-          allowed_tools: "Bash(git:*),Bash(cd:*),Bash(./gradlew:*),Bash(npm:*),Edit,Write,Read,Grep,Glob"
-          max_turns: 25
+          claude_args: "--max-turns 25 --allowedTools 'Bash(git:*),Bash(cd:*),Bash(./gradlew:*),Bash(npm:*),Edit,Write,Read,Grep,Glob'"
         env:
           OVERRIDE_GITHUB_TOKEN: ${{ github.token }}
           ANTHROPIC_BASE_URL: https://api.deepseek.com/anthropic/
