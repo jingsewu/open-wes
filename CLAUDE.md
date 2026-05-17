@@ -146,6 +146,18 @@ HOST_IP=$(hostname -I | awk '{print $1}') docker-compose up -d
 | Station Server | 9040 |
 | Frontend | 80 |
 
+## Database Migrations
+
+All schema and data changes **must** use Liquibase changelogs — never ad-hoc SQL files.
+
+- Changelogs live in `server/server/wes-server/src/main/resources/db/changelog/`
+- Naming: `db.changelog-YYYYMMDD.xml`; register in `db.changelog-master.xml`
+- **Never edit** any SQL file already referenced by an existing changeset (`init_dictionary.sql` etc.) — Liquibase checksums them and will refuse to start if they change
+- Always use `preConditions onFail="MARK_RAN"` for idempotency
+- Split ADD + MIGRATE + DROP into **3 separate changesets** (Hibernate auto-DDL may create the new columns before Liquibase runs)
+
+**Read `docs/standards/liquibase.md`** for full rules, templates, and the ADD+MIGRATE+DROP pattern.
+
 ## Repository Hygiene
 
 **Never commit AI tooling artifacts**: `.superpowers/`, `.claude/settings.local.json`. These are covered by `.gitignore` — if you add new tooling, update `.gitignore` before the first commit.
@@ -159,6 +171,7 @@ HOST_IP=$(hostname -I | awk '{print $1}') docker-compose up -d
 | Backend coding standards | `server/Code Rule.md` |
 | Frontend standards (detailed) | `docs/standards/frontend.md` |
 | Repository hygiene standards | `docs/standards/repository.md` |
+| Database migration standards | `docs/standards/liquibase.md` |
 | Gradle build config | `server/build.gradle`, `server/settings.gradle` |
 | Backend entry points | `server/server/wes-server/`, `station-server/`, `gateway-server/` |
 | App config (Nacos) | `initdb.d/nacos_config.sql` |
