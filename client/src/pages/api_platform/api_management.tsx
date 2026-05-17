@@ -628,7 +628,8 @@ const schema = {
                             dialog: {
                                 title: "interfacePlatform.interfaceManagement.dialog.modifyParameterConversionConfiguration",
                                 closeOnEsc: true,
-                                size: "full",
+                                size: "xl",
+                                style: {height: "90vh"},
                                 body: {
                                     type: "form",
                                     initApi: api_api_config_get,
