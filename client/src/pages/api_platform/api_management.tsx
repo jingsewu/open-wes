@@ -520,7 +520,6 @@ const schema = {
                             dialog: {
                                 title: "interfacePlatform.interfaceManagement.dialog.modifyParameterConversionConfiguration",
                                 closeOnEsc: true,
-                                closeOnOutside: true,
                                 size: "xl",
                                 body: {
                                     type: "form",
