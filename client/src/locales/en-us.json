@@ -568,6 +568,7 @@
     "interfacePlatform.dashboard.title": "Dashboard",
     "interfacePlatform.interfaceManagement.title": "Interface management",
     "interfacePlatform.interfaceManagement.button.parameterConversionConfiguration": "Parameter conversion configuration",
+    "interfacePlatform.interfaceManagement.button.testConverter": "Test converter",
     "interfacePlatform.interfaceManagement.dialog.modifyParameterConversionConfiguration": "Modify parameter conversion configuration",
     "interfacePlatform.interfaceManagement.table.interfaceCode": "Interface code",
     "interfacePlatform.interfaceManagement.table.interfaceName": "Interface name",
@@ -595,6 +596,8 @@
     "interfacePlatform.interfaceManagement.form.requestTransformationScript.description": "If the interface request is a single piece of data, the script will be executed once. If it is multiple pieces of data, the script will be executed once for each piece of data. In this script execution, you can use <strong>this</strong> or <strong>obj</strong> to obtain the current operating data for transformation",
     "interfacePlatform.interfaceManagement.form.responseTransformationScriptType": "Response transformation script type",
     "interfacePlatform.interfaceManagement.form.responseTransformationScripts": "Response transformation scripts",
+    "interfacePlatform.interfaceManagement.form.testInputJson": "Test input JSON",
+    "interfacePlatform.interfaceManagement.form.testOutputJson": "Test output JSON",
 
     "interfacePlatform.interfaceLogs.title": "Interface logs",
     "interfacePlatform.apiKeys.title": "API Keys",
