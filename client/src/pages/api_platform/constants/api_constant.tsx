@@ -6,6 +6,7 @@ export const api_api_update = "post:/api-platform/api-management/update"
 export const api_api_delete = "delete:/api-platform/api-management/${id}"
 export const api_api_config_get = "get:/api-platform/api-config-management/${code}"
 export const api_api_config_update = "post:/api-platform/api-config-management/update"
+export const api_api_config_test_converter = "post:/api-platform/api-config-management/test-converter"
 
 export const api_api_log_get = "get:/api-platform/api-log-management/${id}"
 
