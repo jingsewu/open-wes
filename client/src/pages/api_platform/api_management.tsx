@@ -224,41 +224,31 @@ const configForm = [
                                     {
                                         type: "button",
                                         label: "interfacePlatform.interfaceManagement.button.testConverter",
-                                        actionType: "ajax",
-                                        api: {
-                                            method: "post",
-                                            url: api_api_config_test_converter,
-                                            data: {
-                                                jsScript: "${jsParamConverter}",
-                                                inputJson: "${testParamInput}"
-                                            }
-                                        },
                                         onEvent: {
-                                            success: {
+                                            click: {
                                                 actions: [
+                                                    {
+                                                        actionType: "ajax",
+                                                        outputVar: "paramTestResult",
+                                                        api: {
+                                                            method: "post",
+                                                            url: api_api_config_test_converter,
+                                                            data: {
+                                                                jsScript: "${jsParamConverter}",
+                                                                inputJson: "${testParamInput}"
+                                                            },
+                                                            silent: true
+                                                        }
+                                                    },
                                                     {
                                                         actionType: "setValue",
                                                         componentId: "testParamStatusComp",
-                                                        args: {value: "success"}
+                                                        args: {value: "${paramTestResult.status === 0 ? 'success' : 'error'}"}
                                                     },
                                                     {
                                                         actionType: "setValue",
                                                         componentId: "testParamOutputComp",
-                                                        args: {value: "${event.data.data}"}
-                                                    }
-                                                ]
-                                            },
-                                            error: {
-                                                actions: [
-                                                    {
-                                                        actionType: "setValue",
-                                                        componentId: "testParamStatusComp",
-                                                        args: {value: "error"}
-                                                    },
-                                                    {
-                                                        actionType: "setValue",
-                                                        componentId: "testParamOutputComp",
-                                                        args: {value: "${event.data.msg}"}
+                                                        args: {value: "${paramTestResult.status === 0 ? paramTestResult.data : paramTestResult.msg}"}
                                                     }
                                                 ]
                                             }
@@ -367,41 +357,31 @@ const configForm = [
                                     {
                                         type: "button",
                                         label: "interfacePlatform.interfaceManagement.button.testConverter",
-                                        actionType: "ajax",
-                                        api: {
-                                            method: "post",
-                                            url: api_api_config_test_converter,
-                                            data: {
-                                                jsScript: "${jsResponseConverter}",
-                                                inputJson: "${testResponseInput}"
-                                            }
-                                        },
                                         onEvent: {
-                                            success: {
+                                            click: {
                                                 actions: [
+                                                    {
+                                                        actionType: "ajax",
+                                                        outputVar: "responseTestResult",
+                                                        api: {
+                                                            method: "post",
+                                                            url: api_api_config_test_converter,
+                                                            data: {
+                                                                jsScript: "${jsResponseConverter}",
+                                                                inputJson: "${testResponseInput}"
+                                                            },
+                                                            silent: true
+                                                        }
+                                                    },
                                                     {
                                                         actionType: "setValue",
                                                         componentId: "testResponseStatusComp",
-                                                        args: {value: "success"}
+                                                        args: {value: "${responseTestResult.status === 0 ? 'success' : 'error'}"}
                                                     },
                                                     {
                                                         actionType: "setValue",
                                                         componentId: "testResponseOutputComp",
-                                                        args: {value: "${event.data.data}"}
-                                                    }
-                                                ]
-                                            },
-                                            error: {
-                                                actions: [
-                                                    {
-                                                        actionType: "setValue",
-                                                        componentId: "testResponseStatusComp",
-                                                        args: {value: "error"}
-                                                    },
-                                                    {
-                                                        actionType: "setValue",
-                                                        componentId: "testResponseOutputComp",
-                                                        args: {value: "${event.data.msg}"}
+                                                        args: {value: "${responseTestResult.status === 0 ? responseTestResult.data : responseTestResult.msg}"}
                                                     }
                                                 ]
                                             }
@@ -648,7 +628,7 @@ const schema = {
                             dialog: {
                                 title: "interfacePlatform.interfaceManagement.dialog.modifyParameterConversionConfiguration",
                                 closeOnEsc: true,
-                                size: "xl",
+                                size: "full",
                                 body: {
                                     type: "form",
                                     initApi: api_api_config_get,
