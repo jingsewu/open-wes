@@ -157,10 +157,6 @@ const Station = observer((props: any) => {
     const boundStationCode = workStationEvent?.stationCode || localStorage.getItem("stationId")
     const showUnbindBanner = !bannerDismissed && !!localStorage.getItem("stationId")
 
-    console.log("WorkStationCard - workStationEvent:", workStationEvent)
-    console.log("WorkStationCard - workStationStatus:", workStationStatus)
-    console.log("WorkStationCard - workStationMode:", workStationMode)
-
     useEffect(() => {
         // Do not navigate while store is empty (e.g., immediately after
         // eventLoop.stop() resets the store on exit).

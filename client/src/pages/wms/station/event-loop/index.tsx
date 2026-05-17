@@ -67,7 +67,6 @@ export default class WorkStationEventLoop {
     }
 
     public destroy: () => Promise<void> = async () => {
-        console.log("%c =====> event loop destroy", "color:red;font-size:20px;")
 
         // Clear event listener
         this.eventListener = null
@@ -89,7 +88,6 @@ export default class WorkStationEventLoop {
     }
 
     public pause: () => void = () => {
-        console.log("%c =====> event loop pause", "color:orange;font-size:20px;")
 
         // Detach React listener — component is unmounting.
         // WebSocket and store are intentionally preserved.
@@ -183,7 +181,7 @@ export default class WorkStationEventLoop {
                 console.error("WebSocket connection failed:", error)
             },
             onTimeout: () => {
-                toast.warning("WebSocket连接超时，正在重试...")
+                toast.warning("WebSocket connection timed out, retrying...")
             }
         })
 
@@ -208,12 +206,12 @@ export default class WorkStationEventLoop {
                 this.stationId = res.data.workStationId
                 this.handleEventChange(res.data)
             } else {
-                console.warn("API 返回数据格式异常:", res)
+                console.warn("Unexpected API response format:", res)
                 this.handleEventChange(undefined)
             }
         } catch (error) {
-            console.error("获取工作站数据失败:", error)
-            toast.error("获取工作站数据失败，请检查网络连接")
+            console.error("Failed to fetch workstation data:", error)
+            toast.error("Failed to fetch workstation data, please check the network connection")
             this.handleEventChange(undefined)
         }
     }

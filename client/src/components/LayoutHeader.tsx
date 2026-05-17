@@ -6,6 +6,9 @@ import { DownOutlined, KeyOutlined, LogoutOutlined } from "@ant-design/icons"
 import type { MenuProps } from "antd"
 
 import store from "@/stores"
+
+// Module-scoped ID prevents duplicate gradient IDs when rendered in multiple contexts
+const LOGO_GRAD_ID = "openwes-logo-grad"
 import { workStationEventLoop } from "@/pages/wms/station/event-loop/eventLoopInstance"
 
 import Language from "@/pages/components/Language"
@@ -215,12 +218,12 @@ const Header = ({
                 >
                     <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <defs>
-                            <linearGradient id="logoGrad" x1="0" y1="0" x2="1" y2="1">
+                            <linearGradient id={LOGO_GRAD_ID} x1="0" y1="0" x2="1" y2="1">
                                 <stop offset="0%" stopColor="#2563eb" />
                                 <stop offset="100%" stopColor="#4f46e5" />
                             </linearGradient>
                         </defs>
-                        <rect width="34" height="34" rx="9" fill="url(#logoGrad)" />
+                        <rect width="34" height="34" rx="9" fill={`url(#${LOGO_GRAD_ID})`} />
                         <text x="17" y="23.5" textAnchor="middle" fill="white" fontSize="17" fontWeight="900" fontFamily="Arial,sans-serif">W</text>
                     </svg>
                     <span style={{ fontSize: 15, whiteSpace: "nowrap" }}>

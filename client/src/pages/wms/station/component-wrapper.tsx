@@ -54,14 +54,6 @@ function Wrapper(props: {
         propIsActive !== undefined
             ? propIsActive
             : chooseArea === type
-    console.log("ComponentWrapper render:", {
-        type,
-        chooseArea: workStationEvent?.chooseArea,
-        isActive,
-        propIsActive,
-        workStationEvent: workStationEvent ? "exists" : "null"
-    })
-
     const evenChangeHandler = useCallback(
         debounce(
             async () => {

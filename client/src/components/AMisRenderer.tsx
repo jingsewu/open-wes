@@ -26,94 +26,17 @@ const lang: Record<string, any> = {
 export default class AMisRenderer extends React.Component<RendererProps, any> {
     env: any = null
     private rendererInstance: any = null
-    private resizeObserverManager: any = null
 
     handleAction = (e: any, action: Action) => {
-        this.env.alert(`没有识别的动作：${JSON.stringify(action)}`)
-    }
-
-    componentDidMount() {
-        // 获取 ResizeObserver 管理器
-        this.resizeObserverManager = (window as any).ResizeObserverManager
+        this.env.alert(`Unrecognized action: ${JSON.stringify(action)}`)
     }
 
     componentWillUnmount() {
-        // 清理 AMis 渲染器实例
-        if (this.rendererInstance) {
-            try {
-                // 清理 AMis 内部状态，特别是 table store
-                if (this.rendererInstance.props && this.rendererInstance.props.store) {
-                    // 清理 AMis 内部的 MST store 引用
-                    this.rendererInstance.props.store = null
-                }
-
-                // 清理 AMis 组件树中的所有子组件
-                if (this.rendererInstance.children) {
-                    this.cleanupAmisChildren(this.rendererInstance.children)
-                }
-
-                // 如果 AMis 提供了销毁方法，调用它
-                if (typeof this.rendererInstance.destroy === 'function') {
-                    this.rendererInstance.destroy()
-                }
-
-                // 清理事件监听器
-                if (this.rendererInstance.dispose) {
-                    this.rendererInstance.dispose()
-                }
-
-                this.rendererInstance = null
-            } catch (error) {
-                console.warn('清理 AMis 渲染器时出错:', error)
-            }
-        }
-
-        // 清理 ResizeObserver
-        if (this.resizeObserverManager) {
-            try {
-                // 清理当前组件相关的所有 ResizeObserver
-                const container = this.rendererInstance?.container || this.rendererInstance
-                if (container && container.nodeType === Node.ELEMENT_NODE) {
-                    this.resizeObserverManager.disconnectObserver(container)
-                }
-
-                // 清理所有 ResizeObserver 实例
-                this.resizeObserverManager.disconnectAll()
-            } catch (error) {
-                console.warn('清理 ResizeObserver 时出错:', error)
-            }
-        }
-
-        // 清理 env 中的引用
+        // Release refs. React handles actual DOM/component teardown.
+        // renderSchema() returns a ReactElement, not a class instance,
+        // so destroy()/dispose() should never be called on it.
+        this.rendererInstance = null
         this.env = null
-    }
-
-    // 递归清理 AMis 子组件
-    private cleanupAmisChildren(children: any) {
-        if (!children) return
-
-        if (Array.isArray(children)) {
-            children.forEach(child => this.cleanupAmisChildren(child))
-        } else if (typeof children === 'object') {
-            // 清理组件的 store 引用
-            if (children.props && children.props.store) {
-                children.props.store = null
-            }
-
-            // 清理组件的事件监听器
-            if (children.componentWillUnmount) {
-                try {
-                    children.componentWillUnmount()
-                } catch (error) {
-                    console.warn('清理子组件时出错:', error)
-                }
-            }
-
-            // 递归清理子组件的 children
-            if (children.children) {
-                this.cleanupAmisChildren(children.children)
-            }
-        }
     }
 
     constructor(props: RendererProps) {
