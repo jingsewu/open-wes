@@ -568,6 +568,7 @@
     "interfacePlatform.dashboard.title": "Dashboard",
     "interfacePlatform.interfaceManagement.title": "接口管理",
     "interfacePlatform.interfaceManagement.button.parameterConversionConfiguration": "参数转换配置",
+    "interfacePlatform.interfaceManagement.button.testConverter": "测试转换器",
     "interfacePlatform.interfaceManagement.dialog.modifyParameterConversionConfiguration": "修改参数转换配置",
     "interfacePlatform.interfaceManagement.table.interfaceCode": "接口编码",
     "interfacePlatform.interfaceManagement.table.interfaceName": "接口名称",
@@ -595,6 +596,8 @@
     "interfacePlatform.interfaceManagement.form.requestTransformationScript.description": "如果接口的请求是单条数据时，会执行一次脚本，如果是多条数据，则会为每条数据执行一次脚本，本次执行脚本时，可以使用 <strong>this</strong> 或 <strong>obj</strong> 获取当前操作的数据进行转换",
     "interfacePlatform.interfaceManagement.form.responseTransformationScriptType": "响应转换脚本类型",
     "interfacePlatform.interfaceManagement.form.responseTransformationScripts": "响应转换脚本",
+    "interfacePlatform.interfaceManagement.form.testInputJson": "测试输入 JSON",
+    "interfacePlatform.interfaceManagement.form.testOutputJson": "测试输出 JSON",
 
     "interfacePlatform.interfaceLogs.title": "接口日志",
     "interfacePlatform.apiKeys.title": "API Keys",
