@@ -25,7 +25,7 @@ const SkuAreaHandler = (props: SkuHandlerProps) => {
     }
 
     const onPressEnter = () => {
-        scanSku(details)
+        void scanSku(details)
     }
     return (
         <div className="bg-white p-4 h-full">

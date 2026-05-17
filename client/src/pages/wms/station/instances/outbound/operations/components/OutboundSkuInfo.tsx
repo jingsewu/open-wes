@@ -53,7 +53,7 @@ const OutboundSkuInfo = (props: OutboundSkuInfoProps) => {
     // 扫描完成处理函数
     const onScanComplete = (value: string) => {
         if (!isActive) return
-        handleChange(value)
+        void handleChange(value)
     }
 
     useBarcodeScanner(onScanComplete)

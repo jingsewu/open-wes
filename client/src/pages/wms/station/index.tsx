@@ -103,7 +103,7 @@ const WorkStation = (props: WorkStationProps) => {
             }
         }
 
-        loadInitialStationData()
+        void loadInitialStationData()
 
         return () => {
             isMounted = false

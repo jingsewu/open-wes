@@ -128,7 +128,7 @@ const ContainerHandler = (props: ContainerHandlerProps) => {
     }
 
     const onPressEnter = () => {
-        onPressEnterLocal(containerCode, specOptions)
+        void onPressEnterLocal(containerCode, specOptions)
     }
 
     const handleOK = () => {

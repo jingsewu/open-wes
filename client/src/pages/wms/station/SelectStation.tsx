@@ -43,7 +43,7 @@ const SelectStation = ({ onStationSelected }: SelectStationProps) => {
             }
         }
 
-        fetchStations()
+        void fetchStations()
 
         return () => {
             isMounted = false

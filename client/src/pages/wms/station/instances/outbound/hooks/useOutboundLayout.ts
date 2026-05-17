@@ -10,7 +10,7 @@ import { useWorkStation } from "../../../state"
 export const useOutboundLayout = () => {
     const { store, onActionDispatch, message } = useWorkStation()
     
-    const chooseArea = store?.chooseArea
+    const chooseArea = store.chooseArea
 
     // 区域激活状态
     const activeStates = {
@@ -31,13 +31,13 @@ export const useOutboundLayout = () => {
                 })
                 
                 if (code === "-1") {
-                    message?.({
+                    message({
                         type: MessageType.ERROR,
                         content: msg
                     })
                 }
             } catch (error) {
-                message?.({
+                message({
                     type: MessageType.ERROR,
                     content: error.message
                 })

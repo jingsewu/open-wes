@@ -166,7 +166,7 @@ export default class WorkStationEventLoop {
             connectionTimeout: 15000,
             onMessage: (message) => {
                 if (message.type === "DATA_CHANGED") {
-                    this.getApiData()
+                    void this.getApiData()
                 } else if (message.type === "PRINT") {
                     qzPrinter.printAndUpdateRecord(message as PrintData)
                 }

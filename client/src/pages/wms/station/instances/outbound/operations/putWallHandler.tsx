@@ -17,7 +17,7 @@ const PutWallHandler = (props: OperationProps<PutWallHandlerProps, any>) => {
     const value = {
         putWallViews: workStationEvent?.putWallArea?.putWallViews || [],
         putWallDisplayStyle: workStationEvent?.putWallArea?.putWallDisplayStyle,
-        putWallTagConfigDTO: workStationEvent?.putWallArea?.putWallTagConfigDTO || {},
+        putWallTagConfigDTO: workStationEvent?.putWallArea.putWallTagConfigDTO || {},
         chooseType: workStationEvent?.chooseArea
     }
 

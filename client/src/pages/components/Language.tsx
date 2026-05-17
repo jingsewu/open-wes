@@ -49,7 +49,7 @@ const Language = ({ onLanguageChange }: any) => {
         const option = languageList.find((o) => o.value === key)
         if (!option) return
         store.toggleLanguage(option)
-        i18n.changeLanguage(option.value)
+        void i18n.changeLanguage(option.value)
         onLanguageChange && onLanguageChange(option)
     }
 

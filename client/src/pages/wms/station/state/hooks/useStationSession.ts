@@ -25,7 +25,7 @@ export function useStationSession() {
      * Call this when the user explicitly changes workstation or logs out.
      */
     const clearStation = () => {
-        workStationEventLoop.destroy()
+        void workStationEventLoop.destroy()
         localStorage.removeItem("stationId")
         setIsStationSelected(false)
     }

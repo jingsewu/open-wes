@@ -22,7 +22,7 @@ const ContainerHandler = observer(
         const { workStationEvent } = useWorkStation()
 
         const workLocationArea = workStationEvent?.workLocationArea
-        const containerViews = workLocationArea?.workLocationViews?.find(
+        const containerViews = workLocationArea?.workLocationViews.find(
             (item) => item.enable
         )
         const workLocationType = containerViews?.workLocationType || DevicePhysicalType.DEFAULT
