@@ -1,7 +1,7 @@
-# Enum i18n Design — Brainstorming In Progress
+# Enum i18n Design — 字典多语言
 
-> Status: **In Progress** — discussion not yet complete, design not finalized.
-> Started: 2026-05-17
+**Date:** 2026-05-17
+**Status:** Design finalized
 
 ---
 
@@ -13,126 +13,181 @@
 |------|------|------|
 | `IEnum` 接口 | `modules-utils/common-utils/.../dictionary/IEnum.java` | 所有业务枚举的标记接口，定义 `getValue()` / `getLabel()` |
 | `DictionaryController` | `modules-wes/wes-config/.../controller/DictionaryController.java` | 提供 `/refresh`、`/getAll`、`/createOrUpdate` 接口 |
-| `Dictionary` 实体 | `modules-wes/wes-config/.../entity/Dictionary.java` | 字典领域对象，`items` 字段用 `MultiLanguage` 结构存多语言 |
+| `Dictionary` 实体 | `modules-wes/wes-config/.../entity/Dictionary.java` | 字典领域对象，`DictionaryItem.showContext` 用 `MultiLanguage` 结构存多语言 |
+| `DictionaryTransfer` | `modules-wes/wes-config/.../transfer/DictionaryTransfer.java` | DTO ↔ 实体转换，`toDTOItem()` 调 `LanguageContext` 过滤当前语言 |
+| `LanguageFilter` | `modules-utils/common-utils/.../language/core/LanguageFilter.java` | 读 `Locale` 请求头 → 写入 `LanguageContext` ThreadLocal |
 | `m_dictionary` 表 | DB | 字典持久化，`items` JSON 列存枚举值列表 |
 
-### 数据流
+### 数据流（现状）
 
 ```
-IEnum 枚举实现（100+）
-    ↓ /refresh（反射扫描，开发期手动调用）
-m_dictionary 数据库表
-    ↓ /getAll（前端启动时调用一次）
-前端 localStorage
-    ↓ 渲染时查 dictionary["ContainerStatus"] → 显示 label
+IEnum.getLabel()（只有中文）
+  ↓ refresh()
+DB: showContext = {"zh-CN": "在库内"}   ← 只存了中文
+  ↓ getAll()（Locale 请求头 → LanguageContext → 过滤当前语言）
+前端 localStorage.dictionary
+  ↓ AMIS ${dictionary.ContainerStatus}
+下拉列表 [{label: "在库内", value: "IN_SIDE"}]
 ```
 
-### 枚举当前写法
+### 现有问题
+
+1. `refresh()` 只往 `zh-CN` 写数据，其他语言字段为空
+2. 英文用户请求 → `language.get("en-US")` → null → 空字符串
+3. 要加其他语言必须在管理界面一条条手动编辑，100+ 枚举 × N 语言不可操作
+
+---
+
+## 痛点结论
+
+| 痛点 | 结论 |
+|------|------|
+| Liquibase SQL 维护 | 维持现有 refresh 流程，枚举变更跟着 Liquibase changeset 提交，可接受 |
+| 枚举扩展 | 不独立设计：需业务代码感知→改 Java 枚举；只需展示→直接改 DB items |
+| 国际化 | **核心问题，本文设计目标** |
+
+**翻译数据不能放在代码（注解/资源文件）里**，修改需要重新部署，违背"翻译可运营管理"的要求。
+
+**翻译数据唯一合理的位置是数据库**——改完立即生效，无需部署。
+
+---
+
+## 核心设计
+
+### 两列分离：系统默认值 vs 客户覆盖值
+
+**背景**：字典有两个主人——开发（系统默认值）和客户（业务定制）。
+若共用同一列，Liquibase 迁移会覆盖客户的修改，产生冲突。
+
+```
+DictionaryItem 新结构：
+  system_label   MultiLanguage  ← 开发维护，refresh() / Liquibase 写这里
+  custom_label   MultiLanguage  ← 客户在管理界面修改，写这里（null = 未定制）
+```
+
+**读取优先级（服务端合并）：**
+```
+custom_label[lang] → system_label[lang] → system_label["zh-CN"]
+```
+
+**写入规则：**
+- `refresh()` / Liquibase changeset → 只更新 `system_label`，永远不碰 `custom_label`
+- 管理界面 → 只写 `custom_label`
+
+**无冲突保证**：开发迁移和客户定制写不同列，互不干扰。
+客户恢复默认 → 把 `custom_label` 对应 key 清空即可。
+
+---
+
+## 各层变更
+
+### 1. 领域实体 `Dictionary.DictionaryItem`
 
 ```java
-@Getter
-@AllArgsConstructor
-public enum ContainerStatusEnum implements IEnum {
-    IN_SIDE("IN_SIDE", "在库内"),
-    OUT_SIDE("OUT_SIDE", "在库外");
+// Before
+private MultiLanguage showContext;
 
-    private final String value;
-    private final String label;  // 硬编码中文
+// After
+private MultiLanguage systemLabel;   // 系统默认，由 refresh/Liquibase 维护
+private MultiLanguage customLabel;   // 客户覆盖，由管理界面维护（可为 null）
+```
+
+### 2. `DictionaryTransfer`
+
+`toDTOItem()` 合并逻辑：
+
+```java
+private String resolveLabel(Dictionary.DictionaryItem item) {
+    String lang = LanguageContext.getLanguage();
+    // 1. 客户覆盖
+    if (item.getCustomLabel() != null) {
+        String custom = item.getCustomLabel().get(lang);
+        if (custom != null && !custom.isEmpty()) return custom;
+    }
+    // 2. 系统默认（当前语言）
+    if (item.getSystemLabel() != null) {
+        String system = item.getSystemLabel().get(lang);
+        if (system != null && !system.isEmpty()) return system;
+        // 3. fallback 到中文
+        String zhFallback = item.getSystemLabel().get("zh-CN");
+        if (zhFallback != null && !zhFallback.isEmpty()) return zhFallback;
+    }
+    return "";
 }
 ```
 
-### `/refresh` 的角色
+`toDOItem()` 写入：
+- 入参 `showContent` → 写入 `systemLabel`（当前语言 key）
+- `customLabel` 保持不动
 
-`refresh()` 是**开发期工具接口**，不在生产自动调用。
-流程：新增/修改枚举 → 本地调 `/refresh` 同步进库 → 导出 Liquibase SQL → 提交。
+### 3. `refresh()`
+
+逻辑不变：调 `getLabel()` 拿中文 → 经 `toDOItem()` 存入 `system_label["zh-CN"]`。
+其他语言 system_label 通过 Liquibase changeset 初始化（见下文）。
+
+### 4. `getAll()`
+
+逻辑不变：仍返回服务端合并后的单语言 label，前端无感知。
+
+### 5. `IEnum` 接口
+
+**不变**。`getLabel()` 仍返回中文，继续用于 refresh() 种子数据。
+
+### 6. 管理界面
+
+- 展示：每个枚举值同时显示 `system_label`（只读参考）和 `custom_label`（可编辑）
+- 编辑：按语言 tab，修改后只写 `custom_label`
+- 重置：清空 `custom_label` 对应 key，恢复使用 `system_label`
 
 ---
 
-## 三个原始痛点
+## 数据库迁移
 
-1. **Liquibase SQL 维护** — 每次枚举变更需手动同步 SQL，容易遗漏
-2. **国际化** — `getLabel()` 全部返回中文，无多语言支持
-3. **枚举扩展** — Java enum 封闭，难以在不改代码的情况下扩展
+### Changeset 1：字段迁移（存量数据）
 
----
-
-## 讨论结论
-
-### 痛点 1：Liquibase SQL 维护
-
-**结论：维持现有 refresh 流程，可接受。**
-
-`refresh()` 作为开发期工具，手动调用后导出 SQL 的流程本身没有大问题。
-不引入「启动自动 refresh」机制。
-
-### 痛点 3：枚举扩展
-
-**结论：问题本身可以拆解掉，不需要专门设计。**
-
-分析：
-- 如果新枚举值需要业务代码感知 → 必须改代码 → 直接在 Java 枚举里加常量，这就是正确方式
-- 如果只需要前端展示/筛选 → 直接在 `m_dictionary` 的 `items` 里加记录，无需 Java 枚举承载
-
-因此「枚举扩展」不是独立问题，两种场景分别有自然的解法，**本次设计范围排除**。
-
-### 痛点 2：国际化（主要目标）
-
-**初步方向：注解携带多语言默认值 + 数据库作为覆盖层**
-
-```java
-public enum ContainerStatusEnum implements IEnum {
-
-    @DictionaryLabel(zhCN = "在库内", enUS = "In Stock", jaJP = "在庫内")
-    IN_SIDE("IN_SIDE"),
-
-    @DictionaryLabel(zhCN = "在库外", enUS = "Out of Stock")
-    OUT_SIDE("OUT_SIDE");
-
-    private final String value;
-}
+```xml
+<!-- 存量 showContext → system_label，custom_label 新增为 null -->
+<changeSet id="dict-multilang-rename" author="dev">
+    <preConditions onFail="MARK_RAN">
+        <columnExists tableName="m_dictionary" columnName="items"/>
+    </preConditions>
+    <!-- items JSON 列内 showContext key 改名为 systemLabel，新增 customLabel: null -->
+    <!-- 具体实现根据 JSON 列存储方式决定（MapStruct 或 DB JSON 函数） -->
+</changeSet>
 ```
 
-- 代码注解 = 种子数据/默认值
-- 数据库 = 最终权威（运营人员可在 UI 覆盖 label）
-- `refresh()` 读注解写入 `MultiLanguage`，策略为「不存在则插入，已有不覆盖」
+### Changeset 2：初始化全量多语言数据
+
+一次性 SQL 脚本，把所有枚举的英文/日文/韩文 system_label 写入 DB。
+格式参考：
+```sql
+UPDATE m_dictionary_item
+SET system_label = JSON_SET(system_label, '$."en-US"', 'In Stock')
+WHERE value = 'IN_SIDE' AND dict_code = 'ContainerStatus';
+```
+
+### 后续枚举变更
+
+每次新增/修改枚举值 → 写一个 Liquibase changeset 更新 `system_label`，流程与现有一致。
 
 ---
 
-## 待解决的开放问题
+## Fallback 策略
 
-### 🔲 i18n 接口返回方式（下次继续）
-
-`/getAll` 接口的多语言返回策略：
-
-- **A) 按 Accept-Language 返回单语言** — 服务端根据请求头返回对应语言的 label，前端无感知
-- **B) 一次返回所有语言** — 返回 `{"zh-CN": "在库内", "en-US": "In Stock"}`，前端自己选
-- **C) 两者都支持**
-
-*尚未决策。*
-
-### 🔲 `@DictionaryLabel` 的缺省策略
-
-当注解缺少某个语言时（如没写 `jaJP`），fallback 到什么？
-- fallback 到 `zhCN`？
-- fallback 到 `enUS`？
-- 留空？
-
-*尚未决策。*
-
-### 🔲 存量枚举的迁移策略
-
-现有 100+ 枚举只有中文。是否要求一次性全部补注解，还是渐进式？
-
-*尚未决策。*
-
-### 🔲 `IEnum` 接口变更
-
-`getLabel()` 是否需要修改签名？如何保持向后兼容？
-
-*尚未决策。*
+```
+custom_label[请求语言]
+  ↓ null/空
+system_label[请求语言]
+  ↓ null/空
+system_label["zh-CN"]
+  ↓ null/空
+""（空字符串，不报错）
+```
 
 ---
 
-## 下次继续的起点
+## 不在本次范围内
 
-从「i18n 接口返回方式」的选择开始，然后依次解决 fallback 策略和迁移策略，之后进入完整设计文档编写。
+- 自动翻译集成（机器翻译 API）
+- 翻译版本历史 / 审核流程
+- 枚举扩展（动态添加非 Java 枚举的值）

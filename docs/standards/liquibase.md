@@ -85,6 +85,20 @@ created the new columns before Liquibase runs, the single-changeset approach fai
 - Completely fresh DB → all 3 steps run in order
 - Migration already done manually → all 3 skipped
 
+## Enum Changes Require a Dictionary Changeset
+
+**Rule:** Every time you add or modify an `IEnum` enum value, you **must** include a
+Liquibase changeset in the same commit that syncs the dictionary.
+
+| Enum change | Required changeset action |
+|-------------|--------------------------|
+| Add a new enum value | `JSON_ARRAY_INSERT` — append the new item to the dictionary |
+| Rename / change `getValue()` | Update `value` field in the matching item |
+| Remove an enum value | `JSON_REMOVE` — delete the item from the array |
+
+`POST /config/dictionary/refresh` is a **dev-only helper** for local iteration; it must
+not substitute for a proper changeset in committed code.
+
 ## Dictionary Updates via Liquibase
 
 Dictionaries live in `m_dictionary.items` (JSON array). Use `JSON_SEARCH` as the

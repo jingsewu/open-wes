@@ -155,6 +155,7 @@ All schema and data changes **must** use Liquibase changelogs — never ad-hoc S
 - **Never edit** any SQL file already referenced by an existing changeset (`init_dictionary.sql` etc.) — Liquibase checksums them and will refuse to start if they change
 - Always use `preConditions onFail="MARK_RAN"` for idempotency
 - Split ADD + MIGRATE + DROP into **3 separate changesets** (Hibernate auto-DDL may create the new columns before Liquibase runs)
+- **Adding or modifying an `IEnum` enum value** requires a changeset in the same commit to sync the dictionary — `POST /config/dictionary/refresh` is a dev-only helper, not a substitute
 
 **Read `docs/standards/liquibase.md`** for full rules, templates, and the ADD+MIGRATE+DROP pattern.
 
