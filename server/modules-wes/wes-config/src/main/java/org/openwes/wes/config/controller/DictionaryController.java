@@ -124,7 +124,7 @@ public class DictionaryController {
 
                     return dictionaryDTO;
                 }).filter(Objects::nonNull).toList();
-        dictionaryRepository.saveAll(dictionaryTransfer.toDOs(dictionaryDTOS));
+        dictionaryRepository.saveAll(dictionaryTransfer.toSystemLabelDOs(dictionaryDTOS));
         return Response.success();
     }
 
