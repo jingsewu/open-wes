@@ -175,9 +175,10 @@ jobs:
             printf 'HOST_IP=%s\nIMAGE_BASE=ghcr.io/%s\nIMAGE_TAG=%s\n' \
               "${HOST_IP}" "${GITHUB_REPO}" "${IMAGE_TAG}" > .env
 
-            # Pull new images then recreate only changed containers.
+            # Pull only the 4 app images — mysql/redis/nacos are stable and
+            # already cached on the server after the first deployment.
             # Use 'docker compose' (v2) — docker-compose (v1) is not installed.
-            sudo docker compose -f docker-compose.prod.yml pull
+            sudo docker compose -f docker-compose.prod.yml pull frontend gateway-server wes-server station-server
             sudo docker compose -f docker-compose.prod.yml up -d --remove-orphans
 
             # Remove dangling images to reclaim disk space
