@@ -121,6 +121,28 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prepare remote workspace
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          script: mkdir -p /data/workspace/open-wes
+
+      - name: Copy compose file to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          source: "docker-compose.prod.yml"
+          target: "/data/workspace/open-wes/"
+
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
         env:
@@ -145,18 +167,9 @@ jobs:
             AUTH=$(printf '%s:%s' "${GITHUB_ACTOR}" "${GHCR_TOKEN}" | base64 -w 0)
             printf '{"auths":{"ghcr.io":{"auth":"%s"}}}\n' "${AUTH}" > ~/.docker/config.json
 
-            # First-time setup: clone the repo; otherwise just pull latest
-            if [ -d /data/workspace/open-wes ]; then
-              git -C /data/workspace/open-wes pull origin master
-            else
-              sudo git clone https://github.com/jingsewu/open-wes.git /data/workspace/open-wes
-              sudo chown -R "$(whoami)" /data/workspace/open-wes
-            fi
-
             cd /data/workspace/open-wes
 
             # Write the .env file that docker-compose.prod.yml reads.
-            # Use printf to avoid heredoc indentation issues.
             HOST_IP=$(hostname -I | awk '{print $1}')
             printf 'HOST_IP=%s\nIMAGE_BASE=ghcr.io/%s\nIMAGE_TAG=%s\n' \
               "${HOST_IP}" "${GITHUB_REPO}" "${IMAGE_TAG}" > .env
