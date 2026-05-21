@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <!--
+        Migrate m_dictionary.items: rename showContext JSON key to systemLabel.
+        Uses JSON_CONTAINS_PATH to check for key existence (not JSON_SEARCH with NULL,
+        which always returns NULL and would never match).
+    -->
+    <changeSet id="dict_rename_showContext_to_systemLabel" author="dev">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="m_dictionary"/>
+                <sqlCheck expectedResult="1">
+                    SELECT IF(COUNT(*) > 0, 1, 0)
+                    FROM m_dictionary
+                    WHERE JSON_CONTAINS_PATH(items, 'one', '$[0].showContext') = 1
+                    LIMIT 1
+                </sqlCheck>
+            </and>
+        </preConditions>
+        <sql>
+            UPDATE m_dictionary
+            SET items = (
+                SELECT JSON_ARRAYAGG(
+                    JSON_REMOVE(
+                        JSON_SET(item_val, '$.systemLabel', JSON_EXTRACT(item_val, '$.showContext')),
+                        '$.showContext'
+                    )
+                )
+                FROM JSON_TABLE(items, '$[*]' COLUMNS (item_val JSON PATH '$')) AS jt
+            )
+            WHERE JSON_CONTAINS_PATH(items, 'one', '$[0].showContext') = 1;
+        </sql>
+    </changeSet>
+
+    <!--
+        Template for adding en-US system labels to specific enum values.
+        Copy and customize this pattern for each enum code + value combination.
+
+        Example:
+        <changeSet id="dict_en_ContainerStatus_IDLE" author="dev">
+            <preConditions onFail="MARK_RAN">
+                <and>
+                    <tableExists tableName="m_dictionary"/>
+                    <sqlCheck expectedResult="0">
+                        SELECT COUNT(*) FROM m_dictionary
+                        WHERE code = 'ContainerStatus'
+                        AND JSON_CONTAINS_PATH(items, 'one', '$[0].systemLabel')
+                        AND JSON_SEARCH(items, 'one', 'Idle', NULL, '$[*].systemLabel.languages.en-US') IS NOT NULL
+                    </sqlCheck>
+                </and>
+            </preConditions>
+            <sql>
+                UPDATE m_dictionary
+                SET items = (
+                    SELECT JSON_ARRAYAGG(
+                        CASE
+                            WHEN JSON_UNQUOTE(JSON_EXTRACT(jt.val, '$.value')) = 'IDLE'
+                            THEN JSON_SET(jt.val, '$.systemLabel.languages.en-US', 'Idle')
+                            ELSE jt.val
+                        END
+                    )
+                    FROM JSON_TABLE(items, '$[*]' COLUMNS (val JSON PATH '$')) AS jt
+                )
+                WHERE code = 'ContainerStatus';
+            </sql>
+        </changeSet>
+    -->
+
+</databaseChangeLog>
