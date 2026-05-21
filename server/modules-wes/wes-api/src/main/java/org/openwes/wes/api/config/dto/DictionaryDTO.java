@@ -29,7 +29,8 @@ public class DictionaryDTO extends UpdateUserDTO {
 
         @NotEmpty
         private String value;
-        private String showContent;
+        private String showContent;     // 合并后的展示 label / 管理界面写入的 custom label
+        private String systemContent;   // 系统默认 label（管理界面只读参考）
         private int order;
         private boolean defaultItem;
         private String description;
