@@ -7,6 +7,7 @@ import org.openwes.wes.config.domain.entity.Dictionary;
 import org.mapstruct.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.mapstruct.NullValueCheckStrategy.ALWAYS;
 import static org.mapstruct.NullValueMappingStrategy.RETURN_NULL;
@@ -18,36 +19,84 @@ import static org.mapstruct.NullValueMappingStrategy.RETURN_NULL;
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface DictionaryTransfer {
 
-    @Mapping(source = "items", target = "items")
     @Mapping(source = "name", target = "name", qualifiedByName = "toMultiLanguage")
     @Mapping(source = "description", target = "description", qualifiedByName = "toMultiLanguage")
+    @Mapping(source = "items", target = "items", qualifiedByName = "toDOItem")
     Dictionary toDO(DictionaryDTO dictionaryDTO);
 
-    List<Dictionary> toDOs(List<DictionaryDTO> dictionaryDTOS);
+    default List<Dictionary> toDOs(List<DictionaryDTO> dictionaryDTOS) {
+        return dictionaryDTOS.stream().map(this::toDO).collect(Collectors.toList());
+    }
 
     @Mapping(source = "name", target = "name", qualifiedByName = "toCurrentLanguage")
     @Mapping(source = "description", target = "description", qualifiedByName = "toCurrentLanguage")
-    @Mapping(source = "items", target = "items")
+    @Mapping(source = "items", target = "items", qualifiedByName = "toDTOItem")
     DictionaryDTO toDTO(Dictionary dictionary);
 
-    default Dictionary.DictionaryItem toDOItem(DictionaryDTO.DictionaryItem dictionaryItemDTO) {
-        Dictionary.DictionaryItem dictionaryItem = new Dictionary.DictionaryItem();
-        dictionaryItem.setDefaultItem(dictionaryItemDTO.isDefaultItem());
-        dictionaryItem.setDescription(new MultiLanguage(LanguageContext.getLanguage(), dictionaryItemDTO.getDescription()));
-        dictionaryItem.setOrder(dictionaryItemDTO.getOrder());
-        dictionaryItem.setShowContext(new MultiLanguage(LanguageContext.getLanguage(), dictionaryItemDTO.getShowContent()));
-        dictionaryItem.setValue(dictionaryItemDTO.getValue());
-        return dictionaryItem;
+    /**
+     * Admin UI write path: showContent → customLabel.
+     * If systemContent is provided, write it back to systemLabel (so admin save doesn't lose system label).
+     */
+    @Named("toDOItem")
+    default Dictionary.DictionaryItem toDOItem(DictionaryDTO.DictionaryItem dto) {
+        Dictionary.DictionaryItem item = new Dictionary.DictionaryItem();
+        item.setValue(dto.getValue());
+        item.setOrder(dto.getOrder());
+        item.setDefaultItem(dto.isDefaultItem());
+        item.setDescription(new MultiLanguage(LanguageContext.getLanguage(), dto.getDescription()));
+        item.setCustomLabel(new MultiLanguage(LanguageContext.getLanguage(), dto.getShowContent()));
+        if (dto.getSystemContent() != null && !dto.getSystemContent().isEmpty()) {
+            item.setSystemLabel(new MultiLanguage(LanguageContext.getLanguage(), dto.getSystemContent()));
+        }
+        return item;
     }
 
-    default DictionaryDTO.DictionaryItem toDTOItem(Dictionary.DictionaryItem dictionaryItem) {
-        DictionaryDTO.DictionaryItem dictionaryItemDTO = new DictionaryDTO.DictionaryItem();
-        dictionaryItemDTO.setDefaultItem(dictionaryItem.isDefaultItem());
-        dictionaryItemDTO.setDescription(toCurrentLanguage(dictionaryItem.getDescription()));
-        dictionaryItemDTO.setOrder(dictionaryItem.getOrder());
-        dictionaryItemDTO.setShowContent(toCurrentLanguage(dictionaryItem.getShowContext()));
-        dictionaryItemDTO.setValue(dictionaryItem.getValue());
-        return dictionaryItemDTO;
+    /**
+     * refresh() write path: showContent → systemLabel only, do not touch customLabel.
+     */
+    @Named("toSystemLabelDOItem")
+    default Dictionary.DictionaryItem toSystemLabelDOItem(DictionaryDTO.DictionaryItem dto) {
+        Dictionary.DictionaryItem item = new Dictionary.DictionaryItem();
+        item.setValue(dto.getValue());
+        item.setOrder(dto.getOrder());
+        item.setDefaultItem(dto.isDefaultItem());
+        item.setDescription(new MultiLanguage(LanguageContext.getLanguage(), dto.getDescription()));
+        item.setSystemLabel(new MultiLanguage(LanguageContext.getLanguage(), dto.getShowContent()));
+        return item;
+    }
+
+    /**
+     * refresh() batch entry point.
+     */
+    default Dictionary toSystemLabelDO(DictionaryDTO dto) {
+        Dictionary dictionary = new Dictionary();
+        dictionary.setCode(dto.getCode());
+        dictionary.setEditable(dto.isEditable());
+        dictionary.setName(toMultiLanguage(dto.getName()));
+        dictionary.setDescription(toMultiLanguage(dto.getDescription()));
+        dictionary.setItems(dto.getItems().stream()
+                .map(this::toSystemLabelDOItem)
+                .collect(Collectors.toList()));
+        return dictionary;
+    }
+
+    default List<Dictionary> toSystemLabelDOs(List<DictionaryDTO> dtos) {
+        return dtos.stream().map(this::toSystemLabelDO).collect(Collectors.toList());
+    }
+
+    /**
+     * Read path: three-level fallback → showContent; systemLabel → systemContent (admin reference).
+     */
+    @Named("toDTOItem")
+    default DictionaryDTO.DictionaryItem toDTOItem(Dictionary.DictionaryItem item) {
+        DictionaryDTO.DictionaryItem dto = new DictionaryDTO.DictionaryItem();
+        dto.setValue(item.getValue());
+        dto.setOrder(item.getOrder());
+        dto.setDefaultItem(item.isDefaultItem());
+        dto.setDescription(toCurrentLanguage(item.getDescription()));
+        dto.setShowContent(resolveLabel(item));
+        dto.setSystemContent(item.getSystemLabel() != null ? toCurrentLanguage(item.getSystemLabel()) : "");
+        return dto;
     }
 
     @Named("toMultiLanguage")
@@ -61,5 +110,23 @@ public interface DictionaryTransfer {
             return "";
         }
         return language.get();
+    }
+
+    /**
+     * Three-level fallback: customLabel[lang] → systemLabel[lang] → systemLabel["zh-CN"] → ""
+     */
+    static String resolveLabel(Dictionary.DictionaryItem item) {
+        String lang = LanguageContext.getLanguage();
+        if (item.getCustomLabel() != null) {
+            String v = item.getCustomLabel().get(lang);
+            if (v != null && !v.isEmpty()) return v;
+        }
+        if (item.getSystemLabel() != null) {
+            String v = item.getSystemLabel().get(lang);
+            if (v != null && !v.isEmpty()) return v;
+            String zh = item.getSystemLabel().get("zh-CN");
+            if (zh != null && !zh.isEmpty()) return zh;
+        }
+        return "";
     }
 }
