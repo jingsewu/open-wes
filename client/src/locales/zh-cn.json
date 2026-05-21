@@ -224,6 +224,8 @@
     "parameterManagement.title": "参数管理",
     "systemConfigManagement.title": "系统参数",
     "dictionaryManagement.title": "字典管理",
+    "dictionaryManagement.systemLabel": "系统标签",
+    "dictionaryManagement.customLabel": "自定义标签",
     "barcodeParsingManagement.title": "条码解析管理",
     "warehouseManagement.title": "仓库管理",
     "warehouseAreaManagement.title": "仓区管理",

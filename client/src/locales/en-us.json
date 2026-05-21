@@ -224,6 +224,8 @@
     "parameterManagement.title": "Parameter management",
     "systemConfigManagement.title": "System parameters",
     "dictionaryManagement.title": "Dictionary management",
+    "dictionaryManagement.systemLabel": "System label",
+    "dictionaryManagement.customLabel": "Custom label",
     "barcodeParsingManagement.title": "Barcode parsing management",
     "warehouseManagement.title": "Warehouse management",
     "warehouseAreaManagement.title": "Warehouse area management",

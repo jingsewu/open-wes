@@ -53,8 +53,13 @@ const form = [
                 type: "input-text"
             },
             {
+                name: "systemContent",
+                label: "dictionaryManagement.systemLabel",
+                type: "static"
+            },
+            {
                 name: "showContent",
-                label: "table.label",
+                label: "dictionaryManagement.customLabel",
                 type: "input-text"
             },
             {
