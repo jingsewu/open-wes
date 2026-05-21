@@ -45,9 +45,6 @@ public interface DictionaryTransfer {
         item.setDefaultItem(dto.isDefaultItem());
         item.setDescription(new MultiLanguage(LanguageContext.getLanguage(), dto.getDescription()));
         item.setCustomLabel(new MultiLanguage(LanguageContext.getLanguage(), dto.getShowContent()));
-        if (dto.getSystemContent() != null && !dto.getSystemContent().isEmpty()) {
-            item.setSystemLabel(new MultiLanguage(LanguageContext.getLanguage(), dto.getSystemContent()));
-        }
         return item;
     }
 

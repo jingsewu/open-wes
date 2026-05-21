@@ -17,7 +17,7 @@
                 <sqlCheck expectedResult="1">
                     SELECT IF(COUNT(*) > 0, 1, 0)
                     FROM m_dictionary
-                    WHERE JSON_CONTAINS_PATH(items, 'one', '$[0].showContext') = 1
+                    WHERE JSON_CONTAINS_PATH(items, 'one', '$[*].showContext') = 1
                     LIMIT 1
                 </sqlCheck>
             </and>
@@ -33,7 +33,7 @@
                 )
                 FROM JSON_TABLE(items, '$[*]' COLUMNS (item_val JSON PATH '$')) AS jt
             )
-            WHERE JSON_CONTAINS_PATH(items, 'one', '$[0].showContext') = 1;
+            WHERE JSON_CONTAINS_PATH(items, 'one', '$[*].showContext') = 1;
         </sql>
     </changeSet>
 
