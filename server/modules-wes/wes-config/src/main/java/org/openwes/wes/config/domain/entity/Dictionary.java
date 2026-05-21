@@ -23,7 +23,8 @@ public class Dictionary extends UpdateUserDTO {
     @Data
     public static class DictionaryItem {
         private String value;
-        private MultiLanguage showContext;
+        private MultiLanguage systemLabel;   // 系统默认，由 refresh / Liquibase 写入
+        private MultiLanguage customLabel;   // 客户覆盖，由管理界面写入（null = 未定制）
         private int order;
         private boolean defaultItem;
         private MultiLanguage description;
