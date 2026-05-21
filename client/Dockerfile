@@ -1,12 +1,13 @@
 # Stage 1: Install dependencies
-FROM node:20 AS deps
+FROM node:18-alpine AS deps
+RUN apk add --no-cache git
 RUN corepack enable && corepack prepare pnpm@9 --activate
 WORKDIR /app
 COPY package*.json ./
 RUN pnpm install
 
 # Stage 2: Build (with more memory)
-FROM node:20 AS build
+FROM node:18-alpine AS build
 RUN corepack enable && corepack prepare pnpm@9 --activate
 # Configure pnpm to use HTTPS for Git operations
 RUN pnpm config set git-checks false
@@ -15,6 +16,7 @@ RUN pnpm config set strict-ssl false
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN pnpm run build
 
 # Stage 3: Deploy

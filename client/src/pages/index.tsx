@@ -87,22 +87,10 @@ export default class Admin extends React.Component<AdminProps, State> {
     }
 
     onLanguageChange = (e: any) => {
-        let menuList: string[] = Object.keys(this.state.menus)
-        const options = menuList.map((menu) => {
-            return {
-                key: menu,
-                label: (this.state.menus as any)[menu].title
-            }
-        })
         if (this.state.iframeShow) {
             const postUrl = this.state.iframeUrl.split("#")[0]
             window?.frames[0]?.postMessage(e.locale, postUrl)
         }
-
-        this.setState({
-            ...this.state,
-            applications: options || []
-        })
     }
 
     logout = () => {
