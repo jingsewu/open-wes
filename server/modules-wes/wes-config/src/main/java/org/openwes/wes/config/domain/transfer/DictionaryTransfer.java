@@ -35,7 +35,7 @@ public interface DictionaryTransfer {
 
     /**
      * Admin UI write path: showContent → customLabel.
-     * If systemContent is provided, write it back to systemLabel (so admin save doesn't lose system label).
+     * systemLabel is never written by this path — it is only written by toSystemLabelDOItem (refresh/Liquibase).
      */
     @Named("toDOItem")
     default Dictionary.DictionaryItem toDOItem(DictionaryDTO.DictionaryItem dto) {
