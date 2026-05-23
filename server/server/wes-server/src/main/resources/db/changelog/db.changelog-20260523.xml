@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <!-- Add Monitoring app and its menu entries -->
+    <changeSet id="add_monitoring_app_menus" author="dev">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="u_menu"/>
+                <sqlCheck expectedResult="0">
+                    SELECT COUNT(*) FROM u_menu WHERE system_code = 'monitoring' AND parent_id = 0
+                </sqlCheck>
+            </and>
+        </preConditions>
+        <sql>
+            -- Top-level monitoring app (type=1: System)
+            INSERT INTO u_menu (id, create_user, system_code, parent_id, type, title, description, permissions, order_num, icon, path, enable, create_time, update_time, update_user, iframe_show)
+            VALUES (1300000000, 'admin', 'monitoring', 0, 1, 'monitoring.app.title', NULL, 'monitoring', 5, 'chart', '/monitoring', 1, UNIX_TIMESTAMP()*1000, UNIX_TIMESTAMP()*1000, 'admin', 0);
+
+            -- Overview dashboard (type=2: Menu)
+            INSERT INTO u_menu (id, create_user, system_code, parent_id, type, title, description, permissions, order_num, icon, path, enable, create_time, update_time, update_user, iframe_show)
+            VALUES (1301000000, 'admin', 'monitoring', 1300000000, 2, 'monitoring.overview.title', NULL, '/monitoring/overview', 1, 'dashboard', '/monitoring/overview', 1, UNIX_TIMESTAMP()*1000, UNIX_TIMESTAMP()*1000, 'admin', 0);
+
+            -- JVM monitoring (type=2: Menu)
+            INSERT INTO u_menu (id, create_user, system_code, parent_id, type, title, description, permissions, order_num, icon, path, enable, create_time, update_time, update_user, iframe_show)
+            VALUES (1302000000, 'admin', 'monitoring', 1300000000, 2, 'monitoring.jvm.title', NULL, '/monitoring/jvm', 2, NULL, '/monitoring/jvm', 1, UNIX_TIMESTAMP()*1000, UNIX_TIMESTAMP()*1000, 'admin', 0);
+
+            -- Business metrics (type=2: Menu)
+            INSERT INTO u_menu (id, create_user, system_code, parent_id, type, title, description, permissions, order_num, icon, path, enable, create_time, update_time, update_user, iframe_show)
+            VALUES (1303000000, 'admin', 'monitoring', 1300000000, 2, 'monitoring.business.title', NULL, '/monitoring/business', 3, NULL, '/monitoring/business', 1, UNIX_TIMESTAMP()*1000, UNIX_TIMESTAMP()*1000, 'admin', 0);
+
+            -- Infrastructure (type=2: Menu)
+            INSERT INTO u_menu (id, create_user, system_code, parent_id, type, title, description, permissions, order_num, icon, path, enable, create_time, update_time, update_user, iframe_show)
+            VALUES (1304000000, 'admin', 'monitoring', 1300000000, 2, 'monitoring.infrastructure.title', NULL, '/monitoring/infrastructure', 4, NULL, '/monitoring/infrastructure', 1, UNIX_TIMESTAMP()*1000, UNIX_TIMESTAMP()*1000, 'admin', 0);
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>
