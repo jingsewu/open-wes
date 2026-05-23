@@ -73,6 +73,7 @@ management:
           - env
           - scheduledtasks
           - threadpool
+          - prometheus
 
   endpoint:
     health:
