@@ -44,6 +44,7 @@ include 'modules-utils:common-import'
 include 'modules-utils:distribute-scheduler'
 include 'modules-utils:domain-event:domain-event-api'
 include 'modules-utils:domain-event:domain-event-core'
+include 'modules-utils:monitoring'
 
 include 'server:station-server'
 include 'server:gateway-server'
