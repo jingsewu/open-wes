@@ -26,3 +26,15 @@ pf4j:
 
 worker:
   id: 1
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - info
+          - prometheus
+  endpoint:
+    health:
+      show-details: always

@@ -9,6 +9,9 @@ dependencies {
     implementation 'org.apache.skywalking:apm-toolkit-logback-1.x'
     implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
 
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation project(path: ":modules-utils:monitoring", configuration: 'default')
+
 }
 
 test {
