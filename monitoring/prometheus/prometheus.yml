@@ -1,0 +1,57 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  - "alert-rules.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ["alertmanager:9093"]
+
+scrape_configs:
+  # Application services — 15s interval
+  - job_name: "wes-server"
+    metrics_path: "/actuator/prometheus"
+    scrape_interval: 15s
+    static_configs:
+      - targets: ["wes:9010"]
+
+  - job_name: "station-server"
+    metrics_path: "/actuator/prometheus"
+    scrape_interval: 15s
+    static_configs:
+      - targets: ["station:9040"]
+
+  - job_name: "gateway-server"
+    metrics_path: "/actuator/prometheus"
+    scrape_interval: 15s
+    static_configs:
+      - targets: ["gateway:8090"]
+
+  # Infrastructure exporters — 30s interval
+  - job_name: "mysql"
+    scrape_interval: 30s
+    static_configs:
+      - targets: ["mysql-exporter:9104"]
+
+  - job_name: "redis"
+    scrape_interval: 30s
+    static_configs:
+      - targets: ["redis-exporter:9121"]
+
+  - job_name: "node"
+    scrape_interval: 30s
+    static_configs:
+      - targets: ["node-exporter:9100"]
+
+  - job_name: "kafka"
+    scrape_interval: 30s
+    static_configs:
+      - targets: ["kafka-exporter:9308"]
+
+  # Prometheus self-monitoring
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]

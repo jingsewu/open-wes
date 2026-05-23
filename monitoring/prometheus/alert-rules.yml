@@ -1,0 +1,94 @@
+groups:
+  - name: infrastructure
+    rules:
+      # P1: Service health check failure
+      - alert: ServiceDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Service {{ $labels.job }} is down"
+          description: "{{ $labels.instance }} has been unreachable for 1 minute."
+
+      # P1: Disk usage > 90%
+      - alert: DiskSpaceCritical
+        expr: (1 - node_filesystem_avail_bytes{fstype!~"tmpfs|fuse.lxcfs"} / node_filesystem_size_bytes{fstype!~"tmpfs|fuse.lxcfs"}) * 100 > 90
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Disk usage critical on {{ $labels.instance }}"
+          description: "Disk usage is above 90% (current: {{ $value }}%)"
+
+      # P2: CPU > 80% sustained
+      - alert: HighCpuUsage
+        expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage on {{ $labels.instance }}"
+          description: "CPU usage above 80% for 5 minutes (current: {{ $value }}%)"
+
+      # P2: JVM heap > 85%
+      - alert: JvmHeapHigh
+        expr: jvm_memory_used_bytes{area="heap"} / jvm_memory_max_bytes{area="heap"} * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "JVM heap high on {{ $labels.job }}"
+          description: "Heap usage above 85% (current: {{ $value }}%)"
+
+      # P2: MySQL connection pool > 80%
+      - alert: MysqlConnectionPoolHigh
+        expr: hikaricp_connections_active / hikaricp_connections_max * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "HikariCP connection pool high on {{ $labels.job }}"
+          description: "Active connections above 80% of max (current: {{ $value }}%)"
+
+      # P2: Redis memory > 80%
+      - alert: RedisMemoryHigh
+        expr: redis_memory_used_bytes / redis_memory_max_bytes * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Redis memory usage high"
+          description: "Redis memory above 80% (current: {{ $value }}%)"
+
+      # P3: Disk > 70%
+      - alert: DiskSpaceWarning
+        expr: (1 - node_filesystem_avail_bytes{fstype!~"tmpfs|fuse.lxcfs"} / node_filesystem_size_bytes{fstype!~"tmpfs|fuse.lxcfs"}) * 100 > 70
+        for: 10m
+        labels:
+          severity: info
+        annotations:
+          summary: "Disk usage elevated on {{ $labels.instance }}"
+          description: "Disk usage above 70% (current: {{ $value }}%)"
+
+  - name: application
+    rules:
+      # P1: 5xx error rate > 1%
+      - alert: HighErrorRate
+        expr: sum(rate(http_server_requests_seconds_count{status=~"5.."}[3m])) / sum(rate(http_server_requests_seconds_count[3m])) * 100 > 1
+        for: 3m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High 5xx error rate on {{ $labels.job }}"
+          description: "5xx error rate above 1% (current: {{ $value }}%)"
+
+      # P2: API P99 latency > 5s
+      - alert: HighApiLatency
+        expr: histogram_quantile(0.99, rate(http_server_requests_seconds_bucket[5m])) > 5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High API latency on {{ $labels.job }}"
+          description: "P99 latency above 5 seconds (current: {{ $value }}s)"
