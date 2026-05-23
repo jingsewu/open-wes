@@ -998,6 +998,7 @@
 
     "common.loading": "loading...",
 
+    "monitoring.app.title": "Monitoring",
     "monitoring.overview.title": "Overview",
     "monitoring.jvm.title": "JVM Monitoring",
     "monitoring.business.title": "Business Metrics",
