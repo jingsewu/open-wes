@@ -1,0 +1,13 @@
+dependencies {
+    implementation project(path: ":modules-utils:common-utils", configuration: 'default')
+    implementation project(path: ":modules-utils:domain-event:domain-event-api", configuration: 'default')
+
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    compileOnly 'com.google.guava:guava'
+    compileOnly 'org.springframework.boot:spring-boot-starter-web'
+}
+
+bootJar { enabled = false }
+jar { enabled = true }
