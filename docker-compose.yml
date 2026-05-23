@@ -26,6 +26,8 @@ services:
       target: gateway
     ports:
       - "8090:8090"
+    volumes:
+      - gateway-logs:/app/logs
     depends_on:
       mysql:
         condition: service_healthy
@@ -44,6 +46,8 @@ services:
       target: station
     ports:
       - "9040:9040"
+    volumes:
+      - station-logs:/app/logs
     depends_on:
       mysql:
         condition: service_healthy
@@ -62,6 +66,8 @@ services:
       target: wes
     ports:
       - "9010:9010"
+    volumes:
+      - wes-logs:/app/logs
     depends_on:
       mysql:
         condition: service_healthy
@@ -146,6 +152,135 @@ services:
       my-network:
         aliases:
           - nacos.openwes.com
+
+  # --- Monitoring Stack ---
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./monitoring/prometheus/alert-rules.yml:/etc/prometheus/alert-rules.yml
+      - prometheus-data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.retention.time=15d"
+    mem_limit: 512m
+    networks:
+      - my-network
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards
+      - grafana-data:/var/lib/grafana
+    mem_limit: 256m
+    depends_on:
+      - prometheus
+    networks:
+      - my-network
+
+  loki:
+    container_name: loki
+    image: grafana/loki:latest
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./monitoring/loki/loki-config.yml:/etc/loki/local-config.yaml
+      - loki-data:/loki
+    command: -config.file=/etc/loki/local-config.yaml
+    mem_limit: 768m
+    networks:
+      - my-network
+
+  promtail:
+    container_name: promtail
+    image: grafana/promtail:latest
+    volumes:
+      - ./monitoring/promtail/promtail-config.yml:/etc/promtail/config.yml
+      - wes-logs:/var/log/wes:ro
+      - station-logs:/var/log/station:ro
+      - gateway-logs:/var/log/gateway:ro
+    command: -config.file=/etc/promtail/config.yml
+    mem_limit: 128m
+    depends_on:
+      - loki
+    networks:
+      - my-network
+
+  alertmanager:
+    container_name: alertmanager
+    image: prom/alertmanager:latest
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./monitoring/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+    mem_limit: 64m
+    networks:
+      - my-network
+
+  node-exporter:
+    container_name: node-exporter
+    image: prom/node-exporter:latest
+    ports:
+      - "9100:9100"
+    mem_limit: 64m
+    networks:
+      - my-network
+
+  mysql-exporter:
+    container_name: mysql-exporter
+    image: prom/mysqld-exporter:latest
+    ports:
+      - "9104:9104"
+    environment:
+      DATA_SOURCE_NAME: "root:root@(mysql:3306)/"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    mem_limit: 64m
+    networks:
+      - my-network
+
+  redis-exporter:
+    container_name: redis-exporter
+    image: oliver006/redis_exporter:latest
+    ports:
+      - "9121:9121"
+    environment:
+      REDIS_ADDR: "redis:6379"
+    depends_on:
+      redis:
+        condition: service_healthy
+    mem_limit: 64m
+    networks:
+      - my-network
+
+  kafka-exporter:
+    container_name: kafka-exporter
+    image: danielqsj/kafka-exporter:latest
+    ports:
+      - "9308:9308"
+    command: ["--kafka.server=kafka:9092"]
+    mem_limit: 64m
+    networks:
+      - my-network
+
+volumes:
+  wes-logs:
+  station-logs:
+  gateway-logs:
+  prometheus-data:
+  grafana-data:
+  loki-data:
 
 # Networks
 networks:
