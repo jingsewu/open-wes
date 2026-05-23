@@ -7,7 +7,7 @@ Open WES is a Warehouse Execution System. Monorepo structure:
 - `client/` — React 17, TypeScript, MobX + AMIS framework
 - Infrastructure: Docker Compose, MySQL 8.0, Redis 7.2, Nacos 2.0, Kafka
 
-**Read `server/Code Rule.md` first** — it defines DDD rules, database standards, plugin patterns, and validation rules that all backend code must follow.
+**Read `docs/standards/backend.md` first** — it defines DDD rules, database standards, plugin patterns, and validation rules that all backend code must follow.
 
 ## Project Structure
 
@@ -220,7 +220,7 @@ All schema and data changes **must** use Liquibase changelogs — never ad-hoc S
 
 | Purpose | Path |
 |---------|------|
-| Backend coding standards | `server/Code Rule.md` |
+| Backend coding standards | `docs/standards/backend.md` |
 | Frontend standards (detailed) | `docs/standards/frontend.md` |
 | Repository hygiene standards | `docs/standards/repository.md` |
 | Database migration standards | `docs/standards/liquibase.md` |
