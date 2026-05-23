@@ -5,6 +5,8 @@ dependencies {
     implementation 'io.micrometer:micrometer-registry-prometheus'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
+    compileOnly project(path: ":modules-wes:wes-api", configuration: 'default')
+    compileOnly project(path: ":modules-station:station-api", configuration: 'default')
     compileOnly 'com.google.guava:guava'
     compileOnly 'org.springframework.boot:spring-boot-starter-web'
 }
