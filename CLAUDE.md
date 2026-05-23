@@ -21,13 +21,13 @@ modules-gateway/      # API gateway
 modules-plugin/       # Plugin implementations
 modules-search/       # Search functionality
 modules-api-platform/ # External API platform
-modules-utils/        # Shared utilities (must NOT depend on other modules)
+modules-utils/        # Shared utilities (must NOT depend on other modules) — includes monitoring module
 server/               # Spring Boot runners (wes-server, station-server, gateway-server)
 ```
 
 ### Client (`client/src/`)
 ```
-pages/        # Page components (wms/, api_platform/, data_platform/, user/)
+pages/        # Page components (wms/, api_platform/, data_platform/, user/, monitoring/)
 components/   # Shared React components
 stores/       # MobX state tree stores
 routes/       # React Router config + lazy-loaded route mapping
@@ -125,6 +125,53 @@ These rules are non-negotiable:
 7. **Always** use parameterized queries for any user-influenced SQL.
 8. Store tokens with expiry handling. Prefer httpOnly cookies over localStorage for sensitive tokens.
 
+## Monitoring & Observability
+
+The project uses Prometheus + Grafana + Loki for monitoring, alerting, and log aggregation.
+
+### Architecture
+- **Metrics**: Application (Micrometer) → `/actuator/prometheus` → Prometheus scrape → Grafana
+- **Logs**: Application log files → Promtail → Loki → Grafana
+- **Alerts**: Prometheus/Loki alert rules → AlertManager → Webhook
+- **Infrastructure**: MySQL/Redis/Node/Kafka Exporters → Prometheus
+
+### Monitoring Module (`modules-utils/monitoring/`)
+- Auto-configured via `MonitoringAutoConfiguration` (Spring Boot auto-config)
+- Business metrics use **Guava `@Subscribe`** on domain events — zero invasion of business code
+- `DomainEventProcessor` (BeanPostProcessor) auto-registers any bean with `@Subscribe` methods
+- One `*MetricsSubscriber` per domain: Inbound, Outbound, Task, Stock
+- All three servers (WES, Station, Gateway) expose `/actuator/prometheus`
+
+### Adding New Business Metrics
+1. Create a `@Component` class in `org.openwes.monitoring.metrics`
+2. Add `@Subscribe` methods for the domain events you want to track
+3. Use `MeterRegistry` to record counters/gauges/timers
+4. The subscriber is auto-registered with EventBus — no manual wiring needed
+
+### Frontend Monitoring App
+- Top-level app (`system_code='monitoring'`) with menu entries in `u_menu` table
+- Pages embed Grafana dashboards via iframe (`?kiosk` mode)
+- Grafana configured for anonymous Viewer access + iframe embedding
+
+### Monitoring Config Files
+All monitoring infrastructure config lives in `monitoring/` at the repo root:
+```
+monitoring/
+├── prometheus/          # Scrape targets + alert rules
+├── grafana/             # Dashboards + datasource provisioning
+├── loki/                # Log storage config
+├── promtail/            # Log collection config
+└── alertmanager/        # Alert routing + notification
+```
+
+### Monitoring Ports
+| Service | Port |
+|---------|------|
+| Prometheus | 9090 |
+| Grafana | 3000 |
+| Loki | 3100 |
+| AlertManager | 9093 |
+
 ## Build and Run
 
 ```bash
@@ -145,6 +192,10 @@ HOST_IP=$(hostname -I | awk '{print $1}') docker-compose up -d
 | WES Server | 9010 |
 | Station Server | 9040 |
 | Frontend | 80 |
+| Prometheus | 9090 |
+| Grafana | 3000 |
+| Loki | 3100 |
+| AlertManager | 9093 |
 
 ## Database Migrations
 
@@ -180,3 +231,7 @@ All schema and data changes **must** use Liquibase changelogs — never ad-hoc S
 | DB init scripts | `initdb.d/` |
 | Frontend entry | `client/src/index.tsx` |
 | Route definitions | `client/src/routes/path2Compoment.tsx` |
+| Monitoring module | `server/modules-utils/monitoring/` |
+| Monitoring infra config | `monitoring/` |
+| Monitoring design spec | `docs/superpowers/specs/2026-05-23-monitoring-alerting-framework-design.md` |
+| Domain event system | `server/modules-utils/domain-event/` |
