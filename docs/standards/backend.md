@@ -1,15 +1,32 @@
-Here's the updated file with the new section on Configuration:
-
 # Coding Standards and Best Practices
 
 These are a set of coding standards and best practices to be followed during development. They cover various aspects, including code design, database design, validation, and testing. The main goals are to promote consistency, maintainability, and best practices across the codebase.
+
+## Table of Contents
+
+- [Code Rules](#code-rules)
+  - [Transaction](#transaction)
+  - [Error Definition](#error-definition)
+  - [Utils Usage](#utils-usage)
+  - [Domain Entity](#domain-entity)
+  - [Domain Service](#domain-service)
+  - [Domain Aggregate](#domain-aggregate)
+  - [Domain Repository](#domain-repository)
+  - [Domain Events](#domain-events)
+  - [API Implementation](#api-implementation)
+  - [Server](#server)
+- [Database Rules](#database-rules)
+- [Validation Rules](#validation-rules)
+- [Plugin Rules](#plugin-rules)
+- [Unit Test Rules](#unit-test-rules)
+- [Logging and Configuration](#logging-and-configuration)
 
 ## Code Rules
 
 ### Transaction
 
 1. **Avoid Big Transactions, Use Asynchronous and Eventually Consistent Approach**: Big transactions can lead to performance issues and potential deadlocks. Instead, use an asynchronous and eventually consistent approach to handle complex operations.
-2. **Use @Transaction Annotation Appropriately**: We only use the `@Transaction` annotation on Aggregates and repositories. Any other places should not use this annotation.
+2. **Use @Transactional Annotation Appropriately**: We only use the `@Transactional` annotation on Aggregates and repositories. Any other places should not use this annotation.
 
 ### Error Definition
 
@@ -44,7 +61,9 @@ These are a set of coding standards and best practices to be followed during dev
 
 ### Domain Entity
 
-1. **Domain Entity Immutability**: Domain entities should not have setter methods. Instead, use methods that represent the entity's state transitions. For example:
+1. **Aggregate Root**: Aggregate root entities must extend `AggregatorRoot`. This base class provides domain event publishing and optimistic locking support.
+
+2. **Domain Entity Immutability**: Domain entities should not have setter methods. Instead, use methods that represent the entity's state transitions. For example:
    ```java
    // Instead of outboundPlanOrder.setStatus(xxx);
    outboundPlanOrder.complete();
@@ -55,13 +74,13 @@ These are a set of coding standards and best practices to be followed during dev
    }
    ```
 
-2. **Domain Entity Lifecycle**: Domain entities should have methods representing their full lifecycle. For example, the `OutboundPlanOrder` class should have methods like `initialize()` to set the initial status, `preAllocate()` to change the status to `ASSIGNED`, and so on. This approach makes the entity more "alive" and encapsulates the business logic within the entity.
+3. **Domain Entity Lifecycle**: Domain entities should have methods representing their full lifecycle. For example, the `OutboundPlanOrder` class should have methods like `initialize()` to set the initial status, `preAllocate()` to change the status to `ASSIGNED`, and so on. This approach makes the entity more "alive" and encapsulates the business logic within the entity.
 
    This practice promotes a better understanding of the entity's behavior and state transitions, making it easier to maintain and extend the codebase.
 
    Example:
    ```java
-   public class OutboundPlanOrder implements Serializable {
+   public class OutboundPlanOrder extends AggregatorRoot implements Serializable {
    
        public void initialize() {
            this.outboundPlanOrderStatus = OutboundPlanOrderStatusEnum.NEW;
@@ -75,7 +94,7 @@ These are a set of coding standards and best practices to be followed during dev
    
        public void cancel() {
            log.info("outbound plan order id: {}, orderNo: {} cancel", this.id, this.orderNo);
-           if (OutboundPlanOrderStatusEnum.cancellability(this.outboundPlanOrderStatus)) {
+           if (OutboundPlanOrderStatusEnum.isCancellable(this.outboundPlanOrderStatus)) {
                this.outboundPlanOrderStatus = OutboundPlanOrderStatusEnum.CANCELED;
                this.details.forEach(OutboundPlanOrderDetail::cancel);
            }
@@ -85,7 +104,9 @@ These are a set of coding standards and best practices to be followed during dev
    }
    ```
 
-3. **String Field Length**: String type field lengths must be less than 512 characters. If you need to store more than 512 characters, use a text type and split the data into another table.
+4. **String Field Length**: String type field lengths must be no more than 512 characters. If you need to store more than 512 characters, use a text type and split the data into another table.
+
+5. **Optimistic Locking**: Use `@Version` on a version field for optimistic locking and concurrency control.
 
 ### Domain Service
 1. **Domain Service Responsibilities**: Domain services should only contain calculation logic, and they must be stateless. For example, the `OutboundWaveService` contains a function `wavePickings` that takes a list of `OutboundPlanOrder` objects as input and returns the waved `OutboundPlanOrder` objects.
@@ -96,7 +117,7 @@ These are a set of coding standards and best practices to be followed during dev
    ```
 
 ### Domain Aggregate
-1. **Domain Aggregate Usage**: Domain aggregates will aggregate multiple domain entities. If we need to update multiple entities, we should build an aggregator and use the `@Transaction` annotation to ensure data consistency. Since we use the `@Transaction` annotation, we should pull queries out to improve speed.
+1. **Domain Aggregate Usage**: Domain aggregates will aggregate multiple domain entities. If we need to update multiple entities, we should build an aggregator and use the `@Transactional` annotation to ensure data consistency. Since we use the `@Transactional` annotation, we should pull queries out to improve speed.
 
 ### Domain Repository
 1. **Domain Repository Responsibilities**:  Domain repositories should only contain find or save functions. They should not contain any update functions. For example:
@@ -113,6 +134,44 @@ containerRepository.save(container);
 ```
 2. **Function Naming**: All query functions should be named as find or findAll, and save functions should be named as save or saveAll.
 
+### Domain Events
+
+1. **Publishing Events from Entities**: Aggregate root entities publish domain events via `addAsynchronousDomainEvents()`. Events are dispatched after the transaction commits.
+   ```java
+   public void complete() {
+       this.status = COMPLETE;
+       addAsynchronousDomainEvents(new OrderCompletedEvent(this.id));
+   }
+   ```
+
+2. **Event Subscribers**: For cross-cutting concerns (e.g., metrics, audit), use Guava `@Subscribe` methods on `@Component` beans. The `DomainEventProcessor` (a `BeanPostProcessor`) auto-registers any bean with `@Subscribe` methods to the EventBus — no manual wiring needed.
+
+### API Implementation
+
+1. **Standard Annotations**: API implementation classes must use the following annotation set:
+   ```java
+   @Primary
+   @Service
+   @Validated
+   @DubboService
+   @RequiredArgsConstructor
+   public class EntityApiImpl implements IEntityApi { }
+   ```
+
+2. **Class Naming Conventions**:
+
+   | Type | Pattern | Example |
+   |------|---------|---------|
+   | API interface | `I[Entity]Api` | `IInboundPlanOrderApi` |
+   | API impl | `[Entity]ApiImpl` | `InboundPlanOrderApiImpl` |
+   | Service | `[Entity]Service` / `[Entity]ServiceImpl` | `OutboundWaveService` |
+   | Repository | `[Entity]Repository` / `[Entity]RepositoryImpl` | `ContainerRepository` |
+   | DTO | `[Entity]DTO` | `ContainerDTO` |
+   | Transfer | `[Entity]Transfer` | `InboundPlanOrderTransfer` |
+   | Error enum | `[Module]ErrorDescEnum` | `InboundErrorDescEnum` |
+
+3. **Logging**: Use `@Slf4j` (Lombok) for logger declaration. All log messages must be written in English.
+
 ### Server
 1. **Server Module Responsibilities**: The server module cannot include business codes. It should only contain common configurations and the Spring Boot starter class.
 
@@ -125,7 +184,7 @@ containerRepository.save(container);
    - Remark: 500 characters
    - Enum: 20 characters
 
-2. **POJO Class Design**: POJO classes must be designed as standard POJO classes, meaning they should not contain any special types or special database-specific configurations. For example:
+2. **POJO Class Design**: POJO classes must be designed as standard POJO classes, meaning they should not contain any special types or special database-specific configurations. Use `@Comment` for column comments (comments may be in Chinese for domain terminology).
 
    Instead of:
    ```java
@@ -141,8 +200,6 @@ containerRepository.save(container);
    ```
 
    This approach separates the database-specific configurations from the POJO class, promoting better maintainability and portability of the code.
-
-3. **Version Control for Optimistic Locking**: Add the `@Version` annotation on the POJO classes to enable optimistic locking and concurrency control.
 
 ## Validation Rules
 
@@ -172,26 +229,6 @@ containerRepository.save(container);
    ```
 
    If your parameters are objects that need validation, add `@Validated(value = ValidationSequence.class)` instead of `@Validated`, and the object needs to implement the `IValidate` interface.
-
-## Unit Test Rules
-
-1. **Test Location**: All unit tests must be written within the respective module, not in the `xxx-server` module.
-
-2. **Test Coverage**: Create unit tests for the domain layer, including entities and services. You can refer to the outbound tests as an example.
-
-3. **Avoid Starting Spring Boot**: Unit tests should avoid running the Spring Boot application.
-
-## Log Rules
-
-1. **Log Language**: All log messages must be written in English.
-
-## Configuration
-
-1. **Configuration Classification**: Configurations are divided into two main categories: Environment Configuration and Business Configuration.
-2. **Environment Configuration**: Environment configurations must be configured in Nacos.
-3. **Business Configuration**: Business configurations must be configured in the database (e.g., MySQL).
-4. **Nacos Restrictions**: Nacos cannot be used to configure any business configurations.
-
 
 ## Plugin Rules
 
@@ -249,6 +286,24 @@ public List<ContainerTask> groupContainerTasks(List<CreateContainerTaskDTO> crea
            .forEach((key, values) -> containerTasks.addAll(generateTasks(values)));
    return containerTasks;
 }
-
-
 ```
+
+## Unit Test Rules
+
+1. **Test Location**: All unit tests must be written within the respective module, not in the `xxx-server` module.
+
+2. **Test Coverage**: Create unit tests for the domain layer, including entities and services. You can refer to the outbound tests as an example.
+
+3. **Avoid Starting Spring Boot**: Unit tests should avoid running the Spring Boot application.
+
+## Logging and Configuration
+
+### Logging
+1. **Logger Declaration**: Use `@Slf4j` (Lombok) for logger declaration. Do not manually create Logger instances.
+2. **Log Language**: All log messages must be written in English.
+
+### Configuration
+1. **Configuration Classification**: Configurations are divided into two main categories: Environment Configuration and Business Configuration.
+2. **Environment Configuration**: Environment configurations must be configured in Nacos.
+3. **Business Configuration**: Business configurations must be configured in the database (e.g., MySQL).
+4. **Nacos Restrictions**: Nacos cannot be used to configure any business configurations.
