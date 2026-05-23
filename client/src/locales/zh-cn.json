@@ -999,6 +999,7 @@
     "confirm.callContainer": "确认呼叫容器？",
     "common.loading": "加载中...",
 
+    "monitoring.app.title": "监控中心",
     "monitoring.overview.title": "总览",
     "monitoring.jvm.title": "JVM 监控",
     "monitoring.business.title": "业务指标",

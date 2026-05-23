@@ -286,6 +286,18 @@ monitoring/
 3. **New `monitoring/` directory**: All monitoring configuration files
 4. **`.github/workflows/deploy.yml`**: Add `monitoring/` directory to SCP deployment
 
+### Frontend Changes (Monitoring App)
+
+1. **New `client/src/pages/monitoring/`**: Monitoring app with Grafana iframe embedding
+   - `GrafanaDashboard.tsx` — Reusable iframe component (uses `?kiosk` mode for clean embedding)
+   - `overview.tsx`, `jvm.tsx`, `business.tsx`, `infrastructure.tsx` — Individual dashboard pages
+2. **`client/src/routes/path2Compoment.tsx`**: Add 4 monitoring routes (`/monitoring/*`)
+3. **`client/src/locales/`**: Add monitoring i18n keys (en-us, zh-cn)
+4. **Liquibase changeset `db.changelog-20260523.xml`**: Insert monitoring app menu entries into `u_menu`
+   - Top-level app: `system_code='monitoring'`, ID 1300000000
+   - 4 menu items: Overview, JVM, Business, Infrastructure
+5. **Grafana Docker config**: Enable `GF_SECURITY_ALLOW_EMBEDDING`, `GF_AUTH_ANONYMOUS_ENABLED`, `GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer`
+
 ### No Changes Required
 
 - Existing Logback configuration (Promtail reads log files directly)
