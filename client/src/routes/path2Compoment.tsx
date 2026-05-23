@@ -623,6 +623,44 @@ const menuRouter = [
         component: lazy(() => import("@/pages/plugin_platform/plugin_store"))
     },
 
+    // Monitoring
+    {
+        path: "/monitoring/overview",
+        name: (
+            <Translation>
+                {(t) => t("monitoring.overview.title")}
+            </Translation>
+        ),
+        component: lazy(() => import("@/pages/monitoring/overview"))
+    },
+    {
+        path: "/monitoring/jvm",
+        name: (
+            <Translation>
+                {(t) => t("monitoring.jvm.title")}
+            </Translation>
+        ),
+        component: lazy(() => import("@/pages/monitoring/jvm"))
+    },
+    {
+        path: "/monitoring/business",
+        name: (
+            <Translation>
+                {(t) => t("monitoring.business.title")}
+            </Translation>
+        ),
+        component: lazy(() => import("@/pages/monitoring/business"))
+    },
+    {
+        path: "/monitoring/infrastructure",
+        name: (
+            <Translation>
+                {(t) => t("monitoring.infrastructure.title")}
+            </Translation>
+        ),
+        component: lazy(() => import("@/pages/monitoring/infrastructure"))
+    },
+
 ]
 
 const router = menuRouter.map((item: RouterItem) => {

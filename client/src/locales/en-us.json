@@ -996,5 +996,10 @@
 
     "confirm.callContainer": "Are you sure to call container?",
 
-    "common.loading": "loading..."
+    "common.loading": "loading...",
+
+    "monitoring.overview.title": "Overview",
+    "monitoring.jvm.title": "JVM Monitoring",
+    "monitoring.business.title": "Business Metrics",
+    "monitoring.infrastructure.title": "Infrastructure"
 }
