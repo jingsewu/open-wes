@@ -175,8 +175,32 @@ jobs:
             printf 'HOST_IP=%s\nIMAGE_BASE=ghcr.io/%s\nIMAGE_TAG=%s\n' \
               "${HOST_IP}" "${GITHUB_REPO}" "${IMAGE_TAG}" > .env
 
-            # Pull only the 4 app images — mysql/redis/nacos are stable and
-            # already cached on the server after the first deployment.
+            # Pull monitoring images from Docker Hub (slow on mainland China servers).
+            # Run with retry and do NOT fail the deployment if pull times out —
+            # the server may already have these pinned-version images cached.
+            pull_with_retry() {
+              local image="$1"
+              for i in 1 2 3; do
+                sudo docker pull "$image" && return 0
+                echo "Pull attempt $i failed for $image, retrying..."
+                sleep 10
+              done
+              echo "WARNING: could not pull $image — will use cached image if available"
+              return 0
+            }
+            pull_with_retry prom/prometheus:v2.52.0
+            pull_with_retry grafana/grafana:11.1.0
+            pull_with_retry grafana/loki:3.1.0
+            pull_with_retry grafana/promtail:3.1.0
+            pull_with_retry prom/alertmanager:v0.27.0
+            pull_with_retry prom/node-exporter:v1.8.1
+            pull_with_retry prom/mysqld-exporter:v0.15.1
+            pull_with_retry oliver006/redis_exporter:v1.61.0
+            pull_with_retry danielqsj/kafka-exporter:v1.7.0
+
+            # Pull the 4 app images from GHCR (fast — same region via CDN).
+            # mysql/redis/nacos are stable and already cached on the server
+            # after the first deployment.
             # Use 'docker compose' (v2) — docker-compose (v1) is not installed.
             sudo docker compose -f docker-compose.prod.yml pull frontend gateway-server wes-server station-server
             sudo docker compose -f docker-compose.prod.yml up -d --remove-orphans
