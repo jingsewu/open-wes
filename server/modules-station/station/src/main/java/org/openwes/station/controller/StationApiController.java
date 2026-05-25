@@ -14,9 +14,9 @@ import org.openwes.station.application.business.handler.event.outbound.ReportAbn
 import org.openwes.station.application.business.handler.event.outbound.SplitTasksEvent;
 import org.openwes.station.application.business.handler.event.outbound.TapPutWallSlotEvent;
 import org.openwes.station.application.executor.HandlerExecutor;
-import org.openwes.station.controller.view.ViewHelper;
 import org.openwes.station.domain.entity.WorkStationCache;
 import org.openwes.station.domain.repository.WorkStationCacheRepository;
+import org.openwes.station.domain.service.WorkStationService;
 import org.openwes.station.infrastructure.filters.HttpStationContext;
 import org.openwes.wes.api.ems.proxy.dto.ContainerArrivedEvent;
 import org.springframework.validation.annotation.Validated;
@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.*;
 public class StationApiController {
 
     private final HandlerExecutor handlerExecutor;
-    private final ViewHelper viewHelper;
+    private final WorkStationService workStationService;
     private final WorkStationCacheRepository workStationCacheRepository;
 
     @PutMapping
@@ -59,12 +59,12 @@ public class StationApiController {
     }
 
     @GetMapping
-    public Object getWorkStationVO() {
+    public WorkStationCache getView() {
         Long workStationId = HttpStationContext.getWorkStationId();
         if (workStationId == null) {
             throw WmsException.throwWmsException(StationErrorDescEnum.STATION_ID_IS_NOT_CONFIGURED);
         }
-        return viewHelper.getWorkStationVO(workStationId);
+        return workStationService.getOrThrow(workStationId);
     }
 
     @DeleteMapping

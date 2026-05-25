@@ -5,7 +5,7 @@ import org.openwes.station.application.business.handler.IBusinessHandler;
 import org.openwes.station.domain.entity.WorkStationCache;
 import org.openwes.station.domain.repository.WorkStationCacheRepository;
 import org.openwes.station.domain.service.WorkStationService;
-import org.openwes.station.api.vo.WorkStationVO;
+import org.openwes.station.api.constants.ChooseAreaEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +18,7 @@ public class ChooseAreaHandler implements IBusinessHandler<String> {
 
     @Override
     public void execute(String body, Long workStationId) {
-        WorkStationVO.ChooseAreaEnum chooseArea = WorkStationVO.ChooseAreaEnum.valueOf(body);
+        ChooseAreaEnum chooseArea = ChooseAreaEnum.valueOf(body);
 
         WorkStationCache workStation = workStationService.getOrThrow(workStationId);
         workStation.chooseArea(chooseArea);

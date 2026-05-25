@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.openwes.station.api.constants.ApiCodeEnum;
 import org.openwes.station.api.model.*;
-import org.openwes.station.api.vo.WorkStationVO;
+import org.openwes.station.api.constants.ChooseAreaEnum;
 import org.openwes.station.application.business.handler.event.OnlineEvent;
 import org.openwes.wes.api.basic.constants.WorkStationModeEnum;
 import org.openwes.wes.api.basic.constants.WorkStationStatusEnum;
@@ -61,7 +61,7 @@ public class WorkStationCache {
     protected Toolbar toolbar;
 
     protected WorkStationConfigDTO workStationConfig;
-    protected WorkStationVO.ChooseAreaEnum chooseArea;
+    protected ChooseAreaEnum chooseArea;
     protected List<Tip> tips;
 
     protected ApiCodeEnum eventCode;
@@ -137,7 +137,7 @@ public class WorkStationCache {
         return workStationConfig == null ? new WorkStationConfigDTO() : workStationConfig;
     }
 
-    public void chooseArea(WorkStationVO.ChooseAreaEnum chooseArea) {
+    public void chooseArea(ChooseAreaEnum chooseArea) {
         log.info("work station: {} code: {} choose area: {}", this.id, this.stationCode, chooseArea);
         this.chooseArea = chooseArea;
     }

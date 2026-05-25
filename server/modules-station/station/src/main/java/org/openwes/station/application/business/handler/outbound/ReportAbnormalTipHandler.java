@@ -7,7 +7,7 @@ import org.openwes.station.api.constants.ApiCodeEnum;
 import org.openwes.station.api.model.ArrivedContainerCache;
 import org.openwes.station.api.model.SkuArea;
 import org.openwes.station.api.model.Tip;
-import org.openwes.station.api.vo.WorkStationVO;
+import org.openwes.station.api.constants.ChooseAreaEnum;
 import org.openwes.station.application.business.handler.IBusinessHandler;
 import org.openwes.station.application.business.model.ReportAbnormalTipData;
 import org.openwes.station.domain.entity.OutboundWorkStationCache;
@@ -102,7 +102,7 @@ public class ReportAbnormalTipHandler implements IBusinessHandler<Integer> {
         tip.setTipCode(String.valueOf(snowflake.nextId()));
 
         workStationCache.addTip(tip);
-        workStationCache.setChooseArea(WorkStationVO.ChooseAreaEnum.TIPS);
+        workStationCache.setChooseArea(ChooseAreaEnum.TIPS);
         workStationRepository.save(workStationCache);
     }
 
