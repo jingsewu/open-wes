@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.openwes.station.api.model.Tip;
-import org.openwes.station.api.vo.WorkStationVO;
+import org.openwes.station.api.constants.ChooseAreaEnum;
 import org.openwes.station.application.business.handler.common.OperationTaskRefreshHandler;
 import org.openwes.station.api.model.ArrivedContainerCache;
 import org.openwes.station.domain.entity.OutboundWorkStationCache;
@@ -85,7 +85,7 @@ public class OutboundOperationTaskRefreshHandlerExtension
         tip.setData(containerCode);
 
         workStationCache.addTip(tip);
-        workStationCache.setChooseArea(WorkStationVO.ChooseAreaEnum.TIPS);
+        workStationCache.setChooseArea(ChooseAreaEnum.TIPS);
         workStationRepository.save(workStationCache);
     }
 

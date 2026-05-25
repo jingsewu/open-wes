@@ -7,7 +7,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.openwes.station.api.constants.ProcessStatusEnum;
 import org.openwes.station.api.model.ArrivedContainerCache;
 import org.openwes.station.api.model.SkuArea;
-import org.openwes.station.api.vo.WorkStationVO;
+import org.openwes.station.api.constants.ChooseAreaEnum;
 import org.openwes.station.infrastructure.remote.StocktakeService;
 import org.openwes.wes.api.task.constants.OperationTaskStatusEnum;
 import org.openwes.wes.api.task.dto.OperationTaskVO;
@@ -90,9 +90,9 @@ public class StocktakeWorkStationCache extends WorkStationCache {
         boolean hasContainers = getWorkLocationArea() != null && getWorkLocationArea().hasContainers();
 
         if (hasTasks && hasContainers) {
-            chooseArea(WorkStationVO.ChooseAreaEnum.SKU_AREA);
+            chooseArea(ChooseAreaEnum.SKU_AREA);
         } else if (hasContainers) {
-            chooseArea(WorkStationVO.ChooseAreaEnum.CONTAINER_AREA);
+            chooseArea(ChooseAreaEnum.CONTAINER_AREA);
         }
     }
 }

@@ -8,7 +8,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.openwes.station.api.model.ArrivedContainerCache;
 import org.openwes.station.api.model.Tip;
-import org.openwes.station.api.vo.WorkStationVO;
+import org.openwes.station.api.constants.ChooseAreaEnum;
 import org.openwes.station.infrastructure.remote.TaskService;
 import org.openwes.wes.api.task.constants.OperationTaskStatusEnum;
 import org.openwes.wes.api.task.constants.OperationTaskTypeEnum;
@@ -143,13 +143,13 @@ public class OutboundWorkStationCache extends WorkStationCache {
         boolean hasProcessingTasks = getSkuArea() != null && getSkuArea().hasProcessingTasks();
 
         if (hasProcessingTasks) {
-            chooseArea(WorkStationVO.ChooseAreaEnum.PUT_WALL_AREA);
+            chooseArea(ChooseAreaEnum.PUT_WALL_AREA);
         } else if (hasTasks && hasContainers) {
-            chooseArea(WorkStationVO.ChooseAreaEnum.SKU_AREA);
+            chooseArea(ChooseAreaEnum.SKU_AREA);
         } else if (hasPutWall) {
-            chooseArea(WorkStationVO.ChooseAreaEnum.PUT_WALL_AREA);
+            chooseArea(ChooseAreaEnum.PUT_WALL_AREA);
         } else if (hasContainers) {
-            chooseArea(WorkStationVO.ChooseAreaEnum.CONTAINER_AREA);
+            chooseArea(ChooseAreaEnum.CONTAINER_AREA);
         }
     }
 
