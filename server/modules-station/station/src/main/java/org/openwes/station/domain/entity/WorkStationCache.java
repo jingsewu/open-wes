@@ -15,6 +15,8 @@ import org.openwes.wes.api.basic.constants.WorkStationModeEnum;
 import org.openwes.wes.api.basic.constants.WorkStationStatusEnum;
 import org.openwes.wes.api.basic.dto.WorkStationConfigDTO;
 import org.openwes.wes.api.basic.dto.WorkStationDTO;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.redis.core.RedisHash;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,12 +33,14 @@ import java.util.stream.Collectors;
         @JsonSubTypes.Type(value = InboundWorkStationCache.class, name = "inbound"),
         @JsonSubTypes.Type(value = StocktakeWorkStationCache.class, name = "stocktake")
 })
+@RedisHash("WorkStation")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Slf4j
 public class WorkStationCache {
 
+    @Id
     protected Long id;
 
     protected String warehouseCode;

@@ -10,43 +10,41 @@ import org.openwes.station.domain.entity.WorkStationCache;
 import org.openwes.station.domain.repository.WorkStationCacheRepository;
 import org.openwes.station.domain.service.WorkStationService;
 import org.openwes.station.infrastructure.remote.RemoteWorkStationService;
-import org.openwes.wes.api.basic.constants.PutWallSlotStatusEnum;
 import org.openwes.wes.api.basic.constants.WorkStationModeEnum;
-import org.openwes.wes.api.basic.dto.PutWallSlotDTO;
 import org.openwes.wes.api.basic.dto.WorkStationDTO;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class WorkStationServiceImpl<T extends WorkStationCache> implements WorkStationService<T> {
+public class WorkStationServiceImpl implements WorkStationService {
 
-    private final WorkStationCacheRepository<T> workStationCacheRepository;
+    private final WorkStationCacheRepository workStationCacheRepository;
     private final RemoteWorkStationService remoteWorkStationService;
 
     @Override
-    public T initWorkStation(Long workStationId) {
+    public WorkStationCache initWorkStation(Long workStationId) {
         WorkStationDTO workStationDTO = remoteWorkStationService.queryWorkStation(workStationId);
         return initWorkStation(workStationDTO);
     }
 
     @Override
-    public T getWorkStation(Long workStationId) {
+    public WorkStationCache getWorkStation(Long workStationId) {
         return workStationCacheRepository.findById(workStationId);
     }
 
     @Override
-    public T getOrThrow(Long workStationId) {
+    public WorkStationCache getOrThrow(Long workStationId) {
         return Optional.ofNullable(getWorkStation(workStationId))
                 .orElseThrow(() -> WmsException.throwWmsException(StationErrorDescEnum.STATION_NOT_EXISTS_OR_ALREADY_OFF_LINE));
     }
 
     @Override
-    public T initWorkStation(WorkStationDTO workStationDTO) {
+    public WorkStationCache initWorkStation(WorkStationDTO workStationDTO) {
         WorkStationCache workStationCache;
-        if (workStationDTO.getWorkStationMode() == WorkStationModeEnum.PICKING) {
+        if (workStationDTO.getWorkStationMode() == WorkStationModeEnum.PICKING
+                || workStationDTO.getWorkStationMode() == WorkStationModeEnum.SELECTION) {
             workStationCache = new OutboundWorkStationCache();
         } else if (WorkStationModeEnum.isPutAwayMode(workStationDTO.getWorkStationMode())) {
             workStationCache = new InboundWorkStationCache();
@@ -56,25 +54,12 @@ public class WorkStationServiceImpl<T extends WorkStationCache> implements WorkS
             workStationCache = new WorkStationCache();
         }
 
-        BeanUtils.copyProperties(workStationDTO, workStationCache);
-        workStationCache.setPutWallSlots(workStationDTO.getPutWalls().stream().flatMap(v -> v.getPutWallSlots().stream()).toList());
-        return (T) workStationCache;
+        workStationCache.setId(workStationDTO.getId());
+        workStationCache.setWarehouseCode(workStationDTO.getWarehouseCode());
+        workStationCache.setWarehouseAreaId(workStationDTO.getWarehouseAreaId());
+        workStationCache.setStationCode(workStationDTO.getStationCode());
+        workStationCache.setWorkStationMode(workStationDTO.getWorkStationMode());
+
+        return workStationCache;
     }
-
-    @Override
-    public void validatePicking(PutWallSlotDTO putWallSlot) {
-
-        if (putWallSlot.getPutWallSlotStatus() == PutWallSlotStatusEnum.IDLE) {
-            throw new IllegalStateException("put wall slot is idle, please waiting order dispatched");
-        }
-
-        if (putWallSlot.getPutWallSlotStatus() == PutWallSlotStatusEnum.WAITING_BINDING) {
-            throw new IllegalStateException("put wall slot wait binding, please bound first");
-        }
-
-        if (putWallSlot.getPutWallSlotStatus() == PutWallSlotStatusEnum.WAITING_SEAL) {
-            throw new IllegalStateException("put wall slot wait sealing, please seal first");
-        }
-    }
-
 }
