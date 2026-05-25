@@ -1002,5 +1002,6 @@
     "monitoring.overview.title": "Overview",
     "monitoring.jvm.title": "JVM Monitoring",
     "monitoring.business.title": "Business Metrics",
-    "monitoring.infrastructure.title": "Infrastructure"
+    "monitoring.infrastructure.title": "Infrastructure",
+    "monitoring.warehouse3d.title": "3D Warehouse View"
 }

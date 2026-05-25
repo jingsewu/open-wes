@@ -46,6 +46,8 @@ include 'modules-utils:domain-event:domain-event-api'
 include 'modules-utils:domain-event:domain-event-core'
 include 'modules-utils:monitoring'
 
+include 'modules-simulator:rcs-simulator'
+
 include 'server:station-server'
 include 'server:gateway-server'
 include 'server:wes-server'

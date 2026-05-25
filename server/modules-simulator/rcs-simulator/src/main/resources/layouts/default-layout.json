@@ -1,0 +1,39 @@
+{
+  "warehouse": {
+    "width": 50,
+    "height": 30,
+    "gridSize": 1.0
+  },
+  "shelves": [
+    { "id": "A01", "x": 8, "y": 2, "width": 2, "height": 5, "locationCodes": ["A01-01","A01-02","A01-03","A01-04","A01-05","A01-06","A01-07","A01-08","A01-09","A01-10"] },
+    { "id": "A02", "x": 12, "y": 2, "width": 2, "height": 5, "locationCodes": ["A02-01","A02-02","A02-03","A02-04","A02-05","A02-06","A02-07","A02-08","A02-09","A02-10"] },
+    { "id": "A03", "x": 16, "y": 2, "width": 2, "height": 5, "locationCodes": ["A03-01","A03-02","A03-03","A03-04","A03-05","A03-06","A03-07","A03-08","A03-09","A03-10"] },
+    { "id": "B01", "x": 8, "y": 18, "width": 2, "height": 5, "locationCodes": ["B01-01","B01-02","B01-03","B01-04","B01-05","B01-06","B01-07","B01-08","B01-09","B01-10"] },
+    { "id": "B02", "x": 12, "y": 18, "width": 2, "height": 5, "locationCodes": ["B02-01","B02-02","B02-03","B02-04","B02-05","B02-06","B02-07","B02-08","B02-09","B02-10"] },
+    { "id": "B03", "x": 16, "y": 18, "width": 2, "height": 5, "locationCodes": ["B03-01","B03-02","B03-03","B03-04","B03-05","B03-06","B03-07","B03-08","B03-09","B03-10"] },
+    { "id": "C01", "x": 24, "y": 2, "width": 2, "height": 5, "locationCodes": ["C01-01","C01-02","C01-03","C01-04","C01-05","C01-06","C01-07","C01-08","C01-09","C01-10"] },
+    { "id": "C02", "x": 28, "y": 2, "width": 2, "height": 5, "locationCodes": ["C02-01","C02-02","C02-03","C02-04","C02-05","C02-06","C02-07","C02-08","C02-09","C02-10"] },
+    { "id": "D01", "x": 24, "y": 18, "width": 2, "height": 5, "locationCodes": ["D01-01","D01-02","D01-03","D01-04","D01-05","D01-06","D01-07","D01-08","D01-09","D01-10"] },
+    { "id": "D02", "x": 28, "y": 18, "width": 2, "height": 5, "locationCodes": ["D02-01","D02-02","D02-03","D02-04","D02-05","D02-06","D02-07","D02-08","D02-09","D02-10"] }
+  ],
+  "workstations": [
+    { "id": "WS-01", "x": 2, "y": 10, "type": "PICKING", "locationCode": "WS-01" },
+    { "id": "WS-02", "x": 2, "y": 20, "type": "PICKING", "locationCode": "WS-02" },
+    { "id": "WS-03", "x": 38, "y": 10, "type": "RECEIVING", "locationCode": "WS-03" },
+    { "id": "WS-04", "x": 38, "y": 20, "type": "RECEIVING", "locationCode": "WS-04" }
+  ],
+  "chargingStations": [
+    { "id": "CS-01", "x": 45, "y": 2, "locationCode": "CS-01" },
+    { "id": "CS-02", "x": 45, "y": 28, "locationCode": "CS-02" }
+  ],
+  "robots": [
+    { "robotCode": "AGV-001", "robotType": "KIVA", "startX": 10, "startY": 12, "speed": 2.0 },
+    { "robotCode": "AGV-002", "robotType": "KIVA", "startX": 14, "startY": 12, "speed": 2.0 },
+    { "robotCode": "AGV-003", "robotType": "KIVA", "startX": 18, "startY": 12, "speed": 1.8 },
+    { "robotCode": "AGV-004", "robotType": "KIVA", "startX": 22, "startY": 12, "speed": 2.0 },
+    { "robotCode": "AGV-005", "robotType": "KIVA", "startX": 26, "startY": 12, "speed": 2.2 },
+    { "robotCode": "AGV-006", "robotType": "KIVA", "startX": 30, "startY": 12, "speed": 2.0 },
+    { "robotCode": "FLT-001", "robotType": "FORKLIFT", "startX": 34, "startY": 10, "speed": 1.5 },
+    { "robotCode": "FLT-002", "robotType": "FORKLIFT", "startX": 34, "startY": 20, "speed": 1.5 }
+  ]
+}

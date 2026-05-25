@@ -1,0 +1,29 @@
+server:
+  port: 8091
+
+spring:
+  application:
+    name: rcs-simulator
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+wes:
+  callback-url: ${WES_CALLBACK_URL:http://localhost:8090}
+  api:
+    container-arrive: /api/ems/container/arrive
+    container-leave: /api/ems/container/leave
+    task-status-update: /api/ems/container/task/status
+
+simulator:
+  tick-interval-ms: 200
+  default-robot-speed: 2.0
+  loading-delay-ms: 1500
+  max-robots: 20
+  failure-rate-percent: 0
+  layout-file: ${LAYOUT_FILE:classpath:layouts/default-layout.json}
+  cors:
+    allowed-origins: ${CORS_ORIGINS:http://localhost:8092,http://3d-viewer:8092}

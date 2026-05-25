@@ -660,6 +660,15 @@ const menuRouter = [
         ),
         component: lazy(() => import("@/pages/monitoring/infrastructure"))
     },
+    {
+        path: "/monitoring/warehouse3d",
+        name: (
+            <Translation>
+                {(t) => t("monitoring.warehouse3d.title")}
+            </Translation>
+        ),
+        component: lazy(() => import("@/pages/monitoring/warehouse3d"))
+    },
 
 ]
 

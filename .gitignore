@@ -42,3 +42,7 @@ client/build/README.md
 
 # Git worktrees
 .worktrees/
+
+# 3D Viewer build artifacts
+3d-viewer/node_modules/
+3d-viewer/dist/

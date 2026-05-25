@@ -27,5 +27,6 @@
     <include file="/db/changelog/db.changelog-20260517.xml"/>
     <include file="/db/changelog/db.changelog-20260521.xml"/>
     <include file="/db/changelog/db.changelog-20260523.xml"/>
+    <include file="/db/changelog/db.changelog-20260523-simulator.xml"/>
 
 </databaseChangeLog>

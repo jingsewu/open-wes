@@ -1003,6 +1003,7 @@
     "monitoring.overview.title": "总览",
     "monitoring.jvm.title": "JVM 监控",
     "monitoring.business.title": "业务指标",
-    "monitoring.infrastructure.title": "基础设施"
+    "monitoring.infrastructure.title": "基础设施",
+    "monitoring.warehouse3d.title": "3D仓库视图"
 
 }

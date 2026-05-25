@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
+
+    <!-- Menu entry for 3D Warehouse View under Monitoring app -->
+    <changeSet id="20260523-001" author="simulator">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="u_menu"/>
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM u_menu WHERE menu_code = 'monitoring_warehouse3d'
+            </sqlCheck>
+        </preConditions>
+        <comment>Add 3D Warehouse View menu entry under Monitoring app</comment>
+        <sql>
+            INSERT INTO u_menu (system_code, menu_code, menu_name, menu_path, parent_code, order_num, menu_type, version, create_time, update_time)
+            SELECT 'monitoring', 'monitoring_warehouse3d', '3D Warehouse View', '/monitoring/warehouse3d',
+                   menu_code, 50, 'C', 0, NOW(), NOW()
+            FROM u_menu WHERE system_code = 'monitoring' AND parent_code IS NULL LIMIT 1;
+        </sql>
+    </changeSet>
+
+    <!-- Callback API seed data for RCS Simulator -->
+    <changeSet id="20260523-002" author="simulator">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="u_api"/>
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM u_api WHERE code = 'CONTAINER_TASK_CREATE'
+            </sqlCheck>
+        </preConditions>
+        <comment>Seed RCS Simulator callback API configurations for demo</comment>
+        <sql>
+            INSERT INTO u_api (code, name, api_type, url, method, `format`, enabled, sync_callback, version, create_time, update_time)
+            VALUES
+                ('CONTAINER_TASK_CREATE', 'RCS Simulator - Create Task', 'CALLBACK', 'http://rcs-simulator:8091/api/tasks/create', 'POST', 'application/json', true, false, 0, NOW(), NOW()),
+                ('CONTAINER_TASK_CANCEL', 'RCS Simulator - Cancel Task', 'CALLBACK', 'http://rcs-simulator:8091/api/tasks/cancel', 'POST', 'application/json', true, false, 0, NOW(), NOW()),
+                ('CONTAINER_TASK_IMPROVE_PRIORITY', 'RCS Simulator - Improve Priority', 'CALLBACK', 'http://rcs-simulator:8091/api/tasks/improve-priority', 'POST', 'application/json', true, false, 0, NOW(), NOW()),
+                ('CONTAINER_TASK_RELEASE', 'RCS Simulator - Release Task', 'CALLBACK', 'http://rcs-simulator:8091/api/tasks/release', 'POST', 'application/json', true, false, 0, NOW(), NOW()),
+                ('CONTAINER_LEAVE', 'RCS Simulator - Container Leave', 'CALLBACK', 'http://rcs-simulator:8091/api/tasks/container-leave', 'POST', 'application/json', true, false, 0, NOW(), NOW()),
+                ('CALL_ROBOT', 'RCS Simulator - Call Robot', 'CALLBACK', 'http://rcs-simulator:8091/api/tasks/call-robot', 'POST', 'application/json', true, false, 0, NOW(), NOW());
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

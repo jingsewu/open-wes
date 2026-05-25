@@ -277,6 +277,45 @@ services:
     networks:
       - my-network
 
+  # === Demo Services (start with: docker compose --profile demo up -d) ===
+
+  rcs-simulator:
+    build:
+      context: ./server
+      dockerfile: modules-simulator/rcs-simulator/Dockerfile
+    container_name: rcs-simulator
+    ports:
+      - "8091:8091"
+    environment:
+      - WES_CALLBACK_URL=http://gateway-server:8090
+      - LAYOUT_FILE=classpath:layouts/default-layout.json
+      - CORS_ORIGINS=http://localhost:8092,http://3d-viewer:80
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8091/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    depends_on:
+      - gateway-server
+    networks:
+      - my-network
+    profiles:
+      - demo
+
+  3d-viewer:
+    build:
+      context: ./3d-viewer
+    container_name: 3d-viewer
+    ports:
+      - "8092:80"
+    depends_on:
+      rcs-simulator:
+        condition: service_healthy
+    networks:
+      - my-network
+    profiles:
+      - demo
+
 volumes:
   wes-logs:
   station-logs:
