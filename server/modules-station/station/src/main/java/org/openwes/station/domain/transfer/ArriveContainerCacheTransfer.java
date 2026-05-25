@@ -1,7 +1,7 @@
 package org.openwes.station.domain.transfer;
 
 import org.openwes.station.api.dto.ArrivedContainerCacheDTO;
-import org.openwes.station.domain.entity.ArrivedContainerCache;
+import org.openwes.station.api.model.ArrivedContainerCache;
 import org.openwes.wes.api.ems.proxy.dto.ContainerArrivedEvent;
 import org.mapstruct.Mapper;
 import org.mapstruct.NullValuePropertyMappingStrategy;

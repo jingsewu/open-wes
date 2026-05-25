@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.openwes.station.api.constants.ApiCodeEnum;
 import org.openwes.station.api.vo.WorkStationVO;
-import org.openwes.station.domain.entity.ArrivedContainerCache;
+import org.openwes.station.api.model.ArrivedContainerCache;
 import org.openwes.wes.api.basic.constants.WorkStationModeEnum;
 import org.openwes.wes.api.basic.dto.PutWallSlotDTO;
 import org.openwes.wes.api.basic.dto.WorkStationConfigDTO;

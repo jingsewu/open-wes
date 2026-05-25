@@ -3,7 +3,7 @@ package org.openwes.station.infrastructure.remote;
 import org.openwes.api.platform.api.ICallbackApi;
 import org.openwes.api.platform.api.constants.CallbackApiTypeEnum;
 import org.openwes.api.platform.api.dto.callback.CallbackMessage;
-import org.openwes.station.domain.entity.ArrivedContainerCache;
+import org.openwes.station.api.model.ArrivedContainerCache;
 import org.openwes.wes.api.ems.proxy.IContainerOperatorApi;
 import org.openwes.wes.api.ems.proxy.constants.ContainerOperationTypeEnum;
 import org.openwes.wes.api.ems.proxy.dto.ContainerArrivedEvent;

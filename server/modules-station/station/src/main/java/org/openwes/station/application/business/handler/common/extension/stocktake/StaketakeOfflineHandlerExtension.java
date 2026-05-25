@@ -2,7 +2,7 @@ package org.openwes.station.application.business.handler.common.extension.stockt
 
 import com.google.common.collect.Lists;
 import org.openwes.station.application.business.handler.common.OfflineHandler;
-import org.openwes.station.domain.entity.ArrivedContainerCache;
+import org.openwes.station.api.model.ArrivedContainerCache;
 import org.openwes.station.domain.entity.StocktakeWorkStationCache;
 import org.openwes.station.infrastructure.remote.EquipmentService;
 import org.openwes.station.infrastructure.remote.StocktakeService;
