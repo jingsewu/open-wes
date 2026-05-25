@@ -1,18 +1,15 @@
 package org.openwes.station.domain.service;
 
 import org.openwes.station.domain.entity.WorkStationCache;
-import org.openwes.wes.api.basic.dto.PutWallSlotDTO;
 import org.openwes.wes.api.basic.dto.WorkStationDTO;
 
-public interface WorkStationService<T extends WorkStationCache> {
+public interface WorkStationService {
 
-    T initWorkStation(Long workStationId);
+    WorkStationCache initWorkStation(Long workStationId);
 
-    T getWorkStation(Long workStationId);
+    WorkStationCache initWorkStation(WorkStationDTO workStationDTO);
 
-    T getOrThrow(Long workStationId);
+    WorkStationCache getWorkStation(Long workStationId);
 
-    T initWorkStation(WorkStationDTO workStationDTO);
-
-    void validatePicking(PutWallSlotDTO putWallSlot);
+    WorkStationCache getOrThrow(Long workStationId);
 }
