@@ -19,14 +19,14 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UnbindHandler implements IBusinessHandler<UnbindEvent> {
 
-    private final WorkStationService<OutboundWorkStationCache> workStationService;
+    private final WorkStationService workStationService;
     private final TaskService taskService;
     private final RemoteWorkStationService remoteWorkStationService;
     private final IPtlApi ptlApi;
 
     @Override
     public void execute(UnbindEvent body, Long workStationId) {
-        OutboundWorkStationCache workStationCache = workStationService.getOrThrow(workStationId);
+        OutboundWorkStationCache workStationCache = (OutboundWorkStationCache) workStationService.getOrThrow(workStationId);
 
         body.getPutWallSlotCodes().forEach(slotCode -> {
 
@@ -39,7 +39,7 @@ public class UnbindHandler implements IBusinessHandler<UnbindEvent> {
                     .setWorkStationId(workStationId)
                     .setPutWallSlotCode(slotCode));
 
-            workStationCache.getPutWallSlot(slotCode).ifPresent(v -> ptlApi.reminderBind(workStationId, v.getPtlTag()));
+            workStationCache.getPutWallArea().getSlot(slotCode).ifPresent(v -> ptlApi.reminderBind(workStationId, v.getPtlTag()));
         });
     }
 

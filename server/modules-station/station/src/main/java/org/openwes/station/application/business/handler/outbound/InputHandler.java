@@ -27,8 +27,8 @@ import static org.openwes.station.api.constants.ApiCodeEnum.INPUT;
 @RequiredArgsConstructor
 public class InputHandler implements IBusinessHandler<String> {
 
-    private final WorkStationService<OutboundWorkStationCache> workStationService;
-    private final WorkStationCacheRepository<OutboundWorkStationCache> workStationRepository;
+    private final WorkStationService workStationService;
+    private final WorkStationCacheRepository workStationRepository;
     private final TaskService taskService;
     private final OutboundPtlHelper outboundPtlHelper;
     private final RemoteWorkStationService remoteWorkStationService;
@@ -40,12 +40,12 @@ public class InputHandler implements IBusinessHandler<String> {
             return;
         }
 
-        OutboundWorkStationCache workStationCache = workStationService.getOrThrow(workStationId);
+        OutboundWorkStationCache workStationCache = (OutboundWorkStationCache) workStationService.getOrThrow(workStationId);
         if (!WorkStationModeEnum.PICKING.equals(workStationCache.getWorkStationMode())) {
             return;
         }
 
-        if (workStationCache.getPutWallSlots().stream().anyMatch(v -> StringUtils.equals(v.getPutWallSlotCode(), input))) {
+        if (workStationCache.getPutWallArea().getSlot(input).isPresent()) {
             doInput(input, workStationId, workStationCache);
             return;
         }
@@ -54,19 +54,19 @@ public class InputHandler implements IBusinessHandler<String> {
     }
 
     private void doBindContainer(String input, Long workStationId, OutboundWorkStationCache workStationCache) {
-        if (StringUtils.isEmpty(workStationCache.getInputPutWallSlot())) {
+        if (StringUtils.isEmpty(workStationCache.getPutWallArea().getInputPutWallSlot())) {
             log.error("work station: {} input: {} is not empty and not put wall slot," +
                     " but prevision input is empty.", workStationId, input);
             throw WmsException.throwWmsException(OutboundErrorDescEnum.OUTBOUND_INCRRECT_PUT_WALL_SLOT_CODE, input);
         }
 
-        PutWallSlotDTO putWallSlot = remoteWorkStationService.queryPutWallSlot(workStationId, workStationCache.getInputPutWallSlot());
+        PutWallSlotDTO putWallSlot = remoteWorkStationService.queryPutWallSlot(workStationId, workStationCache.getPutWallArea().getInputPutWallSlot());
         taskService.bindContainer(new BindContainerDTO()
                 .setContainerCode(input)
                 .setPickingOrderId(putWallSlot.getPickingOrderId())
                 .setWarehouseCode(workStationCache.getWarehouseCode())
                 .setWorkStationId(workStationId)
-                .setPutWallSlotCode(workStationCache.getInputPutWallSlot()));
+                .setPutWallSlotCode(workStationCache.getPutWallArea().getInputPutWallSlot()));
 
         workStationCache.clearInput();
         workStationRepository.save(workStationCache);

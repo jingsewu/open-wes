@@ -9,7 +9,6 @@ import org.openwes.station.application.executor.HandlerExecutor;
 import org.openwes.station.domain.entity.WorkStationCache;
 import org.openwes.station.domain.repository.WorkStationCacheRepository;
 import org.openwes.station.domain.service.WorkStationService;
-import org.openwes.station.domain.transfer.WorkStationCacheTransfer;
 import org.openwes.wes.api.ems.proxy.dto.ContainerArrivedEvent;
 import lombok.RequiredArgsConstructor;
 import org.apache.dubbo.config.annotation.DubboService;
@@ -22,12 +21,12 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 @DubboService
 @RequiredArgsConstructor
-public class StationApiImpl<T extends WorkStationCacheDTO, S extends WorkStationCache> implements IStationApi<T> {
+@SuppressWarnings("unchecked")
+public class StationApiImpl implements IStationApi<WorkStationCacheDTO> {
 
     private final HandlerExecutor handlerExecutor;
-    private final WorkStationService<S> workStationService;
-    private final WorkStationCacheTransfer workStationCacheTransfer;
-    private final WorkStationCacheRepository<S> workStationCacheRepository;
+    private final WorkStationService workStationService;
+    private final WorkStationCacheRepository workStationCacheRepository;
 
     @Override
     public void containerArrive(ContainerArrivedEvent containerArrivedEvent) {
@@ -42,14 +41,33 @@ public class StationApiImpl<T extends WorkStationCacheDTO, S extends WorkStation
     }
 
     @Override
-    public T getWorkStationCache(Long workStationId) {
-        S workStation = workStationService.getWorkStation(workStationId);
-        return workStationCacheTransfer.toGenericDTO(workStation);
+    public WorkStationCacheDTO getWorkStationCache(Long workStationId) {
+        // TODO: Phase 7 will remove WorkStationCacheDTO; for now return a minimal DTO
+        WorkStationCache workStation = workStationService.getWorkStation(workStationId);
+        if (workStation == null) {
+            return null;
+        }
+        WorkStationCacheDTO dto = new WorkStationCacheDTO();
+        dto.setId(workStation.getId());
+        dto.setWarehouseCode(workStation.getWarehouseCode());
+        dto.setWarehouseAreaId(workStation.getWarehouseAreaId());
+        dto.setStationCode(workStation.getStationCode());
+        dto.setWorkStationMode(workStation.getWorkStationMode());
+        dto.setWorkStationConfig(workStation.getWorkStationConfig());
+        dto.setChooseArea(workStation.getChooseArea());
+        dto.setEventCode(workStation.getEventCode());
+        return dto;
     }
 
     @Override
-    public void saveWorkStationCache(T workStationCacheDTO) {
-        S workStation = workStationCacheTransfer.toGenericDO(workStationCacheDTO);
-        workStationCacheRepository.save(workStation);
+    public void saveWorkStationCache(WorkStationCacheDTO workStationCacheDTO) {
+        // TODO: Phase 7 will remove WorkStationCacheDTO; for now look up and save the domain entity
+        WorkStationCache workStation = workStationCacheRepository.findById(workStationCacheDTO.getId());
+        if (workStation != null) {
+            workStation.setWorkStationConfig(workStationCacheDTO.getWorkStationConfig());
+            workStation.setChooseArea(workStationCacheDTO.getChooseArea());
+            workStation.setEventCode(workStationCacheDTO.getEventCode());
+            workStationCacheRepository.save(workStation);
+        }
     }
 }

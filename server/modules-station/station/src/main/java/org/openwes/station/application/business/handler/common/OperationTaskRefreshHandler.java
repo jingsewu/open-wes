@@ -14,26 +14,28 @@ import org.openwes.station.domain.entity.WorkStationCache;
 import org.openwes.station.domain.service.WorkStationService;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class OperationTaskRefreshHandler<T extends WorkStationCache> implements IBusinessHandler<OperationTaskRefreshEvent> {
+public class OperationTaskRefreshHandler implements IBusinessHandler<OperationTaskRefreshEvent> {
 
-    private final WorkStationService<T> workStationService;
+    private final WorkStationService workStationService;
     private final ExtensionFactory extensionFactory;
 
     @Override
     public void execute(@Valid OperationTaskRefreshEvent event, Long workStationId) {
 
-        T workStation = workStationService.getOrThrow(workStationId);
-        if (CollectionUtils.isEmpty(workStation.getArrivedContainers())) {
+        WorkStationCache workStation = workStationService.getOrThrow(workStationId);
+        List<ArrivedContainerCache> allContainers = workStation.getWorkLocationArea().getAllContainers();
+        if (CollectionUtils.isEmpty(allContainers)) {
             log.info("work station: {} refresh container tasks but arrived container is empty", workStationId);
             return;
         }
 
-        Optional<ArrivedContainerCache> optional = workStation.getArrivedContainers().stream()
+        Optional<ArrivedContainerCache> optional = allContainers.stream()
                 .filter(v -> event.getContainerCode().equals(v.getContainerCode()) && event.getFace().equals(v.getFace()))
                 .findAny();
         if (optional.isEmpty()) {
@@ -42,7 +44,7 @@ public class OperationTaskRefreshHandler<T extends WorkStationCache> implements 
             return;
         }
 
-        Extension<T> extension = extensionFactory.getExtension(workStation.getWorkStationMode(), getApiCode());
+        Extension extension = extensionFactory.getExtension(workStation.getWorkStationMode(), getApiCode());
         if (extension != null) {
             extension.refresh(workStation);
         }
@@ -58,8 +60,8 @@ public class OperationTaskRefreshHandler<T extends WorkStationCache> implements 
         return OperationTaskRefreshEvent.class;
     }
 
-    public interface Extension<T extends WorkStationCache> extends IExtension {
-        void refresh(T workStationCache);
+    public interface Extension extends IExtension {
+        void refresh(WorkStationCache workStationCache);
 
         default ApiCodeEnum getApiCode() {
             return ApiCodeEnum.CONTAINER_REFRESH;

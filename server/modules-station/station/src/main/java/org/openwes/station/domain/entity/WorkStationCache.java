@@ -3,7 +3,6 @@ package org.openwes.station.domain.entity;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.google.common.collect.Lists;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +21,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * A unified cache model structured around UI areas. Subclasses retain mode-specific
  * behavior but add no state fields. The cache serializes directly to Redis and serves
@@ -36,7 +40,6 @@ import java.util.stream.Collectors;
 @RedisHash("WorkStation")
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 @Slf4j
 public class WorkStationCache {
 
@@ -67,7 +70,17 @@ public class WorkStationCache {
 
     // Inbound-mode fields (on base to avoid casting in common handlers)
     protected List<String> callContainers;
-    protected List<InboundWorkStationCache.ContainerTaskCache> containerTasks;
+    protected List<ContainerTaskCache> containerTasks;
+
+    @Getter
+    @Setter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ContainerTaskCache {
+        private String containerCode;
+        private String taskCode;
+    }
 
     public void online(WorkStationDTO dto, OnlineEvent event) {
         this.workStationMode = dto.getWorkStationMode();
@@ -75,8 +88,7 @@ public class WorkStationCache {
         this.hasOrder = event.isHasOrder();
         this.workStationConfig = dto.getWorkStationConfig();
         this.workLocationArea = buildWorkLocationArea(dto.getWorkLocations());
-        if (workStationMode == WorkStationModeEnum.PICKING
-                || workStationMode == WorkStationModeEnum.SELECTION) {
+        if (workStationMode == WorkStationModeEnum.PICKING) {
             this.putWallArea = buildPutWallArea(dto);
         }
         this.skuArea = new SkuArea();

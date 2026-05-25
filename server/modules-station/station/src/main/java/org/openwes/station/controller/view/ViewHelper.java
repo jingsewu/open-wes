@@ -21,33 +21,36 @@ import java.util.Objects;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class ViewHelper<T extends WorkStationCache> {
+public class ViewHelper {
 
-    private final List<IViewHandler<T>> iViewHandlers;
+    @SuppressWarnings("rawtypes")
+    private final List<IViewHandler> iViewHandlers;
     private final RemoteWorkStationService remoteWorkStationService;
-    private final WorkStationService<T> workStationService;
-    private final WorkStationCacheRepository<T> workStationCacheRepository;
+    private final WorkStationService workStationService;
+    private final WorkStationCacheRepository workStationCacheRepository;
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public WorkStationVO buildView(Long workStationId) {
         WorkStationDTO workStationDTO = remoteWorkStationService.queryWorkStation(workStationId);
         if (workStationDTO == null) {
             return null;
         }
-        T workStationCache = workStationService.getWorkStation(workStationId);
+        WorkStationCache workStationCache = workStationService.getWorkStation(workStationId);
         if (workStationCache == null) {
             log.warn("viewHelper buildView workStationCache is null");
             workStationCache = workStationService.initWorkStation(workStationDTO);
             workStationCacheRepository.save(workStationCache);
         }
-        ViewContext<T> viewContext = new ViewContext<>(workStationDTO, workStationCache);
-        List<IViewHandler<T>> viewHandlers = getViewHandlers(workStationDTO, workStationCache);
-        for (IViewHandler<T> viewHandler : viewHandlers) {
+        ViewContext viewContext = new ViewContext(workStationDTO, workStationCache);
+        List<IViewHandler> viewHandlers = getViewHandlers(workStationDTO, workStationCache);
+        for (IViewHandler viewHandler : viewHandlers) {
             viewHandler.buildView(viewContext);
         }
         return viewContext.getWorkStationVO();
     }
 
-    public List<IViewHandler<T>> getViewHandlers(WorkStationDTO workStationDTO, T workStationCache) {
+    @SuppressWarnings("rawtypes")
+    public List<IViewHandler> getViewHandlers(WorkStationDTO workStationDTO, WorkStationCache workStationCache) {
         if (workStationDTO.getWorkStationStatus() == WorkStationStatusEnum.OFFLINE || Objects.isNull(workStationCache)) {
             return iViewHandlers.stream()
                     .filter(v -> ViewHandlerTypeEnum.baseViewHandlerTypes().contains(v.getViewTypeEnum())).toList();

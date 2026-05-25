@@ -26,7 +26,7 @@ public class InboundBaseAreaHandler extends BaseAreaHandler<InboundWorkStationCa
 
         workStationVO.setCallContainers(workStationCache.getCallContainers());
 
-        if (ObjectUtils.isNotEmpty(workStationCache.getArrivedContainers())) {
+        if (workStationCache.getWorkLocationArea() != null && workStationCache.getWorkLocationArea().hasContainers()) {
             return;
         }
 

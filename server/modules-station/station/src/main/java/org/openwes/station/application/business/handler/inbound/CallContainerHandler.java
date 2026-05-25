@@ -19,12 +19,12 @@ import java.util.List;
 public class CallContainerHandler implements IBusinessHandler<CallContainerEvent> {
 
     private final ContainerTaskService containerTaskService;
-    private final WorkStationCacheRepository<InboundWorkStationCache> workStationCacheRepository;
+    private final WorkStationCacheRepository workStationCacheRepository;
 
     @Override
     public void execute(CallContainerEvent callContainerEvent, Long workStationId) {
 
-        InboundWorkStationCache workStationCache = workStationCacheRepository.findById(workStationId);
+        InboundWorkStationCache workStationCache = (InboundWorkStationCache) workStationCacheRepository.findById(workStationId);
         List<ContainerTaskDTO> containerTasks = containerTaskService.createContainerTasks(callContainerEvent.getContainerCodes(), workStationCache);
 
         workStationCache.saveCallContainers(callContainerEvent, containerTasks);

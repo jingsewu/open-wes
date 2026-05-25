@@ -6,35 +6,37 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.openwes.station.application.business.handler.common.OfflineHandler;
 import org.openwes.station.api.model.ArrivedContainerCache;
-import org.openwes.station.domain.entity.InboundWorkStationCache;
+import org.openwes.station.domain.entity.WorkStationCache;
 import org.openwes.station.infrastructure.remote.ContainerTaskService;
 import org.openwes.station.infrastructure.remote.EquipmentService;
 import org.openwes.wes.api.basic.constants.WorkStationModeEnum;
 import org.openwes.wes.api.ems.proxy.constants.ContainerOperationTypeEnum;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class InboundOfflineHandlerExtension implements OfflineHandler.Extension<InboundWorkStationCache> {
+public class InboundOfflineHandlerExtension implements OfflineHandler.Extension {
 
     private final EquipmentService equipmentService;
     private final ContainerTaskService containerTaskService;
 
     @Override
-    public void doBeforeOffline(InboundWorkStationCache workStationCache) {
+    public void doBeforeOffline(WorkStationCache workStationCache) {
 
-        List<ArrivedContainerCache> arrivedContainers = Optional.ofNullable(workStationCache.getArrivedContainers()).orElseGet(Lists::newArrayList);
+        List<ArrivedContainerCache> arrivedContainers = workStationCache.getWorkLocationArea() != null
+                ? workStationCache.getWorkLocationArea().getAllContainers()
+                : Collections.emptyList();
         if (CollectionUtils.isNotEmpty(arrivedContainers)) {
-            equipmentService.containerLeave(workStationCache.getArrivedContainers(), ContainerOperationTypeEnum.LEAVE);
+            equipmentService.containerLeave(arrivedContainers, ContainerOperationTypeEnum.LEAVE);
         }
 
         if (ObjectUtils.isNotEmpty(workStationCache.getContainerTasks())) {
             containerTaskService.cancel(workStationCache.getContainerTasks().stream()
-                    .filter(Objects::nonNull).map(InboundWorkStationCache.ContainerTaskCache::getTaskCode).toList());
+                    .filter(Objects::nonNull).map(WorkStationCache.ContainerTaskCache::getTaskCode).toList());
         }
     }
 

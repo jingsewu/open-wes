@@ -20,26 +20,27 @@ import static org.openwes.station.api.constants.ApiCodeEnum.EMPTY_CONTAINER_HAND
 
 @Service
 @RequiredArgsConstructor
-public class EmptyContainerHandler<T extends WorkStationCache> implements IBusinessHandler<EmptyContainerHandleEvent> {
+public class EmptyContainerHandler implements IBusinessHandler<EmptyContainerHandleEvent> {
 
     private final ContainerService containerService;
-    private final WorkStationService<T> workStationService;
+    private final WorkStationService workStationService;
     private final EquipmentService equipmentService;
-    private final WorkStationCacheRepository<T> workStationCacheRepository;
+    private final WorkStationCacheRepository workStationCacheRepository;
 
     @Override
     public void execute(EmptyContainerHandleEvent event, Long workStationId) {
 
-        T workStationCache = workStationService.getOrThrow(workStationId);
+        WorkStationCache workStationCache = workStationService.getOrThrow(workStationId);
 
         if (event.getContainerOperationType() == ContainerOperationTypeEnum.MOVE_OUT) {
             containerService.moveOutside(workStationCache.getWarehouseCode(), Sets.newHashSet(event.getContainerCode()));
         }
 
-        List<ArrivedContainerCache> arrivedContainers = workStationCache.getArrivedContainers().stream().filter(v -> v.getContainerCode().equals(event.getContainerCode())).toList();
-        equipmentService.containerLeave(arrivedContainers, ContainerOperationTypeEnum.MOVE_OUT);
+        List<ArrivedContainerCache> leavingContainers = workStationCache.getWorkLocationArea().getAllContainers()
+                .stream().filter(v -> v.getContainerCode().equals(event.getContainerCode())).toList();
+        equipmentService.containerLeave(leavingContainers, ContainerOperationTypeEnum.MOVE_OUT);
 
-        workStationCache.clearArrivedContainers(Sets.newHashSet(event.getContainerCode()));
+        workStationCache.getWorkLocationArea().removeContainer(event.getContainerCode());
         workStationCacheRepository.save(workStationCache);
     }
 

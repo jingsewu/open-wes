@@ -19,22 +19,27 @@ import java.util.List;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class ContainerLeaveHandler<T extends WorkStationCache> implements IBusinessHandler<String> {
+public class ContainerLeaveHandler implements IBusinessHandler<String> {
 
-    private final WorkStationCacheRepository<T> workStationCacheRepository;
+    private final WorkStationCacheRepository workStationCacheRepository;
     private final EquipmentService equipmentService;
     private final ExtensionFactory extensionFactory;
 
     @Override
     public void execute(String containerCode, Long workStationId) {
 
-        T workStationCache = workStationCacheRepository.findById(workStationId);
-        List<ArrivedContainerCache> arrivedContainers = workStationCache.clearArrivedContainers(Lists.newArrayList(containerCode));
+        WorkStationCache workStationCache = workStationCacheRepository.findById(workStationId);
+
+        // Collect containers matching the code before removing
+        List<ArrivedContainerCache> leavingContainers = workStationCache.getWorkLocationArea().getAllContainers()
+                .stream().filter(c -> c.getContainerCode().equals(containerCode)).toList();
+
+        workStationCache.getWorkLocationArea().removeContainer(containerCode);
         workStationCacheRepository.save(workStationCache);
 
-        equipmentService.containerLeave(arrivedContainers, ContainerOperationTypeEnum.LEAVE);
+        equipmentService.containerLeave(leavingContainers, ContainerOperationTypeEnum.LEAVE);
 
-        ContainerLeaveHandler.Extension<T> extension = extensionFactory.getExtension(workStationCache.getWorkStationMode(),
+        ContainerLeaveHandler.Extension extension = extensionFactory.getExtension(workStationCache.getWorkStationMode(),
                 getApiCode());
         if (extension != null) {
             extension.doAfterContainerLeave(workStationCache, containerCode);
@@ -52,8 +57,8 @@ public class ContainerLeaveHandler<T extends WorkStationCache> implements IBusin
         return String.class;
     }
 
-    public interface Extension<T extends WorkStationCache> extends IExtension {
-        void doAfterContainerLeave(T workStationCache, String containerCode);
+    public interface Extension extends IExtension {
+        void doAfterContainerLeave(WorkStationCache workStationCache, String containerCode);
 
         default ApiCodeEnum getApiCode() {
             return ApiCodeEnum.CONTAINER_LEAVE;

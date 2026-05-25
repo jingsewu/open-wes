@@ -33,8 +33,8 @@ import org.springframework.web.bind.annotation.*;
 public class StationApiController {
 
     private final HandlerExecutor handlerExecutor;
-    private final ViewHelper<? extends WorkStationCache> viewHelper;
-    private final WorkStationCacheRepository<? extends WorkStationCache> workStationCacheRepository;
+    private final ViewHelper viewHelper;
+    private final WorkStationCacheRepository workStationCacheRepository;
 
     @PutMapping
     public void execute(@RequestParam @Parameter(explode = Explode.TRUE) ApiCodeEnum apiCode,

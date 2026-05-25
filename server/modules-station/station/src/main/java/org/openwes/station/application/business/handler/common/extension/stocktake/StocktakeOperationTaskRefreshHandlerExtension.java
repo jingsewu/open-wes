@@ -6,6 +6,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.openwes.station.application.business.handler.common.OperationTaskRefreshHandler;
 import org.openwes.station.api.model.ArrivedContainerCache;
 import org.openwes.station.domain.entity.StocktakeWorkStationCache;
+import org.openwes.station.domain.entity.WorkStationCache;
 import org.openwes.station.domain.repository.WorkStationCacheRepository;
 import org.openwes.station.infrastructure.remote.ContainerService;
 import org.openwes.station.infrastructure.remote.EquipmentService;
@@ -20,22 +21,26 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class StocktakeOperationTaskRefreshHandlerExtension implements OperationTaskRefreshHandler.Extension<StocktakeWorkStationCache> {
+public class StocktakeOperationTaskRefreshHandlerExtension implements OperationTaskRefreshHandler.Extension {
 
     private final StocktakeService stocktakeService;
     private final EquipmentService equipmentService;
     private final ContainerService containerService;
 
     @Override
-    public void refresh(StocktakeWorkStationCache workStationCache) {
-        List<ArrivedContainerCache> arrivedContainers = workStationCache.getArrivedContainers();
+    public void refresh(WorkStationCache workStationCache) {
+        if (!(workStationCache instanceof StocktakeWorkStationCache stocktakeCache)) {
+            return;
+        }
+
+        List<ArrivedContainerCache> arrivedContainers = stocktakeCache.getWorkLocationArea().getAllContainers();
         if (ObjectUtils.isEmpty(arrivedContainers)) {
             return;
         }
 
-        Collection<ArrivedContainerCache> doneContainers = workStationCache.queryTasksAndReturnRemovedContainers(stocktakeService);
+        Collection<ArrivedContainerCache> doneContainers = stocktakeCache.queryTasksAndReturnRemovedContainers(stocktakeService);
         if (CollectionUtils.isNotEmpty(doneContainers)) {
-            containerService.unLockContainer(workStationCache.getWarehouseCode(),
+            containerService.unLockContainer(stocktakeCache.getWarehouseCode(),
                     doneContainers.stream().map(ArrivedContainerCache::getContainerCode).collect(Collectors.toSet()));
             equipmentService.containerLeave(doneContainers, ContainerOperationTypeEnum.LEAVE);
         }

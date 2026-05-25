@@ -27,7 +27,7 @@ public class BaseAreaHandler<T extends WorkStationCache> implements IViewHandler
         workStationVO.setWorkStationMode(workStationDTO.getWorkStationMode());
         workStationVO.setWorkStationId(workStationDTO.getId());
         workStationVO.setWarehouseAreaId(String.valueOf(workStationDTO.getWarehouseAreaId()));
-        workStationVO.setScanCode(workStationCache.getScannedBarcode());
+        workStationVO.setScanCode(workStationCache.getSkuArea() != null ? workStationCache.getSkuArea().getScanCode() : null);
         workStationVO.setHasOrder(workStationCache.isHasOrder());
 
         workStationVO.setSkuArea(new WorkStationVO.SkuArea());

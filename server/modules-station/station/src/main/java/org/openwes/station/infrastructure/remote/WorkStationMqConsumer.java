@@ -26,10 +26,10 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class WorkStationMqConsumer<T extends WorkStationCache> {
+public class WorkStationMqConsumer {
 
-    private final WorkStationService<T> workStationService;
-    private final WorkStationCacheRepository<T> workStationCacheRepository;
+    private final WorkStationService workStationService;
+    private final WorkStationCacheRepository workStationCacheRepository;
     private final PtlApiImpl ptlService;
     private final WebsocketMessageListenerUtils sseMessageListenerUtils;
     private final HandlerExecutor handlerExecutor;
@@ -40,7 +40,7 @@ public class WorkStationMqConsumer<T extends WorkStationCache> {
             return;
         }
 
-        T workStation = workStationService.getWorkStation(containerArrivedEvent.getWorkStationId());
+        WorkStationCache workStation = workStationService.getWorkStation(containerArrivedEvent.getWorkStationId());
         if (workStation == null) {
             return;
         }
@@ -55,7 +55,7 @@ public class WorkStationMqConsumer<T extends WorkStationCache> {
             return;
         }
 
-        T workStation = workStationService.getWorkStation(workStationConfigDTO.getWorkStationId());
+        WorkStationCache workStation = workStationService.getWorkStation(workStationConfigDTO.getWorkStationId());
         if (workStation == null) {
             return;
         }

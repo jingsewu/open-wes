@@ -44,11 +44,5 @@ public class InboundWorkStationCache extends WorkStationCache {
         }
     }
 
-    @Getter
-    @Setter
-    @Builder
-    public static class ContainerTaskCache {
-        private String containerCode;
-        private String taskCode;
-    }
+    // ContainerTaskCache is now in WorkStationCache (parent class)
 }

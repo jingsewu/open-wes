@@ -13,7 +13,6 @@ import org.openwes.station.infrastructure.remote.EquipmentService;
 import org.openwes.station.infrastructure.remote.TaskService;
 import org.openwes.wes.api.ems.proxy.constants.ContainerOperationTypeEnum;
 import org.openwes.wes.api.task.dto.OperationTaskDTO;
-import org.openwes.wes.api.task.dto.OperationTaskVO;
 import org.openwes.wes.api.task.dto.ReportAbnormalDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,22 +30,21 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ReportAbnormalHandler implements IBusinessHandler<ReportAbnormalEvent> {
 
-    private final WorkStationService<OutboundWorkStationCache> workStationService;
-    private final WorkStationCacheRepository<OutboundWorkStationCache> workStationRepository;
+    private final WorkStationService workStationService;
+    private final WorkStationCacheRepository workStationRepository;
     private final TaskService taskService;
     private final OutboundPtlHelper outboundPtlHelper;
     private final EquipmentService equipmentService;
 
     @Override
     public void execute(ReportAbnormalEvent handleTasksEvent, Long workStationId) {
-        OutboundWorkStationCache workStationCache = workStationService.getOrThrow(workStationId);
-        Preconditions.checkState(CollectionUtils.isNotEmpty(workStationCache.getOperateTasks()));
+        OutboundWorkStationCache workStationCache = (OutboundWorkStationCache) workStationService.getOrThrow(workStationId);
+        Preconditions.checkState(workStationCache.getSkuArea().hasTasks());
 
         Map<Long, ReportAbnormalEvent.ReportAbnormalTask> taskMap = handleTasksEvent.getReportAbnormalTasks()
                 .stream().collect(Collectors.toMap(ReportAbnormalEvent.ReportAbnormalTask::getTaskId, task -> task));
 
-        List<OperationTaskDTO> operateTasks = workStationCache.getOperateTasks().stream()
-                .map(OperationTaskVO::getOperationTaskDTO)
+        List<OperationTaskDTO> operateTasks = workStationCache.getSkuArea().getAllTasks().stream()
                 .filter(operationTaskDTO -> taskMap.containsKey(operationTaskDTO.getId()))
                 // calculate operated qty order by required qty descending
                 .sorted(Comparator.comparing(OperationTaskDTO::getOperatedQty)).toList();
