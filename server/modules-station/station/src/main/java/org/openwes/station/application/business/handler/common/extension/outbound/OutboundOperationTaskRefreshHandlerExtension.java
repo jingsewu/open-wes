@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.openwes.station.api.vo.WorkStationVO;
 import org.openwes.station.application.business.handler.common.OperationTaskRefreshHandler;
-import org.openwes.station.domain.entity.ArrivedContainerCache;
+import org.openwes.station.api.model.ArrivedContainerCache;
 import org.openwes.station.domain.entity.OutboundWorkStationCache;
 import org.openwes.station.domain.repository.WorkStationCacheRepository;
 import org.openwes.station.infrastructure.remote.ContainerService;

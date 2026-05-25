@@ -3,7 +3,7 @@ package org.openwes.station.application.business.handler.common.extension.empty.
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.openwes.station.application.business.handler.common.OperationTaskRefreshHandler;
-import org.openwes.station.domain.entity.ArrivedContainerCache;
+import org.openwes.station.api.model.ArrivedContainerCache;
 import org.openwes.station.domain.entity.WorkStationCache;
 import org.openwes.station.domain.repository.WorkStationCacheRepository;
 import org.openwes.station.infrastructure.remote.ContainerService;

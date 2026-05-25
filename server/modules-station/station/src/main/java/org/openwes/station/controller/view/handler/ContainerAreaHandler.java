@@ -10,7 +10,7 @@ import org.openwes.station.api.vo.WorkLocationExtend;
 import org.openwes.station.api.vo.WorkStationVO;
 import org.openwes.station.controller.view.context.ViewContext;
 import org.openwes.station.controller.view.context.ViewHandlerTypeEnum;
-import org.openwes.station.domain.entity.ArrivedContainerCache;
+import org.openwes.station.api.model.ArrivedContainerCache;
 import org.openwes.station.domain.entity.WorkStationCache;
 import org.openwes.station.domain.transfer.ArriveContainerCacheTransfer;
 import org.openwes.wes.api.basic.dto.WorkStationDTO;

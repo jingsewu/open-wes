@@ -3,7 +3,7 @@ package org.openwes.station.controller.view.handler.impl.outbound;
 import org.openwes.station.controller.view.context.ViewContext;
 import org.openwes.station.controller.view.context.ViewHandlerTypeEnum;
 import org.openwes.station.controller.view.handler.BaseAreaHandler;
-import org.openwes.station.domain.entity.ArrivedContainerCache;
+import org.openwes.station.api.model.ArrivedContainerCache;
 import org.openwes.station.domain.entity.OutboundWorkStationCache;
 import org.openwes.station.api.vo.WorkStationVO;
 import org.openwes.wes.api.basic.constants.PutWallSlotStatusEnum;

@@ -1,6 +1,6 @@
 package org.openwes.station.application.business.model;
 
-import org.openwes.station.domain.entity.ArrivedContainerCache;
+import org.openwes.station.api.model.ArrivedContainerCache;
 import org.openwes.wes.api.main.data.dto.SkuMainDataDTO;
 import org.openwes.wes.api.task.dto.OperationTaskDTO;
 import lombok.Data;

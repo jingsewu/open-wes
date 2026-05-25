@@ -9,7 +9,7 @@ import org.openwes.station.application.business.handler.IBusinessHandler;
 import org.openwes.station.application.business.handler.common.extension.ExtensionFactory;
 import org.openwes.station.application.business.handler.common.extension.IExtension;
 import org.openwes.station.application.business.handler.event.OperationTaskRefreshEvent;
-import org.openwes.station.domain.entity.ArrivedContainerCache;
+import org.openwes.station.api.model.ArrivedContainerCache;
 import org.openwes.station.domain.entity.WorkStationCache;
 import org.openwes.station.domain.service.WorkStationService;
 import org.springframework.stereotype.Service;

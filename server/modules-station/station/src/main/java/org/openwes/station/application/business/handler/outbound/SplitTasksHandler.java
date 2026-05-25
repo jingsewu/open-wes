@@ -5,7 +5,7 @@ import org.openwes.station.api.IPtlApi;
 import org.openwes.station.api.constants.ApiCodeEnum;
 import org.openwes.station.application.business.handler.IBusinessHandler;
 import org.openwes.station.application.business.handler.event.outbound.SplitTasksEvent;
-import org.openwes.station.domain.entity.ArrivedContainerCache;
+import org.openwes.station.api.model.ArrivedContainerCache;
 import org.openwes.station.domain.entity.OutboundWorkStationCache;
 import org.openwes.station.domain.repository.WorkStationCacheRepository;
 import org.openwes.station.domain.service.WorkStationService;
