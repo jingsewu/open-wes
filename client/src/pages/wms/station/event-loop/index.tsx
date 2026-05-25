@@ -10,11 +10,11 @@ import {
 import WebSocketManager from "./websocketManager"
 import { workStationStore } from "../state/WorkStationStore"
 
-type EventListener = (event: WorkStationView<any> | undefined) => void
+type EventListener = (event: WorkStationView | undefined) => void
 
 export default class WorkStationEventLoop {
     /** 当前需要执行的事件 */
-    private currentEvent: WorkStationView<any> | undefined
+    private currentEvent: WorkStationView | undefined
     /** 事件监听者 */
     private eventListener: EventListener | null = null
     /** 是否开启调试模式 */
@@ -121,7 +121,7 @@ export default class WorkStationEventLoop {
     }
 
     private readonly handleEventChange: (
-        event: WorkStationView<any> | undefined
+        event: WorkStationView | undefined
     ) => void = (event) => {
         // 更新当前事件
         this.currentEvent = event
@@ -217,7 +217,7 @@ export default class WorkStationEventLoop {
     }
 
     private readonly getMockEventData: () => Promise<
-        WorkStationView<any> | undefined
+        WorkStationView | undefined
     > = async () => {
         const topEvent = this.mockData
 

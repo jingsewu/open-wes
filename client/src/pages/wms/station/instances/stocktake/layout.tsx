@@ -16,7 +16,7 @@ import {
 } from "@/pages/wms/station/instances/receive/operations/defaultPage"
 
 interface StocktakeLayoutProps extends OperationProps<any, any> {
-    workStationEvent: WorkStationView<any>
+    workStationEvent: WorkStationView
 }
 
 const Layout = (props: StocktakeLayoutProps) => {

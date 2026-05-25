@@ -9,7 +9,7 @@ import { WorkStationStatus, ChooseArea } from '../event-loop/types'
  */
 export class WorkStationStore {
   // 核心状态
-  @observable workStationEvent: WorkStationView<any> | undefined = undefined
+  @observable workStationEvent: WorkStationView | undefined = undefined
   @observable workStationStatus: WorkStationStatus = WorkStationStatus.OFFLINE
   
   // 操作状态
@@ -24,7 +24,7 @@ export class WorkStationStore {
 
 
 
-  @action setWorkStationEvent(event: WorkStationView<any> | undefined) {
+  @action setWorkStationEvent(event: WorkStationView | undefined) {
     if (this.workStationEvent === event) {
       return
     }
@@ -45,7 +45,7 @@ export class WorkStationStore {
     this.operationsMap.set(type, operation)
   }
 
-  @action updateWorkStationState(updates: Partial<WorkStationView<any>>) {
+  @action updateWorkStationState(updates: Partial<WorkStationView>) {
     runInAction(() => {
       if (this.workStationEvent) {
         Object.assign(this.workStationEvent, updates)
@@ -53,8 +53,8 @@ export class WorkStationStore {
         if (updates.workStationStatus !== undefined) {
           this.workStationStatus = updates.workStationStatus
         }
-        if (updates.scanCode !== undefined) {
-          this.scanCode = updates.scanCode || null
+        if (updates.skuArea?.scanCode !== undefined) {
+          this.scanCode = updates.skuArea.scanCode || null
         }
         if (updates.callContainerCount !== undefined) {
           this.callContainerCount = updates.callContainerCount || 0
@@ -90,9 +90,9 @@ export class WorkStationStore {
   }
 
 
-  private batchUpdateStates(event: WorkStationView<any>): void {
+  private batchUpdateStates(event: WorkStationView): void {
     this.workStationStatus = event.workStationStatus
-    this.scanCode = event.scanCode || null
+    this.scanCode = event.skuArea?.scanCode || null
     this.callContainerCount = event.callContainerCount || 0
     this.stationProcessingStatus = event.stationProcessingStatus
   }
