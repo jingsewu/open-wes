@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.openwes.station.api.constants.ProcessStatusEnum;
+import org.openwes.station.api.model.ArrivedContainerCache;
 import org.openwes.station.infrastructure.remote.StocktakeService;
 import org.openwes.wes.api.task.constants.OperationTaskStatusEnum;
 import org.openwes.wes.api.task.dto.OperationTaskVO;
