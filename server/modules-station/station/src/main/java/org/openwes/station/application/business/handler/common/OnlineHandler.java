@@ -9,7 +9,7 @@ import org.openwes.station.domain.entity.WorkStationCache;
 import org.openwes.station.domain.repository.WorkStationCacheRepository;
 import org.openwes.station.domain.service.WorkStationService;
 import org.openwes.station.infrastructure.remote.RemoteWorkStationService;
-import org.openwes.wes.api.basic.constants.WorkStationModeEnum;
+import org.openwes.wes.api.basic.dto.WorkStationDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,21 +17,23 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class OnlineHandler<T extends WorkStationCache> implements IBusinessHandler<OnlineEvent> {
+public class OnlineHandler implements IBusinessHandler<OnlineEvent> {
 
     private final RemoteWorkStationService remoteWorkStationService;
-    private final WorkStationService<T> workStationService;
-    private final WorkStationCacheRepository<T> workStationRepository;
+    private final WorkStationService workStationService;
+    private final WorkStationCacheRepository workStationRepository;
 
     @Override
     public void execute(OnlineEvent onlineEvent, Long workStationId) {
 
         remoteWorkStationService.online(workStationId, onlineEvent.getWorkStationMode());
 
-        T workStation = Optional.ofNullable(workStationService.initWorkStation(workStationId))
+        WorkStationDTO workStationDTO = remoteWorkStationService.queryWorkStation(workStationId);
+
+        WorkStationCache workStation = Optional.ofNullable(workStationService.initWorkStation(workStationDTO))
                 .orElseThrow(() -> WmsException.throwWmsException(StationErrorDescEnum.STATION_ONLINE_OPERATION_TYPE_CAN_NOT_BE_NULL));
 
-        workStation.online(onlineEvent.getWorkStationMode(), onlineEvent);
+        workStation.online(workStationDTO, onlineEvent);
 
         workStationRepository.save(workStation);
     }

@@ -43,8 +43,7 @@ public class WorkStationServiceImpl implements WorkStationService {
     @Override
     public WorkStationCache initWorkStation(WorkStationDTO workStationDTO) {
         WorkStationCache workStationCache;
-        if (workStationDTO.getWorkStationMode() == WorkStationModeEnum.PICKING
-                || workStationDTO.getWorkStationMode() == WorkStationModeEnum.SELECTION) {
+        if (workStationDTO.getWorkStationMode() == WorkStationModeEnum.PICKING) {
             workStationCache = new OutboundWorkStationCache();
         } else if (WorkStationModeEnum.isPutAwayMode(workStationDTO.getWorkStationMode())) {
             workStationCache = new InboundWorkStationCache();

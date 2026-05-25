@@ -17,7 +17,6 @@ import org.openwes.station.domain.service.WorkStationService;
 import org.openwes.station.infrastructure.remote.StocktakeService;
 import org.openwes.wes.api.stocktake.dto.StocktakeRecordSubmitDTO;
 import org.openwes.wes.api.task.dto.OperationTaskDTO;
-import org.openwes.wes.api.task.dto.OperationTaskVO;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
@@ -27,24 +26,23 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class StocktakeSubmitHandler implements IBusinessHandler<StocktakeSubmitEvent> {
 
-    private final WorkStationService<StocktakeWorkStationCache> workStationService;
-    private final WorkStationCacheRepository<StocktakeWorkStationCache> workStationCacheRepository;
+    private final WorkStationService workStationService;
+    private final WorkStationCacheRepository workStationCacheRepository;
     private final StocktakeService stocktakeService;
-    private final OperationTaskRefreshHandler<StocktakeWorkStationCache> containerTaskRefreshHandler;
+    private final OperationTaskRefreshHandler containerTaskRefreshHandler;
 
     @Override
     public void execute(StocktakeSubmitEvent body, Long workStationId) {
-        StocktakeWorkStationCache workStationCache = workStationService.getOrThrow(workStationId);
+        StocktakeWorkStationCache workStationCache = (StocktakeWorkStationCache) workStationService.getOrThrow(workStationId);
 
         Long detailId = body.getDetailId();
 
-        OperationTaskVO operationTaskVO = workStationCache.getFirstOperationTaskVO();
-        if (operationTaskVO == null) {
+        OperationTaskDTO firstTask = workStationCache.getSkuArea().getFirstTask();
+        if (firstTask == null) {
             throw WmsException.throwWmsException(StocktakeErrorDescEnum.STOCKTAKE_NO_OPERATION_TASK);
         }
 
-        OperationTaskDTO operationTaskDTO = operationTaskVO.getOperationTaskDTO();
-        if (!Objects.equals(detailId, operationTaskDTO.getId())) {
+        if (!Objects.equals(detailId, firstTask.getId())) {
             throw WmsException.throwWmsException(StocktakeErrorDescEnum.STOCKTAKE_OPERATION_TASK_NOT_RIGHT);
         }
 
@@ -59,8 +57,8 @@ public class StocktakeSubmitHandler implements IBusinessHandler<StocktakeSubmitE
         workStationCacheRepository.save(workStationCache);
 
         // task complete or task operated exception happened
-        if ((ObjectUtils.isEmpty(workStationCache.getOperateTasks()) && ObjectUtils.isNotEmpty(workStationCache.getUndoContainers()))) {
-            ArrivedContainerCache arrivedContainerCache = workStationCache.getUndoContainers().get(0);
+        if ((!workStationCache.getSkuArea().hasTasks() && ObjectUtils.isNotEmpty(workStationCache.getWorkLocationArea().getUndoContainers()))) {
+            ArrivedContainerCache arrivedContainerCache = workStationCache.getWorkLocationArea().getUndoContainers().get(0);
             containerTaskRefreshHandler.execute(new OperationTaskRefreshEvent()
                     .setContainerCode(arrivedContainerCache.getContainerCode())
                     .setFace(arrivedContainerCache.getFace()), workStationCache.getId());

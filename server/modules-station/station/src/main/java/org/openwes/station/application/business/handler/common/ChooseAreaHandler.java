@@ -11,16 +11,16 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class ChooseAreaHandler<T extends WorkStationCache> implements IBusinessHandler<String> {
+public class ChooseAreaHandler implements IBusinessHandler<String> {
 
-    private final WorkStationService<T> workStationService;
-    private final WorkStationCacheRepository<T> workStationRepository;
+    private final WorkStationService workStationService;
+    private final WorkStationCacheRepository workStationRepository;
 
     @Override
     public void execute(String body, Long workStationId) {
         WorkStationVO.ChooseAreaEnum chooseArea = WorkStationVO.ChooseAreaEnum.valueOf(body);
 
-        T workStation = workStationService.getOrThrow(workStationId);
+        WorkStationCache workStation = workStationService.getOrThrow(workStationId);
         workStation.chooseArea(chooseArea);
         workStation.setEventCode(getApiCode());
         workStationRepository.save(workStation);

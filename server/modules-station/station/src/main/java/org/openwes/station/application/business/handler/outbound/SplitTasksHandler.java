@@ -17,7 +17,6 @@ import org.openwes.wes.api.ems.proxy.constants.ContainerOperationTypeEnum;
 import org.openwes.wes.api.task.constants.OperationTaskTypeEnum;
 import org.openwes.wes.api.task.dto.HandleTaskDTO;
 import org.openwes.wes.api.task.dto.OperationTaskDTO;
-import org.openwes.wes.api.task.dto.OperationTaskVO;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -33,19 +32,18 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class SplitTasksHandler implements IBusinessHandler<SplitTasksEvent> {
 
     private final RemoteWorkStationService remoteWorkStationService;
-    private final WorkStationService<OutboundWorkStationCache> workStationService;
+    private final WorkStationService workStationService;
     private final TaskService taskService;
     private final EquipmentService equipmentService;
-    private final WorkStationCacheRepository<OutboundWorkStationCache> workStationRepository;
+    private final WorkStationCacheRepository workStationRepository;
     private final IPtlApi ptlApi;
 
     @Override
     public void execute(SplitTasksEvent splitTasksEvent, Long workStationId) {
-        OutboundWorkStationCache workStationCache = workStationService.getOrThrow(workStationId);
-        Preconditions.checkState(CollectionUtils.isNotEmpty(workStationCache.getOperateTasks()));
+        OutboundWorkStationCache workStationCache = (OutboundWorkStationCache) workStationService.getOrThrow(workStationId);
+        Preconditions.checkState(workStationCache.getSkuArea().hasTasks());
 
         List<OperationTaskDTO> operateTasks = workStationCache.getProcessingOperationTasks().stream()
-                .map(OperationTaskVO::getOperationTaskDTO)
                 .filter(operationTaskDTO ->
                         StringUtils.equals(splitTasksEvent.getPutWallSlotCode(), operationTaskDTO.getTargetLocationCode()))
                 // calculate operated qty order by required qty descending
@@ -68,7 +66,7 @@ public class SplitTasksHandler implements IBusinessHandler<SplitTasksEvent> {
         }).toList();
 
         PutWallSlotDTO putWallSlot = remoteWorkStationService.queryPutWallSlot(workStationId, splitTasksEvent.getPutWallSlotCode());
-        workStationService.validatePicking(putWallSlot);
+        workStationCache.getPutWallArea().validatePicking(putWallSlot);
 
         HandleTaskDTO handleTaskDTO = HandleTaskDTO.builder().workStationId(workStationId)
                 .transferContainerCode(putWallSlot.getTransferContainerCode())

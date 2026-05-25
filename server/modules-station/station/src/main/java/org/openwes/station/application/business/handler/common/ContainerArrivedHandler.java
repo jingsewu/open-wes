@@ -3,17 +3,13 @@ package org.openwes.station.application.business.handler.common;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.openwes.station.api.constants.ApiCodeEnum;
-import org.openwes.station.api.constants.ProcessStatusEnum;
 import org.openwes.station.application.business.handler.IBusinessHandler;
 import org.openwes.station.application.business.handler.common.extension.ExtensionFactory;
 import org.openwes.station.api.model.ArrivedContainerCache;
 import org.openwes.station.domain.entity.WorkStationCache;
 import org.openwes.station.domain.repository.WorkStationCacheRepository;
 import org.openwes.station.domain.service.WorkStationService;
-import org.openwes.station.domain.transfer.ArriveContainerCacheTransfer;
 import org.openwes.station.infrastructure.remote.ContainerService;
 import org.openwes.station.infrastructure.remote.EquipmentService;
 import org.openwes.wes.api.basic.dto.ContainerSpecDTO;
@@ -25,22 +21,23 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class ContainerArrivedHandler<T extends WorkStationCache> implements IBusinessHandler<ContainerArrivedEvent> {
+public class ContainerArrivedHandler implements IBusinessHandler<ContainerArrivedEvent> {
 
     private final ContainerService containerService;
-    private final WorkStationService<T> workStationService;
-    private final WorkStationCacheRepository<T> workStationRepository;
-    private final ArriveContainerCacheTransfer arriveContainerCacheTransfer;
+    private final WorkStationService workStationService;
+    private final WorkStationCacheRepository workStationRepository;
     private final ExtensionFactory extensionFactory;
     private final EquipmentService equipmentService;
 
     @Override
     public void execute(ContainerArrivedEvent containerArrivedEvent, Long workStationId) {
 
-        T workStation = workStationService.getWorkStation(workStationId);
+        WorkStationCache workStation = workStationService.getWorkStation(workStationId);
         if (workStation == null) {
             log.warn("work station: {} is not exist or offline and let container: {} go", workStationId, containerArrivedEvent);
             equipmentService.containerLeave(containerArrivedEvent);
@@ -48,8 +45,9 @@ public class ContainerArrivedHandler<T extends WorkStationCache> implements IBus
         }
 
         Set<Pair<String, String>> arrivedContainerCodes = new HashSet<>();
-        if (workStation.getArrivedContainers() != null) {
-            arrivedContainerCodes.addAll(workStation.getArrivedContainers().stream()
+        List<ArrivedContainerCache> existingContainers = workStation.getWorkLocationArea().getAllContainers();
+        if (existingContainers != null) {
+            arrivedContainerCodes.addAll(existingContainers.stream()
                     .map(v -> Pair.of(v.getContainerCode(), v.getFace()))
                     .collect(Collectors.toSet()));
         }
@@ -59,7 +57,7 @@ public class ContainerArrivedHandler<T extends WorkStationCache> implements IBus
                 .filter(v -> !arrivedContainerCodes.contains(Pair.of(v.getContainerCode(), v.getFace())))
                 .map(containerDetail -> {
                     ContainerSpecDTO containerSpecDTO = containerService.queryContainerLayout(containerDetail.getContainerCode(), workStation.getWarehouseCode(), containerDetail.getFace());
-                    ArrivedContainerCache arrivedContainerCache = arriveContainerCacheTransfer.toDTO(containerDetail, containerArrivedEvent);
+                    ArrivedContainerCache arrivedContainerCache = toArrivedContainerCache(containerDetail, containerArrivedEvent, workStationId);
                     arrivedContainerCache.setContainerSpec(containerSpecDTO);
                     arrivedContainerCache.init();
                     return arrivedContainerCache;
@@ -71,22 +69,40 @@ public class ContainerArrivedHandler<T extends WorkStationCache> implements IBus
             return;
         }
 
-        if (workStation.getArrivedContainers() != null
-                && ObjectUtils.isNotEmpty(workStation.getArrivedContainers()
-                .stream().anyMatch(v -> v.getProcessStatus() != ProcessStatusEnum.PROCEED))) {
-            workStation.addArrivedContainers(arrivedContainers);
+        boolean hasNonProceedContainers = existingContainers.stream()
+                .anyMatch(v -> v.getProcessStatus() != org.openwes.station.api.constants.ProcessStatusEnum.PROCEED);
+
+        if (!existingContainers.isEmpty() && hasNonProceedContainers) {
+            arrivedContainers.forEach(c -> workStation.getWorkLocationArea().placeContainer(c));
             workStationRepository.save(workStation);
             return;
         }
 
-        workStation.addArrivedContainers(arrivedContainers);
-        OperationTaskRefreshHandler.Extension<T> extension = extensionFactory.getExtension(workStation.getWorkStationMode(),
+        arrivedContainers.forEach(c -> workStation.getWorkLocationArea().placeContainer(c));
+        OperationTaskRefreshHandler.Extension extension = extensionFactory.getExtension(workStation.getWorkStationMode(),
                 ApiCodeEnum.CONTAINER_REFRESH);
         if (extension != null) {
             extension.refresh(workStation);
         }
 
         workStationRepository.save(workStation);
+    }
+
+    private ArrivedContainerCache toArrivedContainerCache(ContainerArrivedEvent.ContainerDetail detail,
+                                                          ContainerArrivedEvent event, Long workStationId) {
+        ArrivedContainerCache cache = new ArrivedContainerCache();
+        cache.setWorkStationId(workStationId);
+        cache.setContainerCode(detail.getContainerCode());
+        cache.setFace(detail.getFace());
+        cache.setLocationCode(detail.getLocationCode());
+        cache.setWorkLocationCode(event.getWorkLocationCode());
+        cache.setGroupCode(detail.getGroupCode() != null ? detail.getGroupCode() : "");
+        cache.setRobotCode(detail.getRobotCode());
+        cache.setRobotType(detail.getRobotType());
+        cache.setLevel(detail.getLevel());
+        cache.setBay(detail.getBay());
+        cache.setForwardFace(detail.getForwardFace());
+        return cache;
     }
 
     @Override

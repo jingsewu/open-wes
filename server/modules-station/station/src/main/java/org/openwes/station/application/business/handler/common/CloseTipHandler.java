@@ -10,14 +10,14 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class CloseTipHandler<T extends WorkStationCache> implements IBusinessHandler<String> {
+public class CloseTipHandler implements IBusinessHandler<String> {
 
-    private final WorkStationService<T> workStationService;
-    private final WorkStationCacheRepository<T> workStationRepository;
+    private final WorkStationService workStationService;
+    private final WorkStationCacheRepository workStationRepository;
 
     @Override
     public void execute(String body, Long workStationId) {
-        T workStationCache = workStationService.getOrThrow(workStationId);
+        WorkStationCache workStationCache = workStationService.getOrThrow(workStationId);
         workStationCache.closeTip(body);
         workStationRepository.save(workStationCache);
     }

@@ -18,15 +18,15 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class EmptyContainerOutboundRefreshHandlerExtension implements OperationTaskRefreshHandler.Extension<WorkStationCache> {
+public class EmptyContainerOutboundRefreshHandlerExtension implements OperationTaskRefreshHandler.Extension {
 
     private final EquipmentService equipmentService;
     private final ContainerService containerService;
-    private final WorkStationCacheRepository<WorkStationCache> workStationCacheRepository;
+    private final WorkStationCacheRepository workStationCacheRepository;
 
     @Override
     public void refresh(WorkStationCache workStationCache) {
-        List<ArrivedContainerCache> arrivedContainers = workStationCache.getArrivedContainers();
+        List<ArrivedContainerCache> arrivedContainers = workStationCache.getWorkLocationArea().getAllContainers();
         if (ObjectUtils.isEmpty(arrivedContainers)) {
             return;
         }
@@ -36,7 +36,7 @@ public class EmptyContainerOutboundRefreshHandlerExtension implements OperationT
         containerService.moveOutside(workStationCache.getWarehouseCode(), containerCodes);
         equipmentService.containerLeave(arrivedContainers, ContainerOperationTypeEnum.MOVE_OUT);
 
-        workStationCache.clearArrivedContainers(containerCodes);
+        containerCodes.forEach(code -> workStationCache.getWorkLocationArea().removeContainer(code));
         workStationCacheRepository.save(workStationCache);
     }
 
