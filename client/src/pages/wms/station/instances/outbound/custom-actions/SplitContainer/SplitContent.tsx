@@ -66,7 +66,7 @@ interface PutWallArea {
 }
 
 interface SkuArea {
-    pickingViews: SkuInfo[]
+    operationViews: SkuInfo[]
 }
 
 const PICKING_STATUS_PROPERTY = "pickingStatus"
@@ -116,8 +116,8 @@ const SplitContent: React.FC<SplitContentProps> = ({ refs }) => {
         | PutWallArea
         | undefined
     const skuArea = operationsMap.get(ChooseArea.skuArea) as SkuArea | undefined
-    const pickingViews = skuArea?.pickingViews || []
-    const currentSkuInfo = pickingViews[0] as SkuInfo | undefined
+    const operationViews = skuArea?.operationViews || []
+    const currentSkuInfo = operationViews[0] as SkuInfo | undefined
 
     // 如果没有SKU信息
     if (!currentSkuInfo) {

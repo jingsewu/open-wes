@@ -23,7 +23,7 @@ const cx = classNames.bind(styles)
 function Wrapper(props: {
     type: string
     Component: FunctionComponent<OperationProps<any, any>>
-    valueFilter?: (data: WorkStationView<any> | undefined) => any
+    valueFilter?: (data: WorkStationView | undefined) => any
     changeAreaHandler?: () => Promise<void>
     withWrapper?: boolean
     style?: React.CSSProperties

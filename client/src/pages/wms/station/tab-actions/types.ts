@@ -37,7 +37,7 @@ export interface EmitterPayload {
     /** 确定按钮loading状态 */
     loading?: boolean
     /** 工作站信息 */
-    workStationEvent?: WorkStationView<any> | undefined
+    workStationEvent?: WorkStationView | undefined
 }
 
 export interface TabAction {
@@ -65,9 +65,9 @@ export interface TabAction {
     disabled?:
         | boolean
         | ((
-        payload: WorkStationView<any> | undefined) => boolean)
+        payload: WorkStationView | undefined) => boolean)
     /** 是否隐藏 */
-    hide?: boolean | ((payload: WorkStationView<any> | undefined) => boolean)
+    hide?: boolean | ((payload: WorkStationView | undefined) => boolean)
     testid?: string
 }
 

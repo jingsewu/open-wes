@@ -19,15 +19,15 @@ const OutboundSkuInfo = (props: OutboundSkuInfoProps) => {
     const { workStationEvent, onActionDispatch } = useWorkStation()
 
     const value = workStationEvent?.skuArea
-    const { pickingViews = [] } = value || {}
+    const { operationViews = [] } = value || {}
 
     // 计算当前扫描的SKU信息
     const scannedSkuInfo =
-        pickingViews?.find(
+        operationViews?.find(
             (item) =>
                 item.operationTaskDTOS?.[0]?.taskStatus ===
                 ProcessStatusEnum.PROCESSING
-        ) || pickingViews?.[0]
+        ) || operationViews?.[0]
 
     // 计算待操作数量
     const toBeOperatedQty =

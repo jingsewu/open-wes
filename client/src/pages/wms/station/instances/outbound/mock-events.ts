@@ -7,7 +7,6 @@ const mockData = {
     workStationStatus: "PAUSED",
     workStationMode: "PICKING",
     chooseArea: "PUT_WALL_AREA",
-    scanCode: null,
     processingType: null,
     processingInboundOrderDetailId: null,
     callContainerCount: null,
@@ -2569,7 +2568,8 @@ const mockData = {
     },
     skuArea: {
         pickType: null,
-        pickingViews: [
+        scanCode: null,
+        operationViews: [
             {
                 skuMainDataDTO: {
                     id: 571798421208438140,
