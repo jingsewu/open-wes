@@ -1,17 +1,15 @@
 package org.openwes.station.domain.entity;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.openwes.station.api.constants.ProcessStatusEnum;
 import org.openwes.station.api.model.ArrivedContainerCache;
+import org.openwes.station.api.model.Tip;
+import org.openwes.station.api.vo.WorkStationVO;
 import org.openwes.station.infrastructure.remote.TaskService;
-import org.openwes.wes.api.basic.dto.PutWallSlotDTO;
 import org.openwes.wes.api.task.constants.OperationTaskStatusEnum;
 import org.openwes.wes.api.task.constants.OperationTaskTypeEnum;
 import org.openwes.wes.api.task.dto.OperationTaskDTO;
@@ -25,71 +23,52 @@ import java.util.stream.Collectors;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 @Slf4j
 public class OutboundWorkStationCache extends WorkStationCache {
 
-    private String inputPutWallSlot;
-    private String activePutWallCode;
-
     public void input(String input) {
-        this.inputPutWallSlot = input;
+        getPutWallArea().input(input);
     }
 
     public void clearInput() {
         log.info("work station: {} clear input.", super.id);
         this.chooseArea = null;
-        this.inputPutWallSlot = null;
+        getPutWallArea().clearInput();
     }
 
     public void operate() {
         this.chooseArea = null;
-        this.operateTasks.removeIf(v -> {
-            OperationTaskDTO operationTaskDTO = v.getOperationTaskDTO();
-            if (operationTaskDTO.getRequiredQty() - operationTaskDTO.getOperatedQty() - operationTaskDTO.getAbnormalQty() == 0) {
-                log.info("work station: {} remove task: {}.", super.id, operationTaskDTO.getId());
-                return true;
-            }
-            return false;
-        });
+        getSkuArea().removeCompletedTasks();
 
-        if (ObjectUtils.isNotEmpty(this.getProcessingOperationTasks())) {
-            this.operateTasks.stream().map(OperationTaskVO::getSkuMainDataDTO).filter(Objects::nonNull).findFirst()
-                    .ifPresent(task -> resetActivePutWall(task.getSkuCode()));
+        if (!getSkuArea().getProcessingTasks().isEmpty()) {
+            Set<String> processingSlotCodes = getSkuArea().getProcessingTasks().stream()
+                    .map(OperationTaskDTO::getTargetLocationCode)
+                    .collect(Collectors.toSet());
+            getPutWallArea().resetActivePutWall(processingSlotCodes);
         }
+        recalculateChooseArea();
     }
 
-    @Override
     public void resetActivePutWall(String skuCode) {
-
         log.info("work station: {} reset active put wall by sku: {}.", super.id, skuCode);
 
-        Set<String> processingPutWallSlotCodes = this.getProcessingOperationTasks().stream()
-                .filter(v -> StringUtils.equals(v.getSkuMainDataDTO().getSkuCode(), skuCode))
-                .map(v -> v.getOperationTaskDTO().getTargetLocationCode())
+        Set<String> processingPutWallSlotCodes = getSkuArea().getProcessingTasks().stream()
+                .map(OperationTaskDTO::getTargetLocationCode)
                 .collect(Collectors.toSet());
 
-        boolean match = this.putWallSlots.stream()
-                .anyMatch(putWallSlot -> StringUtils.equals(this.activePutWallCode, putWallSlot.getPutWallCode())
-                        && processingPutWallSlotCodes.contains(putWallSlot.getPutWallSlotCode()));
-
-        if (!match) {
-            this.activePutWallCode = putWallSlots.stream()
-                    .filter(putWallSlot -> processingPutWallSlotCodes.contains(putWallSlot.getPutWallSlotCode()))
-                    .map(PutWallSlotDTO::getPutWallCode)
-                    .findAny().orElse(null);
-        }
+        getPutWallArea().resetActivePutWall(processingPutWallSlotCodes);
     }
 
     public List<ArrivedContainerCache> queryTasksAndReturnRemovedContainers(TaskService taskService) {
-
-        List<ArrivedContainerCache> undoContainers = this.getUndoContainers();
-        if (CollectionUtils.isNotEmpty(this.operateTasks) || CollectionUtils.isEmpty(this.getUndoContainers())) {
+        List<ArrivedContainerCache> undoContainers = getWorkLocationArea().getUndoContainers();
+        if (getSkuArea().hasTasks() || CollectionUtils.isEmpty(undoContainers)) {
             return Collections.emptyList();
         }
 
         for (ArrivedContainerCache arrivedContainerCache : undoContainers) {
-            List<OperationTaskVO> operationTaskVOS = taskService.queryTasks(this.id, arrivedContainerCache.getContainerCode(), arrivedContainerCache.getFace(), OperationTaskTypeEnum.PICKING);
+            List<OperationTaskVO> operationTaskVOS = taskService.queryTasks(
+                    this.id, arrivedContainerCache.getContainerCode(),
+                    arrivedContainerCache.getFace(), OperationTaskTypeEnum.PICKING);
 
             if (ObjectUtils.isEmpty(operationTaskVOS)
                     || operationTaskVOS.stream().allMatch(v -> v.getOperationTaskDTO().getTaskStatus() == OperationTaskStatusEnum.PROCESSED)) {
@@ -97,53 +76,89 @@ public class OutboundWorkStationCache extends WorkStationCache {
                 continue;
             }
 
-            this.addOperateTasks(operationTaskVOS);
+            // Convert OperationTaskVO to SkuArea.SkuTaskInfo
+            addOperationTasksToSkuArea(operationTaskVOS);
             arrivedContainerCache.processing();
             break;
         }
 
-        return removeProceedContainers();
+        return getWorkLocationArea().removeProceedContainers();
     }
 
-    public List<OperationTaskVO> getProcessingOperationTasks() {
-        return Optional.ofNullable(this.operateTasks)
-                .stream()
-                .flatMap(Collection::stream)
-                .filter(k -> k.getOperationTaskDTO() != null
-                        && k.getOperationTaskDTO().getTaskStatus() == OperationTaskStatusEnum.PROCESSING)
-                .toList();
+    private void addOperationTasksToSkuArea(List<OperationTaskVO> operationTaskVOS) {
+        Map<String, List<OperationTaskVO>> grouped = operationTaskVOS.stream()
+                .filter(v -> v.getSkuMainDataDTO() != null)
+                .collect(Collectors.groupingBy(v -> v.getSkuMainDataDTO().getSkuCode()));
+
+        List<org.openwes.station.api.model.SkuArea.SkuTaskInfo> tasks = grouped.values().stream()
+                .map(vos -> {
+                    OperationTaskVO first = vos.get(0);
+                    org.openwes.station.api.model.SkuArea.SkuTaskInfo info = new org.openwes.station.api.model.SkuArea.SkuTaskInfo();
+                    info.setSkuMainDataDTO(first.getSkuMainDataDTO());
+                    info.setSkuBatchAttributeDTO(first.getSkuBatchAttributeDTO());
+                    info.setOperationTaskDTOs(vos.stream()
+                            .map(OperationTaskVO::getOperationTaskDTO)
+                            .collect(Collectors.toList()));
+                    return info;
+                }).toList();
+
+        getSkuArea().updateOperationViews(tasks);
+    }
+
+    public List<OperationTaskDTO> getProcessingOperationTasks() {
+        return getSkuArea().getProcessingTasks();
     }
 
     public void reportAbnormal(List<ReportAbnormalDTO.HandleTask> handleTasks) {
-        List<OperationTaskVO> processingOperationTasks = getProcessingOperationTasks();
-        if (CollectionUtils.isEmpty(processingOperationTasks)) {
-            return;
-        }
-
-        Map<Long, ReportAbnormalDTO.HandleTask> handleTaskMap = handleTasks.stream()
-                .collect(Collectors.toMap(ReportAbnormalDTO.HandleTask::getTaskId, Function.identity()));
-        processingOperationTasks.stream()
-                .filter(v -> handleTaskMap.containsKey(v.getOperationTaskDTO().getId()))
-                .forEach(task -> {
-                    OperationTaskDTO operationTaskDTO = task.getOperationTaskDTO();
-                    ReportAbnormalDTO.HandleTask handleTask = handleTaskMap.get(operationTaskDTO.getId());
-                    operationTaskDTO.setAbnormalQty(handleTask.getAbnormalQty());
-                });
-
-        if (this.operateTasks == null) {
-            return;
-        }
-        // remove zero pick tasks
-        this.operateTasks.removeIf(task -> {
-            OperationTaskDTO operationTaskDTO = task.getOperationTaskDTO();
-            return operationTaskDTO.getRequiredQty().equals(operationTaskDTO.getAbnormalQty());
-        });
+        Map<Long, Integer> taskAbnormalQtyMap = handleTasks.stream()
+                .collect(Collectors.toMap(ReportAbnormalDTO.HandleTask::getTaskId, ReportAbnormalDTO.HandleTask::getAbnormalQty));
+        getSkuArea().reportAbnormal(taskAbnormalQtyMap);
     }
 
     public OperationTaskDTO getFirstOperationTaskDTO() {
-        if (CollectionUtils.isEmpty(this.operateTasks)) {
-            return null;
+        return getSkuArea().getFirstTask();
+    }
+
+    public void processTasks(String skuCode) {
+        log.info("work station: {} code: {} process sku: {} tasks", this.id, this.stationCode, skuCode);
+        this.chooseArea = null;
+        getSkuArea().setScanCode(skuCode);
+
+        ArrivedContainerCache processingContainer = getWorkLocationArea().getProcessingContainers().stream()
+                .findFirst().orElse(null);
+        if (processingContainer == null) {
+            log.error("work station: {} code: {} no processing containers", this.id, this.stationCode);
+            return;
         }
-        return this.operateTasks.stream().iterator().next().getOperationTaskDTO();
+
+        getSkuArea().markTasksProcessing(skuCode, processingContainer.getContainerCode(), processingContainer.getFace());
+        resetActivePutWall(skuCode);
+    }
+
+    @Override
+    protected void recalculateChooseArea() {
+        boolean hasTasks = getSkuArea() != null && getSkuArea().hasTasks();
+        boolean hasContainers = getWorkLocationArea() != null && getWorkLocationArea().hasContainers();
+        boolean hasPutWall = getPutWallArea() != null && getPutWallArea().hasWaitingBindingSlots();
+        boolean hasProcessingTasks = getSkuArea() != null && getSkuArea().hasProcessingTasks();
+
+        if (hasProcessingTasks) {
+            chooseArea(WorkStationVO.ChooseAreaEnum.PUT_WALL_AREA);
+        } else if (hasTasks && hasContainers) {
+            chooseArea(WorkStationVO.ChooseAreaEnum.SKU_AREA);
+        } else if (hasPutWall) {
+            chooseArea(WorkStationVO.ChooseAreaEnum.PUT_WALL_AREA);
+        } else if (hasContainers) {
+            chooseArea(WorkStationVO.ChooseAreaEnum.CONTAINER_AREA);
+        }
+    }
+
+    @Override
+    protected void recalculateToolbar() {
+        if (toolbar == null) return;
+        boolean hasTasks = getSkuArea() != null && getSkuArea().hasTasks();
+        boolean hasAbnormal = getSkuArea() != null && getSkuArea().hasAbnormalTasks();
+        toolbar.setEnableReportAbnormal(hasTasks && !hasAbnormal);
+        toolbar.setEnableSplitContainer(hasTasks);
     }
 }
