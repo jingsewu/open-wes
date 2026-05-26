@@ -26,7 +26,7 @@ These are a set of coding standards and best practices to be followed during dev
 ### Transaction
 
 1. **Avoid Big Transactions, Use Asynchronous and Eventually Consistent Approach**: Big transactions can lead to performance issues and potential deadlocks. Instead, use an asynchronous and eventually consistent approach to handle complex operations.
-2. **Use @Transactional Annotation Appropriately**: We only use the `@Transactional` annotation on Aggregates and repositories. Any other places should not use this annotation.
+2. **Use @Transactional Annotation Appropriately**: We use the `@Transactional` annotation on **Use Cases and Repositories**. Domain services and entities should not use this annotation. Event subscribers should use `@Transactional` on write-path handlers.
 
 ### Error Definition
 
@@ -63,7 +63,16 @@ These are a set of coding standards and best practices to be followed during dev
 
 1. **Aggregate Root**: Aggregate root entities must extend `AggregatorRoot`. This base class provides domain event publishing and optimistic locking support.
 
-2. **Domain Entity Immutability**: Domain entities should not have setter methods. Instead, use methods that represent the entity's state transitions. For example:
+2. **Entity Annotations**: Domain entities must use `@Getter @Builder` instead of `@Data`. The `@Data` annotation is **forbidden** on domain entities because it exposes public setters that bypass domain methods. Required annotation set:
+   ```java
+   @Getter
+   @Builder
+   @AllArgsConstructor(access = AccessLevel.PRIVATE)
+   @NoArgsConstructor(access = AccessLevel.PROTECTED) // Required by JPA/MapStruct
+   @EqualsAndHashCode(callSuper = true) // Only for entities extending AggregatorRoot
+   ```
+
+3. **Domain Entity Immutability**: Domain entities should not have setter methods. Instead, use methods that represent the entity's state transitions. For example:
    ```java
    // Instead of outboundPlanOrder.setStatus(xxx);
    outboundPlanOrder.complete();
@@ -109,15 +118,28 @@ These are a set of coding standards and best practices to be followed during dev
 5. **Optimistic Locking**: Use `@Version` on a version field for optimistic locking and concurrency control.
 
 ### Domain Service
-1. **Domain Service Responsibilities**: Domain services should only contain calculation logic, and they must be stateless. For example, the `OutboundWaveService` contains a function `wavePickings` that takes a list of `OutboundPlanOrder` objects as input and returns the waved `OutboundPlanOrder` objects.
+1. **Domain Service Responsibilities**: Domain services should only contain calculation logic, and they must be stateless.
+2. **Domain Service Prohibitions**: Domain services must NOT have `@Transactional`, must NOT call external APIs, and must NOT perform persistence operations. They are pure stateless calculation only. For example, the `OutboundWaveService` contains a function `wavePickings` that takes a list of `OutboundPlanOrder` objects as input and returns the waved `OutboundPlanOrder` objects.
    ```java
    public interface OutboundWaveService {
        Collection<List<OutboundPlanOrder>> wavePickings(List<OutboundPlanOrder> outboundPlanOrders);
    }
    ```
 
-### Domain Aggregate
-1. **Domain Aggregate Usage**: Domain aggregates will aggregate multiple domain entities. If we need to update multiple entities, we should build an aggregator and use the `@Transactional` annotation to ensure data consistency. Since we use the `@Transactional` annotation, we should pull queries out to improve speed.
+### Use Case Pattern (replaces Domain Aggregate)
+1. **Use Case Responsibilities**: Use cases orchestrate cross-aggregate operations. They live in `application/usecase/` and own the `@Transactional` boundary. Each use case represents one business operation.
+   ```java
+   @Service
+   @RequiredArgsConstructor
+   public class CancelOutboundPlanOrderUseCase {
+       @Transactional(rollbackFor = Exception.class)
+       public void execute(List<OutboundPlanOrder> orders) {
+           // Load entities, call domain methods, call external APIs, save
+       }
+   }
+   ```
+2. **Naming Convention**: `[Action][Entity]UseCase`, e.g., `CancelOutboundPlanOrderUseCase`, `PreAllocateOutboundOrderUseCase`.
+3. **Deprecation**: The `domain/aggregate/` package pattern is deprecated. Cross-aggregate orchestration belongs in Use Case classes, not the domain layer.
 
 ### Domain Repository
 1. **Domain Repository Responsibilities**:  Domain repositories should only contain find or save functions. They should not contain any update functions. For example:
@@ -146,6 +168,8 @@ containerRepository.save(container);
 
 2. **Event Subscribers**: For cross-cutting concerns (e.g., metrics, audit), use Guava `@Subscribe` methods on `@Component` beans. The `DomainEventProcessor` (a `BeanPostProcessor`) auto-registers any bean with `@Subscribe` methods to the EventBus — no manual wiring needed.
 
+3. **Event Subscriber Rules**: Event subscribers must be thin dispatchers that delegate to Use Cases. They must have `@Transactional(rollbackFor = Exception.class)` on write paths. No business logic in subscribers — only load event params, call UseCase, done.
+
 ### API Implementation
 
 1. **Standard Annotations**: API implementation classes must use the following annotation set:
@@ -168,6 +192,7 @@ containerRepository.save(container);
    | Repository | `[Entity]Repository` / `[Entity]RepositoryImpl` | `ContainerRepository` |
    | DTO | `[Entity]DTO` | `ContainerDTO` |
    | Transfer | `[Entity]Transfer` | `InboundPlanOrderTransfer` |
+   | UseCase | `[Action][Entity]UseCase` | `CancelOutboundPlanOrderUseCase` |
    | Error enum | `[Module]ErrorDescEnum` | `InboundErrorDescEnum` |
 
 3. **Logging**: Use `@Slf4j` (Lombok) for logger declaration. All log messages must be written in English.

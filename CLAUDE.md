@@ -39,7 +39,7 @@ utils/        # HTTP client, helpers
 
 ### DDD Layer Flow
 ```
-Controller -> IEntityApi (interface) -> EntityApiImpl -> Domain Service -> Entity -> Repository -> JPA
+Controller -> IEntityApi (interface) -> EntityApiImpl -> UseCase -> Domain Service -> Entity -> Repository -> JPA
 ```
 
 ### Package Convention
@@ -57,6 +57,7 @@ org.openwes.[module-group].[module].[domain].[layer]
 | Repository | `[Entity]Repository` / `[Entity]RepositoryImpl` | `ContainerRepository` |
 | DTO | `[Entity]DTO` | `ContainerDTO` |
 | Transfer | `[Entity]Transfer` | `InboundPlanOrderTransfer` |
+| UseCase | `[Action][Entity]UseCase` | `CancelOutboundPlanOrderUseCase` |
 | Error enum | `[Module]ErrorDescEnum` | `InboundErrorDescEnum` |
 
 ### API Implementation Annotations
@@ -70,6 +71,7 @@ public class EntityApiImpl implements IEntityApi { }
 ```
 
 ### Domain Entity Rules
+- Use `@Getter @Builder`, never `@Data` on domain entities
 - **No setters** — use lifecycle methods: `initialize()`, `complete()`, `cancel()`, `close()`
 - Extend `AggregatorRoot` for aggregate roots
 - Use `@Version` for optimistic locking
