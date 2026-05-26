@@ -271,6 +271,8 @@ public class OutboundPlanOrderSubscribe {
 
     @Subscribe
     public void onCreateEvent(@Valid OutboundPlanOrderCreatedEvent event) {
+        // All logic (status check, SKU extraction, cache building, pre-allocation)
+        // has been moved into PreAllocateOutboundOrderUseCase.execute()
         preAllocateUseCase.execute(event.getAggregatorId());
     }
 
@@ -299,12 +301,18 @@ public class OutboundPlanOrderSubscribe {
 
 | Method | Current | Move To |
 |--------|---------|---------|
-| `prepareFullContext()` | Queries 6+ APIs | `DispatchPickingOrdersUseCase` |
-| `prepareAllocateCache()` | Queries 4+ APIs | `PreAllocateOutboundOrderUseCase` |
-| `prepareReallocateStockContext()` | Batch attribute matching | `ReallocatePickingOrderUseCase` |
+| `prepareFullContext()` | Queries 6+ APIs, `@Transactional(readOnly = true)` | `DispatchPickingOrdersUseCase` |
+| `prepareAllocateCache()` | Queries 4+ APIs, `@Transactional(readOnly = true)` | `PreAllocateOutboundOrderUseCase` |
+| `prepareReallocateStockContext()` | Batch attribute matching, `@Transactional(readOnly = true)` | `ReallocatePickingOrderUseCase` |
 | `allocateStocks()` | Pure API proxy | `DispatchPickingOrdersUseCase` (inline) |
 | `reallocateStocks()` | Pure API proxy | `ReallocatePickingOrderUseCase` (inline) |
 | `dispatchOrders()` | Pure API proxy | `DispatchPickingOrdersUseCase` (inline) |
+
+**Transaction note**: The prep methods currently have `@Transactional(readOnly = true)`. When moved into UseCases that have `@Transactional(rollbackFor = Exception.class)` (read-write), the readOnly hint is lost under default REQUIRED propagation (inner joins outer transaction). Two options:
+1. **Accept it** — the prep queries will run in the same read-write transaction as the subsequent writes. This is simpler and the performance impact is negligible for these query sizes.
+2. **Extract to separate bean** — keep prep methods in a separate `@Transactional(readOnly = true)` service, called **before** the UseCase's `@Transactional` method. This preserves read-only optimization but adds complexity.
+
+**Recommendation**: Option 1 (accept). The prep queries are small and the read-write transaction is short-lived. Separating them adds a layer with no meaningful benefit.
 
 **After slimming**: PickingOrderService retains only pure domain calculation methods, or may be eliminated entirely if all logic moves to UseCases or Entities.
 
@@ -355,6 +363,11 @@ public void onPickingEvent(@Valid PickingOrderPickedEvent event) {
 }
 ```
 
+**Propagation behavior**: Event subscribers use default `Propagation.REQUIRED`. When a subscriber calls a UseCase (also `@Transactional` with REQUIRED), they share the same transaction. This means:
+- If the UseCase fails (e.g., stock locking fails in `PreAllocateOutboundOrderUseCase`), the entire subscriber transaction rolls back. This is the **desired behavior** — partial execution (entity saved but stock not locked) would leave inconsistent state.
+- If a subscriber needs independent transaction semantics (e.g., fire-and-forget callbacks), use `Propagation.REQUIRES_NEW` on that specific method.
+- The `onAssignedEvent` handler (Redis push only, no DB writes) does not need `@Transactional`.
+
 ---
 
 ### 5. Aggregate Boundary Decision
@@ -368,9 +381,17 @@ Rationale:
 
 Change: Remove `AggregatorRoot` inheritance (it doesn't extend it anyway). Treat as an independent persistent domain object managed by UseCases.
 
+#### EmptyContainerOutboundOrder: Does NOT Extend AggregatorRoot
+
+Unlike OutboundPlanOrder, PickingOrder, and OutboundWave, `EmptyContainerOutboundOrder` and `EmptyContainerOutboundOrderDetail` do not extend `AggregatorRoot` and do not publish domain events. This is an intentional design difference — empty container outbound is a simpler workflow without cross-aggregate event coordination. The @Builder refactoring still applies, but no `AggregatorRoot` inheritance should be added.
+
+#### OutboundWave: Tighten Existing @NoArgsConstructor
+
+OutboundWave already has a public `@NoArgsConstructor`. The migration should **tighten it to PROTECTED** (`@NoArgsConstructor(access = AccessLevel.PROTECTED)`), not add a duplicate.
+
 #### No Other Boundary Changes
 
-The remaining aggregate boundaries (OutboundPlanOrder, PickingOrder, OutboundWave, EmptyContainerOutboundOrder) are well-designed and should not change.
+The remaining aggregate boundaries (OutboundPlanOrder, PickingOrder, OutboundWave) are well-designed and should not change.
 
 ---
 
@@ -445,7 +466,8 @@ wes-outbound/src/main/java/org/openwes/wes/outbound/
 
 | Phase | Scope | Risk |
 |-------|-------|------|
-| Phase 1 | Entity @Builder refactoring (8 entities + MapStruct transfers) | Medium - need to find all setter call sites |
+| Phase 0 | **Impact analysis**: Full grep across `server/` for setter calls on outbound entities, MapStruct version check, event subscriber cross-module check | None - read-only |
+| Phase 1 | Entity @Builder refactoring (8 entities + MapStruct transfers) | Medium - setter call sites identified in Phase 0 |
 | Phase 2 | Create UseCase classes, move aggregate logic | Low - additive, can coexist temporarily |
 | Phase 3 | Slim ApiImpl, EventSubscriber, DomainService | Medium - redirect call chains |
 | Phase 4 | Delete domain/aggregate/, remove unnecessary events | Low - cleanup |
@@ -453,7 +475,7 @@ wes-outbound/src/main/java/org/openwes/wes/outbound/
 
 ## Risks
 
-- **MapStruct @Builder compatibility**: MapStruct 1.5+ supports `@Builder` natively. Verify the project's MapStruct version.
-- **Setter call sites**: Need comprehensive grep for `.set` calls on entity objects across all modules (not just wes-outbound). Other modules may call setter on outbound entities via API DTOs.
+- **MapStruct @Builder compatibility**: MapStruct 1.5+ supports `@Builder` natively. Verify the project's MapStruct version in Phase 0.
+- **Setter call sites**: Phase 0 must grep across **all modules** in `server/` (not just wes-outbound) for `.set` calls on outbound domain entities. Other modules access outbound entities only through DTOs in wes-api, but entity setter usage within wes-outbound itself (subscribers, aggregates, services) is extensive and must be catalogued.
 - **Event removal (PickingOrderDispatchedEvent)**: Must verify no other module subscribes to this event before removing it.
-- **Transaction boundary changes**: Adding @Transactional to event subscribers changes transaction propagation. Need to verify no unintended side effects with existing aggregate @Transactional methods (REQUIRES_NEW vs REQUIRED).
+- **Transaction propagation**: Subscriber `@Transactional(REQUIRED)` + UseCase `@Transactional(REQUIRED)` = shared transaction. This is the desired behavior for write paths. Read-only hints from former `PickingOrderServiceImpl` prep methods are intentionally dropped (see Section 3.1).
