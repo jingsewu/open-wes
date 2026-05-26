@@ -20,6 +20,7 @@ import org.openwes.wes.api.task.event.OperationTaskPickedEvent;
 import org.openwes.wes.outbound.domain.entity.PickingOrder;
 import org.openwes.wes.outbound.domain.repository.PickingOrderRepository;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -35,29 +36,25 @@ public class PickingOrderSubscribe {
     private final PickingOrderRepository pickingOrderRepository;
 
     @Subscribe
+    @Transactional(rollbackFor = Exception.class)
     public void onOperationTaskPickedEvent(@Valid OperationTaskPickedEvent event) {
-
         OperationTaskPickingDTO operationTask = event.getOperationTaskPicking();
-
         PickingOrder pickingOrder = pickingOrderRepository.findById(operationTask.getOrderId());
         pickingOrder.picking(operationTask.getOperatedQty(), operationTask.getDetailId());
         pickingOrderRepository.saveOrderAndDetail(pickingOrder);
     }
 
     @Subscribe
+    @Transactional(rollbackFor = Exception.class)
     public void onOperationTaskAbnormalEvent(@Valid OperationTaskAbnormalEvent event) {
-
         PickingOrder pickingOrder = pickingOrderRepository.findById(event.getPickingOrderId());
         pickingOrder.reportAbnormal(event.getAbnormalQty(), event.getPickingOrderDetailId());
-
         pickingOrderRepository.saveOrderAndDetail(pickingOrder);
-
         pickingOrderApi.reallocate(Lists.newArrayList(event.getPickingOrderDetailId()));
     }
 
     @Subscribe
     public void onPickingOrderRemindSealContainerEvent(@Valid PickingOrderRemindSealContainerEvent event) {
-
         WarehouseAreaDTO warehouseArea = warehouseAreaApi.getById(event.getWarehouseAreaId());
         if (WarehouseAreaWorkTypeEnum.ROBOT == warehouseArea.getWarehouseAreaWorkType()) {
             putWallApi.remindToSealContainer(event.getAggregatorId(), event.getAssignedStationSlots());
@@ -67,15 +64,13 @@ public class PickingOrderSubscribe {
     }
 
     @Subscribe
+    @Transactional(rollbackFor = Exception.class)
     public void onImprovePriority(OutboundPlanOrderImprovedPriorityEvent event) {
         List<PickingOrder> pickingOrders = pickingOrderRepository.findAllByOutboundPlanOrderId(event.getAggregatorId());
-
         if (ObjectUtils.isEmpty(pickingOrders)) {
             return;
         }
-
         pickingOrders.forEach(pickingOrder -> pickingOrder.improvePriority(event.getPriority()));
         pickingOrderRepository.saveAllOrders(pickingOrders);
     }
-
 }

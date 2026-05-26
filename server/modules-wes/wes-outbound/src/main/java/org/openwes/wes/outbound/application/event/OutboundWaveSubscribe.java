@@ -8,12 +8,13 @@ import org.openwes.wes.api.outbound.constants.OutboundWaveStatusEnum;
 import org.openwes.wes.api.outbound.constants.PickingOrderStatusEnum;
 import org.openwes.wes.api.outbound.event.OutboundWaveCreatedEvent;
 import org.openwes.wes.api.outbound.event.PickingOrderCompletionEvent;
-import org.openwes.wes.outbound.domain.aggregate.PickingOrderWaveAggregate;
+import org.openwes.wes.outbound.application.usecase.SplitWaveToPickingOrdersUseCase;
 import org.openwes.wes.outbound.domain.entity.OutboundWave;
 import org.openwes.wes.outbound.domain.entity.PickingOrder;
 import org.openwes.wes.outbound.domain.repository.OutboundWaveRepository;
 import org.openwes.wes.outbound.domain.repository.PickingOrderRepository;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -23,28 +24,29 @@ import java.util.List;
 public class OutboundWaveSubscribe {
 
     private final OutboundWaveRepository outboundWaveRepository;
-    private final PickingOrderWaveAggregate pickingOrderWaveAggregate;
+    private final SplitWaveToPickingOrdersUseCase splitWaveUseCase;
     private final PickingOrderRepository pickingOrderRepository;
 
     @Subscribe
+    @Transactional(rollbackFor = Exception.class)
     public void onCreateEvent(@Valid OutboundWaveCreatedEvent event) {
         OutboundWave outboundWave = outboundWaveRepository.findByWaveNo(event.getWaveNo());
         if (outboundWave.getWaveStatus() != OutboundWaveStatusEnum.NEW) {
             return;
         }
-        pickingOrderWaveAggregate.split(outboundWave);
+        splitWaveUseCase.execute(outboundWave);
     }
 
     @Subscribe
+    @Transactional(rollbackFor = Exception.class)
     public void onPickingOrderCompleteEvent(@Valid PickingOrderCompletionEvent event) {
         PickingOrder pickingOrder = pickingOrderRepository.findById(event.getAggregatorId());
         String waveNo = pickingOrder.getWaveNo();
-
         List<PickingOrder> pickingOrders = pickingOrderRepository.findByWaveNo(waveNo);
 
-        if (pickingOrders.stream().allMatch(v -> v.getPickingOrderStatus() == PickingOrderStatusEnum.PICKED
-                || v.getPickingOrderStatus() == PickingOrderStatusEnum.CANCELED)) {
-
+        if (pickingOrders.stream().allMatch(v ->
+                v.getPickingOrderStatus() == PickingOrderStatusEnum.PICKED
+                        || v.getPickingOrderStatus() == PickingOrderStatusEnum.CANCELED)) {
             OutboundWave outboundWave = outboundWaveRepository.findByWaveNo(waveNo);
             outboundWave.complete();
             outboundWaveRepository.save(outboundWave);

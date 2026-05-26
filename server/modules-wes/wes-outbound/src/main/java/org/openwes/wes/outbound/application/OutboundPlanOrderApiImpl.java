@@ -10,7 +10,8 @@ import org.openwes.wes.api.outbound.dto.OutboundPlanOrderCancelDTO;
 import org.openwes.wes.api.outbound.dto.OutboundPlanOrderDTO;
 import org.openwes.wes.common.validator.IValidator;
 import org.openwes.wes.common.validator.ValidateResult;
-import org.openwes.wes.outbound.domain.aggregate.OutboundPlanOrderAggregate;
+import org.openwes.wes.outbound.application.usecase.CancelOutboundPlanOrderUseCase;
+import org.openwes.wes.outbound.application.usecase.ImprovePriorityUseCase;
 import org.openwes.wes.outbound.domain.context.OutboundPlanOrderCancelContext;
 import org.openwes.wes.outbound.domain.entity.OutboundPlanOrder;
 import org.openwes.wes.outbound.domain.repository.OutboundPlanOrderRepository;
@@ -34,7 +35,8 @@ public class OutboundPlanOrderApiImpl implements IOutboundPlanOrderApi {
 
     private final OutboundPlanOrderRepository outboundPlanOrderRepository;
     private final OutboundPlanOrderService outboundPlanOrderService;
-    private final OutboundPlanOrderAggregate outboundPlanOrderAggregate;
+    private final CancelOutboundPlanOrderUseCase cancelOutboundPlanOrderUseCase;
+    private final ImprovePriorityUseCase improvePriorityUseCase;
     private final OutboundPlanOrderTransfer outboundPlanOrderTransfer;
     private final DistributeLock distributionLock;
 
@@ -75,10 +77,13 @@ public class OutboundPlanOrderApiImpl implements IOutboundPlanOrderApi {
 
     @Override
     public List<String> cancelOutboundPlanOrder(OutboundPlanOrderCancelDTO outboundPlanOrderCancelDTO) {
-
-        OutboundPlanOrderCancelContext outboundPlanOrderCancelContext = outboundPlanOrderService.prepareCancelContext(outboundPlanOrderCancelDTO);
-        outboundPlanOrderAggregate.cancel(outboundPlanOrderCancelContext);
-        return outboundPlanOrderCancelContext.getOutboundPlanOrders().stream().map(OutboundPlanOrder::getCustomerOrderNo).toList();
+        OutboundPlanOrderCancelContext context = outboundPlanOrderService.prepareCancelContext(outboundPlanOrderCancelDTO);
+        cancelOutboundPlanOrderUseCase.execute(
+                context.getOutboundPlanOrders(),
+                context.getOutboundPreAllocatedRecords(),
+                context.getOutboundWaves(),
+                context.getPickingOrders());
+        return context.getOutboundPlanOrders().stream().map(OutboundPlanOrder::getCustomerOrderNo).toList();
     }
 
     @Override
@@ -95,8 +100,6 @@ public class OutboundPlanOrderApiImpl implements IOutboundPlanOrderApi {
 
     @Override
     public void improvePriority(List<Long> ids, int priority) {
-        List<OutboundPlanOrder> outboundPlanOrders = outboundPlanOrderRepository.findAllByIds(ids);
-        outboundPlanOrders.forEach(v -> v.improvePriority(priority));
-        outboundPlanOrderRepository.saveAllOrders(outboundPlanOrders);
+        improvePriorityUseCase.execute(ids, priority);
     }
 }

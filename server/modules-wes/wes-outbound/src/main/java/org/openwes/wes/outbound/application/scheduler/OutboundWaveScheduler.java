@@ -7,7 +7,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.openwes.common.utils.utils.RedisUtils;
 import org.openwes.distribute.scheduler.annotation.DistributedScheduled;
 import org.openwes.wes.api.outbound.constants.OutboundPlanOrderStatusEnum;
-import org.openwes.wes.outbound.domain.aggregate.OutboundWaveAggregate;
+import org.openwes.wes.outbound.application.usecase.CreateOutboundWaveUseCase;
 import org.openwes.wes.outbound.domain.entity.OutboundPlanOrder;
 import org.openwes.wes.outbound.domain.repository.OutboundPlanOrderRepository;
 import org.openwes.wes.outbound.domain.service.OutboundWaveService;
@@ -28,7 +28,7 @@ public class OutboundWaveScheduler {
 
     private final RedisUtils redisUtils;
     private final OutboundWaveService outboundWaveService;
-    private final OutboundWaveAggregate outboundWaveAggregate;
+    private final CreateOutboundWaveUseCase createOutboundWaveUseCase;
     private final OutboundPlanOrderRepository outboundPlanOrderRepository;
     private final Executor wavePickingExecutor;
 
@@ -71,7 +71,7 @@ public class OutboundWaveScheduler {
         }
 
         lists.forEach(list -> {
-            outboundWaveAggregate.waveOrders(list);
+            createOutboundWaveUseCase.execute(list);
             redisUtils.removeListByPureKey(key, list.stream().map(OutboundPlanOrder::getId).toList());
         });
     }

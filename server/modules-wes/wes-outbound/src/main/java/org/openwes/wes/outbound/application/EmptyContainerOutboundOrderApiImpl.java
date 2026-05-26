@@ -8,7 +8,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.openwes.common.utils.utils.JsonUtils;
 import org.openwes.wes.api.outbound.IEmptyContainerOutboundOrderApi;
 import org.openwes.wes.api.outbound.dto.EmptyContainerOutboundOrderCreateDTO;
-import org.openwes.wes.outbound.domain.aggregate.EmptyContainerOutboundAggregate;
+import org.openwes.wes.outbound.application.usecase.EmptyContainerOutboundUseCase;
 import org.openwes.wes.outbound.domain.entity.EmptyContainerOutboundOrder;
 import org.openwes.wes.outbound.domain.entity.EmptyContainerOutboundOrderDetail;
 import org.openwes.wes.outbound.domain.repository.EmptyContainerOutboundOrderRepository;
@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class EmptyContainerOutboundOrderApiImpl implements IEmptyContainerOutboundOrderApi {
 
-    private final EmptyContainerOutboundAggregate emptyContainerOutboundAggregate;
+    private final EmptyContainerOutboundUseCase emptyContainerOutboundUseCase;
     private final EmptyContainerOutboundOrderRepository emptyContainerOutboundOrderRepository;
     private final EmptyContainerOutboundTransfer emptyContainerOutboundTransfer;
     private final ISearchApi searchApi;
@@ -51,7 +51,7 @@ public class EmptyContainerOutboundOrderApiImpl implements IEmptyContainerOutbou
         EmptyContainerOutboundOrder emptyContainerOutboundOrder = emptyContainerOutboundTransfer.toDO(emptyContainerOutboundOrderCreateDTO, details);
         emptyContainerOutboundOrder.initial();
 
-        emptyContainerOutboundAggregate.create(emptyContainerOutboundOrder,
+        emptyContainerOutboundUseCase.create(emptyContainerOutboundOrder,
                 containerSearchVOs.stream().map(ContainerSearchVO::getContainerCode).collect(Collectors.toSet()));
 
     }
@@ -59,13 +59,13 @@ public class EmptyContainerOutboundOrderApiImpl implements IEmptyContainerOutbou
     @Override
     public void execute(List<Long> orderIds) {
         List<EmptyContainerOutboundOrder> emptyContainerOutboundOrders = emptyContainerOutboundOrderRepository.findAllByIds(orderIds);
-        emptyContainerOutboundAggregate.execute(emptyContainerOutboundOrders);
+        emptyContainerOutboundUseCase.execute(emptyContainerOutboundOrders);
     }
 
     @Override
     public void cancel(List<Long> orderIds) {
         List<EmptyContainerOutboundOrder> emptyContainerOutboundOrders = emptyContainerOutboundOrderRepository.findAllByIds(orderIds);
-        emptyContainerOutboundAggregate.cancel(emptyContainerOutboundOrders);
+        emptyContainerOutboundUseCase.cancel(emptyContainerOutboundOrders);
     }
 
     @Override
