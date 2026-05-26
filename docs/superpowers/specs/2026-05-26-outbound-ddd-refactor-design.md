@@ -472,6 +472,36 @@ wes-outbound/src/main/java/org/openwes/wes/outbound/
 | Phase 3 | Slim ApiImpl, EventSubscriber, DomainService | Medium - redirect call chains |
 | Phase 4 | Delete domain/aggregate/, remove unnecessary events | Low - cleanup |
 | Phase 5 | Add @Transactional to event subscribers | Low - additive |
+| Phase 6 | **Sync coding standards**: Update `server/Code Rule.md` and `CLAUDE.md` to reflect new patterns | Low - documentation only |
+
+### Phase 6: Coding Standards Update
+
+After all code changes are complete, the following documents must be updated to reflect the new architectural patterns:
+
+#### `server/Code Rule.md`
+- **Entity annotations**: Document `@Getter @Builder` as the standard, explicitly forbid `@Data` on domain entities. Add rationale (encapsulation, MapStruct compatibility).
+- **Use Case pattern**: Add a new section describing the `application/usecase/` layer, its responsibilities, and its relationship to ApiImpl and EventSubscriber. Include the layer responsibility table from this design.
+- **Aggregate vs UseCase**: Clarify that `domain/aggregate/` is no longer used. Cross-aggregate orchestration belongs in UseCase classes, not domain layer.
+- **Event subscriber rules**: Document that subscribers must be thin dispatchers (delegate to UseCase), must have `@Transactional` on write paths, and must not contain business logic.
+- **Domain Service scope**: Clarify that Domain Services are for pure domain calculations only — no persistence, no external API calls, no `@Transactional`.
+- **Static factory methods**: Document the preferred entity construction pattern (static factory or `@Builder`) instead of `new` + setter chains.
+
+#### `CLAUDE.md`
+- **DDD Layer Flow**: Update the flow diagram to include UseCase layer:
+  ```
+  Controller -> IEntityApi (interface) -> EntityApiImpl -> UseCase -> Domain Service -> Entity -> Repository -> JPA
+  ```
+- **Class Naming**: Add UseCase naming convention (`[Action][Entity]UseCase`, e.g., `CancelOutboundPlanOrderUseCase`).
+- **Architecture Patterns**: Add Use Case pattern description and layer responsibility summary.
+- **Domain Entity Rules**: Add "Use `@Getter @Builder`, never `@Data`" to the entity rules section.
+
+#### `docs/standards/backend.md` (New File)
+Create a dedicated backend standards document (referenced from `CLAUDE.md`) covering:
+- Entity encapsulation rules (@Builder pattern, no public setters)
+- Use Case pattern guidelines and when to create a new UseCase vs extending an existing one
+- Event subscriber thin-dispatcher pattern
+- Transaction boundary conventions (UseCase owns @Transactional, Domain Service does not)
+- Domain Service vs UseCase responsibility boundary
 
 ## Risks
 
