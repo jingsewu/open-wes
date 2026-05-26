@@ -1,13 +1,18 @@
 package org.openwes.wes.outbound.domain.entity;
 
-import lombok.Data;
-import lombok.experimental.Accessors;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.Collection;
 import java.util.Map;
 
-@Data
-@Accessors(chain = true)
+@Getter
+@Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class OutboundPreAllocatedRecord {
 
     private Long id;

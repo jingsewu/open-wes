@@ -1,7 +1,10 @@
 package org.openwes.wes.outbound.domain.entity;
 
-import lombok.Data;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.openwes.common.utils.id.SnowflakeUtils;
@@ -12,9 +15,11 @@ import org.openwes.wes.api.outbound.event.OutboundWaveCreatedEvent;
 
 import java.util.List;
 
+@Getter
+@Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(callSuper = true)
-@Data
-@NoArgsConstructor
 @Slf4j
 public class OutboundWave extends AggregatorRoot {
 

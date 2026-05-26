@@ -73,19 +73,18 @@ public class OutboundWaveServiceImpl implements OutboundWaveService {
         warehouseAreaRecordMap.forEach((key, value) -> {
 
             List<PickingOrderDetail> pickingOrderDetails = value.stream()
-                    .map(preAllocatedRecord -> {
-                                PickingOrderDetail pickingOrderDetail = new PickingOrderDetail()
-                                        .setSkuId(preAllocatedRecord.getSkuId())
-                                        .setOwnerCode(preAllocatedRecord.getOwnerCode())
-                                        .setOutboundOrderPlanId(preAllocatedRecord.getOutboundPlanOrderId())
-                                        .setBatchAttributes(preAllocatedRecord.getBatchAttributes())
-                                        .setQtyRequired(preAllocatedRecord.getQtyPreAllocated())
-                                        .setSkuBatchStockId(preAllocatedRecord.getSkuBatchStockId())
-                                        .setOutboundOrderPlanDetailId(preAllocatedRecord.getOutboundPlanOrderDetailId())
-                                        .setRetargetingWarehouseAreaIds(preAllocatedRecord.getWarehouseAreaIds());
-                                pickingOrderDetail.setModified(true);
-                                return pickingOrderDetail;
-                            }
+                    .map(preAllocatedRecord ->
+                            PickingOrderDetail.builder()
+                                    .skuId(preAllocatedRecord.getSkuId())
+                                    .ownerCode(preAllocatedRecord.getOwnerCode())
+                                    .outboundOrderPlanId(preAllocatedRecord.getOutboundPlanOrderId())
+                                    .batchAttributes(preAllocatedRecord.getBatchAttributes())
+                                    .qtyRequired(preAllocatedRecord.getQtyPreAllocated())
+                                    .skuBatchStockId(preAllocatedRecord.getSkuBatchStockId())
+                                    .outboundOrderPlanDetailId(preAllocatedRecord.getOutboundPlanOrderDetailId())
+                                    .retargetingWarehouseAreaIds(preAllocatedRecord.getWarehouseAreaIds())
+                                    .modified(true)
+                                    .build()
                     ).toList();
 
             PickingOrder pickingOrder = PickingOrder.create(outboundWave.getPriority(), outboundWave.isShortOutbound(),

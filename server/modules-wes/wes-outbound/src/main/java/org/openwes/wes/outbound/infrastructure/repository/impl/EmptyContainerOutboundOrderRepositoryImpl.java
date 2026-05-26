@@ -30,7 +30,7 @@ public class EmptyContainerOutboundOrderRepositoryImpl implements EmptyContainer
         EmptyContainerOutboundOrderPO saved = orderPORepository.save(emptyContainerOutboundOrderPOTransfer.toPO(order));
 
         order.getDetails().forEach(detail ->
-                detail.setEmptyContainerOutboundOrderId(saved.getId()));
+                detail.initialize(saved.getId()));
 
         detailPORepository.saveAll(emptyContainerOutboundOrderPOTransfer.toDetailPOs(order.getDetails()));
     }

@@ -1,20 +1,26 @@
 package org.openwes.wes.outbound.domain.entity;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.openwes.common.utils.jpa.ModificationAware;
 import org.openwes.wes.api.outbound.constants.PickingOrderDetailStatusEnum;
-import lombok.Data;
-import lombok.experimental.Accessors;
-import org.springframework.beans.BeanUtils;
 
 import java.util.Collection;
 import java.util.Map;
 
-@Data
-@Accessors(chain = true)
+@Getter
+@Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PickingOrderDetail implements ModificationAware {
 
     private Long id;
     private String ownerCode;
+    @Setter(AccessLevel.PACKAGE)
     private Long pickingOrderId;
     private Long outboundOrderPlanDetailId;
     private Long outboundOrderPlanId;
@@ -27,12 +33,9 @@ public class PickingOrderDetail implements ModificationAware {
     private Integer qtyActual;
     private Collection<Long> retargetingWarehouseAreaIds;
 
-    //表示上报的异常数量
     private Integer qtyAbnormal;
-    //表示当前任务短拣的数量，当异常数量重新命中后，说明当前任务短拣了，则需要增加此数量
     private Integer qtyShort;
 
-    //当且仅当 this.shortQty + this.operatedQty == this.requiredQty 时,明细完成
     private PickingOrderDetailStatusEnum pickingOrderDetailStatus;
 
     private Long version;
@@ -100,14 +103,21 @@ public class PickingOrderDetail implements ModificationAware {
     }
 
     public PickingOrderDetail copyAndNew(Long skuBatchStockId, Integer requiredQty) {
-        PickingOrderDetail newPickingOrderDetail = new PickingOrderDetail();
-        BeanUtils.copyProperties(this, newPickingOrderDetail, "id");
-        newPickingOrderDetail.setSkuBatchStockId(skuBatchStockId);
-        newPickingOrderDetail.setQtyRequired(requiredQty);
-        newPickingOrderDetail.setQtyActual(0);
-        newPickingOrderDetail.setQtyShort(0);
-        newPickingOrderDetail.setQtyAbnormal(0);
-        newPickingOrderDetail.setModified(true);
-        return newPickingOrderDetail;
+        return PickingOrderDetail.builder()
+                .ownerCode(this.ownerCode)
+                .pickingOrderId(this.pickingOrderId)
+                .outboundOrderPlanDetailId(this.outboundOrderPlanDetailId)
+                .outboundOrderPlanId(this.outboundOrderPlanId)
+                .skuId(this.skuId)
+                .batchAttributes(this.batchAttributes)
+                .skuBatchStockId(skuBatchStockId)
+                .qtyRequired(requiredQty)
+                .qtyActual(0)
+                .qtyShort(0)
+                .qtyAbnormal(0)
+                .retargetingWarehouseAreaIds(this.retargetingWarehouseAreaIds)
+                .pickingOrderDetailStatus(this.pickingOrderDetailStatus)
+                .modified(true)
+                .build();
     }
 }

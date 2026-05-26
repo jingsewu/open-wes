@@ -1,13 +1,20 @@
 package org.openwes.wes.outbound.domain.entity;
 
-import lombok.Data;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.openwes.common.utils.jpa.ModificationAware;
 import org.openwes.wes.api.outbound.constants.OutboundPlanOrderDetailStatusEnum;
 
 import java.util.Map;
 import java.util.Set;
 
-@Data
+@Getter
+@Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class OutboundPlanOrderDetail implements ModificationAware {
 
     private Long id;
@@ -20,7 +27,9 @@ public class OutboundPlanOrderDetail implements ModificationAware {
     private Map<String, Object> batchAttributes;
 
     private Integer qtyRequired;
+    @Builder.Default
     private Integer qtyAllocated = 0;
+    @Builder.Default
     private Integer qtyActual = 0;
     private Set<Long> warehouseAreaIds;
 
@@ -31,6 +40,11 @@ public class OutboundPlanOrderDetail implements ModificationAware {
     private Long version;
 
     private boolean modified;
+
+    @Override
+    public void setModified(boolean modified) {
+        this.modified = modified;
+    }
 
     public void cancel() {
         if (this.outboundPlanOrderDetailStatus != OutboundPlanOrderDetailStatusEnum.NEW) {
@@ -71,5 +85,10 @@ public class OutboundPlanOrderDetail implements ModificationAware {
     public void initialize(Long outboundPlanOrderId) {
         this.outboundPlanOrderId = outboundPlanOrderId;
         this.modified = true;
+    }
+
+    public void enrichSkuInfo(Long skuId, String skuName) {
+        this.skuId = skuId;
+        this.skuName = skuName;
     }
 }

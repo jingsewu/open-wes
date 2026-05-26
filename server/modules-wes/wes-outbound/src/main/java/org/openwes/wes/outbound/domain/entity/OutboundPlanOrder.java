@@ -2,12 +2,14 @@ package org.openwes.wes.outbound.domain.entity;
 
 import com.google.common.collect.Sets;
 import io.micrometer.common.util.StringUtils;
-import lombok.Data;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
-import lombok.NonNull;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.jetbrains.annotations.NotNull;
 import org.openwes.common.utils.id.OrderNoGenerator;
 import org.openwes.common.utils.id.SnowflakeUtils;
 import org.openwes.domain.event.AggregatorRoot;
@@ -25,8 +27,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Getter
+@Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(callSuper = true)
-@Data
 @Slf4j
 public class OutboundPlanOrder extends AggregatorRoot {
 
@@ -44,6 +49,7 @@ public class OutboundPlanOrder extends AggregatorRoot {
     private String origPlatformCode;
 
     private Long expiredTime;
+    @Builder.Default
     private Integer priority = 0;
 
     private String orderNo;
@@ -61,7 +67,6 @@ public class OutboundPlanOrder extends AggregatorRoot {
 
     private Map<String, String> extendFields;
 
-    @NotNull
     private List<OutboundPlanOrderDetail> details;
 
     private Set<String> destinations;
@@ -98,8 +103,7 @@ public class OutboundPlanOrder extends AggregatorRoot {
             SkuMainDataDTO.Key key = new SkuMainDataDTO.Key(v.getSkuCode(), v.getOwnerCode(), this.warehouseCode);
             SkuMainDataDTO skuMainDataDTO = skuMap.get(key);
             if (skuMainDataDTO != null) {
-                v.setSkuId(skuMainDataDTO.getId());
-                v.setSkuName(skuMainDataDTO.getSkuName());
+                v.enrichSkuInfo(skuMainDataDTO.getId(), skuMainDataDTO.getSkuName());
             }
         });
     }

@@ -78,16 +78,17 @@ public class OutboundPlanOrderPreAllocatedAggregate {
             skuBatchStockDTO.setAvailableQty(skuBatchStockDTO.getAvailableQty() - preAllocated);
             qtyRequired -= preAllocated;
 
-            OutboundPreAllocatedRecord preAllocatedRecord = new OutboundPreAllocatedRecord()
-                    .setOwnerCode(detail.getOwnerCode())
-                    .setSkuBatchStockId(skuBatchStockDTO.getId())
-                    .setWarehouseAreaId(skuBatchStockDTO.getWarehouseAreaId())
-                    .setSkuId(skuBatchStockDTO.getSkuId())
-                    .setBatchAttributes(detail.getBatchAttributes())
-                    .setOutboundPlanOrderId(detail.getOutboundPlanOrderId())
-                    .setWarehouseAreaIds(detail.getWarehouseAreaIds())
-                    .setOutboundPlanOrderDetailId(detail.getId())
-                    .setQtyPreAllocated(preAllocated);
+            OutboundPreAllocatedRecord preAllocatedRecord = OutboundPreAllocatedRecord.builder()
+                    .ownerCode(detail.getOwnerCode())
+                    .skuBatchStockId(skuBatchStockDTO.getId())
+                    .warehouseAreaId(skuBatchStockDTO.getWarehouseAreaId())
+                    .skuId(skuBatchStockDTO.getSkuId())
+                    .batchAttributes(detail.getBatchAttributes())
+                    .outboundPlanOrderId(detail.getOutboundPlanOrderId())
+                    .warehouseAreaIds(detail.getWarehouseAreaIds())
+                    .outboundPlanOrderDetailId(detail.getId())
+                    .qtyPreAllocated(preAllocated)
+                    .build();
 
             preAllocatedRecords.add(preAllocatedRecord);
         }

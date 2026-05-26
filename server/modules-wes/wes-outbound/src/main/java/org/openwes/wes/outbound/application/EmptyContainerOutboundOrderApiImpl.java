@@ -41,12 +41,12 @@ public class EmptyContainerOutboundOrderApiImpl implements IEmptyContainerOutbou
             throw new IllegalArgumentException("can not found any empty containers");
         }
 
-        List<EmptyContainerOutboundOrderDetail> details = containerSearchVOs.stream().map(v -> {
-            EmptyContainerOutboundOrderDetail detail = new EmptyContainerOutboundOrderDetail();
-            detail.setContainerId(v.getId());
-            detail.setContainerCode(v.getContainerCode());
-            return detail;
-        }).toList();
+        List<EmptyContainerOutboundOrderDetail> details = containerSearchVOs.stream().map(v ->
+            EmptyContainerOutboundOrderDetail.builder()
+                .containerId(v.getId())
+                .containerCode(v.getContainerCode())
+                .build()
+        ).toList();
 
         EmptyContainerOutboundOrder emptyContainerOutboundOrder = emptyContainerOutboundTransfer.toDO(emptyContainerOutboundOrderCreateDTO, details);
         emptyContainerOutboundOrder.initial();

@@ -57,7 +57,9 @@ public class ObjectUtils {
 
         try {
 
-            T t = tClass.getDeclaredConstructor().newInstance();
+            java.lang.reflect.Constructor<T> constructor = tClass.getDeclaredConstructor();
+            constructor.setAccessible(true);
+            T t = constructor.newInstance();
 
             List<Field> fieldList = Lists.newArrayList();
             if (tClass.getSuperclass() != null && !StringUtils.equals(tClass.getSuperclass().getName(), Object.class.getName())) {

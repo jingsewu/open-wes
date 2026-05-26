@@ -1,14 +1,21 @@
 package org.openwes.wes.outbound.domain.entity;
 
-import lombok.Data;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.openwes.common.utils.id.OrderNoGenerator;
 import org.openwes.wes.api.outbound.constants.EmptyContainerOutboundOrderStatusEnum;
 
 import java.util.List;
 
+@Getter
+@Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Slf4j
-@Data
 public class EmptyContainerOutboundOrder {
 
     private Long id;
