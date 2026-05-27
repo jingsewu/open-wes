@@ -73,8 +73,7 @@ public class AcceptOrder extends AggregatorRoot {
             this.details.add(acceptOrderDetail);
         }
 
-        //TODO 压力测试临时注释，防止并发报错
-//        calculateTotal();
+        calculateTotal();
     }
 
     public void complete() {
@@ -118,7 +117,7 @@ public class AcceptOrder extends AggregatorRoot {
         }
 
         for (AcceptOrderDetail acceptOrderDetail : this.details) {
-            int box = StringUtils.isNotEmpty(acceptOrderDetail.getBoxNo()) ? 1 : 0;
+            int box = (acceptOrderDetail.getQtyAccepted() > 0 && StringUtils.isNotEmpty(acceptOrderDetail.getBoxNo())) ? 1 : 0;
             this.totalBox += box;
             this.totalQty += acceptOrderDetail.getQtyAccepted();
         }

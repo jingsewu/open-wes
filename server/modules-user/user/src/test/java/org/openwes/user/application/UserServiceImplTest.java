@@ -108,7 +108,7 @@ public class UserServiceImplTest {
         role.setStatus(1);
 
         when(userMapper.findByAccount("newUser")).thenReturn(null);
-        when(passwordEncoder.encode("password")).thenReturn("encodedPassword");
+        when(passwordEncoder.encode(any())).thenReturn("encodedPassword");
         when(userMapper.save(any(User.class))).thenReturn(new User());
         when(userRoleMapper.saveAll(anyList())).thenReturn(null);
         when(roleMapper.findAllById(anySet())).thenReturn(Lists.newArrayList(role));
@@ -269,7 +269,7 @@ public class UserServiceImplTest {
         User user = new User();
         user.setId(2L);
 
-        when(userRoleMapper.findByUserId(1L)).thenReturn(Collections.emptyList());
+        when(userRoleMapper.findByUserId(2L)).thenReturn(Collections.emptyList());
 
         Set<PermissionGrantedAuthority> authorities = userService.getPermissionModels(user);
 

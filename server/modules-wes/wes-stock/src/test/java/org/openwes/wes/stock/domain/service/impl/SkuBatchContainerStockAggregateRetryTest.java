@@ -1,5 +1,6 @@
 package org.openwes.wes.stock.domain.service.impl;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.openwes.wes.api.stock.dto.StockCreateDTO;
@@ -79,6 +80,11 @@ public class SkuBatchContainerStockAggregateRetryTest {
     @Autowired
     private ContainerStockRepository containerStockRepository;
 
+    @BeforeEach
+    void resetMocks() {
+        reset(skuBatchStockRepository, containerStockTransactionTransfer, containerStockTransfer, containerStockRepository);
+    }
+
     @Test
     void shouldRetryThreeTimesOnOptimisticLock() {
         // Arrange — return real objects from transfer mocks to avoid NPE
@@ -98,7 +104,7 @@ public class SkuBatchContainerStockAggregateRetryTest {
                 .thenReturn(new SkuBatchStock());
 
         // Act — this will be retried by Spring Retry
-        aggregate.createStock(new StockCreateDTO(), 100L);
+        aggregate.createStock(stockDTO(), 100L);
 
         // Assert — verify it was retried exactly 3 times
         verify(skuBatchStockRepository, times(3)).save(any());

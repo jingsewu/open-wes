@@ -4,9 +4,12 @@ import com.google.common.collect.Sets;
 import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.openwes.common.utils.id.OrderNoGenerator;
+import org.openwes.common.utils.id.Snowflake;
+import org.openwes.common.utils.id.SnowflakeUtils;
 import org.openwes.common.utils.utils.ObjectUtils;
 import org.openwes.common.utils.utils.RedisUtils;
 import org.openwes.wes.api.main.data.dto.SkuMainDataDTO;
@@ -18,6 +21,11 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 
 class OutboundPlanOrderTest {
+
+    @BeforeEach
+    void setUp() {
+        new SnowflakeUtils(new Snowflake(1, 1));
+    }
 
     @Test
     void testInitialize() {

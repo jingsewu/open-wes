@@ -1,6 +1,8 @@
 package org.openwes.wes.inbound.domain.entity;
 
 import org.openwes.common.utils.id.OrderNoGenerator;
+import org.openwes.common.utils.id.Snowflake;
+import org.openwes.common.utils.id.SnowflakeUtils;
 import org.openwes.common.utils.utils.RedisUtils;
 import org.mockito.Mockito;
 
@@ -12,5 +14,6 @@ public class BaseTest {
         RedisUtils mockRedisUtils = Mockito.mock(RedisUtils.class);
         Mockito.when(mockRedisUtils.getAndIncrement(anyString(), anyInt())).thenReturn(10L);
         new OrderNoGenerator(mockRedisUtils);
+        new SnowflakeUtils(new Snowflake(1, 1));
     }
 }

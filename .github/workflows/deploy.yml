@@ -23,6 +23,13 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Log in to TCR
+        uses: docker/login-action@v3
+        with:
+          registry: ccr.ccs.tencentyun.com
+          username: ${{ secrets.TCR_USERNAME }}
+          password: ${{ secrets.TCR_PASSWORD }}
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -34,6 +41,8 @@ jobs:
           tags: |
             ghcr.io/${{ github.repository }}/frontend:latest
             ghcr.io/${{ github.repository }}/frontend:${{ github.sha }}
+            ccr.ccs.tencentyun.com/${{ secrets.TCR_NAMESPACE }}/frontend:latest
+            ccr.ccs.tencentyun.com/${{ secrets.TCR_NAMESPACE }}/frontend:${{ github.sha }}
           cache-from: type=gha,scope=frontend
           cache-to: type=gha,mode=max,scope=frontend
 
@@ -74,6 +83,13 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Log in to TCR
+        uses: docker/login-action@v3
+        with:
+          registry: ccr.ccs.tencentyun.com
+          username: ${{ secrets.TCR_USERNAME }}
+          password: ${{ secrets.TCR_PASSWORD }}
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -88,6 +104,8 @@ jobs:
           tags: |
             ghcr.io/${{ github.repository }}/gateway:latest
             ghcr.io/${{ github.repository }}/gateway:${{ github.sha }}
+            ccr.ccs.tencentyun.com/${{ secrets.TCR_NAMESPACE }}/gateway:latest
+            ccr.ccs.tencentyun.com/${{ secrets.TCR_NAMESPACE }}/gateway:${{ github.sha }}
           cache-from: type=gha,scope=backend
           cache-to: type=gha,mode=max,scope=backend
 
@@ -100,6 +118,8 @@ jobs:
           tags: |
             ghcr.io/${{ github.repository }}/wes:latest
             ghcr.io/${{ github.repository }}/wes:${{ github.sha }}
+            ccr.ccs.tencentyun.com/${{ secrets.TCR_NAMESPACE }}/wes:latest
+            ccr.ccs.tencentyun.com/${{ secrets.TCR_NAMESPACE }}/wes:${{ github.sha }}
           cache-from: type=gha,scope=backend
           cache-to: type=gha,mode=max,scope=backend
 
@@ -112,6 +132,8 @@ jobs:
           tags: |
             ghcr.io/${{ github.repository }}/station:latest
             ghcr.io/${{ github.repository }}/station:${{ github.sha }}
+            ccr.ccs.tencentyun.com/${{ secrets.TCR_NAMESPACE }}/station:latest
+            ccr.ccs.tencentyun.com/${{ secrets.TCR_NAMESPACE }}/station:${{ github.sha }}
           cache-from: type=gha,scope=backend
           cache-to: type=gha,mode=max,scope=backend
 
@@ -146,34 +168,34 @@ jobs:
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
         env:
-          GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
-          GITHUB_ACTOR: ${{ github.actor }}
-          GITHUB_REPO: ${{ github.repository }}
+          TCR_USERNAME: ${{ secrets.TCR_USERNAME }}
+          TCR_PASSWORD: ${{ secrets.TCR_PASSWORD }}
+          TCR_NAMESPACE: ${{ secrets.TCR_NAMESPACE }}
           IMAGE_TAG: ${{ github.sha }}
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           password: ${{ secrets.SSH_PASSWORD }}
           port: ${{ secrets.SSH_PORT || 22 }}
-          envs: GHCR_TOKEN,GITHUB_ACTOR,GITHUB_REPO,IMAGE_TAG
+          envs: TCR_USERNAME,TCR_PASSWORD,TCR_NAMESPACE,IMAGE_TAG
           command_timeout: 30m
           script: |
             set -e
 
-            # Authenticate with GHCR.
+            # Authenticate with TCR (腾讯云容器镜像服务个人版).
             # Write credentials directly to ~/.docker/config.json to avoid
             # "Cannot perform an interactive login from a non TTY device" errors
             # that occur when Docker on the server uses a credential store.
             mkdir -p ~/.docker
-            AUTH=$(printf '%s:%s' "${GITHUB_ACTOR}" "${GHCR_TOKEN}" | base64 -w 0)
-            printf '{"auths":{"ghcr.io":{"auth":"%s"}}}\n' "${AUTH}" > ~/.docker/config.json
+            AUTH=$(printf '%s:%s' "${TCR_USERNAME}" "${TCR_PASSWORD}" | base64 -w 0)
+            printf '{"auths":{"ccr.ccs.tencentyun.com":{"auth":"%s"}}}\n' "${AUTH}" > ~/.docker/config.json
 
             cd /data/workspace/open-wes
 
             # Write the .env file that docker-compose.prod.yml reads.
             HOST_IP=$(hostname -I | awk '{print $1}')
-            printf 'HOST_IP=%s\nIMAGE_BASE=ghcr.io/%s\nIMAGE_TAG=%s\n' \
-              "${HOST_IP}" "${GITHUB_REPO}" "${IMAGE_TAG}" > .env
+            printf 'HOST_IP=%s\nIMAGE_BASE=ccr.ccs.tencentyun.com/%s\nIMAGE_TAG=%s\n' \
+              "${HOST_IP}" "${TCR_NAMESPACE}" "${IMAGE_TAG}" > .env
 
             # Pull monitoring images from Docker Hub (slow on mainland China servers).
             # Run with retry and do NOT fail the deployment if pull times out —
@@ -198,7 +220,7 @@ jobs:
             pull_with_retry oliver006/redis_exporter:v1.61.0
             pull_with_retry danielqsj/kafka-exporter:v1.7.0
 
-            # Pull the 4 app images from GHCR (fast — same region via CDN).
+            # Pull the 4 app images from TCR (腾讯云内网，极速).
             # mysql/redis/nacos are stable and already cached on the server
             # after the first deployment.
             # Use 'docker compose' (v2) — docker-compose (v1) is not installed.

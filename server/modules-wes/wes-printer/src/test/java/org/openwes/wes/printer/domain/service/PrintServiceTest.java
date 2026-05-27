@@ -24,6 +24,8 @@ import org.thymeleaf.context.Context;
 
 import java.util.*;
 
+import org.mockito.Mockito;
+
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -76,7 +78,7 @@ class PrintServiceTest {
         resultRow.put("age", 30);
         results.add(resultRow);
 
-        when(jdbcTemplate.queryForList(anyString(), any(Object[].class))).thenReturn(results);
+        when(jdbcTemplate.queryForList(anyString(), Mockito.<Object>any())).thenReturn(results);
 
         PrintTemplate template = mock(PrintTemplate.class);
         when(template.getTemplateContent()).thenReturn("<p>Hello ${name}, age: ${age}</p>");
@@ -93,7 +95,7 @@ class PrintServiceTest {
         printService.print(Arrays.asList(rule), Set.of(detail), event);
 
         // Assert
-        verify(jdbcTemplate).queryForList(anyString(), any(Object[].class));
+        verify(jdbcTemplate).queryForList(anyString(), Mockito.<Object>any());
         verify(templateEngine).process(anyString(), any(Context.class));
         verify(printRecordRepository).save(any(PrintRecord.class));
         verify(mqClient).sendMessage(eq(RedisConstants.PRINTER_TOPIC), any(PrintContentDTO.class));
@@ -131,7 +133,7 @@ class PrintServiceTest {
         printService.print(Arrays.asList(rule), Set.of(detail), event);
 
         // Assert
-        verify(jdbcTemplate, never()).queryForList(anyString(), any(Object[].class));
+        verify(jdbcTemplate, never()).queryForList(anyString(), Mockito.<Object>any());
         verify(templateEngine).process(anyString(), any(Context.class));
         verify(printRecordRepository).save(any(PrintRecord.class));
         verify(mqClient).sendMessage(eq(RedisConstants.PRINTER_TOPIC), any(PrintContentDTO.class));

@@ -4,6 +4,7 @@ import com.google.common.collect.Sets;
 import io.micrometer.common.util.StringUtils;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
+@NoArgsConstructor
 @Slf4j
 public class OutboundPlanOrder extends AggregatorRoot {
 

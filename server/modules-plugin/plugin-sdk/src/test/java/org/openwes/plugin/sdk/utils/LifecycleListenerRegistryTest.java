@@ -36,6 +36,6 @@ class LifecycleListenerRegistryTest {
 
         registry.fireAfterStatusChange("TestEntity", 1L, "statusData", "NEW_STATUS");
 
-        verify(listener).afterStatusChange("statusData", 1L, "NEW_STATUS");
+        verify(listener).afterStatusChange(1L, "statusData", "NEW_STATUS");
     }
 }

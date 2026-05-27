@@ -20,7 +20,9 @@ class PutAwayTaskTest extends BaseTest {
     @BeforeEach
     public void setUp() {
         super.setUp();
+        PutAwayTaskDetail detail = new PutAwayTaskDetail();
         putAwayTask = new PutAwayTask();
+        putAwayTask.setPutAwayTaskDetails(Lists.newArrayList(detail));
         putAwayTask.initialize();
     }
 

@@ -23,3 +23,7 @@ dependencies {
 test {
     useJUnitPlatform()
 }
+
+dependencies {
+    testImplementation 'org.mockito:mockito-inline:4.6.0'
+}
