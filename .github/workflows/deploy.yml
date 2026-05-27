@@ -38,6 +38,7 @@ jobs:
         with:
           context: ./client
           push: true
+          provenance: false
           tags: |
             ghcr.io/${{ github.repository }}/frontend:latest
             ghcr.io/${{ github.repository }}/frontend:${{ github.sha }}
@@ -101,6 +102,7 @@ jobs:
           context: ./server
           target: gateway
           push: true
+          provenance: false
           tags: |
             ghcr.io/${{ github.repository }}/gateway:latest
             ghcr.io/${{ github.repository }}/gateway:${{ github.sha }}
@@ -115,6 +117,7 @@ jobs:
           context: ./server
           target: wes
           push: true
+          provenance: false
           tags: |
             ghcr.io/${{ github.repository }}/wes:latest
             ghcr.io/${{ github.repository }}/wes:${{ github.sha }}
@@ -129,6 +132,7 @@ jobs:
           context: ./server
           target: station
           push: true
+          provenance: false
           tags: |
             ghcr.io/${{ github.repository }}/station:latest
             ghcr.io/${{ github.repository }}/station:${{ github.sha }}
