@@ -1,0 +1,207 @@
+name: Build & Deploy
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  build-frontend:
+    name: Build & Push Frontend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Log in to TCR
+        uses: docker/login-action@v3
+        with:
+          registry: ccr.ccs.tencentyun.com
+          username: ${{ secrets.TCR_USERNAME }}
+          password: ${{ secrets.TCR_PASSWORD }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build & push frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./client
+          push: true
+          provenance: false
+          build-args: |
+            NPM_REGISTRY=https://registry.npmmirror.com
+          tags: |
+            ccr.ccs.tencentyun.com/${{ secrets.TCR_NAMESPACE }}/frontend:latest
+          cache-from: type=gha,scope=frontend
+          cache-to: type=gha,mode=max,scope=frontend
+
+  build-backend:
+    name: Build & Push Backend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build JARs with Aliyun mirror
+        run: |
+          cat > /tmp/aliyun.gradle << 'EOF'
+          allprojects {
+            buildscript {
+              repositories {
+                maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
+                maven { url 'https://maven.aliyun.com/repository/public' }
+              }
+            }
+            repositories {
+              maven { url 'https://maven.aliyun.com/repository/public' }
+              maven { url 'https://maven.aliyun.com/repository/spring' }
+              maven { url 'https://maven.aliyun.com/repository/spring-plugin' }
+            }
+          }
+          EOF
+          cd server
+          ./gradlew :server:station-server:bootJar \
+                    :server:gateway-server:bootJar \
+                    :server:wes-server:bootJar \
+                    -x test --no-daemon \
+                    --init-script /tmp/aliyun.gradle
+
+      - name: Log in to TCR
+        uses: docker/login-action@v3
+        with:
+          registry: ccr.ccs.tencentyun.com
+          username: ${{ secrets.TCR_USERNAME }}
+          password: ${{ secrets.TCR_PASSWORD }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build & push gateway
+        uses: docker/build-push-action@v5
+        with:
+          context: ./server
+          target: gateway
+          push: true
+          provenance: false
+          tags: |
+            ccr.ccs.tencentyun.com/${{ secrets.TCR_NAMESPACE }}/gateway:latest
+          cache-from: type=gha,scope=backend
+          cache-to: type=gha,mode=max,scope=backend
+
+      - name: Build & push wes-server
+        uses: docker/build-push-action@v5
+        with:
+          context: ./server
+          target: wes
+          push: true
+          provenance: false
+          tags: |
+            ccr.ccs.tencentyun.com/${{ secrets.TCR_NAMESPACE }}/wes:latest
+          cache-from: type=gha,scope=backend
+          cache-to: type=gha,mode=max,scope=backend
+
+      - name: Build & push station-server
+        uses: docker/build-push-action@v5
+        with:
+          context: ./server
+          target: station
+          push: true
+          provenance: false
+          tags: |
+            ccr.ccs.tencentyun.com/${{ secrets.TCR_NAMESPACE }}/station:latest
+          cache-from: type=gha,scope=backend
+          cache-to: type=gha,mode=max,scope=backend
+
+  deploy:
+    name: Deploy to Remote Server
+    needs: [build-frontend, build-backend]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prepare remote workspace
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          script: mkdir -p /data/workspace/open-wes
+
+      - name: Copy compose file and init scripts to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          source: "docker-compose.prod.yml,initdb.d,monitoring"
+          target: "/data/workspace/open-wes/"
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          TCR_USERNAME: ${{ secrets.TCR_USERNAME }}
+          TCR_PASSWORD: ${{ secrets.TCR_PASSWORD }}
+          TCR_NAMESPACE: ${{ secrets.TCR_NAMESPACE }}
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          envs: TCR_USERNAME,TCR_PASSWORD,TCR_NAMESPACE
+          command_timeout: 30m
+          script: |
+            set -e
+
+            mkdir -p ~/.docker
+            AUTH=$(printf '%s:%s' "${TCR_USERNAME}" "${TCR_PASSWORD}" | base64 -w 0)
+            printf '{"auths":{"ccr.ccs.tencentyun.com":{"auth":"%s"}}}\n' "${AUTH}" > ~/.docker/config.json
+
+            cd /data/workspace/open-wes
+
+            HOST_IP=$(hostname -I | awk '{print $1}')
+            printf 'HOST_IP=%s\nIMAGE_BASE=ccr.ccs.tencentyun.com/%s\nIMAGE_TAG=latest\n' \
+              "${HOST_IP}" "${TCR_NAMESPACE}" > .env
+
+            pull_with_retry() {
+              local image="$1"
+              for i in 1 2 3; do
+                sudo docker pull "$image" && return 0
+                echo "Pull attempt $i failed for $image, retrying..."
+                sleep 10
+              done
+              echo "WARNING: could not pull $image — will use cached image if available"
+              return 0
+            }
+            pull_with_retry prom/prometheus:v2.52.0
+            pull_with_retry grafana/grafana:11.1.0
+            pull_with_retry grafana/loki:3.1.0
+            pull_with_retry grafana/promtail:3.1.0
+            pull_with_retry prom/alertmanager:v0.27.0
+            pull_with_retry prom/node-exporter:v1.8.1
+            pull_with_retry prom/mysqld-exporter:v0.15.1
+            pull_with_retry oliver006/redis_exporter:v1.61.0
+            pull_with_retry danielqsj/kafka-exporter:v1.7.0
+
+            sudo docker compose -f docker-compose.prod.yml pull frontend gateway-server wes-server station-server
+            sudo docker compose -f docker-compose.prod.yml up -d --remove-orphans
+            sudo docker image prune -f

@@ -2,6 +2,8 @@
 FROM node:18-alpine AS deps
 RUN apk add --no-cache git
 RUN corepack enable && corepack prepare pnpm@9 --activate
+ARG NPM_REGISTRY=https://registry.npmjs.org
+RUN pnpm config set registry ${NPM_REGISTRY}
 WORKDIR /app
 COPY package*.json ./
 RUN pnpm install
