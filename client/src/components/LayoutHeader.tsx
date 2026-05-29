@@ -43,7 +43,7 @@ const WarehouseSelect = ({
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
         >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2">
                 <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
                 <polyline points="9 22 9 12 15 12 15 22" />
             </svg>
@@ -91,7 +91,7 @@ const UserTrigger = ({ name, ...rest }: { name: string } & React.HTMLAttributes<
                     height: 26,
                     borderRadius: "50%",
                     flexShrink: 0,
-                    background: "linear-gradient(135deg, #2563eb, #4f46e5)",
+                    background: "linear-gradient(135deg, #3b82f6, #1d4ed8)",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -172,7 +172,7 @@ const Header = ({
                         height: 32,
                         borderRadius: "50%",
                         flexShrink: 0,
-                        background: "linear-gradient(135deg, #2563eb, #4f46e5)",
+                        background: "linear-gradient(135deg, #3b82f6, #1d4ed8)",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
@@ -213,14 +213,14 @@ const Header = ({
                         padding: "0 16px",
                         gap: 8,
                         flexShrink: 0,
-                        borderRight: "1px solid #e5e7eb"
+                        borderRight: "1px solid #e2e8f0"
                     }}
                 >
                     <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <defs>
                             <linearGradient id={LOGO_GRAD_ID} x1="0" y1="0" x2="1" y2="1">
-                                <stop offset="0%" stopColor="#2563eb" />
-                                <stop offset="100%" stopColor="#4f46e5" />
+                                <stop offset="0%" stopColor="#3b82f6" />
+                                <stop offset="100%" stopColor="#1d4ed8" />
                             </linearGradient>
                         </defs>
                         <rect width="34" height="34" rx="9" fill={`url(#${LOGO_GRAD_ID})`} />
@@ -228,7 +228,7 @@ const Header = ({
                     </svg>
                     <span style={{ fontSize: 15, whiteSpace: "nowrap" }}>
                         <span style={{ fontWeight: 500, color: "#374151" }}>Open</span>
-                        <span style={{ fontWeight: 800, color: "#2563eb" }}>WES</span>
+                        <span style={{ fontWeight: 800, color: "#3b82f6" }}>WES</span>
                     </span>
                 </div>
 
