@@ -2,6 +2,15 @@
     "login.submitText": "Login",
     "login.username": "Username",
     "login.password": "Password",
+    "login.subtitle": "Sign in to your account",
+    "login.usernamePlaceholder": "Enter your username",
+    "login.passwordPlaceholder": "Enter your password",
+    "login.rememberMe": "Remember me",
+    "login.contactAdmin": "Need an account? Contact your administrator.",
+    "login.brandTagline": "Warehouse Execution System",
+    "login.featureAnalytics": "Real-time warehouse analytics",
+    "login.featureRealtime": "High-performance task execution",
+    "login.featureSecurity": "Enterprise-grade security",
 
     "station.operatingStation": "Operating station",
     "categories.receiving": "receiving",
@@ -993,6 +1002,9 @@
     "dashboard.status": "Status",
     "dashboard.outboundStatus": "Outbound Status",
     "dashboard.requiredQty": "Required Quantity",
+    "dashboard.todaysOrders": "Today's Orders",
+    "dashboard.activeWorkstations": "Active Workstations",
+    "dashboard.completionRate": "Completion Rate",
 
     "confirm.callContainer": "Are you sure to call container?",
 
