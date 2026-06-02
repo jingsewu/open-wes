@@ -21,7 +21,7 @@ class LayoutServiceTest {
         assertFalse(layout.getWorkstations().isEmpty());
         assertFalse(layout.getChargingStations().isEmpty());
         assertNotNull(layout.getPods());
-        assertEquals(6, layout.getPods().size());
+        assertEquals(32, layout.getPods().size());
         assertEquals(8, layout.getRobots().size());
     }
 

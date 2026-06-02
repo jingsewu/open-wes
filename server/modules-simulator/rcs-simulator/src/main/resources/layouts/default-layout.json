@@ -17,31 +17,37 @@
     { "id": "D02", "x": 28, "y": 6, "width": 2, "height": 5, "locationCodes": ["D02-01","D02-02","D02-03","D02-04","D02-05","D02-06","D02-07","D02-08","D02-09","D02-10"] }
   ],
   "pods": [
-    { "id": "POD-01", "x": 22, "y": 20 },
-    { "id": "POD-02", "x": 25, "y": 20 },
-    { "id": "POD-03", "x": 28, "y": 20 },
-    { "id": "POD-04", "x": 22, "y": 24 },
-    { "id": "POD-05", "x": 25, "y": 24 },
-    { "id": "POD-06", "x": 28, "y": 24 }
+    { "id": "POD-01", "x": 18, "y": 18 }, { "id": "POD-02", "x": 21, "y": 18 }, { "id": "POD-03", "x": 24, "y": 18 },
+    { "id": "POD-04", "x": 27, "y": 18 }, { "id": "POD-05", "x": 30, "y": 18 }, { "id": "POD-06", "x": 33, "y": 18 },
+    { "id": "POD-07", "x": 36, "y": 18 }, { "id": "POD-08", "x": 39, "y": 18 },
+    { "id": "POD-09", "x": 18, "y": 20 }, { "id": "POD-10", "x": 21, "y": 20 }, { "id": "POD-11", "x": 24, "y": 20 },
+    { "id": "POD-12", "x": 27, "y": 20 }, { "id": "POD-13", "x": 30, "y": 20 }, { "id": "POD-14", "x": 33, "y": 20 },
+    { "id": "POD-15", "x": 36, "y": 20 }, { "id": "POD-16", "x": 39, "y": 20 },
+    { "id": "POD-17", "x": 18, "y": 22 }, { "id": "POD-18", "x": 21, "y": 22 }, { "id": "POD-19", "x": 24, "y": 22 },
+    { "id": "POD-20", "x": 27, "y": 22 }, { "id": "POD-21", "x": 30, "y": 22 }, { "id": "POD-22", "x": 33, "y": 22 },
+    { "id": "POD-23", "x": 36, "y": 22 }, { "id": "POD-24", "x": 39, "y": 22 },
+    { "id": "POD-25", "x": 18, "y": 24 }, { "id": "POD-26", "x": 21, "y": 24 }, { "id": "POD-27", "x": 24, "y": 24 },
+    { "id": "POD-28", "x": 27, "y": 24 }, { "id": "POD-29", "x": 30, "y": 24 }, { "id": "POD-30", "x": 33, "y": 24 },
+    { "id": "POD-31", "x": 36, "y": 24 }, { "id": "POD-32", "x": 39, "y": 24 }
   ],
   "workstations": [
     { "id": "WS-01", "x": 2, "y": 10, "type": "PICKING", "locationCode": "WS-01" },
-    { "id": "WS-02", "x": 2, "y": 15, "type": "PICKING", "locationCode": "WS-02" },
+    { "id": "WS-02", "x": 2, "y": 14, "type": "PICKING", "locationCode": "WS-02" },
     { "id": "WS-03", "x": 38, "y": 10, "type": "RECEIVING", "locationCode": "WS-03" },
-    { "id": "WS-04", "x": 38, "y": 15, "type": "RECEIVING", "locationCode": "WS-04" }
+    { "id": "WS-04", "x": 38, "y": 14, "type": "RECEIVING", "locationCode": "WS-04" }
   ],
   "chargingStations": [
-    { "id": "CS-01", "x": 45, "y": 10, "locationCode": "CS-01" },
-    { "id": "CS-02", "x": 45, "y": 20, "locationCode": "CS-02" }
+    { "id": "CS-01", "x": 2, "y": 26, "locationCode": "CS-01" },
+    { "id": "CS-02", "x": 45, "y": 26, "locationCode": "CS-02" }
   ],
   "robots": [
-    { "robotCode": "AGV-001", "robotType": "KIVA", "startX": 10, "startY": 12, "speed": 2.0 },
-    { "robotCode": "AGV-002", "robotType": "KIVA", "startX": 14, "startY": 12, "speed": 2.0 },
-    { "robotCode": "AGV-003", "robotType": "KIVA", "startX": 18, "startY": 12, "speed": 1.8 },
-    { "robotCode": "AGV-004", "robotType": "KIVA", "startX": 14, "startY": 9, "speed": 2.0 },
-    { "robotCode": "AGV-005", "robotType": "KIVA", "startX": 26, "startY": 12, "speed": 2.2 },
-    { "robotCode": "AGV-006", "robotType": "KIVA", "startX": 26, "startY": 9, "speed": 2.0 },
-    { "robotCode": "BIN-001", "robotType": "BIN_ROBOT", "startX": 34, "startY": 22, "speed": 1.5, "basketSlots": 6 },
-    { "robotCode": "BIN-002", "robotType": "BIN_ROBOT", "startX": 34, "startY": 26, "speed": 1.5, "basketSlots": 6 }
+    { "robotCode": "AGV-001", "robotType": "KIVA", "startX": 19, "startY": 27, "speed": 2.0 },
+    { "robotCode": "AGV-002", "robotType": "KIVA", "startX": 23, "startY": 27, "speed": 2.0 },
+    { "robotCode": "AGV-003", "robotType": "KIVA", "startX": 26, "startY": 27, "speed": 1.8 },
+    { "robotCode": "AGV-004", "robotType": "KIVA", "startX": 30, "startY": 27, "speed": 2.0 },
+    { "robotCode": "AGV-005", "robotType": "KIVA", "startX": 34, "startY": 27, "speed": 2.2 },
+    { "robotCode": "AGV-006", "robotType": "KIVA", "startX": 38, "startY": 27, "speed": 2.0 },
+    { "robotCode": "BIN-001", "robotType": "BIN_ROBOT", "startX": 8, "startY": 9, "speed": 1.5, "basketSlots": 6 },
+    { "robotCode": "BIN-002", "robotType": "BIN_ROBOT", "startX": 28, "startY": 9, "speed": 1.5, "basketSlots": 6 }
   ]
 }
