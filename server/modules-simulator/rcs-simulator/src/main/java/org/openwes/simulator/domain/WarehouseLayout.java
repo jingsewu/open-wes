@@ -14,6 +14,7 @@ public class WarehouseLayout {
     private List<Workstation> workstations;
     private List<ChargingStation> chargingStations;
     private List<PodConfig> pods;
+    private List<String> storedContainers;
     private List<RobotConfig> robots;
 
     // locationCode -> Position lookup, built after deserialization

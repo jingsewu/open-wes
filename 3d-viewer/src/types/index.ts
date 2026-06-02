@@ -88,6 +88,7 @@ export interface WarehouseLayout {
   workstations: WorkstationConfig[]
   chargingStations: ChargingStationConfig[]
   pods: PodConfig[]
+  storedContainers: string[]
   robots: RobotConfig[]
 }
 

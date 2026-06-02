@@ -6,6 +6,14 @@ import { Shelf } from './Shelf'
 import { Robot } from './Robot'
 import { Workstation } from './Workstation'
 import { CameraController } from './CameraController'
+import type { ShelfConfig } from '@/types'
+
+function shelvesWithContainers(shelves: ShelfConfig[], stored: string[] | undefined) {
+  const storedSet = new Set(stored ?? [])
+  return shelves.map(shelf => (
+    <Shelf key={shelf.id} config={shelf} storedLocations={storedSet} />
+  ))
+}
 
 function ChargingStation({ config }: { config: { id: string; x: number; y: number } }) {
   return (
@@ -112,9 +120,7 @@ export function WarehouseScene() {
         <>
           <Floor width={layout.warehouse.width} height={layout.warehouse.height} />
 
-          {layout.shelves.map(shelf => (
-            <Shelf key={shelf.id} config={shelf} />
-          ))}
+          {shelvesWithContainers(layout.shelves, layout.storedContainers)}
 
           {layout.workstations.map(ws => (
             <Workstation key={ws.id} config={ws} />

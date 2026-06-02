@@ -16,19 +16,31 @@
     { "id": "D01", "x": 24, "y": 6, "width": 2, "height": 5, "locationCodes": ["D01-01","D01-02","D01-03","D01-04","D01-05","D01-06","D01-07","D01-08","D01-09","D01-10"] },
     { "id": "D02", "x": 28, "y": 6, "width": 2, "height": 5, "locationCodes": ["D02-01","D02-02","D02-03","D02-04","D02-05","D02-06","D02-07","D02-08","D02-09","D02-10"] }
   ],
+  "storedContainers": [
+    "A01-01","A01-03","A01-05","A01-07","A01-09",
+    "A02-02","A02-04","A02-06","A02-08","A02-10",
+    "A03-01","A03-03","A03-05","A03-07","A03-09",
+    "B01-02","B01-04","B01-06","B01-08","B01-10",
+    "B02-01","B02-03","B02-05","B02-07","B02-09",
+    "B03-02","B03-04","B03-06","B03-08","B03-10",
+    "C01-01","C01-03","C01-05","C01-07","C01-09",
+    "C02-02","C02-04","C02-06","C02-08","C02-10",
+    "D01-01","D01-03","D01-05","D01-07","D01-09",
+    "D02-02","D02-04","D02-06","D02-08","D02-10"
+  ],
   "pods": [
-    { "id": "POD-01", "x": 18, "y": 18 }, { "id": "POD-02", "x": 21, "y": 18 }, { "id": "POD-03", "x": 24, "y": 18 },
-    { "id": "POD-04", "x": 27, "y": 18 }, { "id": "POD-05", "x": 30, "y": 18 }, { "id": "POD-06", "x": 33, "y": 18 },
-    { "id": "POD-07", "x": 36, "y": 18 }, { "id": "POD-08", "x": 39, "y": 18 },
-    { "id": "POD-09", "x": 18, "y": 20 }, { "id": "POD-10", "x": 21, "y": 20 }, { "id": "POD-11", "x": 24, "y": 20 },
-    { "id": "POD-12", "x": 27, "y": 20 }, { "id": "POD-13", "x": 30, "y": 20 }, { "id": "POD-14", "x": 33, "y": 20 },
-    { "id": "POD-15", "x": 36, "y": 20 }, { "id": "POD-16", "x": 39, "y": 20 },
-    { "id": "POD-17", "x": 18, "y": 22 }, { "id": "POD-18", "x": 21, "y": 22 }, { "id": "POD-19", "x": 24, "y": 22 },
-    { "id": "POD-20", "x": 27, "y": 22 }, { "id": "POD-21", "x": 30, "y": 22 }, { "id": "POD-22", "x": 33, "y": 22 },
-    { "id": "POD-23", "x": 36, "y": 22 }, { "id": "POD-24", "x": 39, "y": 22 },
-    { "id": "POD-25", "x": 18, "y": 24 }, { "id": "POD-26", "x": 21, "y": 24 }, { "id": "POD-27", "x": 24, "y": 24 },
-    { "id": "POD-28", "x": 27, "y": 24 }, { "id": "POD-29", "x": 30, "y": 24 }, { "id": "POD-30", "x": 33, "y": 24 },
-    { "id": "POD-31", "x": 36, "y": 24 }, { "id": "POD-32", "x": 39, "y": 24 }
+    { "id": "POD-01", "x": 9, "y": 18 }, { "id": "POD-02", "x": 12, "y": 18 }, { "id": "POD-03", "x": 15, "y": 18 },
+    { "id": "POD-04", "x": 18, "y": 18 }, { "id": "POD-05", "x": 21, "y": 18 }, { "id": "POD-06", "x": 24, "y": 18 },
+    { "id": "POD-07", "x": 27, "y": 18 }, { "id": "POD-08", "x": 30, "y": 18 },
+    { "id": "POD-09", "x": 9, "y": 20 }, { "id": "POD-10", "x": 12, "y": 20 }, { "id": "POD-11", "x": 15, "y": 20 },
+    { "id": "POD-12", "x": 18, "y": 20 }, { "id": "POD-13", "x": 21, "y": 20 }, { "id": "POD-14", "x": 24, "y": 20 },
+    { "id": "POD-15", "x": 27, "y": 20 }, { "id": "POD-16", "x": 30, "y": 20 },
+    { "id": "POD-17", "x": 9, "y": 22 }, { "id": "POD-18", "x": 12, "y": 22 }, { "id": "POD-19", "x": 15, "y": 22 },
+    { "id": "POD-20", "x": 18, "y": 22 }, { "id": "POD-21", "x": 21, "y": 22 }, { "id": "POD-22", "x": 24, "y": 22 },
+    { "id": "POD-23", "x": 27, "y": 22 }, { "id": "POD-24", "x": 30, "y": 22 },
+    { "id": "POD-25", "x": 9, "y": 24 }, { "id": "POD-26", "x": 12, "y": 24 }, { "id": "POD-27", "x": 15, "y": 24 },
+    { "id": "POD-28", "x": 18, "y": 24 }, { "id": "POD-29", "x": 21, "y": 24 }, { "id": "POD-30", "x": 24, "y": 24 },
+    { "id": "POD-31", "x": 27, "y": 24 }, { "id": "POD-32", "x": 30, "y": 24 }
   ],
   "workstations": [
     { "id": "WS-01", "x": 2, "y": 10, "type": "PICKING", "locationCode": "WS-01" },
@@ -41,13 +53,13 @@
     { "id": "CS-02", "x": 45, "y": 26, "locationCode": "CS-02" }
   ],
   "robots": [
-    { "robotCode": "AGV-001", "robotType": "KIVA", "startX": 19, "startY": 27, "speed": 2.0 },
-    { "robotCode": "AGV-002", "robotType": "KIVA", "startX": 23, "startY": 27, "speed": 2.0 },
-    { "robotCode": "AGV-003", "robotType": "KIVA", "startX": 26, "startY": 27, "speed": 1.8 },
-    { "robotCode": "AGV-004", "robotType": "KIVA", "startX": 30, "startY": 27, "speed": 2.0 },
-    { "robotCode": "AGV-005", "robotType": "KIVA", "startX": 34, "startY": 27, "speed": 2.2 },
-    { "robotCode": "AGV-006", "robotType": "KIVA", "startX": 38, "startY": 27, "speed": 2.0 },
-    { "robotCode": "BIN-001", "robotType": "BIN_ROBOT", "startX": 8, "startY": 9, "speed": 1.5, "basketSlots": 6 },
-    { "robotCode": "BIN-002", "robotType": "BIN_ROBOT", "startX": 28, "startY": 9, "speed": 1.5, "basketSlots": 6 }
+    { "robotCode": "AGV-001", "robotType": "KIVA", "startX": 10, "startY": 27, "speed": 2.0 },
+    { "robotCode": "AGV-002", "robotType": "KIVA", "startX": 15, "startY": 27, "speed": 2.0 },
+    { "robotCode": "AGV-003", "robotType": "KIVA", "startX": 19, "startY": 27, "speed": 1.8 },
+    { "robotCode": "AGV-004", "robotType": "KIVA", "startX": 24, "startY": 27, "speed": 2.0 },
+    { "robotCode": "AGV-005", "robotType": "KIVA", "startX": 28, "startY": 27, "speed": 2.2 },
+    { "robotCode": "AGV-006", "robotType": "KIVA", "startX": 33, "startY": 27, "speed": 2.0 },
+    { "robotCode": "BIN-001", "robotType": "BIN_ROBOT", "startX": 20, "startY": 16, "speed": 1.5, "basketSlots": 6 },
+    { "robotCode": "BIN-002", "robotType": "BIN_ROBOT", "startX": 20, "startY": 12, "speed": 1.5, "basketSlots": 6 }
   ]
 }
