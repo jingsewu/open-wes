@@ -94,9 +94,7 @@ public class KivaBehavior implements RobotBehavior {
 
             case WAITING_PROCESS:
                 robot.setStatus(RobotStatus.WAITING);
-                long entered = stateEnteredAt.getOrDefault(task.getTaskCode(), now);
-                if (properties.getKiva().getProcessDelayMs() > 0
-                        && (now - entered) >= properties.getKiva().getProcessDelayMs()) {
+                if (isDelayElapsed(task.getTaskCode(), now, properties.getKiva().getProcessDelayMs())) {
                     completeTask(robot, task);
                     return true;
                 }

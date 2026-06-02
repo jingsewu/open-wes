@@ -29,7 +29,8 @@ class TaskExecutionServiceTest {
         properties.setLoadingDelayMs(0); // instant for tests
         properties.setFailureRatePercent(0);
 
-        // Set kiva process delay to 0 so it auto-completes in tests
+        // Set kiva delays to 0 so they complete instantly in tests
+        properties.getKiva().setLiftDelayMs(0);
         properties.getKiva().setProcessDelayMs(0);
 
         fleetService = new RobotFleetService(pathService, properties);
