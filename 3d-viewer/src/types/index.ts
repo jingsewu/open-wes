@@ -8,14 +8,16 @@ export interface RobotState {
   carriedContainerCode: string | null
   taskCode: string | null
   batteryLevel: number
+  basketItems: string[] | null
+  carryingPodId: string | null
 }
 
 export type RobotStatusType =
   | 'IDLE'
-  | 'MOVING_TO_PICKUP'
+  | 'MOVING'
   | 'LOADING'
-  | 'MOVING_TO_DESTINATION'
   | 'UNLOADING'
+  | 'WAITING'
   | 'CHARGING'
   | 'ERROR'
 
@@ -65,12 +67,19 @@ export interface ChargingStationConfig {
   locationCode: string
 }
 
+export interface PodConfig {
+  id: string
+  x: number
+  y: number
+}
+
 export interface RobotConfig {
   robotCode: string
   robotType: string
   startX: number
   startY: number
   speed: number
+  basketSlots: number
 }
 
 export interface WarehouseLayout {
@@ -78,6 +87,7 @@ export interface WarehouseLayout {
   shelves: ShelfConfig[]
   workstations: WorkstationConfig[]
   chargingStations: ChargingStationConfig[]
+  pods: PodConfig[]
   robots: RobotConfig[]
 }
 

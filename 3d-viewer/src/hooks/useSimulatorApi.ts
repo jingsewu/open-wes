@@ -40,5 +40,9 @@ export function useSimulatorApi() {
     await apiFetch(`/api/simulator/robots/${robotCode}/recover`, { method: 'POST' })
   }, [])
 
-  return { fetchLayout, resetSimulator, updateConfig, injectError, recoverRobot }
+  const processComplete = useCallback(async (robotCode: string) => {
+    await apiFetch(`/api/simulator/robots/${robotCode}/process-complete`, { method: 'POST' })
+  }, [])
+
+  return { fetchLayout, resetSimulator, updateConfig, injectError, recoverRobot, processComplete }
 }

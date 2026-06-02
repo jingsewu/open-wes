@@ -1,13 +1,14 @@
 import { useState } from 'react'
 import { useSimulatorStore } from '@/stores/simulatorStore'
+import { useSimulatorApi } from '@/hooks/useSimulatorApi'
 import type { RobotStatusType } from '@/types'
 
 const STATUS_DOT: Record<RobotStatusType, string> = {
   IDLE: 'bg-blue-400',
-  MOVING_TO_PICKUP: 'bg-green-400',
+  MOVING: 'bg-green-400',
   LOADING: 'bg-yellow-400',
-  MOVING_TO_DESTINATION: 'bg-green-400',
   UNLOADING: 'bg-yellow-400',
+  WAITING: 'bg-purple-400',
   CHARGING: 'bg-gray-400',
   ERROR: 'bg-red-500',
 }
@@ -18,6 +19,7 @@ export function RobotPanel() {
   const selectedRobotCode = useSimulatorStore(s => s.selectedRobotCode)
   const selectRobot = useSimulatorStore(s => s.selectRobot)
   const setCameraMode = useSimulatorStore(s => s.setCameraMode)
+  const { processComplete } = useSimulatorApi()
 
   const handleFollowRobot = (robotCode: string) => {
     selectRobot(robotCode)
@@ -54,15 +56,33 @@ export function RobotPanel() {
               <span className={`w-2 h-2 rounded-full ${STATUS_DOT[robot.status]}`} />
               <span className="font-mono font-medium">{robot.robotCode}</span>
             </div>
-            <button
-              onClick={(e) => { e.stopPropagation(); handleFollowRobot(robot.robotCode) }}
-              className="text-blue-500 hover:text-blue-700 text-[10px]"
-            >
-              Follow
-            </button>
+            <div className="flex gap-1">
+              <button
+                onClick={(e) => { e.stopPropagation(); handleFollowRobot(robot.robotCode) }}
+                className="text-blue-500 hover:text-blue-700 text-[10px]"
+              >
+                Follow
+              </button>
+              {robot.status === 'WAITING' && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    processComplete(robot.robotCode)
+                  }}
+                  className="text-purple-500 hover:text-purple-700 text-[10px]"
+                >
+                  Complete
+                </button>
+              )}
+            </div>
           </div>
           <div className="mt-1 text-gray-400">
-            {robot.status} {robot.carriedContainerCode ? `| ${robot.carriedContainerCode}` : ''}
+            {robot.status}
+            {robot.robotType === 'BIN_ROBOT' && robot.basketItems && robot.basketItems.length > 0
+              ? ` | Basket: ${robot.basketItems.length}`
+              : ''}
+            {robot.carryingPodId ? ` | Pod: ${robot.carryingPodId}` : ''}
+            {robot.carriedContainerCode ? ` | ${robot.carriedContainerCode}` : ''}
           </div>
           {/* Battery bar */}
           <div className="mt-1 h-1 bg-gray-200 rounded-full">
