@@ -15,9 +15,24 @@ public class SimulatorProperties {
     private int failureRatePercent = 0;
     private String layoutFile = "classpath:layouts/default-layout.json";
     private Cors cors = new Cors();
+    private Kiva kiva = new Kiva();
+    private BinRobot binRobot = new BinRobot();
 
     @Data
     public static class Cors {
         private String allowedOrigins = "http://localhost:8092,http://3d-viewer:8092";
+    }
+
+    @Data
+    public static class Kiva {
+        private int liftDelayMs = 1500;
+        private int processDelayMs = 5000;
+    }
+
+    @Data
+    public static class BinRobot {
+        private int pickDelayMs = 1500;
+        private int storeDelayMs = 1000;
+        private int unloadDelayMs = 1000;
     }
 }

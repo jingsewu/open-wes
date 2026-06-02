@@ -2,10 +2,10 @@ package org.openwes.simulator.domain;
 
 public enum RobotStatus {
     IDLE,
-    MOVING_TO_PICKUP,
+    MOVING,
     LOADING,
-    MOVING_TO_DESTINATION,
     UNLOADING,
+    WAITING,      // new: waiting for human processing (KIVA)
     CHARGING,
     ERROR
 }

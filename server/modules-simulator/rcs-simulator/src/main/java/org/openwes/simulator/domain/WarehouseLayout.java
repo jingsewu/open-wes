@@ -13,6 +13,7 @@ public class WarehouseLayout {
     private List<Shelf> shelves;
     private List<Workstation> workstations;
     private List<ChargingStation> chargingStations;
+    private List<PodConfig> pods;
     private List<RobotConfig> robots;
 
     // locationCode -> Position lookup, built after deserialization
@@ -40,6 +41,11 @@ public class WarehouseLayout {
         if (chargingStations != null) {
             for (ChargingStation cs : chargingStations) {
                 locationPositions.put(cs.getLocationCode(), new Position(cs.getX(), cs.getY(), 0));
+            }
+        }
+        if (pods != null) {
+            for (PodConfig pod : pods) {
+                locationPositions.put(pod.getId(), new Position(pod.getX(), pod.getY(), 0));
             }
         }
     }
@@ -86,11 +92,19 @@ public class WarehouseLayout {
     }
 
     @Data
+    public static class PodConfig {
+        private String id;
+        private double x;
+        private double y;
+    }
+
+    @Data
     public static class RobotConfig {
         private String robotCode;
-        private String robotType;
+        private RobotType robotType;      // was: String
         private double startX;
         private double startY;
         private double speed;
+        private int basketSlots;          // new: only used for BIN_ROBOT
     }
 }
