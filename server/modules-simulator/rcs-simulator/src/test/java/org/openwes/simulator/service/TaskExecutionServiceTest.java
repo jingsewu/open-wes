@@ -21,7 +21,6 @@ class TaskExecutionServiceTest {
 
     @BeforeEach
     void setUp() {
-        fleetService = new RobotFleetService();
         pathService = new PathService();
         callbackService = mock(WesCallbackService.class);
         layoutService = mock(LayoutService.class);
@@ -30,6 +29,10 @@ class TaskExecutionServiceTest {
         properties.setLoadingDelayMs(0); // instant for tests
         properties.setFailureRatePercent(0);
 
+        // Set kiva process delay to 0 so it auto-completes in tests
+        properties.getKiva().setProcessDelayMs(0);
+
+        fleetService = new RobotFleetService(pathService, properties);
         executionService = new TaskExecutionService(fleetService, pathService, callbackService, layoutService, properties);
 
         // Setup layout with positions
@@ -51,7 +54,7 @@ class TaskExecutionServiceTest {
         // Init robots
         WarehouseLayout.RobotConfig config = new WarehouseLayout.RobotConfig();
         config.setRobotCode("AGV-001");
-        config.setRobotType("KIVA");
+        config.setRobotType(RobotType.KIVA);
         config.setStartX(5);
         config.setStartY(5);
         config.setSpeed(100); // fast for tests
@@ -71,7 +74,7 @@ class TaskExecutionServiceTest {
     void submitTask_noIdleRobot_queuesTask() {
         // Occupy the only robot
         VirtualRobot robot = fleetService.getRobot("AGV-001");
-        robot.setStatus(RobotStatus.MOVING_TO_PICKUP);
+        robot.setStatus(RobotStatus.MOVING);
 
         SimulatedTask task = makeTask("TASK-002", "C-002", "SHELF-01", "WS-01");
         executionService.submitTask(task);
@@ -128,7 +131,7 @@ class TaskExecutionServiceTest {
         SimulatedTask task = new SimulatedTask();
         task.setTaskCode(taskCode);
         task.setContainerCode(containerCode);
-        task.setStartLocation(startLoc);
+        task.setStartLocations(List.of(startLoc));
         task.setDestinations(List.of(destLoc));
         task.setPriority(10);
         task.setGroupPriority(10);

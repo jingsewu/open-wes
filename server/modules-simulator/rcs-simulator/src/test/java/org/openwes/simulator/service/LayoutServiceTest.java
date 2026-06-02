@@ -2,6 +2,7 @@ package org.openwes.simulator.service;
 
 import org.junit.jupiter.api.Test;
 import org.openwes.simulator.domain.Position;
+import org.openwes.simulator.domain.RobotType;
 import org.openwes.simulator.domain.WarehouseLayout;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -19,6 +20,8 @@ class LayoutServiceTest {
         assertFalse(layout.getShelves().isEmpty());
         assertFalse(layout.getWorkstations().isEmpty());
         assertFalse(layout.getChargingStations().isEmpty());
+        assertNotNull(layout.getPods());
+        assertEquals(6, layout.getPods().size());
         assertEquals(8, layout.getRobots().size());
     }
 
@@ -44,5 +47,16 @@ class LayoutServiceTest {
                 .distinct()
                 .count();
         assertEquals(layout.getRobots().size(), uniqueCount, "Robot codes must be unique");
+    }
+
+    @Test
+    void loadDefaultLayout_hasKivaAndBinRobot() {
+        LayoutService service = new LayoutService();
+        WarehouseLayout layout = service.loadFromClasspath("layouts/default-layout.json");
+
+        assertTrue(layout.getRobots().stream().anyMatch(
+                r -> r.getRobotType() == RobotType.KIVA));
+        assertTrue(layout.getRobots().stream().anyMatch(
+                r -> r.getRobotType() == RobotType.BIN_ROBOT));
     }
 }
