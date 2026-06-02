@@ -50,7 +50,7 @@ public class WebSocketPushService {
     private Map<String, Object> robotToMap(VirtualRobot robot) {
         Map<String, Object> map = new LinkedHashMap<>();
         map.put("robotCode", robot.getRobotCode());
-        map.put("robotType", robot.getRobotType());
+        map.put("robotType", robot.getRobotType().name());
         map.put("status", robot.getStatus().name());
         map.put("x", robot.getCurrentPosition().getX());
         map.put("y", robot.getCurrentPosition().getY());
@@ -58,6 +58,8 @@ public class WebSocketPushService {
         map.put("carriedContainerCode", robot.getCarriedContainerCode());
         map.put("taskCode", robot.getAssignedTaskCode());
         map.put("batteryLevel", robot.getBatteryLevel());
+        map.put("basketItems", robot.getBasketItems());
+        map.put("carryingPodId", robot.getCarryingPodId());
         return map;
     }
 
@@ -66,7 +68,8 @@ public class WebSocketPushService {
         map.put("taskCode", task.getTaskCode());
         map.put("status", task.getStatus().name());
         map.put("containerCode", task.getContainerCode());
-        map.put("startLocation", task.getStartLocation());
+        List<String> startLocations = task.getPickupLocationCodes();
+        map.put("startLocation", startLocations.isEmpty() ? null : startLocations.get(0));
         map.put("destination", task.getDestinations() != null && !task.getDestinations().isEmpty()
                 ? task.getDestinations().iterator().next() : null);
         map.put("assignedRobot", task.getAssignedRobotCode());

@@ -28,13 +28,15 @@ public class TaskReceiveController {
             task.setTaskGroupCode(payload.getTaskGroupCode());
             task.setContainerCode(payload.getContainerCode());
             task.setContainerFace(payload.getContainerFace());
-            task.setStartLocation(payload.getStartLocation());
+            task.setStartLocations(payload.getStartLocation() != null
+                    ? List.of(payload.getStartLocation()) : null);
             task.setDestinations(payload.getDestinations());
             task.setPriority(payload.getTaskPriority() != null ? payload.getTaskPriority() : 0);
             task.setGroupPriority(payload.getTaskGroupPriority() != null ? payload.getTaskGroupPriority() : 0);
             task.setBusinessTaskType(payload.getBusinessTaskType());
             task.setContainerTaskType(payload.getContainerTaskType());
             task.setCustomerTaskId(payload.getCustomerTaskId());
+            task.setRequiredRobotType(payload.getRequiredRobotType());
 
             if (task.getTaskCode() == null) {
                 task.setTaskCode("SIM-" + System.currentTimeMillis() + "-" + payload.getCustomerTaskId());
@@ -99,5 +101,6 @@ public class TaskReceiveController {
         private String containerSpecCode;
         private String startLocation;
         private Collection<String> destinations;
+        private String requiredRobotType;
     }
 }

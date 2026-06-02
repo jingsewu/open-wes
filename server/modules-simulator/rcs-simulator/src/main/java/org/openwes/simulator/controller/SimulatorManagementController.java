@@ -12,6 +12,7 @@ import org.openwes.simulator.service.TaskExecutionService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,6 +29,39 @@ public class SimulatorManagementController {
     @GetMapping("/robots")
     public List<VirtualRobot> listRobots() {
         return fleetService.getAllRobots();
+    }
+
+    @GetMapping("/robots/{robotCode}")
+    public Map<String, Object> getRobotDetail(@PathVariable String robotCode) {
+        VirtualRobot robot = fleetService.getRobot(robotCode);
+        if (robot == null) {
+            return Map.of("status", "error", "message", "Robot not found: " + robotCode);
+        }
+        Map<String, Object> detail = new LinkedHashMap<>();
+        detail.put("robotCode", robot.getRobotCode());
+        detail.put("robotType", robot.getRobotType().name());
+        detail.put("status", robot.getStatus().name());
+        detail.put("position", Map.of("x", robot.getCurrentPosition().getX(), "y", robot.getCurrentPosition().getY()));
+        detail.put("batteryLevel", robot.getBatteryLevel());
+        detail.put("basketItems", robot.getBasketItems());
+        detail.put("carryingPodId", robot.getCarryingPodId());
+        detail.put("assignedTaskCode", robot.getAssignedTaskCode());
+        return detail;
+    }
+
+    @PostMapping("/robots/{robotCode}/process-complete")
+    public Map<String, String> processComplete(@PathVariable String robotCode) {
+        VirtualRobot robot = fleetService.getRobot(robotCode);
+        if (robot == null) {
+            return Map.of("status", "error", "message", "Robot not found: " + robotCode);
+        }
+        if (robot.getBehavior() != null) {
+            taskExecutionService.getActiveTasks().stream()
+                    .filter(t -> robotCode.equals(t.getAssignedRobotCode()))
+                    .findFirst()
+                    .ifPresent(task -> robot.getBehavior().processComplete(robot, task));
+        }
+        return Map.of("status", "PROCESS_COMPLETED");
     }
 
     @GetMapping("/tasks")
