@@ -27,3 +27,10 @@ simulator:
   layout-file: ${LAYOUT_FILE:classpath:layouts/default-layout.json}
   cors:
     allowed-origins: ${CORS_ORIGINS:http://localhost:8092,http://3d-viewer:8092}
+  kiva:
+    lift-delay-ms: 1500
+    process-delay-ms: 5000
+  bin-robot:
+    pick-delay-ms: 1500
+    store-delay-ms: 1000
+    unload-delay-ms: 1000

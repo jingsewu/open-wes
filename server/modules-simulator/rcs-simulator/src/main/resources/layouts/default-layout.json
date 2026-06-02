@@ -4,6 +4,14 @@
     "height": 30,
     "gridSize": 1.0
   },
+  "pods": [
+    { "id": "POD-01", "x": 22, "y": 6 },
+    { "id": "POD-02", "x": 25, "y": 6 },
+    { "id": "POD-03", "x": 28, "y": 6 },
+    { "id": "POD-04", "x": 22, "y": 18 },
+    { "id": "POD-05", "x": 25, "y": 18 },
+    { "id": "POD-06", "x": 28, "y": 18 }
+  ],
   "shelves": [
     { "id": "A01", "x": 8, "y": 2, "width": 2, "height": 5, "locationCodes": ["A01-01","A01-02","A01-03","A01-04","A01-05","A01-06","A01-07","A01-08","A01-09","A01-10"] },
     { "id": "A02", "x": 12, "y": 2, "width": 2, "height": 5, "locationCodes": ["A02-01","A02-02","A02-03","A02-04","A02-05","A02-06","A02-07","A02-08","A02-09","A02-10"] },
@@ -33,7 +41,7 @@
     { "robotCode": "AGV-004", "robotType": "KIVA", "startX": 22, "startY": 12, "speed": 2.0 },
     { "robotCode": "AGV-005", "robotType": "KIVA", "startX": 26, "startY": 12, "speed": 2.2 },
     { "robotCode": "AGV-006", "robotType": "KIVA", "startX": 30, "startY": 12, "speed": 2.0 },
-    { "robotCode": "FLT-001", "robotType": "FORKLIFT", "startX": 34, "startY": 10, "speed": 1.5 },
-    { "robotCode": "FLT-002", "robotType": "FORKLIFT", "startX": 34, "startY": 20, "speed": 1.5 }
+    { "robotCode": "BIN-001", "robotType": "BIN_ROBOT", "startX": 34, "startY": 10, "speed": 1.5, "basketSlots": 6 },
+    { "robotCode": "BIN-002", "robotType": "BIN_ROBOT", "startX": 34, "startY": 20, "speed": 1.5, "basketSlots": 6 }
   ]
 }
