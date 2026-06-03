@@ -38,6 +38,9 @@ const WHEEL_RADIUS = 0.06
 const WHEEL_WIDTH = 0.05
 const TIRE_COLOR = '#1a1a2e'
 const HUB_COLOR = '#444466'
+const HK_ORANGE = '#e8772e'
+const HK_DARK = '#2a2a3a'
+const HK_GRAY = '#4a4a5a'
 
 // ─── Sub-component: Wheel ───────────────────────────────────────────
 function Wheel({ pos, rotY = 0, spin = 0 }: { pos: [number, number, number]; rotY?: number; spin?: number }) {
@@ -57,22 +60,57 @@ function Wheel({ pos, rotY = 0, spin = 0 }: { pos: [number, number, number]; rot
   )
 }
 
-// ─── Sub-component: Headlight ───────────────────────────────────────
-function Headlight({ on = true }: { on?: boolean }) {
+// ─── Sub-component: Caster wheel (small, omnidirectional) ───────────
+function Caster({ pos }: { pos: [number, number, number] }) {
+  const cRadius = WHEEL_RADIUS * 0.55
   return (
-    <mesh position={[0, 0.06, -0.31]}>
-      <sphereGeometry args={[0.025, 8, 8]} />
-      <meshStandardMaterial
-        color={on ? '#ffeecc' : '#444'}
-        emissive={on ? '#ffeeaa' : '#000'}
-        emissiveIntensity={on ? 0.8 : 0}
-      />
-    </mesh>
+    <group position={pos}>
+      {/* Caster fork */}
+      <mesh position={[0, cRadius * 0.9, 0]}>
+        <cylinderGeometry args={[0.015, 0.02, cRadius * 1.8, 6]} />
+        <meshStandardMaterial color={HK_GRAY} metalness={0.6} roughness={0.4} />
+      </mesh>
+      {/* Caster wheel */}
+      <mesh position={[0, 0, 0]}>
+        <sphereGeometry args={[cRadius, 8, 6]} />
+        <meshStandardMaterial color={TIRE_COLOR} roughness={0.9} />
+      </mesh>
+    </group>
+  )
+}
+
+// ─── Sub-component: Status Light Tower ──────────────────────────────
+function LightTower({ status }: { status: RobotStatusType }) {
+  const colors =
+    status === 'ERROR'
+      ? ['#e74c3c', '#e74c3c', '#e74c3c']
+      : status === 'LOADING' || status === 'UNLOADING'
+        ? ['#f5a623', '#f5a623', '#444']
+        : status === 'MOVING'
+          ? ['#27ae60', '#444', '#444']
+          : ['#4a90d9', '#444', '#444']
+
+  return (
+    <group position={[0, 0.01, 0]}>
+      {[0, 1, 2].map((i) => (
+        <mesh key={`tower-${i}`} position={[0, 0.05 + i * 0.04, 0]}>
+          <cylinderGeometry args={[0.015, 0.018, 0.03, 6]} />
+          <meshStandardMaterial
+            color={colors[i]}
+            emissive={colors[i]}
+            emissiveIntensity={colors[i] !== '#444' ? 0.8 : 0}
+            transparent
+            opacity={colors[i] !== '#444' ? 0.9 : 0.3}
+          />
+        </mesh>
+      ))}
+    </group>
   )
 }
 
 // ═══════════════════════════════════════════════════════════════════
-//  BIN_ROBOT DESIGN (forklift + basket carrier)
+// HIKVISION-INSPIRED BIN_ROBOT (flat-top bin-transport AGV)
+// Ref: Hikvision MR-B series / bin-handling AGVs
 // ═══════════════════════════════════════════════════════════════════
 function BinRobotMesh({ robot, isSelected }: { robot: RobotState; isSelected: boolean }) {
   const color = STATUS_COLORS[robot.status]
@@ -82,252 +120,137 @@ function BinRobotMesh({ robot, isSelected }: { robot: RobotState; isSelected: bo
   // Spin wheels when moving
   const wheelSpinRef = useRef(0)
   useFrame((_, delta) => {
-    if (isMoving) wheelSpinRef.current += delta * 6
+    if (isMoving) wheelSpinRef.current += delta * 5
   })
 
-  // ─── Body dimensions ───
-  const BW = 0.55 // body width
+  // ─── Body dimensions (elongated flat-top) ───
+  const BW = 0.60 // body width
   const BH = 0.20 // body height
-  const BD = 0.65 // body depth
-  const mastH = 0.55
+  const BD = 0.85 // body depth (longer than KIVA)
 
   return (
     <group>
       {/* ═══ Shadow disc ═══ */}
       <mesh position={[0, -ROBOT_Y + 0.005, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <circleGeometry args={[0.45, 24]} />
-        <meshBasicMaterial color="#000" transparent opacity={0.15} depthWrite={false} />
-      </mesh>
-
-      {/* ═══ Chassis (lower body) ═══ */}
-      <mesh position={[0, BH / 2, 0]} castShadow>
-        <boxGeometry args={[BW, BH, BD]} />
-        <meshStandardMaterial color={color} metalness={0.5} roughness={0.4} />
-      </mesh>
-
-      {/* ═══ Cabin / upper body ═══ */}
-      <mesh position={[0.06, BH + 0.12, -0.05]} castShadow>
-        <boxGeometry args={[BW * 0.75, 0.18, BD * 0.55]} />
-        <meshStandardMaterial color={color} metalness={0.4} roughness={0.5} />
-      </mesh>
-
-      {/* ═══ Overhead guard (4 posts + roof) ═══ */}
-      {[
-        [-BW * 0.32, BD * 0.2],
-        [BW * 0.32, BD * 0.2],
-        [-BW * 0.32, -BD * 0.28],
-        [BW * 0.32, -BD * 0.28],
-      ].map(([px, pz], i) => (
-        <mesh key={`guard-${i}`} position={[px, BH + 0.32, pz]}>
-          <cylinderGeometry args={[0.012, 0.012, 0.28, 6]} />
-          <meshStandardMaterial color="#555566" metalness={0.6} roughness={0.4} />
-        </mesh>
-      ))}
-      {/* Roof */}
-      <mesh position={[0, BH + 0.46, -0.02]} castShadow>
-        <boxGeometry args={[BW * 0.75, 0.02, BD * 0.6]} />
-        <meshStandardMaterial color="#444455" metalness={0.5} roughness={0.5} transparent opacity={0.4} />
-      </mesh>
-
-      {/* ═══ Mast (vertical rails at front) ═══ */}
-      {[-0.08, 0.08].map((ox, i) => (
-        <mesh key={`mast-${i}`} position={[ox, BH + mastH / 2, -BD / 2 + 0.04]}>
-          <boxGeometry args={[0.03, mastH, 0.03]} />
-          <meshStandardMaterial color="#556677" metalness={0.7} roughness={0.3} />
-        </mesh>
-      ))}
-      {/* Mast cross brace */}
-      <mesh position={[0, BH + mastH * 0.4, -BD / 2 + 0.04]}>
-        <boxGeometry args={[0.2, 0.02, 0.02]} />
-        <meshStandardMaterial color="#556677" metalness={0.6} roughness={0.4} />
-      </mesh>
-      <mesh position={[0, BH + mastH * 0.7, -BD / 2 + 0.04]}>
-        <boxGeometry args={[0.2, 0.02, 0.02]} />
-        <meshStandardMaterial color="#556677" metalness={0.6} roughness={0.4} />
-      </mesh>
-
-      {/* ═══ Forks ═══ */}
-      {[-0.08, 0.08].map((ox, i) => (
-        <group key={`fork-${i}`}>
-          {/* Horizontal prong */}
-          <mesh position={[ox, 0.03, -BD / 2 - 0.18]} castShadow>
-            <boxGeometry args={[0.04, 0.025, 0.3]} />
-            <meshStandardMaterial color="#dd8833" metalness={0.6} roughness={0.5} />
-          </mesh>
-          {/* Heel (vertical bit) */}
-          <mesh position={[ox, 0.06, -BD / 2 + 0.02]}>
-            <boxGeometry args={[0.04, 0.08, 0.04]} />
-            <meshStandardMaterial color="#cc7722" metalness={0.6} roughness={0.5} />
-          </mesh>
-        </group>
-      ))}
-
-      {/* ═══ Basket (rear-mounted for bins) ═══ */}
-      {robot.basketItems && robot.basketItems.length > 0 && (
-        <group position={[0, BH + 0.15, BD * 0.15]}>
-          {/* Basket cage */}
-          <mesh>
-            <boxGeometry args={[0.35, 0.2, 0.25]} />
-            <meshStandardMaterial color="#777788" metalness={0.3} roughness={0.6} transparent opacity={0.35} />
-          </mesh>
-          {/* Basket wireframe edges */}
-          <mesh>
-            <edgesGeometry args={[new THREE.BoxGeometry(0.35, 0.2, 0.25)]} />
-            <lineBasicMaterial color="#9999aa" />
-          </mesh>
-          {/* Bin items inside */}
-          {robot.basketItems.slice(0, 3).map((_, idx) => (
-            <mesh key={idx} position={[-0.08 + idx * 0.08, -0.02, -0.04]}>
-              <boxGeometry args={[0.05, 0.08, 0.05]} />
-              <meshStandardMaterial
-                color={['#d4832a', '#5a8f4a', '#4a7aaa'][idx % 3]}
-                metalness={0.2}
-                roughness={0.7}
-              />
-            </mesh>
-          ))}
-        </group>
-      )}
-
-      {/* ═══ Wheels ═══ */}
-      {/* Drive wheels (front) */}
-      <Wheel pos={[-BW / 2 - 0.01, WHEEL_RADIUS, -BD * 0.25]} rotY={0} spin={wheelSpinRef.current} />
-      <Wheel pos={[BW / 2 + 0.01, WHEEL_RADIUS, -BD * 0.25]} rotY={0} spin={wheelSpinRef.current} />
-      {/* Steer wheels (rear) */}
-      <Wheel pos={[-BW / 2 - 0.01, WHEEL_RADIUS, BD * 0.25]} rotY={0} spin={wheelSpinRef.current} />
-      <Wheel pos={[BW / 2 + 0.01, WHEEL_RADIUS, BD * 0.25]} rotY={0} spin={wheelSpinRef.current} />
-
-      {/* ═══ Counterweight (rear) ═══ */}
-      <mesh position={[0, 0.06, BD / 2 - 0.02]} castShadow>
-        <boxGeometry args={[BW * 0.8, 0.1, 0.08]} />
-        <meshStandardMaterial color="#333344" metalness={0.7} roughness={0.4} />
-      </mesh>
-
-      {/* ═══ Headlight ═══ */}
-      <Headlight on={isMoving} />
-
-      {/* ═══ Status LED strip (side) ═══ */}
-      <mesh position={[BW / 2 + 0.005, BH / 2 + 0.02, -BD * 0.15]}>
-        <boxGeometry args={[0.005, 0.04, 0.15]} />
-        <meshStandardMaterial color={color} emissive={color} emissiveIntensity={glow} />
-      </mesh>
-      <mesh position={[-BW / 2 - 0.005, BH / 2 + 0.02, -BD * 0.15]}>
-        <boxGeometry args={[0.005, 0.04, 0.15]} />
-        <meshStandardMaterial color={color} emissive={color} emissiveIntensity={glow} />
-      </mesh>
-
-      {/* ═══ Selection ring ═══ */}
-      {isSelected && (
-        <mesh position={[0, 0.005, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-          <ringGeometry args={[0.48, 0.55, 32]} />
-          <meshBasicMaterial color="#ffdd44" transparent opacity={0.7} />
-        </mesh>
-      )}
-
-      {/* ═══ Carried container ═══ */}
-      {robot.carriedContainerCode && (
-        <mesh position={[0, 0.45, -BD / 4]} castShadow>
-          <boxGeometry args={[0.4, 0.25, 0.4]} />
-          <meshStandardMaterial color="#d4832a" metalness={0.3} roughness={0.6} />
-        </mesh>
-      )}
-
-      {/* ═══ Label ═══ */}
-      <Text position={[0, 0.65, 0]} fontSize={0.16} color="#1a2a3a" anchorX="center" anchorY="bottom">
-        {robot.robotCode}
-      </Text>
-    </group>
-  )
-}
-
-// ═══════════════════════════════════════════════════════════════════
-// KIVA AGV DESIGN (pod lifter)
-// ═══════════════════════════════════════════════════════════════════
-function KivaRobotMesh({ robot, isSelected }: { robot: RobotState; isSelected: boolean }) {
-  const color = STATUS_COLORS[robot.status]
-  const glow = STATUS_GLOW[robot.status]
-  const isMoving = robot.status.startsWith('MOVING')
-
-  const BW = 0.5
-  const BH = 0.18
-  const BD = 0.55
-
-  return (
-    <group>
-      {/* ═══ Shadow disc ═══ */}
-      <mesh position={[0, -ROBOT_Y + 0.005, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <circleGeometry args={[0.4, 24]} />
+        <circleGeometry args={[0.55, 24]} />
         <meshBasicMaterial color="#000" transparent opacity={0.12} depthWrite={false} />
       </mesh>
 
-      {/* ═══ Main body ═══ */}
+      {/* ═══ Main chassis – dark gray body ═══ */}
       <mesh position={[0, BH / 2, 0]} castShadow>
         <boxGeometry args={[BW, BH, BD]} />
-        <meshStandardMaterial color={color} metalness={0.4} roughness={0.5} />
-      </mesh>
-      {/* Top chamfer plates */}
-      <mesh position={[0, BH - 0.01, 0]}>
-        <boxGeometry args={[BW - 0.06, 0.02, BD - 0.06]} />
-        <meshStandardMaterial color={color} metalness={0.5} roughness={0.3} />
+        <meshStandardMaterial color={HK_DARK} metalness={0.5} roughness={0.5} />
       </mesh>
 
-      {/* ═══ Corner bumpers ═══ */}
-      {[
-        [-BW / 2, -BD / 2],
-        [BW / 2, -BD / 2],
-        [-BW / 2, BD / 2],
-        [BW / 2, BD / 2],
-      ].map(([bx, bz], i) => (
-        <mesh key={`bumper-${i}`} position={[bx, 0.04, bz]}>
-          <boxGeometry args={[0.06, 0.06, 0.06]} />
-          <meshStandardMaterial color="#222233" metalness={0.3} roughness={0.8} />
+      {/* ═══ Orange safety stripe (wraps around body) ═══ */}
+      <mesh position={[0, BH * 0.25, -BD / 2 - 0.005]}>
+        <boxGeometry args={[BW + 0.01, 0.03, 0.008]} />
+        <meshStandardMaterial color={HK_ORANGE} metalness={0.3} roughness={0.5} emissive={HK_ORANGE} emissiveIntensity={0.08} />
+      </mesh>
+      <mesh position={[0, BH * 0.25, BD / 2 + 0.005]}>
+        <boxGeometry args={[BW + 0.01, 0.03, 0.008]} />
+        <meshStandardMaterial color={HK_ORANGE} metalness={0.3} roughness={0.5} emissive={HK_ORANGE} emissiveIntensity={0.08} />
+      </mesh>
+      <mesh position={[-BW / 2 - 0.005, BH * 0.25, 0]}>
+        <boxGeometry args={[0.008, 0.03, BD + 0.01]} />
+        <meshStandardMaterial color={HK_ORANGE} metalness={0.3} roughness={0.5} emissive={HK_ORANGE} emissiveIntensity={0.08} />
+      </mesh>
+      <mesh position={[BW / 2 + 0.005, BH * 0.25, 0]}>
+        <boxGeometry args={[0.008, 0.03, BD + 0.01]} />
+        <meshStandardMaterial color={HK_ORANGE} metalness={0.3} roughness={0.5} emissive={HK_ORANGE} emissiveIntensity={0.08} />
+      </mesh>
+
+      {/* ═══ Top deck plate (raised platform) ═══ */}
+      <mesh position={[0, BH - 0.005, 0]}>
+        <boxGeometry args={[BW - 0.06, 0.02, BD - 0.06]} />
+        <meshStandardMaterial color="#3a3a4a" metalness={0.6} roughness={0.3} />
+      </mesh>
+
+      {/* ═══ Roller conveyor section (top – for bin transfer) ═══ */}
+      <group position={[0, BH + 0.015, 0]}>
+        {/* Conveyor frame rails */}
+        <mesh position={[-BW * 0.28, 0.015, 0]}>
+          <boxGeometry args={[0.02, 0.03, BD - 0.20]} />
+          <meshStandardMaterial color={HK_GRAY} metalness={0.6} roughness={0.4} />
+        </mesh>
+        <mesh position={[BW * 0.28, 0.015, 0]}>
+          <boxGeometry args={[0.02, 0.03, BD - 0.20]} />
+          <meshStandardMaterial color={HK_GRAY} metalness={0.6} roughness={0.4} />
+        </mesh>
+        {/* Conveyor rollers */}
+        {Array.from({ length: 7 }).map((_, i) => {
+          const rz = -BD * 0.30 + i * (BD * 0.10)
+          return (
+            <mesh key={`roller-${i}`} position={[0, 0.03, rz]} rotation={[0, 0, Math.PI / 2]}>
+              <cylinderGeometry args={[0.015, 0.015, BW * 0.48, 8]} />
+              <meshStandardMaterial color="#8888aa" metalness={0.7} roughness={0.3} />
+            </mesh>
+          )
+        })}
+      </group>
+
+      {/* ═══ Side guide rails (for bin alignment) ═══ */}
+      {[-1, 1].map((side) => (
+        <mesh key={`guide-${side}`} position={[side * BW * 0.32, BH + 0.10, 0]} castShadow>
+          <boxGeometry args={[0.025, 0.14, BD - 0.15]} />
+          <meshStandardMaterial color={HK_ORANGE} metalness={0.4} roughness={0.5} />
         </mesh>
       ))}
+      {/* Guide rail end caps */}
+      {[-1, 1].map((side) => (
+        <>
+          <mesh key={`cap-f-${side}`} position={[side * BW * 0.32, BH + 0.10, -BD * 0.47]}>
+            <boxGeometry args={[0.03, 0.16, 0.02]} />
+            <meshStandardMaterial color={HK_ORANGE} metalness={0.4} roughness={0.5} />
+          </mesh>
+          <mesh key={`cap-r-${side}`} position={[side * BW * 0.32, BH + 0.10, BD * 0.47]}>
+            <boxGeometry args={[0.03, 0.16, 0.02]} />
+            <meshStandardMaterial color={HK_ORANGE} metalness={0.4} roughness={0.5} />
+          </mesh>
+        </>
+      ))}
 
-      {/* ═══ Sensor dome / turret ═══ */}
-      <mesh position={[0.05, BH + 0.06, -BD * 0.1]}>
-        <sphereGeometry args={[0.08, 12, 10, 0, Math.PI * 2, 0, Math.PI / 2]} />
-        <meshStandardMaterial color="#333344" metalness={0.6} roughness={0.3} />
+      {/* ═══ LiDAR sensor turret (front) ═══ */}
+      <mesh position={[0, BH + 0.04, -BD * 0.20]}>
+        <cylinderGeometry args={[0.025, 0.035, 0.04, 12]} />
+        <meshStandardMaterial color={HK_GRAY} metalness={0.7} roughness={0.3} />
       </mesh>
-      {/* Sensor lens */}
-      <mesh position={[0.05, BH + 0.1, -BD * 0.1]}>
-        <sphereGeometry args={[0.02, 8, 8]} />
-        <meshStandardMaterial color="#00ddff" emissive="#00ddff" emissiveIntensity={0.4} />
+      <mesh position={[0, BH + 0.07, -BD * 0.20]}>
+        <cylinderGeometry args={[0.03, 0.03, 0.025, 16]} />
+        <meshStandardMaterial color="#222233" metalness={0.8} roughness={0.2} />
       </mesh>
-
-      {/* ═══ Status LED ring (top edge) ═══ */}
-      <mesh position={[0, BH + 0.005, 0]}>
-        <torusGeometry args={[BW * 0.4, 0.012, 8, 24]} />
-        <meshStandardMaterial color={color} emissive={color} emissiveIntensity={glow} />
-      </mesh>
-
-      {/* ═══ Direction arrow (front) ═══ */}
-      <mesh position={[0, BH / 2, -BD / 2 - 0.02]} rotation={[(isMoving ? 0.3 : 0), 0, 0]}>
-        <boxGeometry args={[0.08, 0.01, 0.06]} />
-        <meshStandardMaterial
-          color={isMoving ? '#ffffff' : '#666'}
-          emissive={isMoving ? '#ffffff' : '#000'}
-          emissiveIntensity={isMoving ? 0.5 : 0}
-        />
-      </mesh>
-      {/* Arrow triangle */}
-      <mesh position={[0, BH / 2 + 0.005, -BD / 2 - 0.03]}>
-        <coneGeometry args={[0.03, 0.04, 3]} />
-        <meshStandardMaterial
-          color={isMoving ? '#ffffff' : '#666'}
-          emissive={isMoving ? '#ffffff' : '#000'}
-          emissiveIntensity={isMoving ? 0.5 : 0}
-        />
+      <mesh position={[0, BH + 0.07, -BD * 0.20]}>
+        <torusGeometry args={[0.028, 0.003, 8, 16]} />
+        <meshBasicMaterial color="#00ffaa" transparent opacity={0.3} />
       </mesh>
 
-      {/* ═══ Wheels ═══ */}
-      <Wheel pos={[-BW / 2 - 0.02, WHEEL_RADIUS * 0.8, -BD * 0.25]} rotY={0} />
-      <Wheel pos={[BW / 2 + 0.02, WHEEL_RADIUS * 0.8, -BD * 0.25]} rotY={0} />
-      <Wheel pos={[-BW / 2 - 0.02, WHEEL_RADIUS * 0.8, BD * 0.25]} rotY={0} />
-      <Wheel pos={[BW / 2 + 0.02, WHEEL_RADIUS * 0.8, BD * 0.25]} rotY={0} />
+      {/* ═══ Hikvision logo area (front decal) ═══ */}
+      <mesh position={[0, BH * 0.55, -BD / 2 - 0.005]}>
+        <planeGeometry args={[0.06, 0.04]} />
+        <meshBasicMaterial color="#ffffff" transparent opacity={0.25} />
+      </mesh>
 
-      {/* ═══ Front headlights ═══ */}
-      {[-0.1, 0.1].map((ox, i) => (
+      {/* ═══ Status light tower (rear top) ═══ */}
+      <group position={[0, BH + 0.18, BD * 0.30]}>
+        <mesh position={[0, 0.06, 0]}>
+          <cylinderGeometry args={[0.012, 0.015, 0.12, 6]} />
+          <meshStandardMaterial color={HK_GRAY} metalness={0.5} roughness={0.5} />
+        </mesh>
+        <LightTower status={robot.status} />
+      </group>
+
+      {/* ═══ Emergency stop button (red, front top) ═══ */}
+      <mesh position={[0.18, BH + 0.015, -BD * 0.15]}>
+        <cylinderGeometry args={[0.02, 0.025, 0.01, 12]} />
+        <meshStandardMaterial color="#cc2222" emissive="#ff4444" emissiveIntensity={0.2} roughness={0.5} />
+      </mesh>
+      <mesh position={[0.18, BH + 0.015, -BD * 0.15]}>
+        <torusGeometry args={[0.022, 0.004, 6, 12]} />
+        <meshBasicMaterial color="#ffcc00" />
+      </mesh>
+
+      {/* ═══ Headlights (front) ═══ */}
+      {[-0.15, 0.15].map((ox, i) => (
         <mesh key={`light-${i}`} position={[ox, 0.06, -BD / 2 - 0.01]}>
           <sphereGeometry args={[0.015, 8, 8]} />
           <meshStandardMaterial
@@ -338,44 +261,457 @@ function KivaRobotMesh({ robot, isSelected }: { robot: RobotState; isSelected: b
         </mesh>
       ))}
 
-      {/* ═══ Carrying pod (KIVA lifts entire pod) ═══ */}
-      {robot.carryingPodId && (
-        <mesh position={[0, BH + 0.12, 0]} castShadow>
-          <boxGeometry args={[0.3, 0.12, 0.3]} />
-          <meshStandardMaterial color="#7a9a5a" metalness={0.2} roughness={0.7} />
-          {/* Pod legs */}
-          {[
-            [-0.1, -0.1],
-            [0.1, -0.1],
-            [-0.1, 0.1],
-            [0.1, 0.1],
-          ].map(([px, pz], i) => (
-            <mesh key={`podleg-${i}`} position={[px, -0.08, pz]}>
-              <cylinderGeometry args={[0.015, 0.02, 0.04, 6]} />
-              <meshStandardMaterial color="#5a7a3a" metalness={0.3} roughness={0.6} />
-            </mesh>
-          ))}
+      {/* ═══ Rear tail lights ═══ */}
+      {[-0.15, 0.15].map((ox, i) => (
+        <mesh key={`taillight-${i}`} position={[ox, 0.06, BD / 2 + 0.01]}>
+          <sphereGeometry args={[0.01, 6, 6]} />
+          <meshStandardMaterial
+            color={isMoving ? '#ff4444' : '#333'}
+            emissive={isMoving ? '#ff2222' : '#000'}
+            emissiveIntensity={isMoving ? 0.3 : 0}
+          />
         </mesh>
+      ))}
+
+      {/* ═══ Side status LED strips ═══ */}
+      <mesh position={[BW / 2 + 0.005, BH / 2 + 0.02, -BD * 0.10]}>
+        <boxGeometry args={[0.005, 0.04, 0.15]} />
+        <meshStandardMaterial color={color} emissive={color} emissiveIntensity={glow} />
+      </mesh>
+      <mesh position={[-BW / 2 - 0.005, BH / 2 + 0.02, -BD * 0.10]}>
+        <boxGeometry args={[0.005, 0.04, 0.15]} />
+        <meshStandardMaterial color={color} emissive={color} emissiveIntensity={glow} />
+      </mesh>
+
+      {/* ═══ Battery indicator strip (side) ═══ */}
+      {[-1, 1].map((side) => (
+        <mesh key={`batt-${side}`} position={[side * BW * 0.49, 0.04, BD * 0.30]}>
+          <boxGeometry args={[0.005, 0.03, 0.06]} />
+          <meshStandardMaterial
+            color={robot.batteryLevel > 0.3 ? '#27ae60' : '#e74c3c'}
+            emissive={robot.batteryLevel > 0.3 ? '#27ae60' : '#e74c3c'}
+            emissiveIntensity={0.4}
+          />
+        </mesh>
+      ))}
+
+      {/* ═══ Conveyor belt pattern (decorative strip on side) ═══ */}
+      {Array.from({ length: 6 }).map((_, i) => (
+        <mesh key={`belt-${i}`} position={[BW / 2 + 0.008, BH * 0.5, -BD * 0.25 + i * 0.08]}>
+          <boxGeometry args={[0.003, 0.015, 0.02]} />
+          <meshStandardMaterial color="#666688" metalness={0.6} roughness={0.4} />
+        </mesh>
+      ))}
+
+      {/* ═══ Basket items (standing upright on conveyor) ═══ */}
+      {robot.basketItems && robot.basketItems.length > 0 && (
+        <group position={[0, BH + 0.08, -BD * 0.05]}>
+          {robot.basketItems.slice(0, 3).map((_, idx) => (
+            <group key={idx} position={[-0.12 + idx * 0.13, 0, 0]}>
+              {/* Bin body – tall, standing upright */}
+              <mesh position={[0, 0.07, 0]} castShadow>
+                <boxGeometry args={[0.08, 0.14, 0.08]} />
+                <meshStandardMaterial
+                  color={['#b8b8b8', '#a8b8b0', '#b0b0b8'][idx % 3]}
+                  metalness={0.05}
+                  roughness={0.85}
+                />
+              </mesh>
+              {/* Bin rim (top edge) */}
+              <mesh position={[0, 0.142, 0]}>
+                <boxGeometry args={[0.09, 0.008, 0.09]} />
+                <meshStandardMaterial color="#c0c0c0" metalness={0.1} roughness={0.8} />
+              </mesh>
+              {/* Front label panel */}
+              <mesh position={[0, 0.06, 0.041]}>
+                <planeGeometry args={[0.05, 0.05]} />
+                <meshStandardMaterial color="#d0d0d0" metalness={0.0} roughness={0.9} />
+              </mesh>
+            </group>
+          ))}
+          {/* Side containment bars */}
+          <mesh position={[-0.18, 0.09, 0]}>
+            <boxGeometry args={[0.015, 0.16, 0.35]} />
+            <meshStandardMaterial color={HK_ORANGE} metalness={0.4} roughness={0.5} transparent opacity={0.6} />
+          </mesh>
+          <mesh position={[0.18, 0.09, 0]}>
+            <boxGeometry args={[0.015, 0.16, 0.35]} />
+            <meshStandardMaterial color={HK_ORANGE} metalness={0.4} roughness={0.5} transparent opacity={0.6} />
+          </mesh>
+        </group>
       )}
 
-      {/* ═══ Carried container ═══ */}
+      {/* ═══ Carried container (on top) ═══ */}
       {robot.carriedContainerCode && (
-        <mesh position={[0, 0.35, 0]} castShadow>
-          <boxGeometry args={[0.35, 0.2, 0.35]} />
-          <meshStandardMaterial color="#d4832a" metalness={0.3} roughness={0.6} />
-        </mesh>
+        <group position={[0, BH + 0.15, -BD * 0.05]}>
+          <mesh position={[0, 0.10, 0]} castShadow>
+            <boxGeometry args={[0.30, 0.18, 0.30]} />
+            <meshStandardMaterial color="#b8b8b8" metalness={0.05} roughness={0.85} />
+          </mesh>
+          <mesh position={[0, 0.19, 0]}>
+            <boxGeometry args={[0.32, 0.012, 0.32]} />
+            <meshStandardMaterial color="#c0c0c0" metalness={0.1} roughness={0.8} />
+          </mesh>
+        </group>
       )}
+
+      {/* ═══ Wheels (2 drive + 4 casters) ═══ */}
+      {/* Drive wheels (center) */}
+      <Wheel pos={[-BW * 0.28, WHEEL_RADIUS, -BD * 0.15]} rotY={0} spin={wheelSpinRef.current} />
+      <Wheel pos={[BW * 0.28, WHEEL_RADIUS, -BD * 0.15]} rotY={0} spin={wheelSpinRef.current} />
+      <Wheel pos={[-BW * 0.28, WHEEL_RADIUS, BD * 0.15]} rotY={0} spin={wheelSpinRef.current} />
+      <Wheel pos={[BW * 0.28, WHEEL_RADIUS, BD * 0.15]} rotY={0} spin={wheelSpinRef.current} />
+
+      {/* Corner casters */}
+      <Caster pos={[-BW / 2 - 0.02, WHEEL_RADIUS * 0.4, -BD * 0.42]} />
+      <Caster pos={[BW / 2 + 0.02, WHEEL_RADIUS * 0.4, -BD * 0.42]} />
+      <Caster pos={[-BW / 2 - 0.02, WHEEL_RADIUS * 0.4, BD * 0.42]} />
+      <Caster pos={[BW / 2 + 0.02, WHEEL_RADIUS * 0.4, BD * 0.42]} />
+
+      {/* ═══ Corner bumpers (rubber) ═══ */}
+      {[
+        [-BW / 2, -BD / 2],
+        [BW / 2, -BD / 2],
+        [-BW / 2, BD / 2],
+        [BW / 2, BD / 2],
+      ].map(([bx, bz], i) => (
+        <mesh key={`bumper-${i}`} position={[bx, 0.04, bz]}>
+          <boxGeometry args={[0.05, 0.05, 0.05]} />
+          <meshStandardMaterial color="#1a1a2a" metalness={0.2} roughness={0.9} />
+        </mesh>
+      ))}
 
       {/* ═══ Selection ring ═══ */}
       {isSelected && (
         <mesh position={[0, 0.005, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-          <ringGeometry args={[0.42, 0.5, 32]} />
+          <ringGeometry args={[0.52, 0.60, 32]} />
           <meshBasicMaterial color="#ffdd44" transparent opacity={0.7} />
         </mesh>
       )}
 
       {/* ═══ Label ═══ */}
-      <Text position={[0, 0.5, 0]} fontSize={0.14} color="#1a2a3a" anchorX="center" anchorY="bottom">
+      <Text position={[0, 0.40, 0]} fontSize={0.16} color="#1a2a3a" anchorX="center" anchorY="bottom">
+        {robot.robotCode}
+      </Text>
+    </group>
+  )
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// HIKVISION-INSPIRED KIVA AGV — dive-type (潜伏式) pod lifter
+// Ref: Hikvision MR-1000L / dive-type AGV
+// ═══════════════════════════════════════════════════════════════════
+function KivaRobotMesh({ robot, isSelected }: { robot: RobotState; isSelected: boolean }) {
+  const color = STATUS_COLORS[robot.status]
+  const glow = STATUS_GLOW[robot.status]
+  const isMoving = robot.status.startsWith('MOVING')
+
+  // Lower, wider body for dive-type AGV
+  const BW = 0.55
+  const BH = 0.16
+  const BD = 0.62
+
+  // Spin wheels when moving
+  const wheelSpinRef = useRef(0)
+  useFrame((_, delta) => {
+    if (isMoving) wheelSpinRef.current += delta * 5
+  })
+
+  return (
+    <group>
+      {/* ═══ Shadow disc ═══ */}
+      <mesh position={[0, -ROBOT_Y + 0.005, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <circleGeometry args={[0.45, 24]} />
+        <meshBasicMaterial color="#000" transparent opacity={0.12} depthWrite={false} />
+      </mesh>
+
+      {/* ═══ Main body – low-profile dark gray puck ═══ */}
+      <mesh position={[0, BH / 2, 0]} castShadow>
+        <boxGeometry args={[BW, BH, BD]} />
+        <meshStandardMaterial color={HK_DARK} metalness={0.5} roughness={0.5} />
+      </mesh>
+
+      {/* ═══ Top plate (raised platform) ═══ */}
+      <mesh position={[0, BH - 0.005, 0]}>
+        <boxGeometry args={[BW - 0.04, 0.02, BD - 0.04]} />
+        <meshStandardMaterial color="#3a3a4a" metalness={0.6} roughness={0.3} />
+      </mesh>
+
+      {/* ═══ Orange safety stripe (wraps around) ═══ */}
+      <mesh position={[0, BH * 0.22, -BD / 2 - 0.005]}>
+        <boxGeometry args={[BW + 0.01, 0.03, 0.008]} />
+        <meshStandardMaterial color={HK_ORANGE} metalness={0.3} roughness={0.5} emissive={HK_ORANGE} emissiveIntensity={0.1} />
+      </mesh>
+      <mesh position={[0, BH * 0.22, BD / 2 + 0.005]}>
+        <boxGeometry args={[BW + 0.01, 0.03, 0.008]} />
+        <meshStandardMaterial color={HK_ORANGE} metalness={0.3} roughness={0.5} emissive={HK_ORANGE} emissiveIntensity={0.1} />
+      </mesh>
+      <mesh position={[-BW / 2 - 0.005, BH * 0.22, 0]}>
+        <boxGeometry args={[0.008, 0.03, BD + 0.01]} />
+        <meshStandardMaterial color={HK_ORANGE} metalness={0.3} roughness={0.5} emissive={HK_ORANGE} emissiveIntensity={0.1} />
+      </mesh>
+      <mesh position={[BW / 2 + 0.005, BH * 0.22, 0]}>
+        <boxGeometry args={[0.008, 0.03, BD + 0.01]} />
+        <meshStandardMaterial color={HK_ORANGE} metalness={0.3} roughness={0.5} emissive={HK_ORANGE} emissiveIntensity={0.1} />
+      </mesh>
+
+      {/* ═══ Corner bumpers ═══ */}
+      {[
+        [-BW / 2, -BD / 2],
+        [BW / 2, -BD / 2],
+        [-BW / 2, BD / 2],
+        [BW / 2, BD / 2],
+      ].map(([bx, bz], i) => (
+        <mesh key={`bumper-${i}`} position={[bx, 0.035, bz]}>
+          <boxGeometry args={[0.06, 0.05, 0.06]} />
+          <meshStandardMaterial color="#1a1a2a" metalness={0.2} roughness={0.9} />
+        </mesh>
+      ))}
+
+      {/* ═══ LiDAR sensor (front) ═══ */}
+      <mesh position={[0, BH + 0.02, -BD * 0.18]}>
+        <cylinderGeometry args={[0.022, 0.03, 0.035, 12]} />
+        <meshStandardMaterial color={HK_GRAY} metalness={0.7} roughness={0.3} />
+      </mesh>
+      <mesh position={[0, BH + 0.05, -BD * 0.18]}>
+        <cylinderGeometry args={[0.025, 0.025, 0.02, 16]} />
+        <meshStandardMaterial color="#222233" metalness={0.8} roughness={0.2} />
+      </mesh>
+      <mesh position={[0, BH + 0.05, -BD * 0.18]}>
+        <torusGeometry args={[0.023, 0.003, 8, 16]} />
+        <meshBasicMaterial color="#00ffaa" transparent opacity={0.3} />
+      </mesh>
+
+      {/* ═══ E-stop button (top) ═══ */}
+      <mesh position={[0.16, BH + 0.01, -BD * 0.08]}>
+        <cylinderGeometry args={[0.018, 0.022, 0.008, 12]} />
+        <meshStandardMaterial color="#cc2222" emissive="#ff4444" emissiveIntensity={0.2} roughness={0.5} />
+      </mesh>
+
+      {/* ═══ Status LED ring (top perimeter) — neutral when idle ═══ */}
+      <mesh position={[0, BH + 0.003, 0]}>
+        <torusGeometry args={[BW * 0.38, 0.01, 8, 24]} />
+        <meshStandardMaterial color="#444" emissive={color} emissiveIntensity={glow} />
+      </mesh>
+
+      {/* ═══ Scissor lift mechanism (top – orange, prominent) ═══ */}
+      <group position={[0, BH + 0.015, 0]}>
+        {/* Lifting platform base rails */}
+        {[-0.14, 0.14].map((ox, i) => (
+          <mesh key={`lift-rail-${i}`} position={[ox, 0.008, 0]}>
+            <boxGeometry args={[0.025, 0.015, BD * 0.55]} />
+            <meshStandardMaterial color={HK_ORANGE} metalness={0.5} roughness={0.5} />
+          </mesh>
+        ))}
+        {/* Cross braces (scissor arms) */}
+        {[-1, 1].map((side, si) => (
+          <mesh key={`scissor-${si}`} position={[side * 0.06, 0.02, BD * 0.10]} rotation={[0, 0, side * 0.45]}>
+            <boxGeometry args={[0.015, 0.08, 0.015]} />
+            <meshStandardMaterial color="#556677" metalness={0.7} roughness={0.3} />
+          </mesh>
+        ))}
+        {[-1, 1].map((side, si) => (
+          <mesh key={`scissor2-${si}`} position={[side * 0.06, 0.02, -BD * 0.10]} rotation={[0, 0, side * 0.45]}>
+            <boxGeometry args={[0.015, 0.08, 0.015]} />
+            <meshStandardMaterial color="#556677" metalness={0.7} roughness={0.3} />
+          </mesh>
+        ))}
+        {/* Lift platform top plate (thin) */}
+        <mesh position={[0, 0.03, 0]}>
+          <boxGeometry args={[0.34, 0.012, BD * 0.5]} />
+          <meshStandardMaterial color={HK_ORANGE} metalness={0.4} roughness={0.5} />
+        </mesh>
+        {/* Lift guide pins */}
+        {[-0.12, 0.12].map((ox, i) => (
+          <mesh key={`pin-${i}`} position={[ox, 0.04, 0]}>
+            <cylinderGeometry args={[0.006, 0.008, 0.015, 6]} />
+            <meshBasicMaterial color="#ffcc00" />
+          </mesh>
+        ))}
+      </group>
+
+      {/* ═══ Hikvision logo area ═══ */}
+      <mesh position={[0.08, BH + 0.01, 0.13]}>
+        <planeGeometry args={[0.05, 0.025]} />
+        <meshBasicMaterial color="#ffffff" transparent opacity={0.15} />
+      </mesh>
+
+      {/* ═══ Direction indicator chevron (front) ═══ */}
+      <group position={[0, BH / 2, -BD / 2 - 0.015]}>
+        <mesh position={[0, 0, 0]} rotation={[(isMoving ? 0.3 : 0), 0, 0]}>
+          <boxGeometry args={[0.10, 0.01, 0.04]} />
+          <meshStandardMaterial
+            color={isMoving ? '#ffffff' : '#555'}
+            emissive={isMoving ? '#ffffff' : '#000'}
+            emissiveIntensity={isMoving ? 0.5 : 0}
+          />
+        </mesh>
+        <mesh position={[0, 0.005, -0.025]} rotation={[(isMoving ? 0.3 : 0), 0, 0]}>
+          <coneGeometry args={[0.035, 0.04, 3]} />
+          <meshStandardMaterial
+            color={isMoving ? '#ffffff' : '#555'}
+            emissive={isMoving ? '#ffffff' : '#000'}
+            emissiveIntensity={isMoving ? 0.5 : 0}
+          />
+        </mesh>
+      </group>
+
+      {/* ═══ Drive wheels (center) ═══ */}
+      <Wheel pos={[-BW * 0.28, WHEEL_RADIUS * 0.8, -BD * 0.12]} rotY={0} spin={wheelSpinRef.current} />
+      <Wheel pos={[BW * 0.28, WHEEL_RADIUS * 0.8, -BD * 0.12]} rotY={0} spin={wheelSpinRef.current} />
+      <Wheel pos={[-BW * 0.28, WHEEL_RADIUS * 0.8, BD * 0.12]} rotY={0} spin={wheelSpinRef.current} />
+      <Wheel pos={[BW * 0.28, WHEEL_RADIUS * 0.8, BD * 0.12]} rotY={0} spin={wheelSpinRef.current} />
+
+      {/* Corner casters */}
+      <Caster pos={[-BW / 2 - 0.02, WHEEL_RADIUS * 0.35, -BD * 0.42]} />
+      <Caster pos={[BW / 2 + 0.02, WHEEL_RADIUS * 0.35, -BD * 0.42]} />
+      <Caster pos={[-BW / 2 - 0.02, WHEEL_RADIUS * 0.35, BD * 0.42]} />
+      <Caster pos={[BW / 2 + 0.02, WHEEL_RADIUS * 0.35, BD * 0.42]} />
+
+      {/* ═══ Headlights (front) ═══ */}
+      {[-0.12, 0.12].map((ox, i) => (
+        <mesh key={`light-${i}`} position={[ox, 0.05, -BD / 2 - 0.01]}>
+          <sphereGeometry args={[0.015, 8, 8]} />
+          <meshStandardMaterial
+            color={isMoving ? '#ffeecc' : '#444'}
+            emissive={isMoving ? '#ffeeaa' : '#000'}
+            emissiveIntensity={isMoving ? 0.6 : 0}
+          />
+        </mesh>
+      ))}
+
+      {/* ═══ Rear tail lights ═══ */}
+      {[-0.12, 0.12].map((ox, i) => (
+        <mesh key={`taillight-${i}`} position={[ox, 0.05, BD / 2 + 0.01]}>
+          <sphereGeometry args={[0.01, 6, 6]} />
+          <meshStandardMaterial
+            color={isMoving ? '#ff4444' : '#333'}
+            emissive={isMoving ? '#ff2222' : '#000'}
+            emissiveIntensity={isMoving ? 0.3 : 0}
+          />
+        </mesh>
+      ))}
+
+      {/* ═══ Side battery indicator ═══ */}
+      {[-1, 1].map((side) => (
+        <mesh key={`batt-${side}`} position={[side * BW * 0.49, 0.035, BD * 0.20]}>
+          <boxGeometry args={[0.005, 0.02, 0.05]} />
+          <meshStandardMaterial
+            color={robot.batteryLevel > 0.3 ? '#27ae60' : '#e74c3c'}
+            emissive={robot.batteryLevel > 0.3 ? '#27ae60' : '#e74c3c'}
+            emissiveIntensity={0.4}
+          />
+        </mesh>
+      ))}
+
+      {/* ═══ Side status LED strips ═══ */}
+      <mesh position={[BW / 2 + 0.005, BH / 2 + 0.02, -BD * 0.08]}>
+        <boxGeometry args={[0.005, 0.03, 0.12]} />
+        <meshStandardMaterial color={color} emissive={color} emissiveIntensity={glow} />
+      </mesh>
+      <mesh position={[-BW / 2 - 0.005, BH / 2 + 0.02, -BD * 0.08]}>
+        <boxGeometry args={[0.005, 0.03, 0.12]} />
+        <meshStandardMaterial color={color} emissive={color} emissiveIntensity={glow} />
+      </mesh>
+
+      {/* ═══ Carrying pod (料架) – lightweight shelving ═══ */}
+      {robot.carryingPodId && (
+        <group position={[0, BH + 0.06, 0]}>
+          {/* Pod base platform */}
+          <mesh position={[0, 0.03, 0]} castShadow>
+            <boxGeometry args={[0.50, 0.04, 0.50]} />
+            <meshStandardMaterial color="#8a9aaa" metalness={0.4} roughness={0.6} />
+          </mesh>
+          {/* Pod corner legs */}
+          {[
+            [-0.20, -0.20],
+            [0.20, -0.20],
+            [-0.20, 0.20],
+            [0.20, 0.20],
+          ].map(([px, pz], i) => (
+            <mesh key={`podleg-${i}`} position={[px, 0.08, pz]}>
+              <cylinderGeometry args={[0.018, 0.022, 0.06, 6]} />
+              <meshStandardMaterial color="#6a7a8a" metalness={0.6} roughness={0.5} />
+            </mesh>
+          ))}
+          {/* Pod shelf level 1 */}
+          <mesh position={[0, 0.12, 0]} receiveShadow>
+            <boxGeometry args={[0.46, 0.02, 0.46]} />
+            <meshStandardMaterial color="#9aabb8" metalness={0.3} roughness={0.7} />
+          </mesh>
+          {/* Bins on shelf 1 */}
+          {[
+            [-0.10, -0.10],
+            [0.10, -0.10],
+            [-0.10, 0.10],
+            [0.10, 0.10],
+          ].map(([bx, bz], i) => (
+            <group key={`carry-bin1-${i}`} position={[bx, 0.14, bz]}>
+              <mesh position={[0, 0.04, 0]} castShadow>
+                <boxGeometry args={[0.10, 0.07, 0.10]} />
+                <meshStandardMaterial color={['#b8b8b8', '#a8b8b0', '#b0b0b8', '#b8b0a8'][i]} metalness={0.05} roughness={0.85} />
+              </mesh>
+              <mesh position={[0, 0.075, 0]}>
+                <boxGeometry args={[0.105, 0.006, 0.105]} />
+                <meshStandardMaterial color="#c0c0c0" metalness={0.1} roughness={0.8} />
+              </mesh>
+            </group>
+          ))}
+          {/* Pod shelf level 2 */}
+          <mesh position={[0, 0.24, 0]} receiveShadow>
+            <boxGeometry args={[0.46, 0.02, 0.46]} />
+            <meshStandardMaterial color="#9aabb8" metalness={0.3} roughness={0.7} />
+          </mesh>
+          {/* Bins on shelf 2 */}
+          {[
+            [-0.08, 0],
+            [0.08, 0],
+          ].map(([bx, bz], i) => (
+            <group key={`carry-bin2-${i}`} position={[bx, 0.26, bz]}>
+              <mesh position={[0, 0.04, 0]} castShadow>
+                <boxGeometry args={[0.14, 0.07, 0.14]} />
+                <meshStandardMaterial color={['#b0b0b8', '#aab0b0'][i]} metalness={0.05} roughness={0.85} />
+              </mesh>
+              <mesh position={[0, 0.075, 0]}>
+                <boxGeometry args={[0.145, 0.006, 0.145]} />
+                <meshStandardMaterial color="#c0c0c0" metalness={0.1} roughness={0.8} />
+              </mesh>
+            </group>
+          ))}
+          {/* Orange latch mechanism */}
+          {[-0.12, 0.12].map((ox, i) => (
+            <mesh key={`latch-${i}`} position={[ox, 0.005, 0]}>
+              <boxGeometry args={[0.025, 0.015, 0.025]} />
+              <meshStandardMaterial color={HK_ORANGE} metalness={0.5} roughness={0.4} />
+            </mesh>
+          ))}
+        </group>
+      )}
+
+      {/* ═══ Carried container (on lift platform) ═══ */}
+      {robot.carriedContainerCode && !robot.carryingPodId && (
+        <group position={[0, BH + 0.06, 0]}>
+          <mesh position={[0, 0.10, 0]} castShadow>
+            <boxGeometry args={[0.30, 0.18, 0.30]} />
+            <meshStandardMaterial color="#b8b8b8" metalness={0.05} roughness={0.85} />
+          </mesh>
+          <mesh position={[0, 0.19, 0]}>
+            <boxGeometry args={[0.32, 0.012, 0.32]} />
+            <meshStandardMaterial color="#c0c0c0" metalness={0.1} roughness={0.8} />
+          </mesh>
+        </group>
+      )}
+
+      {/* ═══ Selection ring ═══ */}
+      {isSelected && (
+        <mesh position={[0, 0.005, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+          <ringGeometry args={[0.48, 0.55, 32]} />
+          <meshBasicMaterial color="#ffdd44" transparent opacity={0.7} />
+        </mesh>
+      )}
+
+      {/* ═══ Label ═══ */}
+      <Text position={[0, 0.35, 0]} fontSize={0.14} color="#1a2a3a" anchorX="center" anchorY="bottom">
         {robot.robotCode}
       </Text>
     </group>

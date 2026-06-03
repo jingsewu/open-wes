@@ -41,33 +41,118 @@ function ChargingStation({ config }: { config: { id: string; x: number; y: numbe
   )
 }
 
+// ═══ Warehouse Pod (料架) — lightweight shelving unit for KIVA AGV ═══
 function Pod({ config }: { config: { id: string; x: number; y: number } }) {
+  const PW = 0.65
+  const PD = 0.65
+  const LEG_H = 0.12 // ground clearance (AGV slides under)
+  const hw = PW / 2
+  const hd = PD / 2
+
+  const BIN_COLORS = ['#b8b8b8', '#a8b8b0', '#b0b0b8']
+
   return (
     <group position={[config.x, 0, config.y]}>
-      {/* Pod base */}
-      <mesh position={[0, 0.08, 0]} receiveShadow>
-        <boxGeometry args={[0.5, 0.06, 0.5]} />
-        <meshStandardMaterial color="#7a9a5a" metalness={0.2} roughness={0.7} />
-      </mesh>
-      {/* Pod legs (4 corners) */}
+      {/* ═══ 4 corner legs ═══ */}
       {[
-        [-0.18, -0.18],
-        [0.18, -0.18],
-        [-0.18, 0.18],
-        [0.18, 0.18],
+        [-hw + 0.06, -hd + 0.06],
+        [hw - 0.06, -hd + 0.06],
+        [-hw + 0.06, hd - 0.06],
+        [hw - 0.06, hd - 0.06],
       ].map(([px, pz], i) => (
-        <mesh key={i} position={[px, 0.03, pz]}>
-          <cylinderGeometry args={[0.015, 0.02, 0.04, 6]} />
-          <meshStandardMaterial color="#5a7a3a" metalness={0.3} roughness={0.6} />
+        <mesh key={`leg-${i}`} position={[px, LEG_H / 2, pz]} castShadow>
+          <cylinderGeometry args={[0.025, 0.03, LEG_H, 6]} />
+          <meshStandardMaterial color="#6a7a8a" metalness={0.6} roughness={0.5} />
         </mesh>
       ))}
-      {/* Pod top plate */}
-      <mesh position={[0, 0.18, 0]}>
-        <boxGeometry args={[0.45, 0.04, 0.45]} />
-        <meshStandardMaterial color="#8aaa6a" metalness={0.3} roughness={0.6} />
+
+      {/* ═══ Base frame (bottom plate) ═══ */}
+      <mesh position={[0, LEG_H + 0.01, 0]} receiveShadow>
+        <boxGeometry args={[PW - 0.04, 0.025, PD - 0.04]} />
+        <meshStandardMaterial color="#7a8a9a" metalness={0.5} roughness={0.6} />
       </mesh>
-      {/* Label */}
-      <Text position={[0, 0.28, 0]} fontSize={0.08} color="#4a6a3a" anchorX="center" anchorY="bottom">
+
+      {/* ═══ 4 corner upright posts ═══ */}
+      {[
+        [-hw + 0.06, -hd + 0.06],
+        [hw - 0.06, -hd + 0.06],
+        [-hw + 0.06, hd - 0.06],
+        [hw - 0.06, hd - 0.06],
+      ].map(([px, pz], i) => (
+        <mesh key={`post-${i}`} position={[px, LEG_H + 0.20, pz]} castShadow>
+          <cylinderGeometry args={[0.015, 0.018, 0.35, 6]} />
+          <meshStandardMaterial color="#8a9aaa" metalness={0.5} roughness={0.5} />
+        </mesh>
+      ))}
+
+      {/* ═══ Shelf level 1 (middle) ═══ */}
+      <mesh position={[0, LEG_H + 0.18, 0]} receiveShadow>
+        <boxGeometry args={[PW - 0.10, 0.02, PD - 0.10]} />
+        <meshStandardMaterial color="#9aabb8" metalness={0.3} roughness={0.7} />
+      </mesh>
+      {/* Bins on level 1 */}
+      {[
+        [-0.10, -0.10],
+        [0.10, -0.10],
+        [-0.10, 0.10],
+        [0.10, 0.10],
+      ].map(([bx, bz], i) => (
+        <group key={`bin1-${i}`} position={[bx, LEG_H + 0.20, bz]}>
+          <mesh position={[0, 0.05, 0]} castShadow>
+            <boxGeometry args={[0.10, 0.09, 0.10]} />
+            <meshStandardMaterial color={BIN_COLORS[i % 3]} metalness={0.05} roughness={0.85} />
+          </mesh>
+          <mesh position={[0, 0.095, 0]}>
+            <boxGeometry args={[0.11, 0.008, 0.11]} />
+            <meshStandardMaterial color="#c0c0c0" metalness={0.1} roughness={0.8} />
+          </mesh>
+        </group>
+      ))}
+
+      {/* ═══ Shelf level 2 (top) ═══ */}
+      <mesh position={[0, LEG_H + 0.36, 0]} receiveShadow>
+        <boxGeometry args={[PW - 0.10, 0.02, PD - 0.10]} />
+        <meshStandardMaterial color="#9aabb8" metalness={0.3} roughness={0.7} />
+      </mesh>
+      {/* Bins on level 2 */}
+      {[
+        [-0.10, 0],
+        [0.10, 0],
+      ].map(([bx, bz], i) => (
+        <group key={`bin2-${i}`} position={[bx, LEG_H + 0.38, bz]}>
+          <mesh position={[0, 0.05, 0]} castShadow>
+            <boxGeometry args={[0.14, 0.09, 0.14]} />
+            <meshStandardMaterial color={BIN_COLORS[(i + 1) % 3]} metalness={0.05} roughness={0.85} />
+          </mesh>
+          <mesh position={[0, 0.095, 0]}>
+            <boxGeometry args={[0.15, 0.008, 0.15]} />
+            <meshStandardMaterial color="#c0c0c0" metalness={0.1} roughness={0.8} />
+          </mesh>
+        </group>
+      ))}
+
+      {/* ═══ Top rim / frame reinforcement ═══ */}
+      <mesh position={[0, LEG_H + 0.44, 0]}>
+        <boxGeometry args={[PW - 0.06, 0.015, PD - 0.06]} />
+        <meshStandardMaterial color="#8a9aaa" metalness={0.4} roughness={0.6} transparent opacity={0.8} />
+      </mesh>
+
+      {/* ═══ Side cross braces ═══ */}
+      {[-1, 1].map((side) => (
+        <mesh key={`xbrace-${side}`} position={[side * hw, LEG_H + 0.18, 0]} rotation={[0, 0, 0.5]}>
+          <boxGeometry args={[0.012, 0.25, 0.012]} />
+          <meshStandardMaterial color="#8a9aaa" metalness={0.4} roughness={0.6} />
+        </mesh>
+      ))}
+      {[-1, 1].map((side) => (
+        <mesh key={`xbrace2-${side}`} position={[0, LEG_H + 0.18, side * hd]} rotation={[0.5, 0, 0]}>
+          <boxGeometry args={[0.012, 0.25, 0.012]} />
+          <meshStandardMaterial color="#8a9aaa" metalness={0.4} roughness={0.6} />
+        </mesh>
+      ))}
+
+      {/* ═══ Label ═══ */}
+      <Text position={[0, LEG_H + 0.52, 0]} fontSize={0.07} color="#5a6a7a" anchorX="center" anchorY="bottom">
         {config.id}
       </Text>
     </group>
