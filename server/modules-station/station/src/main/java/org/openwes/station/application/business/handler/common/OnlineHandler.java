@@ -9,6 +9,7 @@ import org.openwes.station.domain.entity.WorkStationCache;
 import org.openwes.station.domain.repository.WorkStationCacheRepository;
 import org.openwes.station.domain.service.WorkStationService;
 import org.openwes.station.infrastructure.remote.RemoteWorkStationService;
+import org.openwes.wes.api.basic.constants.WorkStationStatusEnum;
 import org.openwes.wes.api.basic.dto.WorkStationDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,15 +27,14 @@ public class OnlineHandler implements IBusinessHandler<OnlineEvent> {
     @Override
     public void execute(OnlineEvent onlineEvent, Long workStationId) {
 
-        remoteWorkStationService.online(workStationId, onlineEvent.getWorkStationMode());
-
         WorkStationDTO workStationDTO = remoteWorkStationService.queryWorkStation(workStationId);
-
         WorkStationCache workStation = Optional.ofNullable(workStationService.initWorkStation(workStationDTO))
                 .orElseThrow(() -> WmsException.throwWmsException(StationErrorDescEnum.STATION_ONLINE_OPERATION_TYPE_CAN_NOT_BE_NULL));
+        if (workStationDTO.getWorkStationStatus() != WorkStationStatusEnum.ONLINE) {
+            remoteWorkStationService.online(workStationId, onlineEvent.getWorkStationMode());
+        }
 
         workStation.online(workStationDTO, onlineEvent);
-
         workStationRepository.save(workStation);
     }
 

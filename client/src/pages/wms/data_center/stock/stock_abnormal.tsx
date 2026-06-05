@@ -160,7 +160,7 @@ const schema = {
                 showColumns: showColumns,
                 searchObject: {
                     tables: "w_stock_abnormal_record r left join (select sku_id, group_concat(distinct bar_code separator ' ') bar_code_list from m_sku_barcode_data group by sku_id) g on r.sku_id = g.sku_id",
-                    orderBy: "r.create_time desc"
+                    orderBy: "r.update_time desc"
                 }
             },
             autoFillHeight: true,

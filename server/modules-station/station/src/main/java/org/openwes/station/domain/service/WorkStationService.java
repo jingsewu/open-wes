@@ -5,8 +5,6 @@ import org.openwes.wes.api.basic.dto.WorkStationDTO;
 
 public interface WorkStationService {
 
-    WorkStationCache initWorkStation(Long workStationId);
-
     WorkStationCache initWorkStation(WorkStationDTO workStationDTO);
 
     WorkStationCache getWorkStation(Long workStationId);

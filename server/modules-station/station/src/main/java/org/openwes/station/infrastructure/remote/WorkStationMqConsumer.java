@@ -14,14 +14,13 @@ import org.openwes.station.controller.websocket.controller.StationWebSocketContr
 import org.openwes.station.domain.entity.WorkStationCache;
 import org.openwes.station.domain.repository.WorkStationCacheRepository;
 import org.openwes.station.domain.service.WorkStationService;
+import org.openwes.wes.api.basic.dto.PutWallSlotDTO;
 import org.openwes.wes.api.basic.dto.WorkStationConfigDTO;
 import org.openwes.wes.api.basic.event.PutWallAssignOrderEvent;
 import org.openwes.wes.api.basic.event.PutWallRemindSealContainerEvent;
 import org.openwes.wes.api.ems.proxy.dto.ContainerArrivedEvent;
 import org.openwes.wes.api.print.dto.PrintContentDTO;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -64,7 +63,7 @@ public class WorkStationMqConsumer {
         workStationCacheRepository.save(workStation);
     }
 
-    @RedisListener(topic = RedisConstants.STATION_LISTEN_ORDER_ASSIGNED, type = List.class)
+    @RedisListener(topic = RedisConstants.STATION_LISTEN_ORDER_ASSIGNED, type = PutWallAssignOrderEvent.class)
     public void listenOrderAssigned(String topic, PutWallAssignOrderEvent event) {
 
         if (event == null) {
@@ -75,6 +74,15 @@ public class WorkStationMqConsumer {
         if (workStation == null) {
             return;
         }
+
+        PutWallSlotDTO slotSnapshot = PutWallSlotDTO.builder()
+                .putWallSlotCode(event.getPutWallSlotCode())
+                .putWallSlotStatus(event.getPutWallSlotStatus())
+                .pickingOrderId(event.getPickingOrderId())
+                .build();
+
+        workStation.getPutWallArea().applySnapshot(slotSnapshot);
+        workStationCacheRepository.save(workStation);
 
         ptlService.reminderBind(event.getWorkStationId(), event.getPtlTag());
 
@@ -92,6 +100,14 @@ public class WorkStationMqConsumer {
         if (workStation == null) {
             return;
         }
+
+        PutWallSlotDTO slotSnapshot = PutWallSlotDTO.builder()
+                .putWallSlotCode(event.getPutWallSlotCode())
+                .putWallSlotStatus(event.getPutWallSlotStatus())
+                .build();
+
+        workStation.getPutWallArea().applySnapshot(slotSnapshot);
+        workStationCacheRepository.save(workStation);
 
         ptlService.reminderSeal(workStation.getId(), event.getPtlTag());
 

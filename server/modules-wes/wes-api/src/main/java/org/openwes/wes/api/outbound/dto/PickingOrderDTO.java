@@ -46,7 +46,6 @@ public class PickingOrderDTO implements Serializable {
      * Value is the put wall slot code
      */
     @Schema(description = "任务分配情况")
-    @NotNull
     private Map<Long, String> assignedStationSlot;
 
     @Schema(description = "已领操作员账号")

@@ -83,7 +83,8 @@ public class WorkStationCache {
     }
 
     public void online(WorkStationDTO dto, OnlineEvent event) {
-        this.workStationMode = dto.getWorkStationMode();
+        log.info("work station: {} execute online: {}", this.id, event);
+        this.workStationMode = dto.getWorkStationMode() == null ? event.getWorkStationMode() : dto.getWorkStationMode();
         this.workStationStatus = WorkStationStatusEnum.ONLINE;
         this.hasOrder = event.isHasOrder();
         this.workStationConfig = dto.getWorkStationConfig();

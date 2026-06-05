@@ -6,9 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
-import org.openwes.station.api.model.ArrivedContainerCache;
-import org.openwes.station.api.model.Tip;
 import org.openwes.station.api.constants.ChooseAreaEnum;
+import org.openwes.station.api.model.ArrivedContainerCache;
 import org.openwes.station.infrastructure.remote.TaskService;
 import org.openwes.wes.api.task.constants.OperationTaskStatusEnum;
 import org.openwes.wes.api.task.constants.OperationTaskTypeEnum;
@@ -16,8 +15,10 @@ import org.openwes.wes.api.task.dto.OperationTaskDTO;
 import org.openwes.wes.api.task.dto.OperationTaskVO;
 import org.openwes.wes.api.task.dto.ReportAbnormalDTO;
 
-import java.util.*;
-import java.util.function.Function;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @EqualsAndHashCode(callSuper = true)
@@ -106,6 +107,9 @@ public class OutboundWorkStationCache extends WorkStationCache {
     }
 
     public List<OperationTaskDTO> getProcessingOperationTasks() {
+        if (getSkuArea() == null) {
+            return Collections.emptyList();
+        }
         return getSkuArea().getProcessingTasks();
     }
 
@@ -116,6 +120,9 @@ public class OutboundWorkStationCache extends WorkStationCache {
     }
 
     public OperationTaskDTO getFirstOperationTaskDTO() {
+        if (getSkuArea() == null) {
+            return null;
+        }
         return getSkuArea().getFirstTask();
     }
 

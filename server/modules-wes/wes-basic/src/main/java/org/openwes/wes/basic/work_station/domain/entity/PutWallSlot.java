@@ -64,7 +64,8 @@ public class PutWallSlot extends AggregatorRoot {
         this.pickingOrderId = orderId;
         this.putWallSlotStatus = PutWallSlotStatusEnum.WAITING_BINDING;
 
-        this.addAsynchronousDomainEvents(new PutWallAssignOrderEvent(this.id, orderId, this.putWallCode, this.workStationId, this.putWallSlotCode, this.ptlTag));
+        this.addAsynchronousDomainEvents(new PutWallAssignOrderEvent(this.id, orderId, this.putWallCode, this.workStationId, this.putWallSlotCode, this.ptlTag)
+                .setPutWallSlotStatus(PutWallSlotStatusEnum.WAITING_BINDING));
     }
 
     public void bindContainer(String containerCode, Long transferContainerRecordId) {
@@ -113,7 +114,8 @@ public class PutWallSlot extends AggregatorRoot {
         this.putWallSlotStatus = PutWallSlotStatusEnum.WAITING_SEAL;
 
         this.addAsynchronousDomainEvents(new PutWallRemindSealContainerEvent(this.id, this.workStationId, this.putWallSlotCode,
-                pickingOrderId, this.ptlTag));
+                pickingOrderId, this.ptlTag)
+                .setPutWallSlotStatus(PutWallSlotStatusEnum.WAITING_SEAL));
     }
 
     public void splitContainer() {

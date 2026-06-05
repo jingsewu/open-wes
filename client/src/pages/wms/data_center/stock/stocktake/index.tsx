@@ -119,7 +119,7 @@ const schema = {
                 searchIdentity: searchIdentity,
                 showColumns: columns,
                 searchObject: {
-                    orderBy: "id ,stocktake_order_status desc"
+                    orderBy: "update_time desc"
                 }
             },
             autoFillHeight: true,

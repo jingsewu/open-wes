@@ -8,6 +8,7 @@ import org.openwes.station.domain.entity.WorkStationCache;
 import org.openwes.station.domain.repository.WorkStationCacheRepository;
 import org.openwes.station.domain.service.WorkStationService;
 import org.openwes.station.infrastructure.remote.RemoteWorkStationService;
+import org.openwes.wes.api.basic.constants.WorkStationStatusEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +33,17 @@ public class OfflineHandler implements IBusinessHandler<String> {
         remoteWorkStationService.offline(workStationId);
 
         workStationCache.setEventCode(getApiCode());
-        workStationRepository.delete(workStationCache);
+        workStationCache.setWorkStationStatus(WorkStationStatusEnum.OFFLINE);
+        workStationCache.setSkuArea(null);
+        workStationCache.setPutWallArea(null);
+        workStationCache.setWorkLocationArea(null);
+        workStationCache.setOrderArea(null);
+        workStationCache.setTips(null);
+        workStationCache.setChooseArea(null);
+        workStationCache.setCallContainers(null);
+        workStationCache.setContainerTasks(null);
+        workStationCache.setToolbar(null);
+        workStationRepository.save(workStationCache);
     }
 
     @Override

@@ -9,7 +9,6 @@ import org.openwes.station.domain.entity.StocktakeWorkStationCache;
 import org.openwes.station.domain.entity.WorkStationCache;
 import org.openwes.station.domain.repository.WorkStationCacheRepository;
 import org.openwes.station.domain.service.WorkStationService;
-import org.openwes.station.infrastructure.remote.RemoteWorkStationService;
 import org.openwes.wes.api.basic.constants.WorkStationModeEnum;
 import org.openwes.wes.api.basic.dto.WorkStationDTO;
 import org.springframework.stereotype.Service;
@@ -21,13 +20,6 @@ import java.util.Optional;
 public class WorkStationServiceImpl implements WorkStationService {
 
     private final WorkStationCacheRepository workStationCacheRepository;
-    private final RemoteWorkStationService remoteWorkStationService;
-
-    @Override
-    public WorkStationCache initWorkStation(Long workStationId) {
-        WorkStationDTO workStationDTO = remoteWorkStationService.queryWorkStation(workStationId);
-        return initWorkStation(workStationDTO);
-    }
 
     @Override
     public WorkStationCache getWorkStation(Long workStationId) {

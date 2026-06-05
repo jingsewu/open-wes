@@ -104,8 +104,8 @@ export default function request(config: AxiosRequestConfig) {
             } else if (axios.isCancel(res)) {
                 console.info("request canceled, url: ", config.url)
             } else {
-                toast.error(response?.data?.description, {
-                    title: response.data.msg
+                toast.error(response?.data?.description ?? "Request failed", {
+                    title: response?.data?.msg ?? "Error"
                 })
                 reject(res)
             }

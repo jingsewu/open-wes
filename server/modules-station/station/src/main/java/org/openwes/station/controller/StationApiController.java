@@ -64,7 +64,7 @@ public class StationApiController {
         if (workStationId == null) {
             throw WmsException.throwWmsException(StationErrorDescEnum.STATION_ID_IS_NOT_CONFIGURED);
         }
-        return workStationService.getOrThrow(workStationId);
+        return workStationService.getWorkStation(workStationId);
     }
 
     @DeleteMapping

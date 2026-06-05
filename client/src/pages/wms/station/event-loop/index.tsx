@@ -126,14 +126,11 @@ export default class WorkStationEventLoop {
         // 更新当前事件
         this.currentEvent = event
 
-        // 更新 MobX store
-        workStationStore.setWorkStationEvent(event)
-
-        // 通知事件监听者
-        this.eventListener && this.eventListener(event)
-
-        // 保存基本信息到本地存储
         if (event) {
+            // 有数据: 正常更新 store
+            workStationStore.setWorkStationEvent(event)
+
+            // 保存基本信息到本地存储
             const essentialData = {
                 stationCode: event.stationCode,
                 workStationStatus: event.workStationStatus,
@@ -142,7 +139,15 @@ export default class WorkStationEventLoop {
                 timestamp: Date.now()
             }
             localStorage.setItem("sseInfo", JSON.stringify(essentialData))
+        } else {
+            // 无数据: 重置 store（例如后端下线后缓存被删除，导致 API 返回 null）
+            // reset() 会将 workStationStatus 设为 OFFLINE，
+            // header.tsx 的 useEffect 监听到 OFFLINE 后跳转到卡片页
+            workStationStore.reset()
         }
+
+        // 通知事件监听者
+        this.eventListener && this.eventListener(event)
     }
 
     private readonly getWebsocketData: () => Promise<void> = async () => {
@@ -200,6 +205,13 @@ export default class WorkStationEventLoop {
 
     private readonly getApiData: () => Promise<void> = async () => {
         try {
+
+            const stationId = this.stationId ?? localStorage.getItem("stationId")
+
+            if(!stationId){
+                return;
+            }
+
             const res: any = await request_work_station_view()
 
             if (res && res.data) {

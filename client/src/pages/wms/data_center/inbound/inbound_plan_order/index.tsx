@@ -320,7 +320,7 @@ const schema = {
                 searchIdentity: searchIdentity,
                 showColumns: showColumns,
                 searchObject: {
-                    orderBy: "id ,inbound_plan_order_status desc"
+                    orderBy: "update_time desc"
                 }
             },
             autoFillHeight: true,

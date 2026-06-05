@@ -20,7 +20,7 @@ public class PutWallArea {
     private String activePutWallCode;
     private String inputPutWallSlot;
     private String putWallDisplayStyle;
-    private PutWallTagConfigDTO putWallTagConfigDTO;
+    private PutWallTagConfigDTO putWallTagConfigDTO = new PutWallTagConfigDTO();
     private List<PutWallDTO> putWallViews;
 
     public void input(String slotCode) {
@@ -29,6 +29,11 @@ public class PutWallArea {
 
     public void clearInput() {
         this.inputPutWallSlot = null;
+    }
+
+    public void setActivePutWallCode(String activePutWallCode) {
+        this.activePutWallCode = activePutWallCode;
+        syncActiveWall();
     }
 
     public void resetActivePutWall(Set<String> processingSlotCodes) {
@@ -44,6 +49,12 @@ public class PutWallArea {
                     .map(PutWallSlotDTO::getPutWallCode)
                     .findAny().orElse(null);
         }
+        syncActiveWall();
+    }
+
+    private void syncActiveWall() {
+        if (putWallViews == null) return;
+        putWallViews.forEach(pw -> pw.setActive(StringUtils.equals(pw.getPutWallCode(), this.activePutWallCode)));
     }
 
     public boolean hasWaitingBindingSlots() {
@@ -52,6 +63,21 @@ public class PutWallArea {
                 .flatMap(pw -> pw.getPutWallSlots().stream())
                 .filter(PutWallSlotDTO::isEnable)
                 .anyMatch(slot -> PutWallSlotStatusEnum.WAITING_BINDING == slot.getPutWallSlotStatus());
+    }
+
+    /**
+     * Apply a snapshot of a slot's state to the put wall area.
+     * This method has zero business logic — it copies fields from the incoming DTO
+     * to the matching slot in the cache. The DTO is treated as the source of truth.
+     */
+    public void applySnapshot(PutWallSlotDTO slotDTO) {
+        getSlot(slotDTO.getPutWallSlotCode()).ifPresent(slot -> {
+            slot.setPutWallSlotStatus(slotDTO.getPutWallSlotStatus());
+            slot.setPickingOrderId(slotDTO.getPickingOrderId());
+            slot.setTransferContainerCode(slotDTO.getTransferContainerCode());
+            slot.setTransferContainerRecordId(slotDTO.getTransferContainerRecordId());
+            slot.setQtyDispatched(slotDTO.getQtyDispatched());
+        });
     }
 
     public Optional<PutWallSlotDTO> getSlot(String putWallSlotCode) {

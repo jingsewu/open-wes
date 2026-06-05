@@ -184,7 +184,8 @@ const schema = {
                 showColumns: showColumns,
                 searchObject: {
                     tables: "w_container_stock k left join w_sku_batch_stock b on k.sku_batch_stock_id = b.id  left join w_sku_batch_attribute e on k.sku_batch_attribute_id = e.id  left join w_warehouse_area wa on b.warehouse_area_id = wa.id  left join m_sku_main_data a on e.sku_id = a.id left join m_sku_barcode_data f  on a.id = f.sku_id",
-                    where: "k.total_qty > 0 and k.container_id is not null"
+                    where: "k.total_qty > 0 and k.container_id is not null",
+                    orderBy: "k.update_time desc"
                 }
             },
             autoFillHeight: true,
