@@ -61,12 +61,16 @@ public class InputHandler implements IBusinessHandler<String> {
         }
 
         PutWallSlotDTO putWallSlot = remoteWorkStationService.queryPutWallSlot(workStationId, workStationCache.getPutWallArea().getInputPutWallSlot());
-        taskService.bindContainer(new BindContainerDTO()
+        PutWallSlotDTO snapshot = taskService.bindContainer(new BindContainerDTO()
                 .setContainerCode(input)
                 .setPickingOrderId(putWallSlot.getPickingOrderId())
                 .setWarehouseCode(workStationCache.getWarehouseCode())
                 .setWorkStationId(workStationId)
                 .setPutWallSlotCode(workStationCache.getPutWallArea().getInputPutWallSlot()));
+
+        if (snapshot != null) {
+            workStationCache.getPutWallArea().applySnapshot(snapshot);
+        }
 
         workStationCache.clearInput();
         workStationRepository.save(workStationCache);

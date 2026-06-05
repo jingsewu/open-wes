@@ -67,15 +67,19 @@ public class TapPutWallSlotHandler implements IBusinessHandler<TapPutWallSlotEve
 
 
     private void doSealContainer(OutboundWorkStationCache workStationCache, PutWallSlotDTO putWallSlot) {
-        taskService.sealContainer(new SealContainerDTO()
+        PutWallSlotDTO snapshot = taskService.sealContainer(new SealContainerDTO()
                 .setPutWallSlotCode(putWallSlot.getPutWallSlotCode())
                 .setTransferContainerCode(putWallSlot.getTransferContainerCode())
                 .setPickingOrderId(putWallSlot.getPickingOrderId())
                 .setWarehouseCode(workStationCache.getWarehouseCode())
                 .setWorkStationId(workStationCache.getId()));
 
-        ptlService.off(workStationCache.getId(), putWallSlot.getPtlTag());
+        if (snapshot != null) {
+            workStationCache.getPutWallArea().applySnapshot(snapshot);
+        }
 
+        workStationRepository.save(workStationCache);
+        ptlService.off(workStationCache.getId(), putWallSlot.getPtlTag());
     }
 
     private void doCompletePicking(Long workStationId, List<OperationTaskDTO> operateTasks,
