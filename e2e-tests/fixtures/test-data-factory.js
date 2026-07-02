@@ -1,37 +1,21 @@
-import { ApiClient } from '../utils/api-client';
-
 let seq = 0;
-function uniqueId(): string {
+function uniqueId() {
   return `${Date.now()}_${seq++}_${Math.random().toString(36).slice(2, 8)}`;
 }
 
-export interface TestSku {
-  id?: number;
-  code: string;
-  name: string;
-  ownerCode: string;
-  warehouseCode: string;
-}
-
-export interface TestContainer {
-  id?: number;
-  code: string;
-  type: string;
-  warehouseCode: string;
-}
-
-export class TestDataFactory {
-  private createdSkus: string[] = [];
-  private createdContainers: string[] = [];
-  private stash: Map<string, unknown> = new Map();
-
-  constructor(private api: ApiClient) {}
+class TestDataFactory {
+  constructor(api) {
+    this.api = api;
+    this.createdSkus = [];
+    this.createdContainers = [];
+    this.stash = new Map();
+  }
 
   /** Store a value for later retrieval in the same test */
-  set(key: string, value: unknown): void { this.stash.set(key, value); }
-  get<T>(key: string): T | undefined { return this.stash.get(key) as T | undefined; }
+  set(key, value) { this.stash.set(key, value); }
+  get(key) { return this.stash.get(key); }
 
-  async createTestSku(warehouseCode = 'WH001', ownerCode = 'OWNER001'): Promise<TestSku> {
+  async createTestSku(warehouseCode = 'WH001', ownerCode = 'OWNER001') {
     const code = `TEST_SKU_${uniqueId()}`;
     const dto = {
       skuCode: code,
@@ -49,7 +33,7 @@ export class TestDataFactory {
     return { code, name: dto.skuName, ownerCode, warehouseCode };
   }
 
-  async createTestContainer(warehouseCode = 'WH001', type = 'TOTE'): Promise<TestContainer> {
+  async createTestContainer(warehouseCode = 'WH001', type = 'TOTE') {
     const code = `TEST_CTN_${uniqueId()}`;
     // Container creation via API — adjust based on actual container management API
     this.createdContainers.push(code);
@@ -57,7 +41,7 @@ export class TestDataFactory {
   }
 
   /** Clean up all data created by this factory */
-  async cleanup(): Promise<void> {
+  async cleanup() {
     // Clean up is best-effort — failures are logged but not fatal
     for (const code of this.createdSkus) {
       try {
@@ -72,3 +56,5 @@ export class TestDataFactory {
     }
   }
 }
+
+module.exports = { TestDataFactory };
