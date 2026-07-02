@@ -1,0 +1,103 @@
+name: Smoke Test
+
+on:
+  pull_request:
+    branches: [master]
+    paths:
+      - 'server/**'
+      - 'client/**'
+      - 'e2e-tests/**'
+  workflow_dispatch:
+    inputs:
+      scenario:
+        description: 'Specific scenario to run'
+        required: false
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - inbound-receiving
+          - outbound-management
+          - station-picking
+
+jobs:
+  smoke-test:
+    name: E2E Smoke Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    env:
+      BASE_URL: http://localhost:80
+      API_URL: http://localhost:8090
+      AUTH_TOKEN: ${{ secrets.TEST_AUTH_TOKEN }}
+      TEST_WORKSTATION_ID: '1'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: e2e-tests/package-lock.json
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Build backend JARs
+        run: |
+          cd server
+          ./gradlew build -x test
+
+      - name: Start services (core only, no monitoring)
+        run: |
+          docker compose up -d mysql redis nacos
+          # Wait for infra
+          sleep 30
+          docker compose up -d wes-server station-server gateway-server frontend
+          # Wait for health
+          sleep 60
+          docker compose ps
+
+      - name: Install Playwright
+        run: |
+          cd e2e-tests
+          npm ci
+          npx playwright install --with-deps chromium
+
+      - name: Run smoke tests
+        id: test
+        run: |
+          cd e2e-tests
+          if [ "${{ github.event.inputs.scenario }}" != "" ] && [ "${{ github.event.inputs.scenario }}" != "all" ]; then
+            npx playwright test --grep "${{ github.event.inputs.scenario }}"
+          else
+            npx playwright test
+          fi
+
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-test-report
+          path: |
+            e2e-tests/playwright-report/
+            e2e-tests/junit.xml
+          retention-days: 7
+
+      - name: Upload test traces (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-test-traces
+          path: e2e-tests/test-results/
+          retention-days: 3
+
+      - name: Cleanup
+        if: always()
+        run: docker compose down -v
