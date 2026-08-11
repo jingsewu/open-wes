@@ -1,82 +1,115 @@
 const { test, expect } = require('@playwright/test');
-const { ApiClient } = require('../utils/api-client');
-const { TestDataFactory } = require('../fixtures/test-data-factory');
+const { StationApiClient } = require('../utils/station-api');
+const { uiLogin } = require('../utils/ui-login');
 
+/**
+ * Station outbound picking E2E.
+ *
+ * Prerequisites (seeded by scripts/seed-env.js): warehouse WH001, SKU001 with
+ * container stock CTN001, put-wall PW01 bound to workstation ST001, and the WES
+ * outbound pipeline that dispatches picking orders to put-wall slots.
+ *
+ * The test drives the REAL station UI: binds a transfer container to a slot via
+ * the put-wall scan input, simulates the robot delivering the source container
+ * via the station API (CONTAINER_ARRIVED), scans the SKU in the SKU area, then
+ * taps the slot to complete the pick and again to seal the container.
+ */
 test.describe('Station — Outbound Picking Flow', () => {
-  let api;
-  let factory;
+  test('outbound picking at workstation: bind → deliver → scan SKU → pick → seal', async ({ page, request }) => {
+    test.setTimeout(180_000);
 
-  test.beforeEach(async ({ request }) => {
-    api = new ApiClient(request);
-    factory = new TestDataFactory(api);
-  });
+    // ----- Step 0: Log in through the real login page -----
+    await uiLogin(page);
 
-  test.afterEach(async () => {
-    await factory.cleanup();
-  });
+    // Reuse the browser session token for all API calls. A second signin would
+    // overwrite the per-user token in Redis and invalidate the browser session.
+    const wsToken = await page.evaluate(() => localStorage.getItem('ws_token'));
+    const station = new StationApiClient(request);
+    station.setToken(wsToken);
 
-  test('outbound picking at workstation: bind tote → pick SKU → seal', async ({ page }) => {
-    // Pre-condition: outbound orders are already auto-assigned to put-wall slots
-    // by the system. The put-wall should show assigned slots.
+    // Pin this browser session to workstation ST001.
+    await page.evaluate(() => localStorage.setItem('stationId', '1'));
 
-    // ----- Step 1: Open station outbound page -----
-    await page.goto('/wms/workStation/outbound');
-    await page.waitForLoadState('networkidle');
+    // ----- Step 1: Setup via station API -----
+    // Clear the bean-searcher class cache (a bad showColumns run poisons an
+    // identity until cleared), then bring the station online (re-initializes the
+    // Redis cache from DB) and make sure at least one slot is WAITING_BINDING.
+    await station.clearSearchCache();
+    await station.online();
+    const slotCode = await station.ensureWaitingBindingSlot();
+    console.log(`[setup] picking slot: ${slotCode}`);
+    const transferContainer = `TOTE_${Date.now()}`;
+    const skuCode = 'SKU001';
+    const sourceContainer = 'CTN001';
 
-    // Verify the put-wall view loaded — should show slots with orders
-    const putWall = page.locator('.put-wall, .put-wall-container, [class*="putwall"]');
-    await expect(putWall).toBeVisible({ timeout: 10_000 });
+    // ----- Step 2: Navigate to the station outbound page -----
+    // page.goto deep links get redirected to /wms/dashboard by TabsLayout, so we
+    // click the 工作站 sidebar menu; the WorkStationCard auto-navigates to
+    // /wms/workStation/outbound because the station is ONLINE + PICKING.
+    await page.evaluate(() => document.querySelector('a[href="/wms/workStation"]')?.click());
+    await page.waitForURL((u) => u.pathname === '/wms/workStation/outbound', { timeout: 25_000 });
+    await page.waitForSelector('input[data-testid="scanSkuCode"]', { timeout: 20_000 });
 
-    // ----- Step 2: Bind transfer container to a put-wall slot -----
-    // Operator scans a put-wall slot code → system selects the slot
-    // Operator scans a transfer container → system binds the container via INPUT handler
-
-    const scanInput = page.locator('input[placeholder*="scan"], input.barcode-input, #barcodeInput');
-
-    // 2a. Tap on a slot with assigned orders
-    const assignedSlot = page.locator('.put-wall-slot.has-order, .slot-item.occupied').first();
-    await assignedSlot.click();
-
-    // 2b. Scan the transfer container
-    await scanInput.fill('TEST_CTN_001');
+    // ----- Step 3: Bind a transfer container to the slot -----
+    // The put-wall has an invisible scan input; scanning the slot code selects
+    // the slot, then scanning the container code binds it.
+    const scanInput = page.locator('input[class*="opacity-0"], input.absolute.inset-0').first();
+    await expect(scanInput).toBeVisible({ timeout: 15_000 });
+    await scanInput.fill(slotCode);
     await page.keyboard.press('Enter');
-
-    // Verify: container bound, slot shows bound state
-    await expect(page.locator('text=Bound, text=已绑定')).toBeVisible({ timeout: 5_000 });
-
-    // ----- Step 3: Wait for robot to deliver container -----
-    // In smoke test, this may be simulated via the CONTAINER_ARRIVED event
-    // through the station API, or we wait for the system to auto-complete.
-
-    // For now, assume container arrives automatically (mock/MES)
-    await page.waitForTimeout(2_000);
-
-    // ----- Step 4: Scan SKU for picking -----
-    await scanInput.fill('SKU001');
+    await page.waitForTimeout(800);
+    await scanInput.fill(transferContainer);
     await page.keyboard.press('Enter');
+    await page.waitForTimeout(1500);
+    console.log(`[bind] slot ${slotCode} <- ${transferContainer}`);
 
-    // Verify SKU details appear — operator confirms the pick
-    const skuInfo = page.locator('text=SKU001');
-    await expect(skuInfo).toBeVisible({ timeout: 3_000 });
+    // Verify the slot is BOUND via API.
+    const viewAfterBind = await station.getView();
+    const boundSlot = viewAfterBind.putWallArea.putWallViews[0].putWallSlots.find((s) => s.putWallSlotCode === slotCode);
+    expect(boundSlot, `slot ${slotCode} should be BOUND`).not.toBeUndefined();
+    expect(boundSlot.putWallSlotStatus).toBe('BOUND');
 
-    // ----- Step 5: Confirm pick quantity -----
-    // Input the qty to pick
-    const qtyInput = page.locator('input[type="number"], input.qty-input');
-    await qtyInput.fill('5');
-    await page.click('button:has-text("OK"), button:has-text("Confirm"), button:has-text("确定")');
+    // ----- Step 4: Robot delivers the source container (simulated) -----
+    await station.containerArrived(sourceContainer);
+    await page.waitForTimeout(2000);
 
-    // ----- Step 6: Seal container (封箱) -----
-    // After all items picked, operator seals the container.
-    // This triggers the TAP_PUT_WALL_SLOT handler with a WAITING_SEAL slot.
+    // ----- Step 5: Scan the SKU in the SKU area -----
+    const skuInput = page.locator('input[data-testid="scanSkuCode"]');
+    await skuInput.fill(skuCode);
+    await page.keyboard.press('Enter');
+    // The SKU area should now show the SKU being picked.
+    await expect(page.locator('text=' + skuCode)).toBeVisible({ timeout: 10_000 });
+    console.log('[pick] scanned SKU', skuCode);
 
-    // Tap the slot again to trigger seal
-    await assignedSlot.click();
-    // Confirm seal
-    await page.click('button:has-text("Seal"), button:has-text("封箱"), button:has-text("Confirm")');
+    // ----- Step 6: Tap the slot to confirm the pick -----
+    // After scanning, the bound slot becomes DISPATCH (待分拨); tapping it
+    // completes the pick and the slot moves to WAITING_SEAL (待封箱).
+    const dispatchSlot = page.locator('[data-testid="dispatch"]').first();
+    await expect(dispatchSlot).toBeVisible({ timeout: 15_000 });
+    await dispatchSlot.click();
+    await page.waitForTimeout(1500);
 
-    // ----- Step 7: Verify via API -----
-    // Check that the transfer container is now SEALED
-    // (Exact API call depends on available endpoints)
-    console.log('[verify] Container sealed — checking via API...');
+    // ----- Step 7: Tap the slot again to seal the container -----
+    const sealSlot = page.locator('[data-testid="waitingSeal"]').first();
+    await expect(sealSlot).toBeVisible({ timeout: 15_000 });
+    await sealSlot.click();
+    await page.waitForTimeout(2000);
+
+    // ----- Step 8: Verify via API -----
+    const view = await station.getView();
+    const slot = view.putWallArea.putWallViews[0].putWallSlots.find((s) => s.putWallSlotCode === slotCode);
+    expect(slot, `slot ${slotCode} should be IDLE after seal`).not.toBeUndefined();
+    expect(slot.putWallSlotStatus).toBe('IDLE');
+    // The picking order behind the slot should be PICKED.
+    const searchResp = await station.search('WPickingOrder', { id: String(boundSlot.pickingOrderId) }, [
+      { name: 'id' },
+      { name: 'pickingOrderNo' },
+      { name: 'pickingOrderStatus' },
+    ]);
+    const pickingData = await searchResp.json();
+    const pickingOrder = (pickingData.items || []).find((o) => String(o.id) === String(boundSlot.pickingOrderId));
+    expect(pickingOrder, 'picking order should be PICKED').not.toBeUndefined();
+    expect(pickingOrder.pickingOrderStatus).toBe('PICKED');
+    console.log('[verify] slots:', view.putWallArea.putWallViews[0].putWallSlots.map((s) => `${s.putWallSlotCode}:${s.putWallSlotStatus}`).join(' '));
   });
 });

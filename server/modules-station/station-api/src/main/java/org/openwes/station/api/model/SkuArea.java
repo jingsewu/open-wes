@@ -15,8 +15,12 @@ import java.util.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SkuArea {
-    private String scanCode;
-    private List<SkuTaskInfo> operationViews;
+    // Both fields must have a non-null default: the station cache is persisted as
+    // a Redis hash (Jackson flattening) that drops nested objects whose leaves are
+    // all null/empty. An all-null SkuArea came back null after reload, and the
+    // outbound CONTAINER_ARRIVED refresh NPE'd on getSkuArea().
+    private String scanCode = "";
+    private List<SkuTaskInfo> operationViews = new ArrayList<>();
 
     @Data
     @NoArgsConstructor

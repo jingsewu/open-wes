@@ -9,10 +9,10 @@ async function getAuthToken(request) {
   if (envToken) return envToken;
 
   // Fallback: perform login
-  const resp = await request.post(`${BASE_API_URL}/login`, {
+  const resp = await request.post(`${BASE_API_URL}/user/api/auth/signin`, {
     data: {
       username: process.env.TEST_USERNAME || 'admin',
-      password: process.env.TEST_PASSWORD || 'admin',
+      password: process.env.TEST_PASSWORD || '123456',
     },
   });
   if (!resp.ok()) {

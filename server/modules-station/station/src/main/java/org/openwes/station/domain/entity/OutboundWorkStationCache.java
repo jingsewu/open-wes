@@ -140,6 +140,12 @@ public class OutboundWorkStationCache extends WorkStationCache {
 
         getSkuArea().markTasksProcessing(skuCode, processingContainer.getContainerCode(), processingContainer.getFace());
         resetActivePutWall(skuCode);
+
+        // Bound slots that hold a PROCESSING task become DISPATCH so the operator
+        // can tap them to confirm the pick (the frontend only allows tapping
+        // DISPATCH / WAITING_SEAL slots).
+        getPutWallArea().markDispatch(getSkuArea().getProcessingTasks().stream()
+                .map(OperationTaskDTO::getTargetLocationCode).collect(Collectors.toSet()));
     }
 
     @Override

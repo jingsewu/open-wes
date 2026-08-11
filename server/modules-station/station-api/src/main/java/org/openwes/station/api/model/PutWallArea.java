@@ -66,6 +66,20 @@ public class PutWallArea {
     }
 
     /**
+     * Mark BOUND slots that hold PROCESSING tasks as DISPATCH (待分拨). The DB has
+     * no DISPATCH state — it is a station-side, in-cache transition applied after
+     * the SKU is scanned so the operator can tap the slot to confirm the pick.
+     */
+    public void markDispatch(Set<String> slotCodes) {
+        if (putWallViews == null || slotCodes == null || slotCodes.isEmpty()) return;
+        putWallViews.stream()
+                .flatMap(pw -> pw.getPutWallSlots().stream())
+                .filter(slot -> slotCodes.contains(slot.getPutWallSlotCode()))
+                .filter(slot -> PutWallSlotStatusEnum.BOUND == slot.getPutWallSlotStatus())
+                .forEach(slot -> slot.setPutWallSlotStatus(PutWallSlotStatusEnum.DISPATCH));
+    }
+
+    /**
      * Apply a snapshot of a slot's state to the put wall area.
      * This method has zero business logic — it copies fields from the incoming DTO
      * to the matching slot in the cache. The DTO is treated as the source of truth.
