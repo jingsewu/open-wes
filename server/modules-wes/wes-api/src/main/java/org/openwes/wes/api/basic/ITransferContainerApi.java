@@ -2,6 +2,7 @@ package org.openwes.wes.api.basic;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
+import org.openwes.wes.api.basic.dto.PutWallSlotDTO;
 import org.openwes.wes.api.basic.dto.TransferContainerRecordDTO;
 import org.openwes.wes.api.ems.proxy.dto.ContainerArrivedEvent;
 import org.openwes.wes.api.task.dto.*;
@@ -20,11 +21,11 @@ public interface ITransferContainerApi {
 
     List<TransferContainerDTO> findAllByWarehouseCodeAndContainerCodeIn(String warehouseCode, List<String> transferContainerCodes);
 
-    void bindContainer(BindContainerDTO bindContainerDTO);
+    PutWallSlotDTO bindContainer(BindContainerDTO bindContainerDTO);
 
-    void unBindContainer(UnBindContainerDTO unBindContainerDTO, Long transferContainerRecordId);
+    PutWallSlotDTO unBindContainer(UnBindContainerDTO unBindContainerDTO, Long transferContainerRecordId);
 
-    void sealContainer(SealContainerDTO sealContainerDTO);
+    PutWallSlotDTO sealContainer(SealContainerDTO sealContainerDTO);
 
     void sealContainer(Long pickingOrderId);
 }

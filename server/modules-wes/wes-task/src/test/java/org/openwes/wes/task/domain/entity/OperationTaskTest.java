@@ -11,6 +11,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -93,7 +97,13 @@ class OperationTaskTest {
     }
 
     @Test
-    void testSetActualWorkStation_ShouldUpdateWorkStationId() {
+    void testSetActualWorkStation_ShouldUpdateWorkStationId() throws Exception {
+        Field field = OperationTask.class.getDeclaredField("assignedStationSlot");
+        field.setAccessible(true);
+        Map<Long, String> mockSlot = new HashMap<>();
+        mockSlot.put(2L, "SLOT-002");
+        field.set(operationTask, mockSlot);
+
         operationTask.setActualWorkStation(2L);
         assertEquals(2L, operationTask.getWorkStationId());
     }

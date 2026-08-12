@@ -4,11 +4,16 @@ import {attachmentAdpator} from "amis-core"
 import {ApiObject} from "amis-core/lib/types"
 import store from "@/stores"
 
+export interface RequestConfig extends AxiosRequestConfig {
+    /** When true, suppress the global business-error toast so the caller can surface its own message */
+    silentError?: boolean
+}
+
 /**
  * 全局请求拦截，方便对错误进行统一处理
  * @param config
  */
-export default function request(config: AxiosRequestConfig) {
+export default function request(config: RequestConfig) {
     let instance = axios.create()
 
     config.url = "/gw" + config.url
@@ -70,7 +75,6 @@ export default function request(config: AxiosRequestConfig) {
             }
 
             if (res.data === null) {
-                console.log("reject data")
                 reject(res)
             } else if (res.data === "") {
                 console.warn("response body is empty, url: ", config.url)
@@ -82,7 +86,9 @@ export default function request(config: AxiosRequestConfig) {
             } else if (!res.data.status || res?.data?.status === "SAT010001") {
                 resolve(res)
             } else {
-                toast.error(res.data.description, {title: res.data.msg})
+                if (!config.silentError) {
+                    toast.error(res.data.description, {title: res.data.msg})
+                }
                 resolve(res)
             }
         }
@@ -104,8 +110,8 @@ export default function request(config: AxiosRequestConfig) {
             } else if (axios.isCancel(res)) {
                 console.info("request canceled, url: ", config.url)
             } else {
-                toast.error(response?.data?.description, {
-                    title: response.data.msg
+                toast.error(response?.data?.description ?? "Request failed", {
+                    title: response?.data?.msg ?? "Error"
                 })
                 reject(res)
             }

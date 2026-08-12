@@ -139,7 +139,7 @@ const schema = {
                 showColumns: showColumns,
                 searchObject: {
                     tables: "w_stock_adjustment_order",
-                    orderBy: "create_time desc"
+                    orderBy: "update_time desc"
                 }
             },
             autoFillHeight: true,

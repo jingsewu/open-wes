@@ -189,17 +189,24 @@ export const useSkuScanner = (onSkuChange: (detail: any) => void) => {
 export const useQuantityControl = () => {
     const [inputValue, setInputValue] = useState<number | string>("")
 
-    const handleQuantityChange = {
-        onChange: (value: number) => setInputValue(value),
-        minus: () => {
-            if (inputValue) {
-                setInputValue((prev: number | string) => Math.max(0, Number(prev) - 1))
-            }
-        },
-        plus: () => setInputValue((prev: number | string) => (Number(prev) || 0) + 1)
-    }
+    // handleQuantityChange / resetQuantity must be stable (useCallback), not
+    // recreated per render — ContainerHandler's reset effect deps on
+    // resetQuantity, and an unstable identity makes it run on every render
+    // while focusValue === "container", wiping the just-typed container code.
+    const handleQuantityChange = useMemo(
+        () => ({
+            onChange: (value: number) => setInputValue(value),
+            minus: () =>
+                setInputValue((prev: number | string) =>
+                    prev ? Math.max(0, Number(prev) - 1) : prev
+                ),
+            plus: () =>
+                setInputValue((prev: number | string) => (Number(prev) || 0) + 1)
+        }),
+        []
+    )
 
-    const resetQuantity = () => setInputValue("")
+    const resetQuantity = useCallback(() => setInputValue(""), [])
 
     return { inputValue, setInputValue, handleQuantityChange, resetQuantity }
 }

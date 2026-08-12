@@ -5,15 +5,15 @@ import org.openwes.station.domain.entity.WorkStationCache;
 import java.util.Collection;
 import java.util.List;
 
-public interface WorkStationCacheRepository<T extends WorkStationCache> {
+public interface WorkStationCacheRepository {
 
-    T findById(Long id);
+    WorkStationCache findById(Long id);
 
-    void save(T workStationCache);
+    void save(WorkStationCache workStationCache);
 
-    void delete(T workStationCache);
+    void delete(WorkStationCache workStationCache);
 
-    List<T> findAllById(Collection<Long> workStationIds);
+    List<WorkStationCache> findAllById(Collection<Long> workStationIds);
 
     void deleteById(Long workStationId);
 }

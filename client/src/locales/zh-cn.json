@@ -11,6 +11,11 @@
     "login.featureAnalytics": "实时仓库数据分析",
     "login.featureRealtime": "高性能任务执行",
     "login.featureSecurity": "企业级安全保障",
+    "login.usernameRequired": "请输入用户名",
+    "login.passwordRequired": "请输入密码",
+    "login.passwordMinLength": "密码至少 6 个字符",
+    "login.submitting": "登录中...",
+    "login.invalidCredentials": "用户名或密码错误",
 
     "categories.receiving": "收货",
     "categories.put_away": "上架",
@@ -1007,9 +1012,12 @@
     "dashboard.todaysOrders": "今日订单",
     "dashboard.activeWorkstations": "活跃工作站",
     "dashboard.completionRate": "完成率",
+    "dashboard.loading": "加载中...",
+    "dashboard.noData": "暂无数据",
 
     "confirm.callContainer": "确认呼叫容器？",
     "common.loading": "加载中...",
+    "common.notLoggedIn": "请先登录",
 
     "monitoring.app.title": "监控中心",
     "monitoring.overview.title": "总览",

@@ -138,7 +138,7 @@ const searchObject = {
         "w_container_stock_transaction wcst " +
         "left join m_sku_barcode_data msbd on msbd.sku_id = wcst.sku_id " +
         "left join m_sku_main_data msmd on msmd.id = wcst.sku_id",
-    orderBy: "wcst.create_time desc"
+    orderBy: "wcst.update_time desc"
 }
 
 const schema = {

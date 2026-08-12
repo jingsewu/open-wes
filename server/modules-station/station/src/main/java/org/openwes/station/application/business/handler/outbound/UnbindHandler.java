@@ -5,6 +5,7 @@ import org.openwes.station.api.constants.ApiCodeEnum;
 import org.openwes.station.application.business.handler.IBusinessHandler;
 import org.openwes.station.application.business.handler.event.outbound.UnbindEvent;
 import org.openwes.station.domain.entity.OutboundWorkStationCache;
+import org.openwes.station.domain.repository.WorkStationCacheRepository;
 import org.openwes.station.domain.service.WorkStationService;
 import org.openwes.station.infrastructure.remote.RemoteWorkStationService;
 import org.openwes.station.infrastructure.remote.TaskService;
@@ -19,28 +20,36 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UnbindHandler implements IBusinessHandler<UnbindEvent> {
 
-    private final WorkStationService<OutboundWorkStationCache> workStationService;
+    private final WorkStationService workStationService;
     private final TaskService taskService;
     private final RemoteWorkStationService remoteWorkStationService;
     private final IPtlApi ptlApi;
+    private final WorkStationCacheRepository workStationRepository;
 
     @Override
     public void execute(UnbindEvent body, Long workStationId) {
-        OutboundWorkStationCache workStationCache = workStationService.getOrThrow(workStationId);
+        OutboundWorkStationCache workStationCache = (OutboundWorkStationCache) workStationService.getOrThrow(workStationId);
 
         body.getPutWallSlotCodes().forEach(slotCode -> {
 
             PutWallSlotDTO putWallSlot = remoteWorkStationService.queryPutWallSlot(workStationId, slotCode);
 
-            taskService.unbindContainer(new UnBindContainerDTO()
+            PutWallSlotDTO snapshot = taskService.unbindContainer(new UnBindContainerDTO()
                     .setPickingOrderId(putWallSlot.getPickingOrderId())
                     .setContainerCode(putWallSlot.getTransferContainerCode())
                     .setWarehouseCode(workStationCache.getWarehouseCode())
                     .setWorkStationId(workStationId)
                     .setPutWallSlotCode(slotCode));
 
-            workStationCache.getPutWallSlot(slotCode).ifPresent(v -> ptlApi.reminderBind(workStationId, v.getPtlTag()));
+            if (snapshot != null) {
+                workStationCache.getPutWallArea().applySnapshot(snapshot);
+            }
+
+            workStationCache.getPutWallArea().getSlot(slotCode)
+                    .ifPresent(v -> ptlApi.reminderBind(workStationId, v.getPtlTag()));
         });
+
+        workStationRepository.save(workStationCache);
     }
 
     @Override

@@ -11,7 +11,7 @@ import { observer } from "../../state"
 import { useOutboundLayout } from "./hooks"
 
 export interface OutBoundLayoutProps {
-    workStationEvent: WorkStationView<any>
+    workStationEvent: WorkStationView
 }
 
 const OutBoundLayout = observer((props: OutBoundLayoutProps) => {

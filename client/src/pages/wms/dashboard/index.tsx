@@ -14,6 +14,7 @@ import {
 import {Doughnut, Line} from "react-chartjs-2"
 import {Package, Truck, ArrowUpRight, Activity} from "lucide-react"
 import request from "@/utils/requestInterceptor"
+import {colors, radius, spacing, shadows, fontSizes} from "@/theme"
 
 ChartJS.register(
     CategoryScale,
@@ -51,13 +52,13 @@ interface WorkstationRow {
     operatedQty: number
 }
 
-const CHART_COLORS = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#64748b"]
+const CHART_COLORS = [colors.primary, colors.success, colors.warning, colors.danger, colors.primaryLight, colors.info]
 
 const cardStyle: React.CSSProperties = {
     background: "#fff",
-    borderRadius: 12,
-    padding: 24,
-    boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+    borderRadius: radius.md,
+    padding: spacing.lg,
+    boxShadow: shadows.card,
     transition: "box-shadow 0.2s ease, transform 0.2s ease",
 }
 
@@ -84,7 +85,7 @@ function KpiCard({
                 ...cardStyle,
                 cursor: "default",
                 ...(hovered
-                    ? {boxShadow: "0 4px 12px rgba(0,0,0,0.08)", transform: "translateY(-1px)"}
+                    ? {boxShadow: shadows.cardHover, transform: "translateY(-1px)"}
                     : {}),
             }}
             onMouseEnter={() => setHovered(true)}
@@ -106,13 +107,13 @@ function KpiCard({
                     <Icon size={22} color={iconColor} />
                 </div>
                 <div>
-                    <div style={{fontSize: 12, color: "#64748b", fontWeight: 500, marginBottom: 4}}>
+                    <div style={{fontSize: 12, color: colors.textSecondary, fontWeight: 500, marginBottom: 4}}>
                         {title}
                     </div>
-                    <div style={{fontSize: 24, fontWeight: 700, color: "#1e293b", lineHeight: 1}}>
+                    <div style={{fontSize: fontSizes.kpi, fontWeight: 700, color: colors.textStrong, lineHeight: 1}}>
                         {value}
                         {suffix && (
-                            <span style={{fontSize: 14, fontWeight: 500, color: "#94a3b8", marginLeft: 2}}>
+                            <span style={{fontSize: 14, fontWeight: 500, color: colors.textMuted, marginLeft: 2}}>
                                 {suffix}
                             </span>
                         )}
@@ -127,7 +128,7 @@ function KpiCard({
 function DashCard({title, children, style: extra}: {title: string; children: React.ReactNode; style?: React.CSSProperties}) {
     return (
         <div style={{...cardStyle, ...extra}}>
-            <div style={{fontSize: 14, fontWeight: 600, color: "#334155", marginBottom: 16}}>
+            <div style={{fontSize: fontSizes.lg, fontWeight: 600, color: colors.text, marginBottom: spacing.md}}>
                 {title}
             </div>
             {children}
@@ -136,28 +137,32 @@ function DashCard({title, children, style: extra}: {title: string; children: Rea
 }
 
 // ── Data table ──────────────────────────────────────
-function DataTable<T extends Record<string, unknown>>({
+function DataTable<T extends object>({
     columns,
     data,
+    rowKey,
+    noData,
 }: {
     columns: {key: string; label: string}[]
     data: T[]
+    rowKey?: (row: T, index: number) => string
+    noData?: string
 }) {
     return (
         <div style={{overflowX: "auto"}}>
-            <table style={{width: "100%", borderCollapse: "collapse", fontSize: 13}}>
+            <table style={{width: "100%", borderCollapse: "collapse", fontSize: fontSizes.md}}>
                 <thead>
                     <tr>
                         {columns.map((col) => (
                             <th
                                 key={col.key}
                                 style={{
-                                    background: "#f1f5f9",
+                                    background: colors.borderSubtle,
                                     padding: "10px 12px",
                                     textAlign: "left",
                                     fontWeight: 600,
                                     color: "#475569",
-                                    borderBottom: "1px solid #e2e8f0",
+                                    borderBottom: `1px solid ${colors.border}`,
                                     whiteSpace: "nowrap",
                                 }}
                             >
@@ -171,27 +176,27 @@ function DataTable<T extends Record<string, unknown>>({
                         <tr>
                             <td
                                 colSpan={columns.length}
-                                style={{padding: 24, textAlign: "center", color: "#94a3b8"}}
+                                style={{padding: spacing.lg, textAlign: "center", color: colors.textMuted}}
                             >
-                                No data
+                                {noData || "No data"}
                             </td>
                         </tr>
                     ) : (
                         data.map((row, idx) => (
                             <tr
-                                key={idx}
-                                style={{background: idx % 2 === 0 ? "#fff" : "#f8fafc"}}
+                                key={rowKey ? rowKey(row, idx) : idx}
+                                style={{background: idx % 2 === 0 ? "#fff" : colors.bgSubtle}}
                             >
                                 {columns.map((col) => (
                                     <td
                                         key={col.key}
                                         style={{
                                             padding: "10px 12px",
-                                            color: "#334155",
-                                            borderBottom: "1px solid #f1f5f9",
+                                            color: colors.text,
+                                            borderBottom: `1px solid ${colors.borderSubtle}`,
                                         }}
                                     >
-                                        {String(row[col.key] ?? "")}
+                                        {String((row as Record<string, unknown>)[col.key] ?? "")}
                                     </td>
                                 ))}
                             </tr>
@@ -358,7 +363,7 @@ export default function WmsDashboard() {
             {
                 label: t("dashboard.inbound"),
                 data: flowData.inbound,
-                borderColor: "#3b82f6",
+                borderColor: colors.primary,
                 backgroundColor: "rgba(59, 130, 246, 0.08)",
                 fill: true,
                 tension: 0.4,
@@ -369,7 +374,7 @@ export default function WmsDashboard() {
             {
                 label: t("dashboard.outbound"),
                 data: flowData.outbound,
-                borderColor: "#f59e0b",
+                borderColor: colors.warning,
                 backgroundColor: "rgba(245, 158, 11, 0.08)",
                 fill: true,
                 tension: 0.4,
@@ -412,14 +417,14 @@ export default function WmsDashboard() {
     ]
 
     return (
-        <div style={{padding: 24, maxWidth: 1400, margin: "0 auto"}}>
+        <div style={{padding: spacing.lg, maxWidth: 1400, margin: "0 auto"}}>
             {/* Page title */}
-            <h2 style={{fontSize: 20, fontWeight: 700, color: "#1e293b", marginBottom: 20}}>
+            <h2 style={{fontSize: fontSizes.heading, fontWeight: 700, color: colors.textStrong, marginBottom: 20}}>
                 {t("dashboard.title")}
             </h2>
 
             {/* KPI cards */}
-            <div style={{display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 20}}>
+            <div style={{display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: spacing.md, marginBottom: 20}}>
                 <KpiCard
                     icon={Package}
                     iconBg="#eff6ff"
@@ -448,19 +453,19 @@ export default function WmsDashboard() {
                     iconBg="#f0f9ff"
                     iconColor="#0ea5e9"
                     title={t("dashboard.activeWorkstations")}
-                    value={workstations.length}
+                    value={new Set(workstations.map((r) => r.stationCode)).size}
                 />
             </div>
 
             {/* Charts */}
-            <div style={{display: "grid", gridTemplateColumns: "1fr 1fr 2fr", gap: 16, marginBottom: 20}}>
+            <div style={{display: "grid", gridTemplateColumns: "1fr 1fr 2fr", gap: spacing.md, marginBottom: 20}}>
                 <DashCard title={t("dashboard.inboundProgress")}>
                     <div style={{height: 240}}>
                         {inboundProgress.length > 0 ? (
                             <Doughnut data={makeDoughnutData(inboundProgress)} options={doughnutOptions} />
                         ) : (
-                            <div style={{display: "flex", alignItems: "center", justifyContent: "center", height: "100%", color: "#94a3b8"}}>
-                                Loading...
+                            <div style={{display: "flex", alignItems: "center", justifyContent: "center", height: "100%", color: colors.textMuted}}>
+                                {t("dashboard.loading")}
                             </div>
                         )}
                     </div>
@@ -471,8 +476,8 @@ export default function WmsDashboard() {
                         {outboundProgress.length > 0 ? (
                             <Doughnut data={makeDoughnutData(outboundProgress)} options={doughnutOptions} />
                         ) : (
-                            <div style={{display: "flex", alignItems: "center", justifyContent: "center", height: "100%", color: "#94a3b8"}}>
-                                Loading...
+                            <div style={{display: "flex", alignItems: "center", justifyContent: "center", height: "100%", color: colors.textMuted}}>
+                                {t("dashboard.loading")}
                             </div>
                         )}
                     </div>
@@ -486,13 +491,13 @@ export default function WmsDashboard() {
             </div>
 
             {/* Tables */}
-            <div style={{display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16}}>
+            <div style={{display: "grid", gridTemplateColumns: "1fr 1fr", gap: spacing.md}}>
                 <DashCard title={t("dashboard.operatorRanking")}>
-                    <DataTable columns={operatorCols} data={operators} />
+                    <DataTable columns={operatorCols} data={operators} rowKey={(r) => r.operator} noData={t("dashboard.noData")} />
                 </DashCard>
 
                 <DashCard title={t("dashboard.workstationDetails")}>
-                    <DataTable columns={workstationCols} data={workstations} />
+                    <DataTable columns={workstationCols} data={workstations} rowKey={(r) => `${r.stationCode}-${r.taskType}`} noData={t("dashboard.noData")} />
                 </DashCard>
             </div>
         </div>

@@ -39,6 +39,10 @@ const PutWall = (props: PutWallProps) => {
     const putWallDisplayStyle =
         propPutWallDisplayStyle ||
         workStationEvent?.putWallArea?.putWallDisplayStyle
+    // 当服务器未设置 putWallDisplayStyle 时，默认采用合并显示模式，
+    // 否则 PutWall/index.tsx 中的渲染守卫 `putWallDisplayStyle === PutWallDisplayStyle.merge || item.active`
+    // 会在两个条件都失败时导致 SlotLayout 永远不渲染。
+    const effectiveDisplayStyle = putWallDisplayStyle || PutWallDisplayStyle.merge
     const isActive =
         propIsActive !== undefined
             ? propIsActive
@@ -99,7 +103,7 @@ const PutWall = (props: PutWallProps) => {
 
             <div className="d-flex flex-1 gap-3">
                 {putWallViews.map((item, index) => {
-                    return putWallDisplayStyle === PutWallDisplayStyle.merge ||
+                    return effectiveDisplayStyle === PutWallDisplayStyle.merge ||
                         item.active ? (
                         <SlotLayout
                             key={index}

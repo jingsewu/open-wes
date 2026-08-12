@@ -13,25 +13,33 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class TapPtlHandler<T extends WorkStationCache> implements IBusinessHandler<TapPtlEvent> {
+public class TapPtlHandler implements IBusinessHandler<TapPtlEvent> {
 
-    private final WorkStationService<T> workStationService;
+    private final WorkStationService workStationService;
     private final TapPutWallSlotHandler tapPutWallSlotHandler;
 
     @Override
     public void execute(TapPtlEvent tapPtlEvent, Long workStationId) {
         WorkStationCache workStationCache = workStationService.getOrThrow(workStationId);
 
-        PutWallSlotDTO putWallSlot = workStationCache.getPutWallSlots().stream()
+        if (workStationCache.getPutWallArea() == null || workStationCache.getPutWallArea().getPutWallViews() == null) {
+            log.error("work station: {} has no put wall area", workStationId);
+            return;
+        }
+
+        PutWallSlotDTO putWallSlot = workStationCache.getPutWallArea().getPutWallViews().stream()
+            .flatMap(pw -> (pw.getPutWallSlots() != null ? pw.getPutWallSlots() : Collections.<PutWallSlotDTO>emptyList()).stream())
             .filter(v -> StringUtils.equals(v.getPtlTag(), tapPtlEvent.getPtlTag()))
             .findFirst().orElse(null);
 
         // not put wall tap, return now
         if (putWallSlot == null) {
-            log.error("work station: {} don't contains ptl tag: {}",workStationId, tapPtlEvent.getPtlTag());
+            log.error("work station: {} don't contains ptl tag: {}", workStationId, tapPtlEvent.getPtlTag());
             return;
         }
 
