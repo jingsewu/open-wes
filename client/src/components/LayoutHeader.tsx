@@ -3,6 +3,7 @@ import { useHistory } from "react-router"
 import { useTranslation } from "react-i18next"
 import { Button, Dropdown, Menu, Select } from "antd"
 import { DownOutlined, KeyOutlined, LogoutOutlined } from "@ant-design/icons"
+import { PanelLeftClose, PanelLeftOpen } from "lucide-react"
 import type { MenuProps } from "antd"
 
 import store from "@/stores"
@@ -13,9 +14,10 @@ import { workStationEventLoop } from "@/pages/wms/station/event-loop/eventLoopIn
 
 import Language from "@/pages/components/Language"
 import ChangePasswordForm from "@/pages/components/ChangePassword"
+import { colors } from "@/theme"
 
 const Divider = () => (
-    <div style={{ width: 1, height: 18, background: "#e5e7eb", margin: "0 4px", flexShrink: 0 }} />
+    <div style={{ width: 1, height: 18, background: colors.border, margin: "0 4px", flexShrink: 0 }} />
 )
 
 const WarehouseSelect = ({
@@ -239,7 +241,11 @@ const Header = ({
                     style={{ marginLeft: 8 }}
                     onClick={store.toggleAsideFolded}
                 >
-                    <i className={store.asideFolded ? "fa fa-indent" : "fa fa-outdent"} />
+                    {store.asideFolded ? (
+                        <PanelLeftOpen size={18} color={colors.textSecondary} />
+                    ) : (
+                        <PanelLeftClose size={18} color={colors.textSecondary} />
+                    )}
                 </Button>
 
                 {/* ── App navigation ── */}

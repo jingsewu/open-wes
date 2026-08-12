@@ -7,27 +7,13 @@ import "@/scss/style.scss"
 import LoginForm from "./components/LoginForm"
 import {withTranslation} from "react-i18next"
 import Language from "./components/Language"
+import BrandLogo from "@/components/BrandLogo"
 import {BarChart3, Zap, Shield} from 'lucide-react'
 
 interface LoginProps extends RouteComponentProps<any> {
     store: IMainStore
     t: any
 }
-
-const BRAND_LOGO_GRAD_ID = "login-brand-logo-grad"
-
-const BrandLogo = () => (
-    <svg width="72" height="72" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-            <linearGradient id={BRAND_LOGO_GRAD_ID} x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stopColor="#3b82f6" />
-                <stop offset="100%" stopColor="#1d4ed8" />
-            </linearGradient>
-        </defs>
-        <rect width="34" height="34" rx="9" fill={`url(#${BRAND_LOGO_GRAD_ID})`} />
-        <text x="17" y="23.5" textAnchor="middle" fill="white" fontSize="17" fontWeight="900" fontFamily="Plus Jakarta Sans, Arial, sans-serif">W</text>
-    </svg>
-)
 
 const features = [
     {icon: BarChart3, labelKey: "login.featureAnalytics"},
@@ -46,6 +32,13 @@ const featureFallbacks: Record<string, string> = {
 @withRouter
 @observer
 class LoginRoute extends React.Component<LoginProps, any> {
+    componentDidMount() {
+        // Already signed in — skip the login form and go straight to the app
+        if (this.props.store.user.isAuthenticated) {
+            this.props.history.replace("/wms/dashboard")
+        }
+    }
+
     render() {
         const {t} = this.props
         return (

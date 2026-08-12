@@ -1,68 +1,87 @@
 import * as React from "react"
 import {Button, Checkbox, Form, Input, Typography} from "antd"
-import {RouteComponentProps} from "react-router-dom"
 import {UserOutlined, LockOutlined} from "@ant-design/icons"
 import Message, {MessageType} from "@/pages/wms/station/widgets/message"
 
-import {IMainStore} from "@/stores"
 import {inject, observer} from "mobx-react"
 import {withRouter} from "react-router"
 import request from "@/utils/requestInterceptor"
 import "@/scss/style.scss"
 import {withTranslation} from "react-i18next"
+import BrandLogo from "@/components/BrandLogo"
 
 const {Title, Text} = Typography
 
-const FORM_LOGO_GRAD_ID = "login-form-logo-grad"
+// Remember-me stores only the username — never the password
+const LOGIN_USERNAME_KEY = "login_username"
+const FORM_LOGO_GRAD_ID = "openwes-login-form-logo-grad"
 
-interface LoginProps extends RouteComponentProps<any> {
-    store: IMainStore
+interface LoginFormState {
+    loading: boolean
 }
 
 @inject("store")
 // @ts-ignore
 @withRouter
 @observer
-class LoginForm extends React.Component<any> {
-    handleFormSaved = (values: { username: string; password: string }) => {
-        const history = this.props.history;
-        const store = this.props.store;
-        const {t} = this.props;
+class LoginForm extends React.Component<any, LoginFormState> {
+    state: LoginFormState = {loading: false}
 
-        request({
-            method: "post",
-            url: "/user/api/auth/signin",
-            data: values,
-            headers: {
-                "content-type": "application/json",
-            },
-        }).then((res: any) => {
-            if (res.data != null && res.status === 200 && res.data.token != undefined) {
-                store.user.login(values.username, res.data.token);
+    handleFormSaved = async (values: {
+        username: string
+        password: string
+        remember?: boolean
+    }) => {
+        const {history, store, t} = this.props
+        this.setState({loading: true})
+
+        try {
+            const res: any = await request({
+                method: "post",
+                url: "/user/api/auth/signin",
+                data: {username: values.username, password: values.password},
+                headers: {
+                    "content-type": "application/json",
+                },
+                silentError: true,
+            })
+
+            if (res?.data?.token) {
+                if (values.remember) {
+                    localStorage.setItem(LOGIN_USERNAME_KEY, values.username)
+                } else {
+                    localStorage.removeItem(LOGIN_USERNAME_KEY)
+                }
+                store.user.login(values.username, res.data.token)
                 Message({
                     type: MessageType.SUCCESS,
                     content: t("toast.loginSuccess"),
-                });
-                history.replace(`/dashboard`);
+                })
+                history.replace("/wms/dashboard")
+            } else {
+                Message({
+                    type: MessageType.ERROR,
+                    content: t("login.invalidCredentials"),
+                })
             }
-        });
-    };
+        } catch (err) {
+            Message({
+                type: MessageType.ERROR,
+                content: t("login.invalidCredentials"),
+            })
+        } finally {
+            this.setState({loading: false})
+        }
+    }
 
     render() {
         const {t} = this.props
+        const savedUsername = localStorage.getItem(LOGIN_USERNAME_KEY) || ""
+
         return (
             <div className="login-form-card">
                 <div style={{textAlign: "center", marginBottom: 32}}>
-                    <svg width="48" height="48" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <defs>
-                            <linearGradient id={FORM_LOGO_GRAD_ID} x1="0" y1="0" x2="1" y2="1">
-                                <stop offset="0%" stopColor="#3b82f6" />
-                                <stop offset="100%" stopColor="#1d4ed8" />
-                            </linearGradient>
-                        </defs>
-                        <rect width="34" height="34" rx="9" fill={`url(#${FORM_LOGO_GRAD_ID})`} />
-                        <text x="17" y="23.5" textAnchor="middle" fill="white" fontSize="17" fontWeight="900" fontFamily="Plus Jakarta Sans, Arial, sans-serif">W</text>
-                    </svg>
+                    <BrandLogo size={48} gradientId={FORM_LOGO_GRAD_ID} />
                     <Title level={3} style={{
                         color: "#1e293b",
                         marginTop: 16,
@@ -82,6 +101,7 @@ class LoginForm extends React.Component<any> {
                     onFinish={this.handleFormSaved}
                     autoComplete="off"
                     requiredMark={false}
+                    initialValues={{username: savedUsername, remember: !!savedUsername}}
                 >
                     <Form.Item
                         label={<span style={{fontWeight: 500, color: "#334155"}}>{t("login.username")}</span>}
@@ -89,12 +109,13 @@ class LoginForm extends React.Component<any> {
                         rules={[
                             {
                                 required: true,
-                                message: "Please input your username!",
+                                message: t("login.usernameRequired"),
                             },
                         ]}
                     >
                         <Input
                             size="large"
+                            autoFocus
                             prefix={<UserOutlined style={{color: "#94a3b8"}} />}
                             placeholder={t("login.usernamePlaceholder")}
                             style={{borderRadius: 8, height: 44}}
@@ -107,9 +128,9 @@ class LoginForm extends React.Component<any> {
                         rules={[
                             {
                                 required: true,
-                                message: "Please input your password!",
+                                message: t("login.passwordRequired"),
                             },
-                            {type: "string", min: 6, message: "Password must be at least 6 characters long!"},
+                            {type: "string", min: 6, message: t("login.passwordMinLength")},
                         ]}
                     >
                         <Input.Password
@@ -130,6 +151,7 @@ class LoginForm extends React.Component<any> {
                             htmlType="submit"
                             size="large"
                             block
+                            loading={this.state.loading}
                             style={{
                                 borderRadius: 8,
                                 height: 44,
@@ -139,7 +161,7 @@ class LoginForm extends React.Component<any> {
                                 boxShadow: "0 2px 8px rgba(59, 130, 246, 0.3)",
                             }}
                         >
-                            {t("login.submitText")}
+                            {this.state.loading ? t("login.submitting") : t("login.submitText")}
                         </Button>
                     </Form.Item>
                 </Form>
