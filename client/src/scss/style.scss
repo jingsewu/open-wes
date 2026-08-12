@@ -6,6 +6,12 @@
     --sidebar-text: #{$sidebar-text};
     --header-height: #{$header-height};
     --font-family: #{$font-family-base};
+
+    /* AMIS cxd theme brand scale → project blue (#3b82f6) */
+    /* !important required: this file is emitted BEFORE amis cxd.css in the bundle */
+    --colors-brand-4: #{$color-primary-dark} !important; /* pressed/active — darker */
+    --colors-brand-5: #{$color-primary} !important; /* primary */
+    --colors-brand-6: #{$color-primary-light} !important; /* hover — lighter */
 }
 
 *,
@@ -126,6 +132,8 @@
 }
 
 .login-brand-panel {
+    flex: 1 1 0;
+    min-width: 0;
     background: linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #1e3a5f 100%);
     position: relative;
     overflow: hidden;
@@ -186,6 +194,8 @@
 }
 
 .login-form-panel {
+    flex: 1 1 0;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -218,74 +228,21 @@
     }
 }
 
-.login-image {
-    flex: 1;
-    height: 70%;
-    background-image: url("~@/icon/wms.png");
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: contain;
-}
+/* ─── Login responsive ───────────────────────────── */
+@media (max-width: 900px) {
+    .login-page-container {
+        flex-direction: column;
+        overflow-y: auto;
+    }
 
-/* ─── Legacy form styles ─────────────────────────── */
-.card {
-    height: 420px;
-    background-color: white;
-}
+    .login-brand-panel {
+        display: none;
+    }
 
-.forms-inputs {
-    position: relative;
-}
-
-.forms-inputs span {
-    position: absolute;
-    top: -18px;
-    left: 10px;
-    background-color: #fff;
-    padding: 5px 10px;
-    font-size: 15px;
-}
-
-.forms-inputs input {
-    height: 50px;
-    border: 2px solid #eee;
-}
-
-.forms-inputs input:focus {
-    box-shadow: none;
-    outline: none;
-    border: 2px solid #000;
-}
-
-.btn {
-    height: 50px;
-    background-color: "#1d2642";
-}
-
-.success-data {
-    display: flex;
-    flex-direction: column;
-}
-
-.bxs-badge-check {
-    font-size: 90px;
-}
-
-.text-iwms {
-    font-size: 86px;
-    line-height: 96px;
-    padding-top: 4rem;
-    text-align: center;
-    white-space: nowrap;
-    background-image: -webkit-linear-gradient(left, #fcbe4c, #a750eb);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-.login-title {
-    font-size: 72px;
-    color: #4f64d2;
-    line-height: 93px;
+    .login-form-panel {
+        width: 100%;
+        flex: none;
+    }
 }
 
 /* ─── Slot text positions ────────────────────────── */
@@ -563,4 +520,97 @@
 
 .ant-tabs-card > .ant-tabs-nav .ant-tabs-tab .ant-tabs-tab-btn {
     color: #64748b;
+}
+
+/* ─── Ant Design v4 → brand blue ─────────────────── */
+/* antd/dist/antd.css is emitted AFTER this file, so !important is required */
+
+.ant-btn-primary {
+    background-color: #{$color-primary} !important;
+    border-color: #{$color-primary} !important;
+
+    &:hover,
+    &:focus {
+        background-color: #{$color-primary-light} !important;
+        border-color: #{$color-primary-light} !important;
+    }
+
+    &:active {
+        background-color: #{$color-primary-dark} !important;
+        border-color: #{$color-primary-dark} !important;
+    }
+}
+
+.ant-btn-link {
+    color: #{$color-primary} !important;
+
+    &:hover,
+    &:focus {
+        color: #{$color-primary-light} !important;
+    }
+}
+
+.ant-checkbox-checked .ant-checkbox-inner,
+.ant-checkbox-indeterminate .ant-checkbox-inner {
+    background-color: #{$color-primary} !important;
+    border-color: #{$color-primary} !important;
+}
+
+.ant-checkbox-wrapper:hover .ant-checkbox-inner,
+.ant-checkbox:hover .ant-checkbox-inner {
+    border-color: #{$color-primary} !important;
+}
+
+.ant-radio-checked .ant-radio-inner {
+    border-color: #{$color-primary} !important;
+
+    &::after {
+        background-color: #{$color-primary} !important;
+    }
+}
+
+.ant-switch-checked {
+    background-color: #{$color-primary} !important;
+}
+
+.ant-input:hover,
+.ant-input-affix-wrapper:hover .ant-input,
+.ant-select:not(.ant-select-disabled):hover .ant-select-selector {
+    border-color: #{$color-primary-light} !important;
+}
+
+.ant-input:focus,
+.ant-input-focused,
+.ant-input-affix-wrapper:focus,
+.ant-input-affix-wrapper-focused,
+.ant-select-focused .ant-select-selector {
+    border-color: #{$color-primary} !important;
+    box-shadow: 0 0 0 2px rgb(59 130 246 / 20%) !important;
+}
+
+.ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
+    background-color: rgb(59 130 246 / 8%) !important;
+}
+
+.ant-menu-horizontal > .ant-menu-item-selected {
+    color: #{$color-primary} !important;
+    border-bottom-color: #{$color-primary} !important;
+}
+
+.ant-menu-horizontal > .ant-menu-item:hover,
+.ant-menu-horizontal > .ant-menu-submenu:hover {
+    color: #{$color-primary} !important;
+    border-bottom-color: #{$color-primary} !important;
+}
+
+.ant-pagination-item-active {
+    border-color: #{$color-primary} !important;
+
+    a {
+        color: #{$color-primary} !important;
+    }
+}
+
+.ant-tabs-tab-active .ant-tabs-tab-btn {
+    color: #{$color-primary} !important;
 }

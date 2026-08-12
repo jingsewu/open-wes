@@ -8,6 +8,7 @@ import LoginForm from "./components/LoginForm"
 import {withTranslation} from "react-i18next"
 import Language from "./components/Language"
 import BrandLogo from "@/components/BrandLogo"
+import {colors} from "@/theme"
 import {BarChart3, Zap, Shield} from 'lucide-react'
 
 interface LoginProps extends RouteComponentProps<any> {
@@ -44,7 +45,7 @@ class LoginRoute extends React.Component<LoginProps, any> {
         return (
             <div className="login-page-container d-flex">
                 {/* Brand panel */}
-                <div className="w-1/2 login-brand-panel">
+                <div className="login-brand-panel">
                     <div style={{position: "relative", zIndex: 1, textAlign: "center"}}>
                         <BrandLogo />
                         <h1 style={{
@@ -55,10 +56,10 @@ class LoginRoute extends React.Component<LoginProps, any> {
                             lineHeight: 1.2,
                         }}>
                             <span style={{color: "#fff"}}>Open</span>
-                            <span style={{color: "#60a5fa"}}>WES</span>
+                            <span style={{color: colors.primaryLight}}>WES</span>
                         </h1>
                         <p style={{
-                            color: "#94a3b8",
+                            color: colors.textMuted,
                             fontSize: 16,
                             fontWeight: 500,
                             marginBottom: 48,
@@ -93,10 +94,10 @@ class LoginRoute extends React.Component<LoginProps, any> {
                                         justifyContent: "center",
                                         flexShrink: 0,
                                     }}>
-                                        <Icon size={20} color="#60a5fa" />
+                                        <Icon size={20} color={colors.primaryLight} />
                                     </div>
                                     <span style={{
-                                        color: "#cbd5e1",
+                                        color: colors.sidebarText,
                                         fontSize: 14,
                                         fontWeight: 500,
                                     }}>
@@ -109,7 +110,7 @@ class LoginRoute extends React.Component<LoginProps, any> {
                 </div>
 
                 {/* Form panel */}
-                <div className="w-1/2 login-form-panel">
+                <div className="login-form-panel">
                     <div style={{position: "absolute", top: 24, right: 24}}>
                         <Language />
                     </div>

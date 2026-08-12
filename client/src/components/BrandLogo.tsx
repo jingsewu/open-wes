@@ -1,4 +1,5 @@
 import * as React from "react"
+import { colors } from "@/theme"
 
 /**
  * Shared "W" brand mark used across login page and app header.
@@ -23,8 +24,8 @@ const BrandLogo = ({ size = 72, gradientId = DEFAULT_LOGO_GRAD_ID }: BrandLogoPr
     >
         <defs>
             <linearGradient id={gradientId} x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stopColor="#3b82f6" />
-                <stop offset="100%" stopColor="#1d4ed8" />
+                <stop offset="0%" stopColor={colors.primary} />
+                <stop offset="100%" stopColor={colors.primaryDark} />
             </linearGradient>
         </defs>
         <rect width="34" height="34" rx="9" fill={`url(#${gradientId})`} />

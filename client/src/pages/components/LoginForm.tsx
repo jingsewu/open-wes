@@ -9,6 +9,7 @@ import request from "@/utils/requestInterceptor"
 import "@/scss/style.scss"
 import {withTranslation} from "react-i18next"
 import BrandLogo from "@/components/BrandLogo"
+import {colors} from "@/theme"
 
 const {Title, Text} = Typography
 
@@ -83,14 +84,14 @@ class LoginForm extends React.Component<any, LoginFormState> {
                 <div style={{textAlign: "center", marginBottom: 32}}>
                     <BrandLogo size={48} gradientId={FORM_LOGO_GRAD_ID} />
                     <Title level={3} style={{
-                        color: "#1e293b",
+                        color: colors.textStrong,
                         marginTop: 16,
                         marginBottom: 4,
                         fontWeight: 700,
                     }}>
                         {t("login.submitText")}
                     </Title>
-                    <Text style={{color: "#64748b", fontSize: 14}}>
+                    <Text style={{color: colors.textSecondary, fontSize: 14}}>
                         {t("login.subtitle")}
                     </Text>
                 </div>
@@ -104,7 +105,7 @@ class LoginForm extends React.Component<any, LoginFormState> {
                     initialValues={{username: savedUsername, remember: !!savedUsername}}
                 >
                     <Form.Item
-                        label={<span style={{fontWeight: 500, color: "#334155"}}>{t("login.username")}</span>}
+                        label={<span style={{fontWeight: 500, color: colors.text}}>{t("login.username")}</span>}
                         name="username"
                         rules={[
                             {
@@ -116,14 +117,14 @@ class LoginForm extends React.Component<any, LoginFormState> {
                         <Input
                             size="large"
                             autoFocus
-                            prefix={<UserOutlined style={{color: "#94a3b8"}} />}
+                            prefix={<UserOutlined style={{color: colors.textMuted}} />}
                             placeholder={t("login.usernamePlaceholder")}
                             style={{borderRadius: 8, height: 44}}
                         />
                     </Form.Item>
 
                     <Form.Item
-                        label={<span style={{fontWeight: 500, color: "#334155"}}>{t("login.password")}</span>}
+                        label={<span style={{fontWeight: 500, color: colors.text}}>{t("login.password")}</span>}
                         name="password"
                         rules={[
                             {
@@ -135,7 +136,7 @@ class LoginForm extends React.Component<any, LoginFormState> {
                     >
                         <Input.Password
                             size="large"
-                            prefix={<LockOutlined style={{color: "#94a3b8"}} />}
+                            prefix={<LockOutlined style={{color: colors.textMuted}} />}
                             placeholder={t("login.passwordPlaceholder")}
                             style={{borderRadius: 8, height: 44}}
                         />
@@ -156,8 +157,8 @@ class LoginForm extends React.Component<any, LoginFormState> {
                                 borderRadius: 8,
                                 height: 44,
                                 fontWeight: 600,
-                                background: "#3b82f6",
-                                borderColor: "#3b82f6",
+                                background: colors.primary,
+                                borderColor: colors.primary,
                                 boxShadow: "0 2px 8px rgba(59, 130, 246, 0.3)",
                             }}
                         >
@@ -165,7 +166,7 @@ class LoginForm extends React.Component<any, LoginFormState> {
                         </Button>
                     </Form.Item>
                 </Form>
-                <Text style={{color: "#94a3b8", fontSize: 13, display: "block", textAlign: "center"}}>
+                <Text style={{color: colors.textSecondary, fontSize: 13, display: "block", textAlign: "center"}}>
                     {t("login.contactAdmin")}
                 </Text>
             </div>

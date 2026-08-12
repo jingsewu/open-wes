@@ -38,14 +38,14 @@ const WarehouseSelect = ({
                 gap: 6,
                 padding: "4px 10px",
                 borderRadius: 6,
-                background: hovered ? "#f3f4f6" : "transparent",
+                background: hovered ? colors.bgHover : "transparent",
                 transition: "background 0.15s",
                 cursor: "pointer"
             }}
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
         >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={colors.primary} strokeWidth="2">
                 <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
                 <polyline points="9 22 9 12 15 12 15 22" />
             </svg>
@@ -55,8 +55,8 @@ const WarehouseSelect = ({
                 options={options}
                 onChange={onChange}
                 dropdownMatchSelectWidth={false}
-                suffixIcon={<DownOutlined style={{ fontSize: 10, color: "#9ca3af" }} />}
-                style={{ fontSize: 13, fontWeight: 500, color: "#374151", padding: 0 }}
+                suffixIcon={<DownOutlined style={{ fontSize: 10, color: colors.textMuted }} />}
+                style={{ fontSize: 13, fontWeight: 500, color: colors.text, padding: 0 }}
                 dropdownStyle={{
                     borderRadius: 8,
                     boxShadow: "0 8px 24px rgba(0,0,0,.12)",
@@ -80,7 +80,7 @@ const UserTrigger = ({ name, ...rest }: { name: string } & React.HTMLAttributes<
                 gap: 7,
                 padding: "4px 8px",
                 borderRadius: 6,
-                background: hovered ? "#f3f4f6" : "transparent",
+                background: hovered ? colors.bgHover : "transparent",
                 transition: "background 0.15s",
                 cursor: "pointer"
             }}
@@ -93,7 +93,7 @@ const UserTrigger = ({ name, ...rest }: { name: string } & React.HTMLAttributes<
                     height: 26,
                     borderRadius: "50%",
                     flexShrink: 0,
-                    background: "linear-gradient(135deg, #3b82f6, #1d4ed8)",
+                    background: `linear-gradient(135deg, ${colors.primary}, ${colors.primaryDark})`,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -104,8 +104,8 @@ const UserTrigger = ({ name, ...rest }: { name: string } & React.HTMLAttributes<
             >
                 {initial}
             </div>
-            <span style={{ fontSize: 13, fontWeight: 500, color: "#374151" }}>{name}</span>
-            <DownOutlined style={{ fontSize: 10, color: "#9ca3af" }} />
+            <span style={{ fontSize: 13, fontWeight: 500, color: colors.text }}>{name}</span>
+            <DownOutlined style={{ fontSize: 10, color: colors.textMuted }} />
         </div>
     )
 }
@@ -165,7 +165,7 @@ const Header = ({
                     display: "flex",
                     alignItems: "center",
                     gap: 10,
-                    borderBottom: "1px solid #f3f4f6"
+                    borderBottom: `1px solid ${colors.bgHover}`
                 }}
             >
                 <div
@@ -174,7 +174,7 @@ const Header = ({
                         height: 32,
                         borderRadius: "50%",
                         flexShrink: 0,
-                        background: "linear-gradient(135deg, #3b82f6, #1d4ed8)",
+                        background: `linear-gradient(135deg, ${colors.primary}, ${colors.primaryDark})`,
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
@@ -185,7 +185,7 @@ const Header = ({
                 >
                     {store.user.name?.[0]?.toUpperCase() ?? "U"}
                 </div>
-                <span style={{ fontSize: 13, fontWeight: 500, color: "#374151" }}>{store.user.name}</span>
+                <span style={{ fontSize: 13, fontWeight: 500, color: colors.text }}>{store.user.name}</span>
             </div>
             {/* Actions */}
             <div style={{ padding: "4px 0" }}>
@@ -215,22 +215,22 @@ const Header = ({
                         padding: "0 16px",
                         gap: 8,
                         flexShrink: 0,
-                        borderRight: "1px solid #e2e8f0"
+                        borderRight: `1px solid ${colors.border}`
                     }}
                 >
                     <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <defs>
                             <linearGradient id={LOGO_GRAD_ID} x1="0" y1="0" x2="1" y2="1">
-                                <stop offset="0%" stopColor="#3b82f6" />
-                                <stop offset="100%" stopColor="#1d4ed8" />
+                                <stop offset="0%" stopColor={colors.primary} />
+                                <stop offset="100%" stopColor={colors.primaryDark} />
                             </linearGradient>
                         </defs>
                         <rect width="34" height="34" rx="9" fill={`url(#${LOGO_GRAD_ID})`} />
                         <text x="17" y="23.5" textAnchor="middle" fill="white" fontSize="17" fontWeight="900" fontFamily="Arial,sans-serif">W</text>
                     </svg>
                     <span style={{ fontSize: 15, whiteSpace: "nowrap" }}>
-                        <span style={{ fontWeight: 500, color: "#374151" }}>Open</span>
-                        <span style={{ fontWeight: 800, color: "#3b82f6" }}>WES</span>
+                        <span style={{ fontWeight: 500, color: colors.text }}>Open</span>
+                        <span style={{ fontWeight: 800, color: colors.primary }}>WES</span>
                     </span>
                 </div>
 
@@ -296,8 +296,8 @@ const DropdownItem = ({
     danger?: boolean
 }) => {
     const [hovered, setHovered] = useState(false)
-    const color = danger ? "#ef4444" : "#374151"
-    const hoverBg = danger ? "#fef2f2" : "#f9fafb"
+    const color = danger ? colors.danger : colors.text
+    const hoverBg = danger ? "#fef2f2" : colors.bgSubtle
     return (
         <div
             onClick={onClick}
@@ -315,7 +315,7 @@ const DropdownItem = ({
                 transition: "background 0.15s"
             }}
         >
-            <span style={{ fontSize: 14, color: danger ? "#ef4444" : "#9ca3af" }}>{icon}</span>
+            <span style={{ fontSize: 14, color: danger ? colors.danger : colors.textMuted }}>{icon}</span>
             {children}
         </div>
     )

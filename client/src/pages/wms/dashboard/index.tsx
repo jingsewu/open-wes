@@ -52,7 +52,7 @@ interface WorkstationRow {
     operatedQty: number
 }
 
-const CHART_COLORS = [colors.primary, colors.success, colors.warning, colors.danger, "#8b5cf6", colors.info]
+const CHART_COLORS = [colors.primary, colors.success, colors.warning, colors.danger, colors.primaryLight, colors.info]
 
 const cardStyle: React.CSSProperties = {
     background: "#fff",
