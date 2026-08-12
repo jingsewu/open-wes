@@ -29,9 +29,13 @@ class StationApiClient extends ApiClient {
     return resp;
   }
 
-  /** Bring the station online (re-initializes the Redis cache from DB). */
-  async online(stationId = STATION_ID) {
-    return this.action('ONLINE', JSON.stringify({ workStationMode: 'PICKING', hasOrder: true }), stationId);
+  /**
+   * Bring the station online (re-initializes the Redis cache from DB).
+   * @param {string} mode  WorkStationModeEnum: 'PICKING' (default), 'RECEIVE', ...
+   * @param {boolean} hasOrder  Whether the mode operates with an order.
+   */
+  async online(mode = 'PICKING', hasOrder = true, stationId = STATION_ID) {
+    return this.action('ONLINE', JSON.stringify({ workStationMode: mode, hasOrder }), stationId);
   }
 
   /** Bind a transfer container to a WAITING_BINDING slot (2 INPUT scans). */

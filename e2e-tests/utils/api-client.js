@@ -70,13 +70,36 @@ class ApiClient {
 
   // -- Inbound --
   async createInboundPlanOrder(dto) {
-    // NOTE: inbound plan order is created via the management UI in the smoke test;
-    // a dedicated create API is not exercised here.
+    // NOTE: inbound plan orders have no JSON create API (Excel import only), so
+    // the E2E seeds them directly via scripts/seed-inbound.js. This stub exists
+    // for symmetry and would point at a create endpoint if one is added.
     return this.post('/wms/inbound/plan/create', dto);
   }
 
-  async queryInboundPlanOrder(id) {
-    return this.get(`/wms/inbound/plan/${id}`);
+  /**
+   * Query an inbound plan order by LPN or customer order no — the same endpoint
+   * the receive station UI's queryPlan() calls.
+   * Returns the InboundPlanOrderDTO (with details) via the Response.data wrapper.
+   */
+  async queryInboundPlanByIdentify(identifyNo, warehouseCode) {
+    const resp = await this.post(`/wms/inbound/plan/query/${identifyNo}/${warehouseCode}`, {});
+    const body = await resp.json();
+    return body.data;
+  }
+
+  /** POST /wms/inbound/plan/accept — the receive station UI's acceptPlan(). */
+  async acceptInbound(dto) {
+    return this.post('/wms/inbound/plan/accept', dto);
+  }
+
+  /** POST /wms/inbound/accept/completeByContainer — "满箱完成收货". */
+  async completeInboundByContainer(containerCode) {
+    return this.post(`/wms/inbound/accept/completeByContainer?containerCode=${containerCode}`, {});
+  }
+
+  /** POST /wms/basic/container/get — fetch a container (id + spec + slots). */
+  async getContainerByCode(containerCode, warehouseCode) {
+    return this.post(`/wms/basic/container/get?containerCode=${containerCode}&warehouseCode=${warehouseCode}`, {});
   }
 
   // -- Outbound --

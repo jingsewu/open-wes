@@ -46,6 +46,7 @@ public class WorkStationServiceImpl implements WorkStationService {
         }
 
         workStationCache.setId(workStationDTO.getId());
+        workStationCache.setWorkStationId(workStationDTO.getId());
         workStationCache.setWarehouseCode(workStationDTO.getWarehouseCode());
         workStationCache.setWarehouseAreaId(workStationDTO.getWarehouseAreaId());
         workStationCache.setStationCode(workStationDTO.getStationCode());

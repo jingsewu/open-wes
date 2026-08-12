@@ -46,6 +46,13 @@ public class WorkStationCache {
     @Id
     protected Long id;
 
+    /**
+     * Mirror of {@link #id} — the frontend WorkStationView contract expects
+     * {@code workStationId} (the receive page sends it as the accept's
+     * workStationId). Kept in sync where the cache is initialized.
+     */
+    protected Long workStationId;
+
     protected String warehouseCode;
     protected Long warehouseAreaId;
     protected String stationCode;

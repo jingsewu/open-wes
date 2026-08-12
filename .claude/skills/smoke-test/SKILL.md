@@ -46,7 +46,7 @@ Generate or update Playwright test scripts for given scenarios.
 5. Report what was changed
 
 **Scenarios available:**
-- `inbound-receiving` — Station inbound receiving flow
+- `inbound-receiving` — Station receive flow: seed order → scan LPN → SKU → container → accept → "满箱" complete
 - `outbound-management` — Management outbound order lifecycle
 - `station-picking` — Station outbound picking flow
 - `all` — All three (default)
@@ -85,6 +85,8 @@ e2e-tests/
 │   ├── outbound-management.spec.js
 │   └── station-outbound-picking.spec.js
 └── scripts/
+    ├── seed-inbound.js        # Inbound order + target container + RECEIVE mode
+    ├── restore-station-mode.js# Revert workstation 1 to PICKING after inbound test
     └── wait-for-services.sh  # Health check script for CI
 ```
 
@@ -94,7 +96,11 @@ e2e-tests/
 - **Gateway:** Spring Boot on port 8090, REST API
 - **Station API:** `PUT /api?apiCode=<ApiCodeEnum>` with JSON body
 - **API codes for outbound:** `INPUT`, `UNBIND`, `TAP_PUT_WALL_SLOT`, `SPLIT_TASKS`, `REPORT_ABNORMAL`
-- **API codes for inbound:** `CALL_CONTAINER`
+- **Inbound receive (no station apiCode — the receive UI calls WES inbound REST directly):**
+  - `POST /wms/inbound/plan/query/{identifyNo}/{warehouseCode}` — scan LPN/customer order no
+  - `POST /wms/inbound/plan/accept` — accept a line (`AcceptRecordDTO`)
+  - `POST /wms/inbound/accept/completeByContainer?containerCode=` — "满箱完成收货"
+  - `POST /wms/basic/container/get` — target container lookup (spec + slot)
 - **AMIS page selectors:** `.cxd-Dialog`, `.cxd-Form`, `.cxd-Button`, `.cxd-TextControl-input`
 - **Test data:** All test-created data uses `TEST_` prefix, safe for cleanup
 
