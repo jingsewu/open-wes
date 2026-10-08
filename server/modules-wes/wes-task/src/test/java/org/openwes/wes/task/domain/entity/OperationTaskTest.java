@@ -94,7 +94,12 @@ class OperationTaskTest {
 
     @Test
     void testSetActualWorkStation_ShouldUpdateWorkStationId() {
+        // setActualWorkStation also resolves the target location from the assigned slot map,
+        // so the task must carry the station-to-slot assignment before the call.
+        operationTask.setAssignedStationSlot(java.util.Map.of(2L, "SLOT-1"));
+
         operationTask.setActualWorkStation(2L);
+
         assertEquals(2L, operationTask.getWorkStationId());
     }
 }

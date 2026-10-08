@@ -37,7 +37,7 @@ subprojects {
 
     test {
         useJUnitPlatform()
-        ignoreFailures = true
+        ignoreFailures = false
     }
 
     dependencies {
