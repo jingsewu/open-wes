@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <!-- Legacy plugin metadata table: the Plugin JPA entity has no changelog, so the
+         plugin management page failed with a missing-table error on every real deployment. -->
+    <changeSet id="create_p_plugin_table" author="dev">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="p_plugin"/>
+            </not>
+        </preConditions>
+        <sql>
+            CREATE TABLE p_plugin (
+                id                BIGINT       NOT NULL,
+                code              VARCHAR(64)  NOT NULL COMMENT '插件编号',
+                plugin_unique_key VARCHAR(255) NOT NULL COMMENT '插件ID,用于校验加载插件',
+                name              VARCHAR(128) NOT NULL COMMENT '插件名称',
+                developer         VARCHAR(255) NOT NULL COMMENT '开发者',
+                plugin_version    VARCHAR(64)  NOT NULL COMMENT '插件版本',
+                description       VARCHAR(255) NOT NULL DEFAULT '' COMMENT '描述',
+                jar_file_path     VARCHAR(255) NOT NULL COMMENT 'jar文件地址',
+                source_code_url   VARCHAR(255) NULL,
+                license           VARCHAR(255) NULL,
+                plugin_status     VARCHAR(64)  NOT NULL,
+                download_count    INT          NOT NULL DEFAULT 0,
+                version           BIGINT       NULL,
+                create_time       BIGINT       NOT NULL DEFAULT 0 COMMENT 'Creation time',
+                create_user       VARCHAR(60)  NOT NULL DEFAULT '' COMMENT 'Create user',
+                update_time       BIGINT       NOT NULL DEFAULT 0,
+                update_user       VARCHAR(60)  NOT NULL DEFAULT '',
+                PRIMARY KEY (id),
+                UNIQUE KEY uk_plugin_unique_key (plugin_unique_key),
+                UNIQUE KEY uk_plugin_code_version (code, plugin_version)
+            ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COMMENT '插件元数据';
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>
