@@ -12,4 +12,12 @@ public interface IPlugin extends ExtensionPoint {
     default void destory() {
     }
 
+    /**
+     * Higher value wins when several plugins can serve the same extension point. Ties are broken
+     * by the registry order (script plugins are merged after jar plugins, sorted by plugin key).
+     */
+    default int priority() {
+        return 0;
+    }
+
 }
