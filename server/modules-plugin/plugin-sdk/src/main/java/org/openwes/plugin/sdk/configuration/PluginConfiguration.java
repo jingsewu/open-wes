@@ -21,7 +21,7 @@ public class PluginConfiguration {
     @Bean
     public DefaultPluginManager pluginManager(PluginRegister pluginClassRegister) {
         SpringPluginManager springPluginManager = new SpringPluginManager(Paths.get(pluginDir));
-        springPluginManager.addPluginStateListener(new CustomPluginStateListener(pluginClassRegister));
+        springPluginManager.addPluginStateListener(new CustomPluginStateListener(pluginClassRegister, springPluginManager));
         return springPluginManager;
     }
 
