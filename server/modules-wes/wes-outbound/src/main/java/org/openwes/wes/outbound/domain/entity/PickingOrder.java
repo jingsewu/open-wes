@@ -80,7 +80,8 @@ public class PickingOrder extends AggregatorRoot {
             details.forEach(detail -> detail.setPickingOrderId(order.id));
         }
 
-        order.addLifecycleEvent(new LifeCycleStatusChangeEvent().setEntityId(order.getId()).setNewStatus(PickingOrderStatusEnum.NEW.name()));
+        order.addLifecycleEvent(new LifeCycleStatusChangeEvent(PickingOrderStatusEnum.NEW.name(), order.getId(),
+                order.getPickingOrderNo(), order.getClass().getSimpleName()));
 
         return order;
     }
@@ -95,7 +96,8 @@ public class PickingOrder extends AggregatorRoot {
         this.pickingOrderStatus = PickingOrderStatusEnum.DISPATCHED;
 
         this.addAsynchronousDomainEvents(new PickingOrderDispatchedEvent(this.id));
-        this.addLifecycleEvent(new LifeCycleStatusChangeEvent().setEntityId(this.id).setNewStatus(PickingOrderStatusEnum.DISPATCHED.name()));
+        this.addLifecycleEvent(new LifeCycleStatusChangeEvent(PickingOrderStatusEnum.DISPATCHED.name(), this.id,
+                this.pickingOrderNo, this.getClass().getSimpleName()));
     }
 
     public void cancel() {
@@ -106,7 +108,8 @@ public class PickingOrder extends AggregatorRoot {
         }
         this.details.forEach(PickingOrderDetail::cancel);
         this.pickingOrderStatus = PickingOrderStatusEnum.CANCELED;
-        addLifecycleEvent(new LifeCycleStatusChangeEvent().setEntityId(this.id).setNewStatus(PickingOrderStatusEnum.CANCELED.name()));
+        addLifecycleEvent(new LifeCycleStatusChangeEvent(PickingOrderStatusEnum.CANCELED.name(), this.id,
+                this.pickingOrderNo, this.getClass().getSimpleName()));
     }
 
     public void picking(Integer operatedQty, Long detailId) {
