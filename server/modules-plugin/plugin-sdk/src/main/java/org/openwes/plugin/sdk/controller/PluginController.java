@@ -54,9 +54,9 @@ public class PluginController {
 
     @GetMapping(value = "/list")
     public List<Map<String, Object>> list() {
-        Map<String, Object> result = Maps.newHashMap();
         List<PluginWrapper> plugins = pluginManager.getPlugins();
         return plugins.stream().map(v -> {
+            Map<String, Object> result = Maps.newHashMap();
             result.put("pluginId", v.getPluginId());
             result.put("pluginPath", v.getPluginPath().toString());
             result.put("pluginStatus", v.getPluginState());
