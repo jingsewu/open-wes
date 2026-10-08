@@ -21,6 +21,12 @@ services:
   # Gateway Server
   gateway-server:
     container_name: gateway
+    environment:
+      # Secrets are not stored in the repo. The seeded Nacos gateway config holds
+      # ${AZURE_CLIENT_SECRET} / ${ZHIPUAI_API_KEY} placeholders, resolved from here.
+      # Supply them in a gitignored .env file next to this compose file.
+      AZURE_CLIENT_SECRET: ${AZURE_CLIENT_SECRET:-}
+      ZHIPUAI_API_KEY: ${ZHIPUAI_API_KEY:-}
     build:
       context: ./server/
       target: gateway
