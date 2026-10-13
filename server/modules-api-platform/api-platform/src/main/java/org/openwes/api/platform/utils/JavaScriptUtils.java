@@ -8,16 +8,15 @@ import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Source;
 import org.graalvm.polyglot.TypeLiteral;
 import org.graalvm.polyglot.Value;
+import org.openwes.common.utils.exception.CommonException;
 import org.openwes.common.utils.utils.JsonUtils;
+import org.openwes.script.engine.GroovyScriptEngine;
+import org.openwes.script.engine.ScriptCompileException;
+import org.openwes.script.engine.ScriptExecutionException;
 
-import java.lang.ref.SoftReference;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,7 +24,8 @@ import java.util.regex.Pattern;
 public class JavaScriptUtils {
 
     private static final Pattern GROOVY_PATTERN = Pattern.compile("//java:(\\w+)");
-    private static final ConcurrentHashMap<String, SoftReference<Class<?>>> javaCompiledClassMap = new ConcurrentHashMap<>();
+
+    private static final GroovyScriptEngine GROOVY_SCRIPT_ENGINE = new GroovyScriptEngine();
 
     private JavaScriptUtils() {
     }
@@ -59,33 +59,13 @@ public class JavaScriptUtils {
             script = script.substring(0, matcher.start()) + script.substring(matcher.end()); // More efficient string removal
         }
 
-        Class<?> clazz = Objects.requireNonNull(javaCompiledClassMap.computeIfAbsent(script, s -> {
-            try (GroovyClassLoader groovyClassLoader = new GroovyClassLoader()) {
-                Class<?> loadedClass = groovyClassLoader.parseClass(s);
-                return new SoftReference<>(loadedClass); // Create SoftReference AFTER loading
-            } catch (Exception e) {
-                log.error("Error compiling Groovy script: {}", s, e);
-                return null;
-            }
-        })).get();
-
-        if (clazz != null) {
-            try {
-                Method method = clazz.getMethod(methodName, Object.class);
-                if (Modifier.isStatic(method.getModifiers())) {
-                    return method.invoke(null, param);
-                } else {
-                    Object instance = clazz.getDeclaredConstructor().newInstance();
-                    return method.invoke(instance, param);
-                }
-            } catch (NoSuchMethodException e) {
-                log.error("Method not found: {}", methodName, e);
-            } catch (IllegalAccessException | InvocationTargetException | InstantiationException e) {
-                log.error("Error executing Java script: {}", script, e);
-            }
+        try {
+            Class<?> clazz = GROOVY_SCRIPT_ENGINE.compile(script);
+            return GROOVY_SCRIPT_ENGINE.invoke(GROOVY_SCRIPT_ENGINE.newInstance(clazz), methodName, param);
+        } catch (ScriptCompileException | ScriptExecutionException e) {
+            log.error("Error executing Java script: {}", script, e);
+            throw new CommonException("script execution failed: " + e.getMessage());
         }
-
-        return null;
     }
 
     public static void main(String[] args) {
