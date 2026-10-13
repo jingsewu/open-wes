@@ -1,6 +1,7 @@
 package org.openwes.script.plugin.core.controller;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.openwes.common.utils.http.Response;
 import org.openwes.script.plugin.api.dto.ScriptPluginDTO;
@@ -37,13 +38,13 @@ public class ScriptPluginController {
     }
 
     @PostMapping("/createDraft")
-    public Response<ScriptPluginDTO> createDraft(@RequestBody ScriptPluginDTO dto) {
+    public Response<ScriptPluginDTO> createDraft(@Valid @RequestBody ScriptPluginDTO dto) {
         return Response.success(scriptPluginService.createDraft(dto));
     }
 
     @PostMapping("/{pluginKey}/revision")
     public Response<ScriptPluginRevisionDTO> saveRevision(@PathVariable("pluginKey") String pluginKey,
-                                                          @RequestBody ScriptPluginRevisionDTO dto) {
+                                                          @Valid @RequestBody ScriptPluginRevisionDTO dto) {
         return Response.success(scriptPluginService.saveRevision(pluginKey, dto));
     }
 
