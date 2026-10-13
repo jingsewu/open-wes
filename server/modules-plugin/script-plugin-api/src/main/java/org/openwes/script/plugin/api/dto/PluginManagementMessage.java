@@ -11,5 +11,7 @@ import org.openwes.script.plugin.api.enums.PluginManagementMessageType;
 @AllArgsConstructor
 public class PluginManagementMessage {
     private String pluginKey;
+    /** Revision the change refers to; null only when the plugin has no revision yet. */
+    private Long revisionId;
     private PluginManagementMessageType type;
 }

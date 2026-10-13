@@ -1,7 +1,6 @@
 package org.openwes.api.platform.utils;
 
 import com.google.common.collect.Maps;
-import groovy.lang.GroovyClassLoader;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.graalvm.polyglot.Context;
@@ -16,7 +15,6 @@ import org.openwes.script.engine.ScriptExecutionException;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

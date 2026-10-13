@@ -109,7 +109,7 @@ public class ScriptPluginService {
         plugin.setExtensionPoints(revision.getExtensionPointsSnapshot());
         plugin.setConfigSchema(revision.getConfigSchemaSnapshot());
         pluginRepository.save(plugin);
-        publishManagementMessage(pluginKey);
+        publishManagementMessage(plugin);
 
         return toRevisionDto(revision);
     }
@@ -148,7 +148,7 @@ public class ScriptPluginService {
 
         CompletableFuture<ValidationReportDTO> future = new CompletableFuture<>();
         pendingValidations.put(pluginKey, new PendingValidation(plugin.getApplySystem(), future));
-        publishManagementMessage(pluginKey);
+        publishManagementMessage(plugin);
         try {
             return future.get(validationTimeoutMs, TimeUnit.MILLISECONDS);
         } catch (TimeoutException e) {
@@ -191,7 +191,7 @@ public class ScriptPluginService {
 
         plugin.enable();
         pluginRepository.save(plugin);
-        publishManagementMessage(pluginKey);
+        publishManagementMessage(plugin);
         return toDto(plugin);
     }
 
@@ -200,7 +200,7 @@ public class ScriptPluginService {
         if (plugin.getStatus() == ScriptPluginStatusEnum.ENABLED) {
             plugin.disable();
             pluginRepository.save(plugin);
-            publishManagementMessage(pluginKey);
+            publishManagementMessage(plugin);
             log.warn("script plugin {} disabled: {}", pluginKey, reason);
         }
         return toDto(plugin);
@@ -210,7 +210,7 @@ public class ScriptPluginService {
         ScriptPlugin plugin = require(pluginKey);
         plugin.archive();
         pluginRepository.save(plugin);
-        publishManagementMessage(pluginKey);
+        publishManagementMessage(plugin);
         return toDto(plugin);
     }
 
@@ -227,7 +227,7 @@ public class ScriptPluginService {
         plugin.setExtensionPoints(revision.getExtensionPointsSnapshot());
         plugin.setConfigSchema(revision.getConfigSchemaSnapshot());
         pluginRepository.save(plugin);
-        publishManagementMessage(pluginKey);
+        publishManagementMessage(plugin);
         return toDto(plugin);
     }
 
@@ -298,9 +298,10 @@ public class ScriptPluginService {
                 .orElseThrow(() -> new CommonException("script plugin not found: " + pluginKey));
     }
 
-    private void publishManagementMessage(String pluginKey) {
+    private void publishManagementMessage(ScriptPlugin plugin) {
         redisUtils.publish(RedisConstants.PLUGIN_LISTEN_PLUGIN_MANAGEMENT,
-                new PluginManagementMessage(pluginKey, PluginManagementMessageType.PLUGIN_CHANGED));
+                new PluginManagementMessage(plugin.getPluginKey(), plugin.getCurrentRevisionId(),
+                        PluginManagementMessageType.PLUGIN_CHANGED));
     }
 
     private Map<String, Object> resolveConfig(ScriptPlugin plugin) {

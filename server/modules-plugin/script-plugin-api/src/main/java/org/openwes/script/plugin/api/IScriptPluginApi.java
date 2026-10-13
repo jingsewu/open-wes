@@ -1,5 +1,6 @@
 package org.openwes.script.plugin.api;
 
+import jakarta.validation.Valid;
 import org.openwes.script.plugin.api.dto.ExecutionLogDTO;
 import org.openwes.script.plugin.api.dto.ScriptPluginBundleDTO;
 import org.openwes.script.plugin.api.dto.ValidationReportDTO;
@@ -21,9 +22,9 @@ public interface IScriptPluginApi {
     /** The validation request waiting for this app, or null. Cleared when the node reports back. */
     ScriptPluginBundleDTO getPendingValidation(String applySystem);
 
-    void reportValidation(ValidationReportDTO report);
+    void reportValidation(@Valid ValidationReportDTO report);
 
-    void reportExecution(ExecutionLogDTO executionLog);
+    void reportExecution(@Valid ExecutionLogDTO executionLog);
 
     /** Runtime-triggered disable (e.g. cron auto-disable after repeated failures). */
     void disable(String pluginKey, String reason);

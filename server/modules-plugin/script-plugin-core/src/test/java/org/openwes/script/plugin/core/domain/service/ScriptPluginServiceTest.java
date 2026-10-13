@@ -3,6 +3,7 @@ package org.openwes.script.plugin.core.domain.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openwes.common.utils.exception.CommonException;
@@ -13,6 +14,7 @@ import org.openwes.script.plugin.api.dto.PluginManagementMessage;
 import org.openwes.script.plugin.api.dto.ScriptPluginBundleDTO;
 import org.openwes.script.plugin.api.dto.ScriptPluginDTO;
 import org.openwes.script.plugin.api.dto.ValidationReportDTO;
+import org.openwes.script.plugin.api.enums.PluginManagementMessageType;
 import org.openwes.script.plugin.api.enums.ScriptPluginStatusEnum;
 import org.openwes.script.plugin.core.domain.entity.ScriptPlugin;
 import org.openwes.script.plugin.core.domain.entity.ScriptPluginRevision;
@@ -101,8 +103,12 @@ class ScriptPluginServiceTest {
 
         assertEquals(ScriptPluginStatusEnum.ENABLED, dto.getStatus());
         assertEquals("PASSED", dto.getLastValidationStatus());
+        ArgumentCaptor<PluginManagementMessage> messageCaptor = ArgumentCaptor.forClass(PluginManagementMessage.class);
         verify(redisUtils).publish(eq(org.openwes.common.utils.constants.RedisConstants.PLUGIN_LISTEN_PLUGIN_MANAGEMENT),
-                any(PluginManagementMessage.class));
+                messageCaptor.capture());
+        assertEquals("packing-wave", messageCaptor.getValue().getPluginKey());
+        assertEquals(11L, messageCaptor.getValue().getRevisionId());
+        assertEquals(PluginManagementMessageType.PLUGIN_CHANGED, messageCaptor.getValue().getType());
     }
 
     @Test
@@ -187,7 +193,9 @@ class ScriptPluginServiceTest {
         ScriptPluginDTO dto = service.rollback("packing-wave", 7L);
 
         assertEquals(7L, dto.getCurrentRevisionId());
-        verify(redisUtils).publish(any(), any(PluginManagementMessage.class));
+        ArgumentCaptor<PluginManagementMessage> messageCaptor = ArgumentCaptor.forClass(PluginManagementMessage.class);
+        verify(redisUtils).publish(any(), messageCaptor.capture());
+        assertEquals(7L, messageCaptor.getValue().getRevisionId());
     }
 
     @Test
