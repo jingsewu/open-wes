@@ -5,11 +5,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface ScriptPluginExecutionLogRepository extends JpaRepository<ScriptPluginExecutionLog, Long> {
 
     long countByPluginKey(String pluginKey);
 
+    @Transactional
     @Modifying
     @Query(value = """
             DELETE FROM p_script_plugin_execution_log
