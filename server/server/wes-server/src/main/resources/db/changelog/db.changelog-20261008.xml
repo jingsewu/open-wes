@@ -39,4 +39,82 @@
         </sql>
     </changeSet>
 
+    <changeSet id="create_p_script_plugin_tables" author="dev">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="p_script_plugin"/>
+            </not>
+        </preConditions>
+        <sql>
+            CREATE TABLE p_script_plugin (
+                id                    BIGINT       NOT NULL,
+                plugin_key            VARCHAR(64)  NOT NULL COMMENT '插件key，声明式，全局唯一',
+                name                  VARCHAR(128) NOT NULL,
+                description           VARCHAR(512) NOT NULL DEFAULT '',
+                apply_system          VARCHAR(32)  NOT NULL COMMENT '目标应用: wes / station',
+                apply_module          VARCHAR(64)  NOT NULL DEFAULT '',
+                status                VARCHAR(16)  NOT NULL COMMENT 'DRAFT/ENABLED/DISABLED/ARCHIVED',
+                extension_points      JSON         NOT NULL,
+                config_schema         JSON         NULL,
+                sdk_version           VARCHAR(16)  NOT NULL,
+                current_revision_id   BIGINT       NULL,
+                last_validation_status VARCHAR(16) NULL,
+                last_validation_error TEXT         NULL,
+                last_validation_at    BIGINT       NULL,
+                version               BIGINT       NULL,
+                create_time           BIGINT       NOT NULL DEFAULT 0,
+                create_user           VARCHAR(60)  NOT NULL DEFAULT '',
+                update_time           BIGINT       NOT NULL DEFAULT 0,
+                update_user           VARCHAR(60)  NOT NULL DEFAULT '',
+                PRIMARY KEY (id),
+                UNIQUE KEY uk_script_plugin_key (plugin_key),
+                KEY idx_script_plugin_app_status (apply_system, status)
+            ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COMMENT '脚本插件';
+
+            CREATE TABLE p_script_plugin_revision (
+                id                        BIGINT       NOT NULL,
+                plugin_id                 BIGINT       NOT NULL,
+                revision_no               INT          NOT NULL,
+                scripts                   JSON         NOT NULL,
+                extension_points_snapshot JSON         NOT NULL,
+                config_schema_snapshot    JSON         NULL,
+                content_hash              VARCHAR(64)  NOT NULL,
+                change_summary            VARCHAR(512) NOT NULL DEFAULT '',
+                origin                    VARCHAR(16)  NOT NULL COMMENT 'AI/MANUAL',
+                ai_model                  VARCHAR(64)  NULL,
+                prompt_version            VARCHAR(32)  NULL,
+                created_by                VARCHAR(60)  NOT NULL DEFAULT '',
+                created_at                BIGINT       NOT NULL DEFAULT 0,
+                PRIMARY KEY (id),
+                UNIQUE KEY uk_script_revision_no (plugin_id, revision_no)
+            ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COMMENT '脚本插件版本（不可变）';
+
+            CREATE TABLE p_script_plugin_config (
+                id            BIGINT      NOT NULL,
+                plugin_id     BIGINT      NOT NULL,
+                config_json   JSON        NOT NULL,
+                lock_version  BIGINT      NOT NULL DEFAULT 0,
+                create_time   BIGINT      NOT NULL DEFAULT 0,
+                create_user   VARCHAR(60) NOT NULL DEFAULT '',
+                update_time   BIGINT      NOT NULL DEFAULT 0,
+                update_user   VARCHAR(60) NOT NULL DEFAULT '',
+                PRIMARY KEY (id),
+                UNIQUE KEY uk_script_config_plugin (plugin_id)
+            ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COMMENT '脚本插件配置';
+
+            CREATE TABLE p_script_plugin_execution_log (
+                id             BIGINT        NOT NULL,
+                plugin_key     VARCHAR(64)   NOT NULL,
+                revision_id    BIGINT        NOT NULL,
+                extension_type VARCHAR(64)   NOT NULL,
+                success        TINYINT(1)    NOT NULL,
+                duration_ms    BIGINT        NOT NULL DEFAULT 0,
+                error_message  VARCHAR(1024) NULL,
+                created_at     BIGINT        NOT NULL DEFAULT 0,
+                PRIMARY KEY (id),
+                KEY idx_script_exec_plugin (plugin_key, id)
+            ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COMMENT '脚本插件执行日志（封顶保留）';
+        </sql>
+    </changeSet>
+
 </databaseChangeLog>

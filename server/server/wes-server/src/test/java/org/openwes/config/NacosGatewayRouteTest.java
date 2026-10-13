@@ -38,4 +38,18 @@ class NacosGatewayRouteTest {
         assertTrue(pluginRoute.contains("uri: lb://wes"));
         assertTrue(pluginRoute.contains("Path=/plugin/**"));
     }
+
+    @Test
+    void pluginPlatformRoute_forwardsToWesWithoutRewrite() throws Exception {
+        String sql = seedConfig();
+        int start = sql.indexOf("- id: plugin-platform\\n");
+        int end = sql.indexOf("- id: station\\n");
+        assertTrue(start >= 0 && end > start, "plugin-platform route block not found in nacos_config.sql");
+        String route = sql.substring(start, end);
+
+        assertTrue(route.contains("uri: lb://wes"));
+        assertTrue(route.contains("Path=/plugin-platform/**"));
+        assertFalse(route.contains("RewritePath"),
+                "controllers are mapped with the full plugin-platform prefix; the route must not strip it");
+    }
 }
