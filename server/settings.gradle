@@ -23,6 +23,7 @@ include 'modules-plugin:plugin-core'
 include 'modules-plugin:plugin-sdk'
 include 'modules-plugin:plugin-extension'
 include 'modules-plugin:script-plugin-api'
+include 'modules-plugin:script-plugin-core'
 include 'modules-plugin:plugin-example'
 
 include 'modules-gateway:gateway-core'
