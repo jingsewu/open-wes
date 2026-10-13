@@ -118,114 +118,7 @@
     color: #94a3b8 !important;
 }
 
-/* ─── Login Page ─────────────────────────────────── */
-.login-page-container {
-    position: absolute;
-    width: 100vw;
-    height: 100vh;
-}
-
-.login-brand-panel {
-    background: linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #1e3a5f 100%);
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 48px;
-
-    &::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background-image:
-            linear-gradient(rgba(59, 130, 246, 0.06) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(59, 130, 246, 0.06) 1px, transparent 1px);
-        background-size: 40px 40px;
-        animation: gridPulse 8s ease-in-out infinite;
-    }
-
-    &::after {
-        content: "";
-        position: absolute;
-        width: 400px;
-        height: 400px;
-        border-radius: 50%;
-        background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
-        top: -100px;
-        right: -100px;
-        animation: floatOrb 12s ease-in-out infinite;
-    }
-}
-
-@keyframes gridPulse {
-    0%,
-    100% {
-        opacity: 0.4;
-    }
-
-    50% {
-        opacity: 0.8;
-    }
-}
-
-@keyframes floatOrb {
-    0%,
-    100% {
-        transform: translate(0, 0) scale(1);
-    }
-
-    33% {
-        transform: translate(-30px, 40px) scale(1.1);
-    }
-
-    66% {
-        transform: translate(20px, -20px) scale(0.95);
-    }
-}
-
-.login-form-panel {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 48px;
-    background: #f8fafc;
-    position: relative;
-    animation: fadeSlideIn 0.6s ease-out;
-}
-
-.login-form-card {
-    width: 100%;
-    max-width: 420px;
-    background: #fff;
-    border-radius: 16px;
-    padding: 40px 36px;
-    box-shadow: 0 4px 24px rgb(0 0 0 / 6%);
-    animation: fadeSlideIn 0.6s ease-out 0.15s both;
-}
-
-@keyframes fadeSlideIn {
-    from {
-        opacity: 0;
-        transform: translateY(16px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.login-image {
-    flex: 1;
-    height: 70%;
-    background-image: url("~@/icon/wms.png");
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: contain;
-}
+/* Login page styles live in scss/login.scss */
 
 /* ─── Legacy form styles ─────────────────────────── */
 .card {
@@ -280,12 +173,6 @@
     background-image: -webkit-linear-gradient(left, #fcbe4c, #a750eb);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-}
-
-.login-title {
-    font-size: 72px;
-    color: #4f64d2;
-    line-height: 93px;
 }
 
 /* ─── Slot text positions ────────────────────────── */

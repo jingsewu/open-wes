@@ -1,0 +1,602 @@
+/* ─── Login: machine hall + docked sign-in console ─────────────────
+   The page is the warehouse floor: an anthracite hall with the execution
+   line running across it, and a lit console panel docked on the right
+   edge. Written flat (no nesting) so the stylesheet stands on its own.
+   All rules are scoped under .login-page — nothing here leaks app-wide. */
+
+.login-page {
+    --hall-top: #24354b;
+    --hall-mid: #16202e;
+    --hall-floor: #0d1420;
+    --structure: #334155;
+    --structure-2: #475569;
+    --signal: #22d3ee;
+    --brand: #2563eb;
+    --brand-hover: #1d4ed8;
+    --brand-active: #1e40af;
+    --brand-light: #60a5fa;
+    --hall-ink: #e2e8f0;
+    --hall-ink-2: #94a3b8;
+    --console-ink: #0f172a;
+    --console-ink-2: #64748b;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    --login-rail: 72px;
+
+    position: fixed;
+    inset: 0;
+    display: flex;
+    overflow: hidden;
+    background: var(--hall-floor);
+}
+
+/* ─── Hall ───────────────────────────────────────── */
+
+.login-hall {
+    position: relative;
+    flex: 1 1 auto;
+    min-width: 0;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    overflow: auto;
+    background: radial-gradient(130% 100% at 12% -10%, var(--hall-top) 0%, var(--hall-mid) 46%, var(--hall-floor) 100%);
+}
+
+.login-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 32px var(--login-rail) 0;
+    animation: login-fade 0.5s ease-out both;
+}
+
+.login-brand__mark {
+    width: 26px;
+    height: 26px;
+    flex: none;
+    color: var(--brand-light);
+}
+
+.login-brand__word {
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    color: var(--hall-ink);
+}
+
+.login-brand__word b {
+    font-weight: 800;
+    color: var(--brand-light);
+}
+
+/* Rests on the line below it rather than floating mid-hall. */
+.login-hero {
+    align-self: end;
+    padding: 28px var(--login-rail) 46px;
+}
+
+.login-hero__title {
+    margin: 0;
+    max-width: 15ch;
+    font-size: clamp(32px, 4vw, 52px);
+    font-weight: 800;
+    line-height: 1.06;
+    letter-spacing: -0.03em;
+    color: #eaf0f7;
+    text-wrap: balance;
+    animation: login-rise 0.55s cubic-bezier(0.22, 0.7, 0.24, 1) 0.05s both;
+}
+
+.login-hero__sub {
+    margin: 18px 0 0;
+    max-width: 46ch;
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--hall-ink-2);
+    animation: login-rise 0.55s cubic-bezier(0.22, 0.7, 0.24, 1) 0.12s both;
+}
+
+/* ─── The execution line ─────────────────────────── */
+
+.login-line {
+    position: relative;
+    height: 178px;
+}
+
+.login-line__belt {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 54px;
+    height: 46px;
+    overflow: hidden;
+    background: linear-gradient(180deg, #1b2838 0%, #131d2b 100%);
+    box-shadow: 0 22px 34px -22px rgb(0 0 0 / 90%);
+    animation: login-fade 0.5s ease-out 0.3s both;
+}
+
+.login-line__rollers {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 13px;
+    height: 20px;
+    background-image: repeating-linear-gradient(90deg, #3f4f63 0 1px, transparent 1px 13px);
+}
+
+.login-line__rail {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 1px;
+}
+
+.login-line__rail--top {
+    top: 0;
+    background: var(--structure-2);
+    transform-origin: left center;
+    animation: login-grow 0.62s cubic-bezier(0.4, 0.7, 0.2, 1) 0.12s both;
+}
+
+.login-line__rail--bottom {
+    bottom: 0;
+    background: #2b394a;
+}
+
+.login-line__track {
+    position: absolute;
+    inset: 0;
+    animation: login-tote-run 19s linear infinite, login-fade 0.4s ease-out 0.8s both;
+}
+
+.login-line__track--b {
+    animation-delay: -6.3s, 0.86s;
+}
+
+.login-line__track--c {
+    animation-delay: -12.6s, 0.92s;
+}
+
+.login-line__tote {
+    position: absolute;
+    left: 0;
+    bottom: 8px;
+    width: 30px;
+    height: 20px;
+    border-radius: 3px;
+    background: linear-gradient(180deg, #dbe4ee 0%, #b8c6d6 100%);
+    box-shadow: inset -3px 0 0 0 var(--signal), 0 2px 6px rgb(0 0 0 / 45%);
+}
+
+.login-line__station {
+    position: absolute;
+    bottom: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    transform: translateX(-50%);
+    animation: login-fade 0.45s ease-out both;
+}
+
+.login-line__station--1 {
+    animation-delay: 0.46s;
+}
+
+.login-line__station--2 {
+    animation-delay: 0.52s;
+}
+
+.login-line__station--3 {
+    animation-delay: 0.58s;
+}
+
+.login-line__station--4 {
+    animation-delay: 0.64s;
+}
+
+.login-line__label {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+    color: var(--hall-ink-2);
+}
+
+.login-line__post {
+    width: 2px;
+    height: 20px;
+    background: linear-gradient(180deg, rgb(71 85 105 / 0%), var(--structure-2));
+}
+
+.login-line__station::after {
+    content: "";
+    width: 5px;
+    height: 5px;
+    margin-top: -2px;
+    border-radius: 50%;
+    background: var(--structure-2);
+}
+
+.login-line__floor {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 54px;
+    background: linear-gradient(180deg, rgb(8 13 22 / 0%) 0%, #080d16 100%);
+}
+
+/* ─── Console panel ──────────────────────────────── */
+
+.login-console {
+    position: relative;
+    flex: 0 0 448px;
+    width: 448px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 48px 44px;
+    background: linear-gradient(180deg, #ffffff 0%, #f6f8fb 100%);
+    box-shadow: -28px 0 60px -30px rgb(0 0 0 / 70%);
+    animation: login-fade 0.5s ease-out both;
+}
+
+/* The line feeds the console: signal port on the panel edge, at belt height. */
+.login-console::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 54px;
+    width: 3px;
+    height: 46px;
+    border-radius: 0 3px 3px 0;
+    background: var(--signal);
+    box-shadow: 0 0 12px rgb(34 211 238 / 55%);
+}
+
+.login-console__top {
+    position: absolute;
+    top: 22px;
+    right: 22px;
+}
+
+.login-console__body {
+    width: 100%;
+    max-width: 352px;
+}
+
+.login-console__title {
+    margin: 0;
+    font-size: 27px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--console-ink);
+}
+
+.login-console__sub {
+    margin: 8px 0 30px;
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: var(--console-ink-2);
+}
+
+.login-console__note {
+    margin: 22px 0 0;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #64748b;
+}
+
+/* ─── Console form controls (antd v4 overrides, scoped) ───────── */
+
+.login-console .ant-form-item {
+    margin-bottom: 18px;
+}
+
+.login-console .ant-form-item-label {
+    padding-bottom: 7px;
+}
+
+.login-console .ant-form-item-label > label {
+    height: auto;
+    font-size: 13px;
+    font-weight: 600;
+    color: #334155;
+}
+
+.login-console .ant-form-item-label > label::after {
+    display: none;
+}
+
+.login-console .ant-input,
+.login-console .ant-input-affix-wrapper {
+    height: 48px;
+    padding: 0 14px;
+    border: 1px solid #dfe6ee;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: none;
+    font-size: 15px;
+    color: var(--console-ink);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.login-console .ant-input-affix-wrapper {
+    padding: 0 12px 0 14px;
+}
+
+.login-console .ant-input-affix-wrapper .ant-input {
+    height: 46px;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.login-console .ant-input::placeholder {
+    color: #697789;
+}
+
+.login-console .ant-input:hover,
+.login-console .ant-input-affix-wrapper:hover {
+    border-color: #c3ceda;
+}
+
+.login-console .ant-input:focus,
+.login-console .ant-input-affix-wrapper:focus-within,
+.login-console .ant-input-affix-wrapper-focused {
+    border-color: var(--brand);
+    box-shadow: 0 0 0 3px rgb(37 99 235 / 16%);
+}
+
+/* The affixed inner input must not draw a second ring inside the wrapper. */
+.login-console .ant-input-affix-wrapper .ant-input:focus {
+    border: 0;
+    box-shadow: none;
+}
+
+.login-console .ant-input-password-icon {
+    color: #9aa8b8;
+}
+
+.login-console .ant-input-password-icon:hover {
+    color: #475569;
+}
+
+.login-console .ant-form-item-has-error .ant-input,
+.login-console .ant-form-item-has-error .ant-input-affix-wrapper {
+    border-color: #e5484d;
+    background: #fff;
+}
+
+.login-console .ant-form-item-has-error .ant-input:focus,
+.login-console .ant-form-item-has-error .ant-input-affix-wrapper:focus-within {
+    box-shadow: 0 0 0 3px rgb(229 72 77 / 14%);
+}
+
+.login-console .ant-form-item-explain-error {
+    margin-top: 6px;
+    font-size: 13px;
+    color: #d93a3f;
+}
+
+.login-console .ant-checkbox-wrapper {
+    font-size: 14px;
+    color: #475569;
+}
+
+.login-console .ant-checkbox-checked .ant-checkbox-inner {
+    background-color: var(--brand);
+    border-color: var(--brand);
+}
+
+.login-console .ant-checkbox-wrapper:hover .ant-checkbox-inner,
+.login-console .ant-checkbox-input:focus + .ant-checkbox-inner {
+    border-color: var(--brand);
+}
+
+.login-console .ant-checkbox-checked::after {
+    border-color: var(--brand);
+}
+
+.login-console .ant-btn-primary {
+    height: 48px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    background: var(--brand);
+    border-color: var(--brand);
+    box-shadow: none;
+}
+
+.login-console .ant-btn-primary:hover,
+.login-console .ant-btn-primary:focus {
+    background: var(--brand-hover);
+    border-color: var(--brand-hover);
+}
+
+.login-console .ant-btn-primary:active {
+    background: var(--brand-active);
+    border-color: var(--brand-active);
+}
+
+.login-console .ant-btn-primary:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgb(37 99 235 / 30%);
+}
+
+/* ─── Focus visibility ───────────────────────────── */
+
+.login-hall :focus-visible {
+    outline: 2px solid var(--signal);
+    outline-offset: 3px;
+}
+
+.login-console :focus-visible {
+    outline: 2px solid var(--brand);
+    outline-offset: 2px;
+}
+
+.login-console .ant-input:focus-visible,
+.login-console .ant-input-affix-wrapper:focus-within,
+.login-console .ant-btn-primary:focus-visible {
+    outline: none;
+}
+
+.login-console .ant-btn-text:focus-visible {
+    outline: 2px solid var(--brand);
+    outline-offset: 1px;
+}
+
+/* ─── Motion ─────────────────────────────────────── */
+
+@keyframes login-rise {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@keyframes login-fade {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes login-grow {
+    from {
+        transform: scaleX(0);
+    }
+
+    to {
+        transform: scaleX(1);
+    }
+}
+
+@keyframes login-tote-run {
+    from {
+        transform: translateX(-6%);
+    }
+
+    to {
+        transform: translateX(104%);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .login-brand,
+    .login-hero__title,
+    .login-hero__sub,
+    .login-line__belt,
+    .login-line__rail--top,
+    .login-line__station,
+    .login-line__track,
+    .login-console {
+        animation: none;
+    }
+
+    .login-line__track--b,
+    .login-line__track--c {
+        display: none;
+    }
+
+    .login-line__track--a {
+        transform: translateX(24%);
+    }
+}
+
+/* ─── Responsive ─────────────────────────────────── */
+
+@media (max-width: 1280px) {
+    .login-page {
+        --login-rail: 44px;
+    }
+
+    .login-console {
+        flex-basis: 400px;
+        width: 400px;
+        padding: 44px 34px;
+    }
+}
+
+@media (max-width: 960px) {
+    .login-page {
+        flex-direction: column;
+        overflow-y: auto;
+        background: var(--hall-floor) linear-gradient(180deg, #ffffff 0%, #f6f8fb 100%);
+    }
+
+    .login-hall {
+        flex: none;
+        grid-template-rows: auto auto auto;
+        overflow: visible;
+    }
+
+    .login-hero {
+        padding-top: 34px;
+        padding-bottom: 34px;
+    }
+
+    .login-line {
+        height: 158px;
+    }
+
+    .login-console {
+        flex: none;
+        width: 100%;
+        align-items: stretch;
+        padding: 30px 24px 44px;
+        border-top: 1px solid #e2e8f0;
+        box-shadow: none;
+    }
+
+    .login-console::before {
+        display: none;
+    }
+
+    .login-console__top {
+        position: static;
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 4px;
+    }
+
+    .login-console__body {
+        max-width: 420px;
+        margin: 0 auto;
+    }
+}
+
+@media (max-width: 700px) {
+    .login-page {
+        --login-rail: 22px;
+    }
+
+    .login-hero__title {
+        font-size: 30px;
+    }
+
+    .login-line {
+        height: 146px;
+    }
+
+    .login-line__label {
+        font-size: 10px;
+        letter-spacing: 0.03em;
+    }
+
+    .login-console__title {
+        font-size: 24px;
+    }
+}
