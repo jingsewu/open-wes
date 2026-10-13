@@ -1,33 +1,43 @@
 import * as React from "react"
-import {Button, Checkbox, Form, Input, Typography} from "antd"
-import {RouteComponentProps} from "react-router-dom"
-import {UserOutlined, LockOutlined} from "@ant-design/icons"
+import {Button, Checkbox, Form, Input} from "antd"
 import Message, {MessageType} from "@/pages/wms/station/widgets/message"
 
-import {IMainStore} from "@/stores"
 import {inject, observer} from "mobx-react"
 import {withRouter} from "react-router"
 import request from "@/utils/requestInterceptor"
+// Global app chrome (header, sidebar, AMIS overrides) ships from the login route — keep the import.
 import "@/scss/style.scss"
+import "@/scss/login.scss"
 import {withTranslation} from "react-i18next"
+import Language from "./Language"
 
-const {Title, Text} = Typography
-
-const FORM_LOGO_GRAD_ID = "login-form-logo-grad"
-
-interface LoginProps extends RouteComponentProps<any> {
-    store: IMainStore
+interface LoginFormValues {
+    username: string
+    password: string
+    remember?: boolean
 }
 
+interface LoginFormState {
+    submitting: boolean
+}
+
+/**
+ * Sign-in console docked on the right edge of the login page. The panel is
+ * the lit surface of the machine hall defined in Login.tsx.
+ */
 @inject("store")
 // @ts-ignore
 @withRouter
 @observer
-class LoginForm extends React.Component<any> {
-    handleFormSaved = (values: { username: string; password: string }) => {
-        const history = this.props.history;
-        const store = this.props.store;
-        const {t} = this.props;
+class LoginForm extends React.Component<any, LoginFormState> {
+    state: LoginFormState = {
+        submitting: false
+    }
+
+    handleFormSaved = (values: LoginFormValues) => {
+        const {history, store, t} = this.props
+
+        this.setState({submitting: true})
 
         request({
             method: "post",
@@ -36,117 +46,92 @@ class LoginForm extends React.Component<any> {
             headers: {
                 "content-type": "application/json",
             },
-        }).then((res: any) => {
-            if (res.data != null && res.status === 200 && res.data.token != undefined) {
-                store.user.login(values.username, res.data.token);
-                Message({
-                    type: MessageType.SUCCESS,
-                    content: t("toast.loginSuccess"),
-                });
-                history.replace(`/dashboard`);
+        }).then(
+            (res: any) => {
+                if (res.data != null && res.status === 200 && res.data.token != undefined) {
+                    store.user.login(values.username, res.data.token)
+                    Message({
+                        type: MessageType.SUCCESS,
+                        content: t("toast.loginSuccess"),
+                    })
+                    history.replace(`/dashboard`)
+                    return
+                }
+                this.setState({submitting: false})
+            },
+            (error: unknown) => {
+                console.error("Sign-in request failed:", error)
+                this.setState({submitting: false})
             }
-        });
-    };
+        )
+    }
 
     render() {
         const {t} = this.props
+
         return (
-            <div className="login-form-card">
-                <div style={{textAlign: "center", marginBottom: 32}}>
-                    <svg width="48" height="48" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <defs>
-                            <linearGradient id={FORM_LOGO_GRAD_ID} x1="0" y1="0" x2="1" y2="1">
-                                <stop offset="0%" stopColor="#3b82f6" />
-                                <stop offset="100%" stopColor="#1d4ed8" />
-                            </linearGradient>
-                        </defs>
-                        <rect width="34" height="34" rx="9" fill={`url(#${FORM_LOGO_GRAD_ID})`} />
-                        <text x="17" y="23.5" textAnchor="middle" fill="white" fontSize="17" fontWeight="900" fontFamily="Plus Jakarta Sans, Arial, sans-serif">W</text>
-                    </svg>
-                    <Title level={3} style={{
-                        color: "#1e293b",
-                        marginTop: 16,
-                        marginBottom: 4,
-                        fontWeight: 700,
-                    }}>
-                        {t("login.submitText")}
-                    </Title>
-                    <Text style={{color: "#64748b", fontSize: 14}}>
-                        {t("login.subtitle")}
-                    </Text>
+            <section className="login-console">
+                <div className="login-console__top">
+                    <Language/>
                 </div>
 
-                <Form
-                    name="basic"
-                    layout="vertical"
-                    onFinish={this.handleFormSaved}
-                    autoComplete="off"
-                    requiredMark={false}
-                >
-                    <Form.Item
-                        label={<span style={{fontWeight: 500, color: "#334155"}}>{t("login.username")}</span>}
-                        name="username"
-                        rules={[
-                            {
-                                required: true,
-                                message: "Please input your username!",
-                            },
-                        ]}
+                <div className="login-console__body">
+                    <h2 className="login-console__title">{t("login.title")}</h2>
+                    <p className="login-console__sub">{t("login.subtitle")}</p>
+
+                    <Form
+                        name="login"
+                        layout="vertical"
+                        requiredMark={false}
+                        onFinish={this.handleFormSaved}
                     >
-                        <Input
-                            size="large"
-                            prefix={<UserOutlined style={{color: "#94a3b8"}} />}
-                            placeholder={t("login.usernamePlaceholder")}
-                            style={{borderRadius: 8, height: 44}}
-                        />
-                    </Form.Item>
-
-                    <Form.Item
-                        label={<span style={{fontWeight: 500, color: "#334155"}}>{t("login.password")}</span>}
-                        name="password"
-                        rules={[
-                            {
-                                required: true,
-                                message: "Please input your password!",
-                            },
-                            {type: "string", min: 6, message: "Password must be at least 6 characters long!"},
-                        ]}
-                    >
-                        <Input.Password
-                            size="large"
-                            prefix={<LockOutlined style={{color: "#94a3b8"}} />}
-                            placeholder={t("login.passwordPlaceholder")}
-                            style={{borderRadius: 8, height: 44}}
-                        />
-                    </Form.Item>
-
-                    <Form.Item name="remember" valuePropName="checked" className="text-left">
-                        <Checkbox>{t("login.rememberMe")}</Checkbox>
-                    </Form.Item>
-
-                    <Form.Item>
-                        <Button
-                            type="primary"
-                            htmlType="submit"
-                            size="large"
-                            block
-                            style={{
-                                borderRadius: 8,
-                                height: 44,
-                                fontWeight: 600,
-                                background: "#3b82f6",
-                                borderColor: "#3b82f6",
-                                boxShadow: "0 2px 8px rgba(59, 130, 246, 0.3)",
-                            }}
+                        <Form.Item
+                            label={t("login.username")}
+                            name="username"
+                            rules={[{required: true, message: t("login.usernameRequired")}]}
                         >
-                            {t("login.submitText")}
-                        </Button>
-                    </Form.Item>
-                </Form>
-                <Text style={{color: "#94a3b8", fontSize: 13, display: "block", textAlign: "center"}}>
-                    {t("login.contactAdmin")}
-                </Text>
-            </div>
+                            <Input
+                                size="large"
+                                autoComplete="username"
+                                placeholder={t("login.usernamePlaceholder")}
+                            />
+                        </Form.Item>
+
+                        <Form.Item
+                            label={t("login.password")}
+                            name="password"
+                            rules={[
+                                {required: true, message: t("login.passwordRequired")},
+                                {type: "string", min: 6, message: t("login.passwordMin")},
+                            ]}
+                        >
+                            <Input.Password
+                                size="large"
+                                autoComplete="current-password"
+                                placeholder={t("login.passwordPlaceholder")}
+                            />
+                        </Form.Item>
+
+                        <Form.Item name="remember" valuePropName="checked">
+                            <Checkbox>{t("login.rememberMe")}</Checkbox>
+                        </Form.Item>
+
+                        <Form.Item>
+                            <Button
+                                type="primary"
+                                htmlType="submit"
+                                size="large"
+                                block
+                                loading={this.state.submitting}
+                            >
+                                {t("login.submitText")}
+                            </Button>
+                        </Form.Item>
+                    </Form>
+
+                    <p className="login-console__note">{t("login.contactAdmin")}</p>
+                </div>
+            </section>
         )
     }
 }
