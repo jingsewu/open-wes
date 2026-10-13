@@ -8,6 +8,7 @@ import org.openwes.wes.api.outbound.IPickingOrderApi;
 import org.slf4j.Logger;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Host context passed to every script method. Facade methods are sugar over bean lookup against
@@ -32,6 +33,13 @@ public interface ScriptContext {
     Boolean configBool(String field);
 
     List<ConfigFieldDTO> configSchema();
+
+    /**
+     * Whole resolved plugin config: schema defaults overlaid with stored values, keyed by field.
+     * In Groovy, {@code ctx.config.dbPassword} reads one field; secrets come from here, never from
+     * hardcoded literals.
+     */
+    Map<String, Object> config();
 
     ScriptHttpClient http();
 
