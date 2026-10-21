@@ -24,9 +24,10 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Fires due CRON declarations, at most once per occurrence per cluster (DistributeLock) and at
- * most once per occurrence per node (in-memory last-fired stamp). Consecutive failures leading to
- * auto-disable are reported through the management plane.
+ * Fires due CRON declarations. An occurrence runs at most once per node (in-memory last-fired
+ * stamp) and at most once per cluster: the occurrence-scoped DistributeLock lease is intentionally
+ * never released, so peers keep seeing the occurrence claimed until it is safely in the past.
+ * Consecutive failures leading to auto-disable are reported through the management plane.
  */
 @Component
 @Slf4j
@@ -42,9 +43,9 @@ public class ScriptCronDispatcher {
     private final int maxConsecutiveFailures;
 
     private final Map<String, Long> lastFiredAt = new ConcurrentHashMap<>();
-    private final Map<String, CronExpression> parsedCron = new ConcurrentHashMap<>();
+    private final Map<String, CachedCron> parsedCron = new ConcurrentHashMap<>();
     private final Map<String, Integer> consecutiveFailures = new ConcurrentHashMap<>();
-    private final Set<String> invalidCronKeys = ConcurrentHashMap.newKeySet();
+    private final Map<String, String> invalidCrons = new ConcurrentHashMap<>();
 
     public ScriptCronDispatcher(ScriptPluginRegistry registry,
                                 ScriptInvocationExecutor executor,
@@ -71,80 +72,100 @@ public class ScriptCronDispatcher {
                 }
                 String key = fireKey(plugin, extension);
                 activeKeys.add(key);
-                if (isDue(key, extension.getDeclaration().getCron(), now)) {
-                    fire(plugin, extension, key);
+                try {
+                    ZonedDateTime occurrence = isDue(key, extension.getDeclaration().getCron(), now);
+                    if (occurrence != null) {
+                        fire(plugin, extension, key, occurrence);
+                    }
+                } catch (Exception e) {
+                    // a broker/executor/disable failure for one declaration must not abort the
+                    // remaining plugins or the state purge
+                    log.error("script cron {} failed to dispatch: {}", key, e.getMessage());
                 }
             }
         }
         lastFiredAt.keySet().retainAll(activeKeys);
         parsedCron.keySet().retainAll(activeKeys);
         consecutiveFailures.keySet().retainAll(activeKeys);
-        invalidCronKeys.retainAll(activeKeys);
+        invalidCrons.keySet().retainAll(activeKeys);
     }
 
-    private boolean isDue(String key, String cron, long now) {
-        CronExpression expression = resolveExpression(key, cron);
-        if (expression == null) {
-            return false;
-        }
+    /**
+     * Returns the cron occurrence that became due since the last stamp, or null when nothing is
+     * due. The fresh-key stamp starts counting from activation: the first run happens at the next
+     * boundary, never immediately.
+     */
+    private ZonedDateTime isDue(String key, String cron, long now) {
         Long lastFired = lastFiredAt.get(key);
         if (lastFired == null) {
-            // start counting from activation: the first run happens at the next boundary, not immediately
             lastFiredAt.put(key, now);
-            return false;
+            lastFired = now;
+        }
+        CronExpression expression = resolveExpression(key, cron);
+        if (expression == null) {
+            return null;
         }
         ZonedDateTime after = ZonedDateTime.ofInstant(Instant.ofEpochMilli(lastFired), clock.getZone());
         ZonedDateTime next = expression.next(after);
         if (next != null && !next.isAfter(ZonedDateTime.ofInstant(Instant.ofEpochMilli(now), clock.getZone()))) {
             lastFiredAt.put(key, now);
-            return true;
+            return next;
         }
-        return false;
+        return null;
     }
 
     private CronExpression resolveExpression(String key, String cron) {
-        CronExpression cached = parsedCron.get(key);
-        if (cached != null) {
-            return cached;
+        CachedCron cached = parsedCron.get(key);
+        if (cached != null && cached.cron().equals(cron)) {
+            return cached.expression();
         }
-        if (invalidCronKeys.contains(key)) {
-            return null;
+        String invalidCron = invalidCrons.get(key);
+        if (invalidCron != null) {
+            if (invalidCron.equals(cron)) {
+                return null;
+            }
+            // the declaration changed: retry, a fixed expression must take effect without a restart
+            invalidCrons.remove(key);
         }
         try {
             CronExpression parsed = CronExpression.parse(cron);
-            parsedCron.put(key, parsed);
+            parsedCron.put(key, new CachedCron(cron, parsed));
+            invalidCrons.remove(key);
             return parsed;
         } catch (IllegalArgumentException e) {
-            invalidCronKeys.add(key);
+            invalidCrons.put(key, cron);
+            parsedCron.remove(key);
             log.error("invalid cron expression '{}' for cron plugin {}: {}", cron, key, e.getMessage());
             return null;
         }
     }
 
-    private void fire(MaterializedScriptPlugin plugin, MaterializedExtension extension, String key) {
-        String lockKey = "script-plugin:cron:" + key;
+    private void fire(MaterializedScriptPlugin plugin, MaterializedExtension extension, String key,
+                      ZonedDateTime occurrence) {
+        // The occurrence-scoped key plus a lease that is never released claims this occurrence for
+        // the whole cluster: a peer ticking later within the same boundary cannot acquire it.
+        String lockKey = "script-plugin:cron:" + key + "@" + occurrence.toEpochSecond();
         if (!distributeLock.acquireLock(lockKey, 0, LOCK_LEASE_MILLIS)) {
-            return; // another node has already fired this occurrence
+            return; // another node has already claimed this occurrence
         }
-        try {
-            InvocationOutcome outcome = executor.invoke(plugin, extension, new Object[0]);
-            if (outcome.success()) {
-                consecutiveFailures.remove(key);
-                return;
-            }
-            int failures = consecutiveFailures.merge(key, 1, Integer::sum);
-            log.error("script cron {} failed ({}/{} consecutive): {}", key, failures, maxConsecutiveFailures,
-                    outcome.errorMessage());
-            if (failures >= maxConsecutiveFailures) {
-                accessor.disable(plugin.getPluginKey(), "cron failed " + failures + " consecutive times");
-            }
-        } finally {
-            distributeLock.releaseLock(lockKey);
+        InvocationOutcome outcome = executor.invoke(plugin, extension, new Object[0]);
+        if (outcome.success()) {
+            consecutiveFailures.remove(key);
+            return;
+        }
+        int failures = consecutiveFailures.merge(key, 1, Integer::sum);
+        log.error("script cron {} failed ({}/{} consecutive): {}", key, failures, maxConsecutiveFailures,
+                outcome.errorMessage());
+        if (failures >= maxConsecutiveFailures) {
+            accessor.disable(plugin.getPluginKey(), "cron failed " + failures + " consecutive times");
         }
     }
 
     private String fireKey(MaterializedScriptPlugin plugin, MaterializedExtension extension) {
         return plugin.getPluginKey() + "#" + extension.getDeclaration().getScript() + "#"
                 + extension.getDeclaration().getMethod();
+    }
+
+    private record CachedCron(String cron, CronExpression expression) {
     }
 }
