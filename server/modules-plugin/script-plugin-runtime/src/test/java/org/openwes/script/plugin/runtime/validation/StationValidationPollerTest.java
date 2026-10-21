@@ -19,6 +19,7 @@ class StationValidationPollerTest {
 
     @Test
     void poll_withoutPendingRequest_doesNothing() {
+        when(validator.targetApp()).thenReturn("station");
         when(accessor.getPendingValidation("station")).thenReturn(null);
 
         poller.poll();

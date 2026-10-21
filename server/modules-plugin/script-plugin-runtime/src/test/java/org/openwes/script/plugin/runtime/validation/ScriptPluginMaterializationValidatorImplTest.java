@@ -148,6 +148,53 @@ class ScriptPluginMaterializationValidatorImplTest {
         assertTrue(failedOn(report, "declarations"));
     }
 
+    private ExtensionDeclarationDTO httpEndpoint(String httpMethod) {
+        ExtensionDeclarationDTO declaration = new ExtensionDeclarationDTO();
+        declaration.setType(ExtensionType.HTTP_ENDPOINT);
+        declaration.setScript("Http.groovy");
+        declaration.setMethod("handle");
+        declaration.setHttpMethod(httpMethod);
+        declaration.setPath("/x");
+        return declaration;
+    }
+
+    @Test
+    void validate_duplicateHttpEndpointWithWildcardMethod_reportsDeclarationsStage() {
+        ExtensionDeclarationDTO wildcard = httpEndpoint(null);
+        ExtensionDeclarationDTO get = httpEndpoint("GET");
+        ScriptPluginBundleDTO bundle = bundle(Map.of("Http.groovy",
+                "class Http { Object handle(Object body, Object ctx) { return 'ok' } }"), wildcard);
+        bundle.setDeclarations(List.of(wildcard, get));
+
+        ValidationReportDTO report = validator.validate(bundle);
+
+        assertFalse(report.isPassed());
+        assertTrue(failedOn(report, "declarations"));
+    }
+
+    @Test
+    void validate_duplicateHttpEndpointCaseInsensitiveMethod_reportsDeclarationsStage() {
+        ExtensionDeclarationDTO lower = httpEndpoint("get");
+        ExtensionDeclarationDTO upper = httpEndpoint("GET");
+        ScriptPluginBundleDTO bundle = bundle(Map.of("Http.groovy",
+                "class Http { Object handle(Object body, Object ctx) { return 'ok' } }"), lower);
+        bundle.setDeclarations(List.of(lower, upper));
+
+        ValidationReportDTO report = validator.validate(bundle);
+
+        assertFalse(report.isPassed());
+        assertTrue(failedOn(report, "declarations"));
+    }
+
+    @Test
+    void validate_validSingleHttpEndpoint_passes() {
+        String source = "class Http { Object handle(Object body, Object ctx) { return 'ok' } }";
+
+        ValidationReportDTO report = validator.validate(bundle(Map.of("Http.groovy", source), httpEndpoint("GET")));
+
+        assertTrue(report.isPassed(), report.failureSummary());
+    }
+
     @Test
     void validate_invalidCron_reportsDeclarationsStage() {
         ExtensionDeclarationDTO declaration = new ExtensionDeclarationDTO();
