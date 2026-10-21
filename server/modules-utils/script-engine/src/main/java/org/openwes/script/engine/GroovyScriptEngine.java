@@ -3,7 +3,9 @@ package org.openwes.script.engine;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import groovy.lang.GroovyClassLoader;
+import groovy.lang.MetaClass;
 import lombok.extern.slf4j.Slf4j;
+import org.codehaus.groovy.reflection.GeneratedMetaMethod;
 import org.codehaus.groovy.runtime.InvokerHelper;
 
 import java.time.Duration;
@@ -43,6 +45,17 @@ public class GroovyScriptEngine {
         } catch (Exception e) {
             throw new ScriptExecutionException("cannot instantiate script class " + compiledClass.getName(), e);
         }
+    }
+
+    /**
+     * Groovy-aware method existence check used by the enable-time smoke validation. Groovy
+     * extension (DGM) methods such as {@code split(Closure)} are attached to every object and
+     * must not be mistaken for a method the script actually declares.
+     */
+    public boolean respondsTo(Object instance, String methodName) {
+        MetaClass metaClass = InvokerHelper.getMetaClass(instance);
+        return metaClass.respondsTo(instance, methodName).stream()
+                .anyMatch(metaMethod -> !(metaMethod instanceof GeneratedMetaMethod));
     }
 
     /**
