@@ -43,7 +43,9 @@ public class ScriptPluginService {
     @Value("${script-plugin.validation-timeout-ms:30000}")
     private long validationTimeoutMs = 30000;
 
-    private record PendingValidation(String app, CompletableFuture<ValidationReportDTO> future) {
+    private record PendingValidation(String pluginKey, Long revisionId, String app,
+                                     ScriptPluginBundleDTO bundle,
+                                     CompletableFuture<ValidationReportDTO> future) {
     }
 
     private final Map<String, PendingValidation> pendingValidations = new ConcurrentHashMap<>();
@@ -146,15 +148,23 @@ public class ScriptPluginService {
             return localValidator.get().validate(bundle);
         }
 
-        CompletableFuture<ValidationReportDTO> future = new CompletableFuture<>();
-        pendingValidations.put(pluginKey, new PendingValidation(plugin.getApplySystem(), future));
-        publishManagementMessage(plugin);
+        Long revisionId = bundle.getRevisionId();
+        String key = pendingValidationKey(pluginKey, revisionId);
+        PendingValidation candidate = new PendingValidation(pluginKey, revisionId, plugin.getApplySystem(),
+                bundle, new CompletableFuture<>());
+        PendingValidation existing = pendingValidations.putIfAbsent(key, candidate);
+        boolean firstCaller = existing == null;
+        PendingValidation pending = firstCaller ? candidate : existing;
+
         try {
-            return future.get(validationTimeoutMs, TimeUnit.MILLISECONDS);
+            if (firstCaller) {
+                publishManagementMessage(plugin);
+            }
+            return pending.future().get(validationTimeoutMs, TimeUnit.MILLISECONDS);
         } catch (TimeoutException e) {
             log.warn("validation for plugin {} on app {} did not report within {} ms",
                     pluginKey, plugin.getApplySystem(), validationTimeoutMs);
-            return ValidationReportDTO.failed(pluginKey, bundle.getRevisionId(), plugin.getApplySystem(),
+            return ValidationReportDTO.failed(pluginKey, revisionId, plugin.getApplySystem(),
                     "remote", "target node " + plugin.getApplySystem() + " did not report within "
                             + validationTimeoutMs + " ms");
         } catch (InterruptedException e) {
@@ -163,8 +173,12 @@ public class ScriptPluginService {
         } catch (ExecutionException e) {
             throw new CommonException("validation failed: " + e.getCause().getMessage());
         } finally {
-            pendingValidations.remove(pluginKey);
+            pendingValidations.remove(key, pending);
         }
+    }
+
+    private static String pendingValidationKey(String pluginKey, Long revisionId) {
+        return pluginKey + "#" + revisionId;
     }
 
     public ScriptPluginDTO enable(String pluginKey) {
@@ -271,23 +285,28 @@ public class ScriptPluginService {
     }
 
     public ScriptPluginBundleDTO findPendingValidation(String applySystem) {
-        return pendingValidations.entrySet().stream()
-                .filter(entry -> applySystem.equals(entry.getValue().app()))
-                .map(entry -> getBundle(entry.getKey()))
-                .filter(Objects::nonNull)
+        return pendingValidations.values().stream()
+                .filter(pending -> applySystem.equals(pending.app()))
+                .map(PendingValidation::bundle)
                 .findFirst().orElse(null);
     }
 
     public void reportValidation(ValidationReportDTO report) {
-        PendingValidation pending = pendingValidations.get(report.getPluginKey());
+        PendingValidation pending = pendingValidations.remove(
+                pendingValidationKey(report.getPluginKey(), report.getRevisionId()));
         if (pending != null) {
             pending.future().complete(report);
+        } else {
+            log.info("validation report for {} (revision {}) has no pending request, ignoring late report",
+                    report.getPluginKey(), report.getRevisionId());
         }
         pluginRepository.findByPluginKey(report.getPluginKey()).ifPresent(plugin -> {
-            plugin.setLastValidationStatus(report.isPassed() ? "PASSED" : "FAILED");
-            plugin.setLastValidationError(report.isPassed() ? null : report.failureSummary());
-            plugin.setLastValidationAt(report.getFinishedAt());
-            pluginRepository.save(plugin);
+            if (Objects.equals(plugin.getCurrentRevisionId(), report.getRevisionId())) {
+                plugin.setLastValidationStatus(report.isPassed() ? "PASSED" : "FAILED");
+                plugin.setLastValidationError(report.isPassed() ? null : report.failureSummary());
+                plugin.setLastValidationAt(report.getFinishedAt());
+                pluginRepository.save(plugin);
+            }
         });
         log.info("validation report for {} (revision {}): passed={}", report.getPluginKey(),
                 report.getRevisionId(), report.isPassed());

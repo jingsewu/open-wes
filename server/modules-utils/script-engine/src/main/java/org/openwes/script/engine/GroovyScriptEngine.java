@@ -1,26 +1,33 @@
 package org.openwes.script.engine;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import groovy.lang.GroovyClassLoader;
 import lombok.extern.slf4j.Slf4j;
 import org.codehaus.groovy.runtime.InvokerHelper;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.time.Duration;
 
 /**
  * Compiles and caches Groovy script classes. Cache keys are content hashes
  * ({@link ScriptHashes#sha256}), so identical sources across plugins and revisions share one class.
+ * The cache is bounded so repeated AI-generated revisions cannot grow it without limit.
  */
 @Slf4j
 public class GroovyScriptEngine {
 
-    private final Map<String, Class<?>> compiledClassCache = new ConcurrentHashMap<>();
+    private static final int MAX_CACHED_CLASSES = 500;
+
+    private final Cache<String, Class<?>> compiledClassCache = Caffeine.newBuilder()
+            .maximumSize(MAX_CACHED_CLASSES)
+            .expireAfterAccess(Duration.ofHours(1))
+            .build();
 
     public Class<?> compile(String source) {
         if (source == null || source.isBlank()) {
             throw new ScriptCompileException("script source is empty");
         }
-        return compiledClassCache.computeIfAbsent(ScriptHashes.sha256(source), hash -> {
+        return compiledClassCache.get(ScriptHashes.sha256(source), hash -> {
             try (GroovyClassLoader loader = new GroovyClassLoader()) {
                 return loader.parseClass(source);
             } catch (Exception e) {

@@ -2,4 +2,5 @@ dependencies {
     implementation project(path: ":modules-utils:common-utils", configuration: 'default')
     implementation 'org.apache.groovy:groovy'
     implementation 'org.apache.commons:commons-lang3'
+    implementation 'com.github.ben-manes.caffeine:caffeine'
 }

@@ -24,19 +24,26 @@ import org.openwes.script.plugin.core.domain.repository.ScriptPluginRevisionRepo
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -142,6 +149,22 @@ class ScriptPluginServiceTest {
         verify(revisionRepository, never()).findById(any());
     }
 
+    private void awaitPendingValidation(String applySystem) throws InterruptedException {
+        for (int i = 0; i < 200 && service.findPendingValidation(applySystem) == null; i++) {
+            Thread.sleep(10);
+        }
+        assertNotNull(service.findPendingValidation(applySystem),
+                "validation request must be pending for the " + applySystem + " poller");
+    }
+
+    private void awaitNoPendingValidation(String applySystem) throws InterruptedException {
+        for (int i = 0; i < 100 && service.findPendingValidation(applySystem) != null; i++) {
+            Thread.sleep(10);
+        }
+        assertNull(service.findPendingValidation(applySystem),
+                "pending validation must be removed for the " + applySystem + " poller");
+    }
+
     @Test
     void validate_forRemoteApp_waitsForNodeReport() throws Exception {
         ScriptPlugin plugin = plugin("station-api", "station", ScriptPluginStatusEnum.DRAFT);
@@ -152,10 +175,36 @@ class ScriptPluginServiceTest {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         try {
             Future<ValidationReportDTO> result = executor.submit(() -> service.validate("station-api"));
-            for (int i = 0; i < 200 && service.findPendingValidation("station") == null; i++) {
+            awaitPendingValidation("station");
+
+            service.reportValidation(ValidationReportDTO.passed("station-api", 11L, "station"));
+
+            assertTrue(result.get(2, TimeUnit.SECONDS).isPassed());
+            awaitNoPendingValidation("station");
+        } finally {
+            executor.shutdownNow();
+        }
+    }
+
+    @Test
+    void reportValidation_withWrongRevision_doesNotCompleteWaiter() throws Exception {
+        ScriptPlugin plugin = plugin("station-api", "station", ScriptPluginStatusEnum.DRAFT);
+        when(pluginRepository.findByPluginKey("station-api")).thenReturn(Optional.of(plugin));
+        when(revisionRepository.findById(11L)).thenReturn(Optional.of(revision()));
+        when(configRepository.findByPluginId(1L)).thenReturn(Optional.empty());
+        org.springframework.test.util.ReflectionTestUtils.setField(service, "validationTimeoutMs", 3000L);
+
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        try {
+            Future<ValidationReportDTO> result = executor.submit(() -> service.validate("station-api"));
+            awaitPendingValidation("station");
+
+            service.reportValidation(ValidationReportDTO.passed("station-api", 99L, "station"));
+
+            for (int i = 0; i < 20 && !result.isDone(); i++) {
                 Thread.sleep(10);
             }
-            assertNotNull(service.findPendingValidation("station"), "validation request must be pending for the station poller");
+            assertFalse(result.isDone(), "a report for another revision must not complete the waiter");
 
             service.reportValidation(ValidationReportDTO.passed("station-api", 11L, "station"));
 
@@ -163,6 +212,67 @@ class ScriptPluginServiceTest {
         } finally {
             executor.shutdownNow();
         }
+    }
+
+    @Test
+    void validate_samePluginAndRevision_concurrentCallersShareOnePendingRequest() throws Exception {
+        ScriptPlugin plugin = plugin("station-api", "station", ScriptPluginStatusEnum.DRAFT);
+        when(pluginRepository.findByPluginKey("station-api")).thenReturn(Optional.of(plugin));
+        when(revisionRepository.findById(11L)).thenReturn(Optional.of(revision()));
+        when(configRepository.findByPluginId(1L)).thenReturn(Optional.empty());
+        org.springframework.test.util.ReflectionTestUtils.setField(service, "validationTimeoutMs", 3000L);
+
+        ExecutorService executor = Executors.newFixedThreadPool(2);
+        try {
+            CountDownLatch start = new CountDownLatch(1);
+            Callable<ValidationReportDTO> validation = () -> {
+                start.await();
+                return service.validate("station-api");
+            };
+            Future<ValidationReportDTO> first = executor.submit(validation);
+            Future<ValidationReportDTO> second = executor.submit(validation);
+
+            start.countDown();
+            awaitPendingValidation("station");
+            Thread.sleep(100);
+            service.reportValidation(ValidationReportDTO.passed("station-api", 11L, "station"));
+
+            ValidationReportDTO firstReport = first.get(2, TimeUnit.SECONDS);
+            ValidationReportDTO secondReport = second.get(2, TimeUnit.SECONDS);
+            assertTrue(firstReport.isPassed());
+            assertTrue(secondReport.isPassed());
+            assertSame(firstReport, secondReport, "both callers must receive the shared report");
+            verify(redisUtils, times(1)).publish(any(), any());
+        } finally {
+            executor.shutdownNow();
+        }
+    }
+
+    @Test
+    void validate_publishFailure_removesThePendingEntry() throws Exception {
+        ScriptPlugin plugin = plugin("station-api", "station", ScriptPluginStatusEnum.DRAFT);
+        when(pluginRepository.findByPluginKey("station-api")).thenReturn(Optional.of(plugin));
+        when(revisionRepository.findById(11L)).thenReturn(Optional.of(revision()));
+        when(configRepository.findByPluginId(1L)).thenReturn(Optional.empty());
+        doThrow(new IllegalStateException("redis unavailable")).when(redisUtils).publish(any(), any());
+
+        IllegalStateException e = assertThrows(IllegalStateException.class, () -> service.validate("station-api"));
+
+        assertEquals("redis unavailable", e.getMessage());
+        assertNull(service.findPendingValidation("station"),
+                "a failed publish must not leak the pending request");
+    }
+
+    @Test
+    void reportValidation_staleRevision_doesNotOverwritePluginStatus() {
+        ScriptPlugin plugin = plugin("station-api", "station", ScriptPluginStatusEnum.DRAFT);
+        when(pluginRepository.findByPluginKey("station-api")).thenReturn(Optional.of(plugin));
+
+        service.reportValidation(ValidationReportDTO.failed("station-api", 99L, "station", "compile", "boom"));
+
+        assertNull(plugin.getLastValidationStatus());
+        assertNull(plugin.getLastValidationError());
+        verify(pluginRepository, never()).save(any());
     }
 
     @Test
