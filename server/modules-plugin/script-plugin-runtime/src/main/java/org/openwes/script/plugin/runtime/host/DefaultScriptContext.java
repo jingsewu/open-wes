@@ -57,13 +57,25 @@ public class DefaultScriptContext implements ScriptContext {
     @Override
     public Integer configInt(String field) {
         Object value = config.get(field);
-        return value == null ? null : Integer.valueOf(value.toString());
+        if (value == null) {
+            return null;
+        }
+        if (value instanceof Number number) {
+            return number.intValue();
+        }
+        return Integer.valueOf(value.toString());
     }
 
     @Override
     public Boolean configBool(String field) {
         Object value = config.get(field);
-        return value == null ? null : Boolean.valueOf(value.toString());
+        if (value == null) {
+            return null;
+        }
+        if (value instanceof Boolean bool) {
+            return bool;
+        }
+        return Boolean.valueOf(value.toString());
     }
 
     @Override
