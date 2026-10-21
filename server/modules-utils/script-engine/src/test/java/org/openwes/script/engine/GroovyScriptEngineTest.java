@@ -22,6 +22,16 @@ class GroovyScriptEngineTest {
     }
 
     @Test
+    void compile_reusesTheSameClassForIdenticalSource() {
+        String source = "class Reused { Object run(Object p) { return p } }";
+
+        Class<?> class1 = engine.compile(source);
+        Class<?> class2 = engine.compile(source);
+
+        assertSame(class1, class2);
+    }
+
+    @Test
     void invoke_callsNamedMethodWithUntypedParameter() {
         Class<?> clazz = engine.compile("class Wave { Object wave(Object p) { return [1, 2] } }");
         Object instance = engine.newInstance(clazz);
