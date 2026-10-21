@@ -89,16 +89,24 @@ public class ScriptPluginRegistry implements DisposableBean {
                 if (current != null && Objects.equals(current.getRevisionId(), bundle.getRevisionId())) {
                     continue;
                 }
+                MaterializedScriptPlugin fresh;
                 try {
-                    MaterializedScriptPlugin fresh = materializer.materialize(bundle);
-                    materialized.put(bundle.getPluginKey(), fresh);
-                    materializer.closeRevisionsExcept(bundle.getPluginKey(), bundle.getRevisionId());
-                    log.info("materialized script plugin {} revision {}", bundle.getPluginKey(), bundle.getRevisionId());
+                    fresh = materializer.materialize(bundle);
                 } catch (Exception e) {
                     log.error("materialization of script plugin {} revision {} failed; keeping the previous revision: {}",
                             bundle.getPluginKey(), bundle.getRevisionId(), e.getMessage());
                     discardFailedRevision(bundle.getPluginKey(), current);
+                    continue;
                 }
+
+                materialized.put(bundle.getPluginKey(), fresh);
+                try {
+                    materializer.closeRevisionsExcept(bundle.getPluginKey(), bundle.getRevisionId());
+                } catch (Exception e) {
+                    log.warn("closing superseded revisions of script plugin {} failed; revision {} stays registered: {}",
+                            bundle.getPluginKey(), bundle.getRevisionId(), e.getMessage());
+                }
+                log.info("materialized script plugin {} revision {}", bundle.getPluginKey(), bundle.getRevisionId());
             }
             lastVersion.set(version);
         } catch (Exception e) {

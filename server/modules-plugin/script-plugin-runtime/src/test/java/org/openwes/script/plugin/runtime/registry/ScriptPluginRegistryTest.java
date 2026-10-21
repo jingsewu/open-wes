@@ -14,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -110,6 +111,21 @@ class ScriptPluginRegistryTest {
 
         assertNull(registry.getMaterialized("packing-wave"));
         verify(materializer).closePlugin("packing-wave");
+    }
+
+    @Test
+    void refreshAll_supersededCleanupFails_keepsTheFreshPluginRegistered() {
+        ScriptPluginBundleDTO bundle = bundle(11L);
+        MaterializedScriptPlugin materialized = new MaterializedScriptPlugin("packing-wave", 11L, new ArrayList<>());
+        when(accessor.getEnabledPlugins("wes")).thenReturn(List.of(bundle));
+        when(materializer.materialize(bundle)).thenReturn(materialized);
+        doThrow(new IllegalStateException("close failed"))
+                .when(materializer).closeRevisionsExcept("packing-wave", 11L);
+
+        registry.refreshAll();
+
+        assertSame(materialized, registry.getMaterialized("packing-wave"));
+        verify(materializer, never()).closePlugin("packing-wave");
     }
 
     @Test
