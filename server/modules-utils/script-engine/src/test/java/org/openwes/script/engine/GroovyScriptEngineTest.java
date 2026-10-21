@@ -75,4 +75,21 @@ class GroovyScriptEngineTest {
 
         assertThrows(ScriptExecutionException.class, () -> engine.invoke(instance, "run", null));
     }
+
+    @Test
+    void respondsTo_detectsDeclaredAndMissingMethods() {
+        Class<?> clazz = engine.compile("class Wave { Object wave(Object orders, Object ctx) { return orders } }");
+        Object instance = engine.newInstance(clazz);
+
+        assertEquals(true, engine.respondsTo(instance, "wave"));
+        assertEquals(false, engine.respondsTo(instance, "split"));
+    }
+
+    @Test
+    void respondsTo_detectsDeclaredMethodThatShadowsGroovyExtension() {
+        Class<?> clazz = engine.compile("class Splitter { Object split(Object orders, Object ctx) { return orders } }");
+        Object instance = engine.newInstance(clazz);
+
+        assertEquals(true, engine.respondsTo(instance, "split"));
+    }
 }
