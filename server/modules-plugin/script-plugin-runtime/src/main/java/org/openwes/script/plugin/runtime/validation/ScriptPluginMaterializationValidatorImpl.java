@@ -17,8 +17,10 @@ import org.springframework.scheduling.support.CronExpression;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -69,7 +71,7 @@ public class ScriptPluginMaterializationValidatorImpl implements ScriptPluginMat
 
     private void validateDeclarations(ScriptPluginBundleDTO bundle,
                                       List<ValidationReportDTO.ValidationFailureDTO> failures) {
-        Set<String> httpEndpoints = new HashSet<>();
+        Map<String, Set<String>> httpEndpointsByPath = new HashMap<>();
         for (ExtensionDeclarationDTO declaration : bundle.getDeclarations()) {
             if (declaration.getType() == null
                     || PluginContractCatalog.archetype(declaration.getType()).isEmpty()) {
@@ -105,9 +107,9 @@ public class ScriptPluginMaterializationValidatorImpl implements ScriptPluginMat
                     if (StringUtils.isBlank(declaration.getPath()) || !declaration.getPath().startsWith("/")
                             || declaration.getPath().endsWith("/")) {
                         failures.add(failure("declarations", "HTTP_ENDPOINT path must start with '/' and not end with '/'"));
-                    } else if (!httpEndpoints.add(declaration.getHttpMethod() + " " + declaration.getPath())) {
+                    } else if (isDuplicateHttpEndpoint(httpEndpointsByPath, declaration)) {
                         failures.add(failure("declarations", "duplicate HTTP endpoint "
-                                + declaration.getHttpMethod() + " " + declaration.getPath()));
+                                + normalizeHttpMethod(declaration.getHttpMethod()) + " " + declaration.getPath()));
                     }
                 }
                 case CRON -> {
@@ -126,6 +128,24 @@ public class ScriptPluginMaterializationValidatorImpl implements ScriptPluginMat
                 }
             }
         }
+    }
+
+    /**
+     * Mirrors {@code ScriptPluginRegistry#matchesHttpMethod}: a blank method is a wildcard and
+     * method comparison is case-insensitive, so "*" overlaps every method declared on the path.
+     */
+    private boolean isDuplicateHttpEndpoint(Map<String, Set<String>> endpointsByPath,
+                                            ExtensionDeclarationDTO declaration) {
+        String method = normalizeHttpMethod(declaration.getHttpMethod());
+        Set<String> methods = endpointsByPath.computeIfAbsent(declaration.getPath(), path -> new HashSet<>());
+        boolean duplicate = methods.contains("*") || (method.equals("*") && !methods.isEmpty())
+                || methods.contains(method);
+        methods.add(method);
+        return duplicate;
+    }
+
+    private String normalizeHttpMethod(String httpMethod) {
+        return StringUtils.defaultIfBlank(httpMethod, "*").toUpperCase(Locale.ROOT);
     }
 
     private void dryRun(ScriptPluginBundleDTO bundle, List<ValidationReportDTO.ValidationFailureDTO> failures) {
