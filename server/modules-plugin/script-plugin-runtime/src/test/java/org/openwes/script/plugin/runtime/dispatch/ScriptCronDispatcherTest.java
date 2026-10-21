@@ -1,6 +1,7 @@
 package org.openwes.script.plugin.runtime.dispatch;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.openwes.distribute.lock.DistributeLock;
 import org.openwes.script.plugin.api.dto.ExtensionDeclarationDTO;
 import org.openwes.script.plugin.api.enums.ExtensionType;
@@ -21,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -70,16 +72,29 @@ class ScriptCronDispatcherTest {
         return new ScriptCronDispatcher(registry, executor, distributeLock, accessor, clock, maxConsecutiveFailures);
     }
 
-    private void givenOneCronPlugin() {
+    private MaterializedExtension cronExtension(String script, String method, String cron) {
         ExtensionDeclarationDTO declaration = new ExtensionDeclarationDTO();
         declaration.setType(ExtensionType.CRON);
-        declaration.setScript("Job.groovy");
-        declaration.setMethod("run");
-        declaration.setCron("0 * * * * *");
+        declaration.setScript(script);
+        declaration.setMethod(method);
+        declaration.setCron(cron);
         MaterializedExtension extension = new MaterializedExtension();
         extension.setDeclaration(declaration);
-        when(registry.all()).thenReturn(
-                List.of(new MaterializedScriptPlugin("nightly-task", 11L, List.of(extension))));
+        return extension;
+    }
+
+    private MaterializedScriptPlugin plugin(String pluginKey, MaterializedExtension... extensions) {
+        return new MaterializedScriptPlugin(pluginKey, 11L, List.of(extensions));
+    }
+
+    private void givenOneCronPlugin() {
+        when(registry.all()).thenReturn(List.of(
+                plugin("nightly-task", cronExtension("Job.groovy", "run", "0 * * * * *"))));
+    }
+
+    private String occurrenceLockKey(String script) {
+        return "script-plugin:cron:nightly-task#" + script + "#run@"
+                + Instant.parse("2026-10-08T10:01:00Z").getEpochSecond();
     }
 
     @Test
@@ -95,10 +110,10 @@ class ScriptCronDispatcherTest {
         clock.advance(Duration.ofSeconds(30));
         dispatcher.tick();
         verify(executor, times(1)).invoke(any(), any(), any());
+        verify(distributeLock).acquireLock(eq(occurrenceLockKey("Job.groovy")), eq(0L), eq(30_000L));
 
         dispatcher.tick();
         verify(executor, times(1)).invoke(any(), any(), any());
-        verify(distributeLock).releaseLock(anyString());
     }
 
     @Test
@@ -112,6 +127,7 @@ class ScriptCronDispatcherTest {
         dispatcher.tick();
 
         verify(executor, never()).invoke(any(), any(), any());
+        verify(distributeLock, times(1)).acquireLock(eq(occurrenceLockKey("Job.groovy")), eq(0L), eq(30_000L));
         verify(distributeLock, never()).releaseLock(anyString());
     }
 
@@ -159,7 +175,10 @@ class ScriptCronDispatcherTest {
         dispatcher.tick();
         clock.advance(Duration.ofSeconds(30));
         dispatcher.tick();
+        verify(executor, times(1)).invoke(any(), any(), any());
 
+        // move to the next boundary before the purge, so a restored plugin must start from scratch
+        clock.advance(Duration.ofMinutes(1));
         when(registry.all()).thenReturn(List.of());
         dispatcher.tick();
 
@@ -169,5 +188,78 @@ class ScriptCronDispatcherTest {
         clock.advance(Duration.ofMinutes(1));
         dispatcher.tick();
         verify(executor, times(2)).invoke(any(), any(), any());
+    }
+
+    @Test
+    void tick_twoCronDeclarationsSameMethod_fireUnderDistinctKeys() {
+        when(registry.all()).thenReturn(List.of(plugin("nightly-task",
+                cronExtension("A.groovy", "run", "0 * * * * *"),
+                cronExtension("B.groovy", "run", "0 * * * * *"))));
+        when(distributeLock.acquireLock(anyString(), anyLong(), anyLong())).thenReturn(true);
+        when(executor.invoke(any(), any(), any())).thenReturn(new InvocationOutcome(true, null, 1, null));
+        ScriptCronDispatcher dispatcher = dispatcher(3);
+
+        dispatcher.tick();
+        clock.advance(Duration.ofSeconds(30));
+        dispatcher.tick();
+
+        verify(executor, times(2)).invoke(any(), any(), any());
+        ArgumentCaptor<String> lockKeys = ArgumentCaptor.forClass(String.class);
+        verify(distributeLock, times(2)).acquireLock(lockKeys.capture(), eq(0L), eq(30_000L));
+        assertEquals(2, lockKeys.getAllValues().size());
+        assertEquals(1L, lockKeys.getAllValues().stream().filter(key -> key.contains("#A.groovy#run@")).count());
+        assertEquals(1L, lockKeys.getAllValues().stream().filter(key -> key.contains("#B.groovy#run@")).count());
+    }
+
+    @Test
+    void tick_cronChangedOnSameScriptAndMethod_takesEffect() {
+        MaterializedExtension extension = cronExtension("Job.groovy", "run", "0 * * * * *");
+        when(registry.all()).thenReturn(List.of(plugin("nightly-task", extension)));
+        when(distributeLock.acquireLock(anyString(), anyLong(), anyLong())).thenReturn(true);
+        when(executor.invoke(any(), any(), any())).thenReturn(new InvocationOutcome(true, null, 1, null));
+        ScriptCronDispatcher dispatcher = dispatcher(3);
+
+        dispatcher.tick();
+        extension.getDeclaration().setCron("0 0 * * * *");
+        clock.advance(Duration.ofMinutes(1));
+        dispatcher.tick();
+
+        verify(executor, never()).invoke(any(), any(), any());
+    }
+
+    @Test
+    void tick_invalidCron_retriedAfterDeclarationChanges() {
+        MaterializedExtension extension = cronExtension("Job.groovy", "run", "not a cron");
+        when(registry.all()).thenReturn(List.of(plugin("nightly-task", extension)));
+        when(distributeLock.acquireLock(anyString(), anyLong(), anyLong())).thenReturn(true);
+        when(executor.invoke(any(), any(), any())).thenReturn(new InvocationOutcome(true, null, 1, null));
+        ScriptCronDispatcher dispatcher = dispatcher(3);
+
+        dispatcher.tick();
+        extension.getDeclaration().setCron("0 * * * * *");
+        clock.advance(Duration.ofMinutes(1));
+        dispatcher.tick();
+
+        verify(executor, times(1)).invoke(any(), any(), any());
+    }
+
+    @Test
+    void tick_onePluginDispatchThrows_otherPluginsStillRun() {
+        MaterializedScriptPlugin first = plugin("first-plugin", cronExtension("A.groovy", "run", "0 * * * * *"));
+        MaterializedScriptPlugin second = plugin("second-plugin", cronExtension("B.groovy", "run", "0 * * * * *"));
+        when(registry.all()).thenReturn(List.of(first, second));
+        when(distributeLock.acquireLock(argThat(key -> key != null && key.contains("#A.groovy#run@")),
+                anyLong(), anyLong())).thenThrow(new IllegalStateException("redis down"));
+        when(distributeLock.acquireLock(argThat(key -> key != null && !key.contains("#A.groovy#run@")),
+                anyLong(), anyLong())).thenReturn(true);
+        when(executor.invoke(any(), any(), any())).thenReturn(new InvocationOutcome(true, null, 1, null));
+        ScriptCronDispatcher dispatcher = dispatcher(3);
+
+        dispatcher.tick();
+        clock.advance(Duration.ofSeconds(30));
+        dispatcher.tick();
+
+        verify(executor, never()).invoke(eq(first), any(), any());
+        verify(executor, times(1)).invoke(eq(second), any(), any());
     }
 }
