@@ -87,6 +87,12 @@ public class ScriptPluginMaterializationValidatorImpl implements ScriptPluginMat
                         + declaration.getScript() + "'"));
                 continue;
             }
+            String requiredMethod = PluginContractCatalog.archetype(declaration.getType())
+                    .map(PluginContractCatalog.ArchetypeDescriptor::scriptMethod).orElse(null);
+            if (requiredMethod != null && !requiredMethod.equals(declaration.getMethod())) {
+                failures.add(failure("declarations", declaration.getType() + " requires script method '"
+                        + requiredMethod + "' but declaration uses '" + declaration.getMethod() + "'"));
+            }
             switch (declaration.getType()) {
                 case REQUEST_VALIDATE, REQUEST_SUPPLY, REQUEST_AFTER_INVOKE, CUSTOM_REQUEST_INVOKE -> {
                     if (StringUtils.isBlank(declaration.getApiType())) {
