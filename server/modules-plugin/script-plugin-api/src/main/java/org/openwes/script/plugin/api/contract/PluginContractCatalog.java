@@ -21,10 +21,11 @@ public final class PluginContractCatalog {
      * @param type                   the archetype
      * @param extensionPointClassName host interface the proxy implements, or null for dispatcher-backed archetypes
      * @param scriptMethod           the method name a script must declare
+     * @param hostSignature          the exact script method signature; the runtime appends ctx as the last argument
      * @param blocking               whether an exception blocks the host operation
      */
     public record ArchetypeDescriptor(ExtensionType type, String extensionPointClassName, String scriptMethod,
-                                      boolean blocking) {
+                                      String hostSignature, boolean blocking) {
     }
 
     /**
@@ -36,23 +37,39 @@ public final class PluginContractCatalog {
 
     public static final List<ArchetypeDescriptor> ARCHETYPES = List.of(
             new ArchetypeDescriptor(ExtensionType.OUTBOUND_WAVE_WAVE_ACTION,
-                    "org.openwes.plugin.extension.business.wes.outbound.action.IOutboundWaveWaveAction", "wave", true),
+                    "org.openwes.plugin.extension.business.wes.outbound.action.IOutboundWaveWaveAction",
+                    "wave", "List<List<OutboundPlanOrderDTO>> wave(List<OutboundPlanOrderDTO> orders, Object ctx)",
+                    true),
             new ArchetypeDescriptor(ExtensionType.OUTBOUND_WAVE_SPLIT_ACTION,
-                    "org.openwes.plugin.extension.business.wes.outbound.action.IOutboundWaveSplitAction", "split", true),
+                    "org.openwes.plugin.extension.business.wes.outbound.action.IOutboundWaveSplitAction",
+                    "split", "List<PickingOrderDTO> split(OutboundWaveDTO wave, Object ctx)", true),
             new ArchetypeDescriptor(ExtensionType.REQUEST_VALIDATE,
-                    "org.openwes.plugin.extension.business.api.platform.request.IRequestPlugin", "validate", true),
+                    "org.openwes.plugin.extension.business.api.platform.request.IRequestPlugin",
+                    "validate", "void validate(RequestHandleContext context, Object ctx)", true),
             new ArchetypeDescriptor(ExtensionType.REQUEST_SUPPLY,
-                    "org.openwes.plugin.extension.business.api.platform.request.IRequestPlugin", "supply", false),
+                    "org.openwes.plugin.extension.business.api.platform.request.IRequestPlugin",
+                    "supply", "void supply(RequestHandleContext context, Object ctx)", false),
             new ArchetypeDescriptor(ExtensionType.REQUEST_AFTER_INVOKE,
-                    "org.openwes.plugin.extension.business.api.platform.request.IRequestPlugin", "afterInvoke", false),
+                    "org.openwes.plugin.extension.business.api.platform.request.IRequestPlugin",
+                    "afterInvoke", "void afterInvoke(RequestHandleContext context, Object ctx)", false),
             new ArchetypeDescriptor(ExtensionType.CUSTOM_REQUEST_INVOKE,
-                    "org.openwes.plugin.extension.business.api.platform.request.ICustomRequestPlugin", "invoke", true),
+                    "org.openwes.plugin.extension.business.api.platform.request.ICustomRequestPlugin",
+                    "invoke", "void invoke(RequestHandleContext context, Object ctx)", true),
             new ArchetypeDescriptor(ExtensionType.CUSTOM_API,
-                    "org.openwes.plugin.extension.business.station.ICustomApiPlugin", "execute", true),
+                    "org.openwes.plugin.extension.business.station.ICustomApiPlugin",
+                    "execute", "void execute(CustomApiParameter parameter, Object ctx)", true),
             new ArchetypeDescriptor(ExtensionType.LIFECYCLE_LISTENER,
-                    "org.openwes.plugin.extension.business.IEntityLifecycleListener", "afterStatusChange", false),
-            new ArchetypeDescriptor(ExtensionType.HTTP_ENDPOINT, null, "handle", true),
-            new ArchetypeDescriptor(ExtensionType.CRON, null, "run", false));
+                    "org.openwes.plugin.extension.business.IEntityLifecycleListener",
+                    "afterStatusChange",
+                    "void afterStatusChange(Long entityId, String entityOrderNo, String newStatus, Object ctx)", false),
+            new ArchetypeDescriptor(ExtensionType.HTTP_ENDPOINT, null,
+                    "handle", "Object handle(Object body, Object ctx)", true),
+            new ArchetypeDescriptor(ExtensionType.CRON, null,
+                    "run", "Object run(Object ctx)", false));
+
+    /** Entity names that actually receive lifecycle events; declared by the host extension interfaces. */
+    public static final List<String> LIFECYCLE_ENTITY_NAMES =
+            List.of("OutboundPlanOrder", "OutboundWave", "ContainerTask");
 
     private static final Map<String, List<BeanDescriptor>> BEAN_CATALOG = buildBeanCatalog();
 
@@ -69,6 +86,21 @@ public final class PluginContractCatalog {
     }
 
     /**
+     * Archetypes a draft may declare for an app. CUSTOM_API is station-only; wes hosts everything
+     * else. Returns empty for an unknown app so callers fail closed.
+     */
+    public static List<ExtensionType> typesForApp(String app) {
+        if (ScriptPluginApiConstants.APP_WES.equals(app)) {
+            return List.of(ExtensionType.values()).stream()
+                    .filter(type -> type != ExtensionType.CUSTOM_API).toList();
+        }
+        if (ScriptPluginApiConstants.APP_STATION.equals(app)) {
+            return List.of(ExtensionType.CUSTOM_API, ExtensionType.HTTP_ENDPOINT, ExtensionType.CRON);
+        }
+        return List.of();
+    }
+
+    /**
      * Human/AI-readable contract subset for one app and a set of archetypes — the AI prompt and the
      * docs rewrite embed exactly this text.
      */
@@ -82,13 +114,14 @@ public final class PluginContractCatalog {
                 continue;
             }
             fragment.append("- ").append(archetype.type())
-                    .append(": implement '")
-                    .append(archetype.extensionPointClassName() == null ? "dispatcher" : archetype.extensionPointClassName())
-                    .append("', script method '")
-                    .append(archetype.scriptMethod()).append("(.., ctx)'")
+                    .append(": script method ").append(archetype.hostSignature())
                     .append(archetype.blocking() ? ", blocking (exception blocks the host operation)"
                             : ", non-blocking (exception is logged and execution continues)")
                     .append('\n');
+        }
+        if (types.contains(ExtensionType.LIFECYCLE_LISTENER)) {
+            fragment.append("Lifecycle entityName values: ")
+                    .append(String.join(", ", LIFECYCLE_ENTITY_NAMES)).append('\n');
         }
         fragment.append("Available beans (ctx.bean / facade methods):\n");
         for (BeanDescriptor bean : BEAN_CATALOG.getOrDefault(app, List.of())) {
