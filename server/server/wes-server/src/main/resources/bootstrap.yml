@@ -47,6 +47,10 @@ spring:
         order_updates: true
         batch_versioned_data: true
 
+script-plugin:
+  registry:
+    mode: local
+
 server:
   port: 9010
 

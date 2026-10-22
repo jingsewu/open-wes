@@ -14,6 +14,10 @@ spring:
         username: nacos
         password: nacos
 
+script-plugin:
+  registry:
+    mode: remote
+
 server:
   port: 9040
 

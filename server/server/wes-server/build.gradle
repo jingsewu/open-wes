@@ -18,6 +18,7 @@ dependencies {
     implementation project(path: ":modules-ai:ai-core", configuration: 'default')
     implementation project(path: ":modules-plugin:plugin-sdk", configuration: 'default')
     implementation project(path: ":modules-plugin:script-plugin-core", configuration: 'default')
+    implementation project(path: ":modules-plugin:script-plugin-runtime", configuration: 'default')
     implementation project(path: ":modules-utils:monitoring", configuration: 'default')
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
