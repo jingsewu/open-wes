@@ -18,6 +18,7 @@ These are a set of coding standards and best practices to be followed during dev
 - [Database Rules](#database-rules)
 - [Validation Rules](#validation-rules)
 - [Plugin Rules](#plugin-rules)
+  - [Script Plugin Rules](#script-plugin-rules)
 - [Unit Test Rules](#unit-test-rules)
 - [Logging and Configuration](#logging-and-configuration)
 
@@ -287,6 +288,68 @@ public List<ContainerTask> groupContainerTasks(List<CreateContainerTaskDTO> crea
    return containerTasks;
 }
 ```
+
+### Script Plugin Rules
+
+4. **Script Plugins Are Declared Against the Contract Catalog**: A script plugin is a versioned bundle of Groovy scripts plus extension declarations that is materialized into a running server at enable time. The allowed extension points, script methods and blocking semantics are defined once in `PluginContractCatalog.ARCHETYPES` (`org.openwes.script.plugin.api.contract`). The AI prompt, the generated documentation and the enable-time validation all read that catalog, so never duplicate the table below in code.
+
+| Archetype | Host extension point | Script method | Blocking |
+|-----------|----------------------|---------------|----------|
+| `OUTBOUND_WAVE_WAVE_ACTION` | `org.openwes.plugin.extension.business.wes.outbound.action.IOutboundWaveWaveAction` | `wave` | yes |
+| `OUTBOUND_WAVE_SPLIT_ACTION` | `org.openwes.plugin.extension.business.wes.outbound.action.IOutboundWaveSplitAction` | `split` | yes |
+| `REQUEST_VALIDATE` | `org.openwes.plugin.extension.business.api.platform.request.IRequestPlugin` | `validate` | yes |
+| `REQUEST_SUPPLY` | `org.openwes.plugin.extension.business.api.platform.request.IRequestPlugin` | `supply` | no |
+| `REQUEST_AFTER_INVOKE` | `org.openwes.plugin.extension.business.api.platform.request.IRequestPlugin` | `afterInvoke` | no |
+| `CUSTOM_REQUEST_INVOKE` | `org.openwes.plugin.extension.business.api.platform.request.ICustomRequestPlugin` | `invoke` | yes |
+| `CUSTOM_API` | `org.openwes.plugin.extension.business.station.ICustomApiPlugin` | `execute` | yes |
+| `LIFECYCLE_LISTENER` | `org.openwes.plugin.extension.business.IEntityLifecycleListener` | `afterStatusChange` | no |
+| `HTTP_ENDPOINT` | dispatcher (`/plugin-platform/ext/{pluginKey}/**`) | `handle` | yes |
+| `CRON` | dispatcher (scheduler) | `run` | no |
+
+5. **Script Method Signature: `ctx` Is Always the Last Parameter**: The runtime appends the extension's `ScriptContext` as the final argument of every invocation, after the host method arguments. Declare every script method with the host parameters first and `ctx` last; a method that does not accept the appended argument fails at invocation time (the smoke stage only checks that the declared method exists). Script instances are created with Spring's `createBean` inside a child context whose parent is the application context, so `@Autowired`, `@Resource`, `@Value` and `@PostConstruct` all work. Use `ctx.log()` for logging, `ctx.bean(...)` or the facade methods (`ctx.outbound()`, `ctx.pickingOrder()`, `ctx.callback()`, `ctx.station()`) for host beans, and `ctx.configString/configInt/configBool` for plugin config. Secrets come from `ctx.config` only — never hardcode them in a script.
+
+```groovy
+import org.openwes.wes.api.outbound.IOutboundPlanOrderApi
+import org.springframework.beans.factory.annotation.Autowired
+
+class Wave {
+    @Autowired
+    IOutboundPlanOrderApi outbound
+
+    Object wave(Object orders, Object ctx) {
+        ctx.log().info('grouping {} orders for plugin {}', orders.size(), ctx.pluginKey())
+        return orders.collect { [it] }
+    }
+}
+```
+
+6. **Script Plugin Failure Policy**: Failures never disappear silently, and only blocking archetypes abort the host operation.
+
+| Situation | Behavior |
+|-----------|----------|
+| Blocking archetype throws or times out | `ScriptPluginInvocationException` is thrown to the host; the host operation aborts. |
+| Non-blocking archetype throws or times out | The error is logged (`script plugin ... failed (non-blocking, continuing)`) and the default value for the return type is returned; the host continues. |
+| `HTTP_ENDPOINT` throws or times out | The dispatcher logs the error and returns `Response.fail()`; the HTTP call fails. |
+| `CRON` throws | The failure is logged and counted; after `script-plugin.cron.max-consecutive-failures` (default `10`) consecutive failures the plugin is disabled automatically through the management plane. |
+
+Every invocation is reported to `p_script_plugin_execution_log` with plugin key, revision, extension type, success flag, duration and error message. Shipping the log must never break the invocation path; a failed shipment is only warned. Script execution is bounded by `script-plugin.execution.timeout-ms` (default `2000`).
+
+7. **Priority and Built-in Fallback**: `IPlugin.priority()` returns `0` by default; the higher value wins when several plugins can serve the same extension point. `PluginSdkUtils.getExtractObject` and `LifecycleListenerRegistry` merge PF4J jar plugins with materialized script extensions and sort them by priority descending. Ties are broken by stable order: jar plugins are appended first, then script plugins in registry order (plugin key ascending). A script proxy answers `priority()` from its declaration's `priority` field. When no plugin for an extension point is enabled, the extracted list is empty and the calling code must keep its built-in behavior — a plugin never replaces the default unless it is enabled.
+
+8. **Enable, Disable and Rollback Flow**: A plugin starts as a draft and receives immutable revisions, each with a content hash; `current_revision_id` points at the active revision. Enable is accepted only from `DRAFT` or `DISABLED`, only when a current revision exists, and only when the plugin's `sdk_version` equals the platform contract (`ScriptPluginApiConstants.CONTRACT_VERSION`, currently `1.0`). Validation runs on the node whose app matches `apply_system`: wes validates in-process; a remote app such as station is asked through the pending-validation channel (the management plane publishes a message, the target node's `StationValidationPoller` picks it up, dry-runs the bundle and reports the verdict within the configured timeout). A failed validation leaves the plugin disabled and records the failing stage and message.
+
+   The five validation stages are:
+   1. `sdkVersion` — the plugin's `sdk_version` equals the platform contract version.
+   2. `declarations` — static legality: known extension type, script and method present, referenced script exists, `apiType` for request archetypes, `entityName` for lifecycle listeners, `customApiCode` for custom APIs, valid non-duplicate HTTP path/method, parseable cron expression.
+   3. `compile` — every Groovy script compiles.
+   4. `context` — dry-run materialization in a throwaway child context, including injection and `@PostConstruct`.
+   5. `smoke` — every declared script actually declares the declared method.
+
+   On success, `enable` publishes the management message; running nodes rematerialize without a restart (Redis message, with a 60 s registry-version poll as the safety net). A failed rematerialization keeps the previous revision running. `disable` only applies to an `ENABLED` plugin and makes every node drop the materialization, restoring the built-in behavior. `rollback` repoints `current_revision_id` to an earlier immutable revision (archived plugins cannot be rolled back) and republishes; revisions are never mutated. Rollback does not re-run validation, so only roll back to a revision that passed it.
+
+9. **Lifecycle Listeners Are Not `IPlugin`s**: `IEntityLifecycleListener` intentionally does **not** extend `IPlugin`. In the merge it therefore keeps priority `0` and stable order. Listeners are dispatched by `getEntityName()` matching the entity name through `LifecycleListenerRegistry`, one call per registered listener; a script `LIFECYCLE_LISTENER` declaration must set `entityName` and expose the `afterStatusChange` method.
+
+10. **Runtime Wiring**: `wes-server` depends on both `script-plugin-core` (management plane) and `script-plugin-runtime`, and sets `script-plugin.registry.mode: local` so enable-time validation runs in-process. `station-server` depends on `script-plugin-runtime` only and sets `mode: remote`; it must also be annotated with `@EnableScheduling`, because registry polling, cron dispatch and the validation poller are `@Scheduled`. Both applications scan `org.openwes`, which covers `org.openwes.script.plugin.runtime`. Any other server embedding the runtime uses `mode: remote` and a Dubbo reference to the management plane.
 
 ## Unit Test Rules
 
