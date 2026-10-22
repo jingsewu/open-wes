@@ -55,6 +55,9 @@ public class ScriptPluginService {
                 || StringUtils.isBlank(dto.getApplySystem())) {
             throw new CommonException("pluginKey, name and applySystem are required");
         }
+        if (!dto.getPluginKey().matches("[A-Za-z0-9._-]+")) {
+            throw new CommonException("pluginKey may only contain letters, digits, '.', '_' and '-'");
+        }
         if (!ScriptPluginApiConstants.SUPPORTED_APPS.contains(dto.getApplySystem())) {
             throw new CommonException("unsupported applySystem: " + dto.getApplySystem());
         }
@@ -83,6 +86,9 @@ public class ScriptPluginService {
         ScriptPlugin plugin = require(pluginKey);
         if (plugin.getStatus() == ScriptPluginStatusEnum.ARCHIVED) {
             throw new CommonException("archived plugins are read-only");
+        }
+        if (plugin.getStatus() == ScriptPluginStatusEnum.ENABLED) {
+            throw new CommonException("disable the plugin before saving a new revision");
         }
         if (dto.getScripts() == null || dto.getScripts().isEmpty()) {
             throw new CommonException("a revision needs at least one script");

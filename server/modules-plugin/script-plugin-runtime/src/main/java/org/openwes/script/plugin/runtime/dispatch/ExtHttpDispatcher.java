@@ -9,6 +9,8 @@ import org.openwes.script.plugin.runtime.invoke.ScriptInvocationExecutor;
 import org.openwes.script.plugin.runtime.materialize.MaterializedExtension;
 import org.openwes.script.plugin.runtime.materialize.MaterializedScriptPlugin;
 import org.openwes.script.plugin.runtime.registry.ScriptPluginRegistry;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,14 +30,15 @@ public class ExtHttpDispatcher {
     private final ScriptInvocationExecutor executor;
 
     @RequestMapping("plugin-platform/ext/{pluginKey}/**")
-    public Response<Object> dispatch(@PathVariable("pluginKey") String pluginKey,
-                                     HttpServletRequest request,
-                                     @RequestBody(required = false) String body) {
+    public ResponseEntity<Response<Object>> dispatch(@PathVariable("pluginKey") String pluginKey,
+                                                     HttpServletRequest request,
+                                                     @RequestBody(required = false) String body) {
         String path = extractPath(request, pluginKey);
         ScriptPluginRegistry.HttpEndpointMatch match =
                 registry.findHttpEndpoint(pluginKey, request.getMethod(), path);
         if (match == null) {
-            return failWith("no script plugin endpoint " + pluginKey + " " + request.getMethod() + " " + path);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(failWith("no script plugin endpoint " + pluginKey + " " + request.getMethod() + " " + path));
         }
 
         MaterializedScriptPlugin plugin = match.plugin();
@@ -43,9 +46,10 @@ public class ExtHttpDispatcher {
         InvocationOutcome outcome = executor.invoke(plugin, extension, new Object[]{body});
         if (!outcome.success()) {
             log.error("script plugin endpoint {} {} failed: {}", pluginKey, path, outcome.errorMessage());
-            return failWith("script plugin '" + pluginKey + "' failed");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(failWith("script plugin '" + pluginKey + "' failed"));
         }
-        return Response.success(outcome.result());
+        return ResponseEntity.ok(Response.success(outcome.result()));
     }
 
     private String extractPath(HttpServletRequest request, String pluginKey) {

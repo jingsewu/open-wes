@@ -112,6 +112,22 @@ class ScriptPluginMaterializationValidatorImplTest {
     }
 
     @Test
+    void validate_declarationMethodDoesNotMatchArchetype_reportsDeclarationsStage() {
+        ExtensionDeclarationDTO declaration = waveDeclaration();
+        declaration.setMethod("split");
+        String source = "class Wave { Object split(Object orders, Object ctx) { return [] } }";
+
+        ValidationReportDTO report = validator.validate(bundle(Map.of("Wave.groovy", source), declaration));
+
+        assertFalse(report.isPassed());
+        assertTrue(failedOn(report, "declarations"));
+        assertTrue(report.getFailures().stream().anyMatch(failure -> failure.getStage().equals("declarations")
+                        && failure.getMessage().contains("OUTBOUND_WAVE_WAVE_ACTION requires script method 'wave'")
+                        && failure.getMessage().contains("declaration uses 'split'")),
+                report.failureSummary());
+    }
+
+    @Test
     void validate_wrongSdkVersion_reportsSdkVersionStage() {
         ScriptPluginBundleDTO bundle = bundle(Map.of("Wave.groovy", "class Wave { Object wave(Object o, Object ctx) { return [] } }"),
                 waveDeclaration());

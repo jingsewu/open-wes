@@ -9,12 +9,14 @@ import org.openwes.script.plugin.runtime.materialize.MaterializedExtension;
 import org.openwes.script.plugin.runtime.materialize.MaterializedScriptPlugin;
 import org.openwes.script.plugin.runtime.registry.ScriptPluginRegistry;
 import org.openwes.script.plugin.runtime.registry.ScriptPluginRegistry.HttpEndpointMatch;
+import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -40,40 +42,50 @@ class ExtHttpDispatcherTest {
     }
 
     @Test
-    void dispatch_unknownEndpoint_returnsFailNamingThePlugin() {
+    void dispatch_unknownEndpoint_returns404AndFailNamingThePlugin() {
         when(registry.findHttpEndpoint("packing-wave", "POST", "/order/status")).thenReturn(null);
 
-        Response<Object> response = dispatcher.dispatch("packing-wave",
+        ResponseEntity<Response<Object>> entity = dispatcher.dispatch("packing-wave",
                 request("/plugin-platform/ext/packing-wave/order/status"), "{}");
 
+        assertEquals(404, entity.getStatusCode().value());
+        Response<Object> response = entity.getBody();
+        assertNotNull(response);
         assertEquals("1", response.getCode());
         assertTrue(response.getMsg().contains("packing-wave"));
+        assertTrue(response.getMsg().contains("POST"));
         assertTrue(response.getMsg().contains("/order/status"));
     }
 
     @Test
-    void dispatch_success_returnsTheScriptResult() {
+    void dispatch_success_returns200WithTheScriptResult() {
         when(registry.findHttpEndpoint("packing-wave", "POST", "/order/status")).thenReturn(match());
         when(executor.invoke(any(), any(), any())).thenReturn(new InvocationOutcome(true, Map.of("status", "ok"), 2, null));
 
-        Response<Object> response = dispatcher.dispatch("packing-wave",
+        ResponseEntity<Response<Object>> entity = dispatcher.dispatch("packing-wave",
                 request("/plugin-platform/ext/packing-wave/order/status"), "{}");
 
+        assertEquals(200, entity.getStatusCode().value());
+        Response<Object> response = entity.getBody();
+        assertNotNull(response);
         assertEquals("0", response.getCode());
         assertEquals(Map.of("status", "ok"), response.getData());
     }
 
     @Test
-    void dispatch_scriptFailure_returnsFailWithoutStackTrace() {
+    void dispatch_scriptFailure_returns500WithoutStackTrace() {
         when(registry.findHttpEndpoint("packing-wave", "POST", "/order/status")).thenReturn(match());
         when(executor.invoke(any(), any(), any()))
                 .thenReturn(new InvocationOutcome(false, null, 3, "boom: java.lang.IllegalStateException"));
 
-        Response<Object> response = dispatcher.dispatch("packing-wave",
+        ResponseEntity<Response<Object>> entity = dispatcher.dispatch("packing-wave",
                 request("/plugin-platform/ext/packing-wave/order/status"), "{}");
 
+        assertEquals(500, entity.getStatusCode().value());
+        Response<Object> response = entity.getBody();
+        assertNotNull(response);
         assertEquals("1", response.getCode());
-        assertTrue(response.getMsg().contains("packing-wave"));
+        assertEquals("script plugin 'packing-wave' failed", response.getMsg());
         assertFalse(response.getMsg().contains("java.lang"));
         assertFalse(response.getMsg().contains("\tat"));
     }

@@ -13,6 +13,7 @@ import org.openwes.script.plugin.api.ScriptPluginMaterializationValidator;
 import org.openwes.script.plugin.api.dto.PluginManagementMessage;
 import org.openwes.script.plugin.api.dto.ScriptPluginBundleDTO;
 import org.openwes.script.plugin.api.dto.ScriptPluginDTO;
+import org.openwes.script.plugin.api.dto.ScriptPluginRevisionDTO;
 import org.openwes.script.plugin.api.dto.ValidationReportDTO;
 import org.openwes.script.plugin.api.enums.PluginManagementMessageType;
 import org.openwes.script.plugin.api.enums.ScriptPluginStatusEnum;
@@ -23,6 +24,7 @@ import org.openwes.script.plugin.core.domain.repository.ScriptPluginRepository;
 import org.openwes.script.plugin.core.domain.repository.ScriptPluginRevisionRepository;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
@@ -91,6 +93,78 @@ class ScriptPluginServiceTest {
         revision.setContentHash("hash");
         revision.setCreatedAt(System.currentTimeMillis());
         return revision;
+    }
+
+    private ScriptPluginRevisionDTO revisionDto() {
+        ScriptPluginRevisionDTO dto = new ScriptPluginRevisionDTO();
+        dto.setScripts(Map.of("Wave.groovy", "class Wave { Object wave(Object o, Object ctx) { return [] } }"));
+        dto.setExtensionPoints(List.of());
+        return dto;
+    }
+
+    private ScriptPluginDTO draftDto(String pluginKey) {
+        ScriptPluginDTO dto = new ScriptPluginDTO();
+        dto.setPluginKey(pluginKey);
+        dto.setName("Packing wave rule");
+        dto.setApplySystem("wes");
+        return dto;
+    }
+
+    @Test
+    void saveRevision_onEnabledPlugin_isRejectedWithoutWritingOrPublishing() {
+        ScriptPlugin plugin = plugin("packing-wave", "wes", ScriptPluginStatusEnum.ENABLED);
+        when(pluginRepository.findByPluginKey("packing-wave")).thenReturn(Optional.of(plugin));
+
+        CommonException e = assertThrows(CommonException.class,
+                () -> service.saveRevision("packing-wave", revisionDto()));
+
+        assertEquals("disable the plugin before saving a new revision", e.getMessage());
+        verify(revisionRepository, never()).save(any());
+        verify(pluginRepository, never()).save(any());
+        verify(redisUtils, never()).publish(any(), any());
+    }
+
+    @Test
+    void saveRevision_onDisabledPlugin_isAllowed() {
+        ScriptPlugin plugin = plugin("packing-wave", "wes", ScriptPluginStatusEnum.DISABLED);
+        when(pluginRepository.findByPluginKey("packing-wave")).thenReturn(Optional.of(plugin));
+        when(revisionRepository.findTopByPluginIdOrderByRevisionNoDesc(1L)).thenReturn(Optional.empty());
+        when(revisionRepository.save(any())).thenAnswer(invocation -> {
+            ScriptPluginRevision revision = invocation.getArgument(0);
+            revision.setId(12L);
+            return revision;
+        });
+        when(pluginRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+
+        ScriptPluginRevisionDTO saved = service.saveRevision("packing-wave", revisionDto());
+
+        assertEquals(12L, saved.getId());
+        assertEquals(12L, plugin.getCurrentRevisionId());
+        verify(revisionRepository).save(any());
+        verify(pluginRepository).save(plugin);
+        verify(redisUtils).publish(any(), any());
+    }
+
+    @Test
+    void createDraft_withInvalidPluginKeyCharacters_isRejected() {
+        for (String pluginKey : List.of("packing#wave", "packing/wave")) {
+            CommonException e = assertThrows(CommonException.class,
+                    () -> service.createDraft(draftDto(pluginKey)));
+
+            assertEquals("pluginKey may only contain letters, digits, '.', '_' and '-'", e.getMessage());
+        }
+        verify(pluginRepository, never()).save(any());
+    }
+
+    @Test
+    void createDraft_withDashedPluginKey_isAccepted() {
+        when(pluginRepository.findByPluginKey("packing-wave.v1_x")).thenReturn(Optional.empty());
+        when(pluginRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+
+        ScriptPluginDTO created = service.createDraft(draftDto("packing-wave.v1_x"));
+
+        assertEquals("packing-wave.v1_x", created.getPluginKey());
+        assertEquals(ScriptPluginStatusEnum.DRAFT, created.getStatus());
     }
 
     @Test
