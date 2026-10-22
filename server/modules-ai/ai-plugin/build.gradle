@@ -1,0 +1,22 @@
+dependencies {
+    implementation project(path: ":modules-plugin:script-plugin-api", configuration: 'default')
+    implementation project(path: ":modules-plugin:script-plugin-core", configuration: 'default')
+    implementation project(path: ":modules-utils:script-engine", configuration: 'default')
+    implementation project(path: ":modules-utils:common-utils", configuration: 'default')
+
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    implementation 'org.springframework.ai:spring-ai-core'
+    implementation 'org.springframework.ai:spring-ai-zhipuai'
+    implementation 'org.springframework.ai:spring-ai-zhipuai-spring-boot-starter'
+
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+    implementation 'org.apache.commons:commons-lang3'
+    implementation 'io.swagger.core.v3:swagger-annotations'
+
+    // Test-only: the in-process wes materialization validator for the end-to-end test.
+    testImplementation project(path: ":modules-plugin:script-plugin-runtime", configuration: 'default')
+    testImplementation 'io.projectreactor:reactor-test'
+}

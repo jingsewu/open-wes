@@ -37,6 +37,7 @@ include 'modules-search:search-api'
 
 include 'modules-ai:ai-core'
 include 'modules-ai:ai-api'
+include 'modules-ai:ai-plugin'
 
 include 'modules-utils:common-utils'
 include 'modules-utils:distribute-lock'

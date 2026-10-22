@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="create_p_script_plugin_ai_setting" author="dev">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="p_script_plugin_ai_setting"/>
+            </not>
+        </preConditions>
+        <sql>
+            CREATE TABLE p_script_plugin_ai_setting (
+                id                     BIGINT      NOT NULL,
+                singleton_key          VARCHAR(32) NOT NULL COMMENT 'Singleton key; always DEFAULT',
+                daily_generation_limit INT         NOT NULL DEFAULT 20 COMMENT 'Per-user generations per day; 0 disables the limit',
+                max_tokens_per_call    INT         NOT NULL DEFAULT 4096 COMMENT 'Output token cap per model call',
+                max_attempts           INT         NOT NULL DEFAULT 3 COMMENT 'Retry cap; values above 3 are clamped to 3',
+                version                BIGINT      NULL,
+                create_time            BIGINT      NOT NULL DEFAULT 0,
+                create_user            VARCHAR(60) NOT NULL DEFAULT '',
+                update_time            BIGINT      NOT NULL DEFAULT 0,
+                update_user            VARCHAR(60) NOT NULL DEFAULT '',
+                PRIMARY KEY (id),
+                UNIQUE KEY uk_ai_setting_singleton (singleton_key)
+            ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COMMENT 'Script plugin AI settings (singleton)';
+        </sql>
+        <rollback>
+            <sql>DROP TABLE p_script_plugin_ai_setting;</sql>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create_p_script_plugin_ai_generation" author="dev">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="p_script_plugin_ai_generation"/>
+            </not>
+        </preConditions>
+        <sql>
+            CREATE TABLE p_script_plugin_ai_generation (
+                id                BIGINT        NOT NULL,
+                plugin_key        VARCHAR(64)   NOT NULL,
+                user_name         VARCHAR(64)   NOT NULL,
+                model             VARCHAR(64)   NULL,
+                prompt_version    VARCHAR(32)   NULL,
+                status            VARCHAR(20)   NOT NULL COMMENT 'RUNNING/SUCCEEDED/FAILED/CANCELLED',
+                attempts          INT           NOT NULL DEFAULT 0,
+                prompt_tokens     INT           NULL,
+                completion_tokens INT           NULL,
+                duration_ms       BIGINT        NULL,
+                error_message     VARCHAR(1024) NULL,
+                created_at        BIGINT        NOT NULL DEFAULT 0,
+                finished_at       BIGINT        NULL,
+                PRIMARY KEY (id),
+                KEY idx_ai_generation_plugin (plugin_key, id),
+                KEY idx_ai_generation_user (user_name, created_at)
+            ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COMMENT 'Script plugin AI generation audit';
+        </sql>
+        <rollback>
+            <sql>DROP TABLE p_script_plugin_ai_generation;</sql>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="seed_p_script_plugin_ai_setting" author="dev">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="p_script_plugin_ai_setting"/>
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM p_script_plugin_ai_setting WHERE singleton_key = 'DEFAULT'</sqlCheck>
+        </preConditions>
+        <sql>
+            INSERT INTO p_script_plugin_ai_setting
+                (id, singleton_key, daily_generation_limit, max_tokens_per_call, max_attempts, version,
+                 create_time, create_user, update_time, update_user)
+            VALUES (1, 'DEFAULT', 20, 4096, 3, 0,
+                    UNIX_TIMESTAMP() * 1000, 'system', UNIX_TIMESTAMP() * 1000, 'system');
+        </sql>
+        <rollback>
+            <sql>DELETE FROM p_script_plugin_ai_setting WHERE singleton_key = 'DEFAULT';</sql>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>
