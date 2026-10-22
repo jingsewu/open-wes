@@ -3,6 +3,11 @@ spring:
     name: wes
   profiles:
     active: test
+  # The AI draft stream budgets its model calls below this value so a clean SSE error
+  # event can still reach the client; keep it above ai-plugin.stream-budget-ms.
+  mvc:
+    async:
+      request-timeout: 180000
   cloud:
     nacos:
       config:
