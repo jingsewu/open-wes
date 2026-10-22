@@ -65,4 +65,42 @@ class PluginContractCatalogTest {
         assertFalse(fragment.contains("CUSTOM_API"));
         assertTrue(fragment.contains("ctx."));
     }
+
+    @Test
+    void typesForApp_excludesStationOnlyArchetypesFromWes() {
+        assertEquals(ExtensionType.values().length - 1,
+                PluginContractCatalog.typesForApp("wes").size());
+        assertFalse(PluginContractCatalog.typesForApp("wes").contains(ExtensionType.CUSTOM_API));
+
+        assertEquals(java.util.List.of(ExtensionType.CUSTOM_API, ExtensionType.HTTP_ENDPOINT, ExtensionType.CRON),
+                PluginContractCatalog.typesForApp("station"));
+        assertTrue(PluginContractCatalog.typesForApp("unknown").isEmpty());
+    }
+
+    @Test
+    void everyArchetype_hasAHostSignatureEndingWithCtx() {
+        for (PluginContractCatalog.ArchetypeDescriptor archetype : PluginContractCatalog.archetypes()) {
+            assertTrue(archetype.hostSignature().contains("Object ctx"),
+                    archetype.type() + " host signature must end with Object ctx");
+            assertTrue(archetype.hostSignature().contains(archetype.scriptMethod() + "("),
+                    archetype.type() + " host signature must contain its script method");
+        }
+    }
+
+    @Test
+    void lifecycleEntityNames_matchTheImplementations() {
+        assertEquals(java.util.List.of("OutboundPlanOrder", "OutboundWave", "ContainerTask"),
+                PluginContractCatalog.LIFECYCLE_ENTITY_NAMES);
+    }
+
+    @Test
+    void promptFragment_includesTheSignatureAndLifecycleNames() {
+        String fragment = PluginContractCatalog.toPromptFragment("wes",
+                java.util.List.of(ExtensionType.LIFECYCLE_LISTENER));
+
+        assertTrue(fragment.contains("afterStatusChange(Long entityId, String entityOrderNo, String newStatus, Object ctx)"));
+        assertTrue(fragment.contains("OutboundPlanOrder"));
+        assertTrue(fragment.contains("OutboundWave"));
+        assertTrue(fragment.contains("ContainerTask"));
+    }
 }
