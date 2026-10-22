@@ -14,7 +14,7 @@ Open WES is a Warehouse Execution System. Monorepo structure:
 ### Server Modules (`server/`)
 ```
 modules-wes/          # Core domain (inbound, outbound, stock, basic, config, task, stocktake, algo, ems-proxy, printer)
-modules-ai/           # AI integration (ai-core, ai-api)
+modules-ai/           # AI integration (ai-core, ai-api, ai-plugin — script plugin drafts)
 modules-user/         # Auth, user management
 modules-station/      # Workstation operations
 modules-gateway/      # API gateway
@@ -235,3 +235,4 @@ All schema and data changes **must** use Liquibase changelogs — never ad-hoc S
 | Monitoring infra config | `monitoring/` |
 | Monitoring design spec | `docs/superpowers/specs/2026-05-23-monitoring-alerting-framework-design.md` |
 | Domain event system | `server/modules-utils/domain-event/` |
+| Script plugin AI pipeline | `server/modules-ai/ai-plugin/` |
