@@ -26,7 +26,7 @@ spring:
 
     vectorstore:
       pinecone:
-        apiKey: pcsk_4fXqXq_2Letb8YmcVtevz8NQcBaWhSv3jQmvzXufPzLkgJKQ7xWRaT2V27LZqjoyWxLxrZ
+        apiKey: ${PINECONE_API_KEY:}
         environment: aped-4627-b74a
         index-name: chatbot
         project-id: 5k87fkv
