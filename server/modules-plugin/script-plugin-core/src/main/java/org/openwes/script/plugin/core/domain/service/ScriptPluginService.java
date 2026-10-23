@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.openwes.common.utils.constants.RedisConstants;
 import org.openwes.common.utils.exception.CommonException;
+import org.openwes.common.utils.user.AuthConstants;
+import org.openwes.common.utils.user.UserContext;
 import org.openwes.common.utils.utils.RedisUtils;
 import org.openwes.script.plugin.api.ScriptPluginApiConstants;
 import org.openwes.script.plugin.api.ScriptPluginContentHasher;
@@ -83,6 +85,13 @@ public class ScriptPluginService {
 
     public ScriptPluginRevisionDTO saveRevision(String pluginKey, ScriptPluginRevisionDTO dto,
                                                 RevisionOriginEnum origin, String aiModel, String promptVersion) {
+        return saveRevision(pluginKey, dto, origin, aiModel, promptVersion,
+                UserContext.getCurrentUser());
+    }
+
+    public ScriptPluginRevisionDTO saveRevision(String pluginKey, ScriptPluginRevisionDTO dto,
+                                                RevisionOriginEnum origin, String aiModel, String promptVersion,
+                                                String actor) {
         ScriptPlugin plugin = require(pluginKey);
         if (plugin.getStatus() == ScriptPluginStatusEnum.ARCHIVED) {
             throw new CommonException("archived plugins are read-only");
@@ -110,6 +119,8 @@ public class ScriptPluginService {
         revision.setOrigin(origin);
         revision.setAiModel(aiModel);
         revision.setPromptVersion(promptVersion);
+        revision.setCreatedBy(StringUtils.left(
+                StringUtils.defaultIfBlank(actor, AuthConstants.USERNAME_SYSTEM), 60));
         revision.setCreatedAt(System.currentTimeMillis());
         revision = revisionRepository.save(revision);
 

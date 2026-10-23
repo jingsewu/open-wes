@@ -23,8 +23,9 @@ import java.util.List;
 
 /**
  * AI draft surface. The SSE endpoint is intentionally not wrapped in {@code Response}: the stream
- * carries its own result/error events. Authentication is the gateway JWT today; role checks land
- * with the workbench in Phase 3.
+ * carries its own result/error events. Authentication is the gateway JWT today; workbench role
+ * checks run inside {@link AiDraftGenerationService} so the same rules apply to direct service
+ * calls.
  */
 @RestController
 @Validated

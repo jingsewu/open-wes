@@ -1,5 +1,6 @@
 package org.openwes.script.plugin.core.domain.service;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -7,6 +8,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openwes.common.utils.exception.CommonException;
+import org.openwes.common.utils.user.UserContext;
 import org.openwes.common.utils.utils.RedisUtils;
 import org.openwes.script.plugin.api.ScriptPluginApiConstants;
 import org.openwes.script.plugin.api.ScriptPluginMaterializationValidator;
@@ -16,6 +18,7 @@ import org.openwes.script.plugin.api.dto.ScriptPluginDTO;
 import org.openwes.script.plugin.api.dto.ScriptPluginRevisionDTO;
 import org.openwes.script.plugin.api.dto.ValidationReportDTO;
 import org.openwes.script.plugin.api.enums.PluginManagementMessageType;
+import org.openwes.script.plugin.api.enums.RevisionOriginEnum;
 import org.openwes.script.plugin.api.enums.ScriptPluginStatusEnum;
 import org.openwes.script.plugin.core.domain.entity.ScriptPlugin;
 import org.openwes.script.plugin.core.domain.entity.ScriptPluginRevision;
@@ -67,6 +70,11 @@ class ScriptPluginServiceTest {
     void setUp() {
         service = new ScriptPluginService(pluginRepository, revisionRepository, configRepository,
                 List.of(), redisUtils);
+    }
+
+    @AfterEach
+    void tearDown() {
+        UserContext.removeUser();
     }
 
     private ScriptPlugin plugin(String pluginKey, String applySystem, ScriptPluginStatusEnum status) {
@@ -143,6 +151,49 @@ class ScriptPluginServiceTest {
         verify(revisionRepository).save(any());
         verify(pluginRepository).save(plugin);
         verify(redisUtils).publish(any(), any());
+    }
+
+    private void stubRevisionSave() {
+        ScriptPlugin plugin = plugin("packing-wave", "wes", ScriptPluginStatusEnum.DISABLED);
+        when(pluginRepository.findByPluginKey("packing-wave")).thenReturn(Optional.of(plugin));
+        when(revisionRepository.findTopByPluginIdOrderByRevisionNoDesc(1L)).thenReturn(Optional.empty());
+        when(revisionRepository.save(any())).thenAnswer(invocation -> {
+            ScriptPluginRevision revision = invocation.getArgument(0);
+            revision.setId(12L);
+            return revision;
+        });
+        when(pluginRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+    }
+
+    @Test
+    void saveRevision_manualSave_recordsTheCurrentUser() {
+        UserContext.setAccount("bob");
+        stubRevisionSave();
+
+        ScriptPluginRevisionDTO saved = service.saveRevision("packing-wave", revisionDto());
+
+        assertEquals("bob", saved.getCreatedBy());
+    }
+
+    @Test
+    void saveRevision_explicitActor_overridesTheContext() {
+        UserContext.setAccount("bob");
+        stubRevisionSave();
+
+        ScriptPluginRevisionDTO saved = service.saveRevision("packing-wave", revisionDto(),
+                RevisionOriginEnum.MANUAL, null, null, "alice");
+
+        assertEquals("alice", saved.getCreatedBy());
+    }
+
+    @Test
+    void saveRevision_blankActor_recordsSystem() {
+        stubRevisionSave();
+
+        ScriptPluginRevisionDTO saved = service.saveRevision("packing-wave", revisionDto(),
+                RevisionOriginEnum.MANUAL, null, null, " ");
+
+        assertEquals("system", saved.getCreatedBy());
     }
 
     @Test
