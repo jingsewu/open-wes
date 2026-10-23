@@ -2,7 +2,6 @@ package org.openwes.ai.plugin.domain.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.openwes.ai.plugin.config.AiPluginProperties;
 import org.openwes.ai.plugin.domain.entity.ScriptPluginAiGeneration;
 import org.openwes.ai.plugin.domain.model.AiDraftDocument;
@@ -22,7 +21,10 @@ import org.openwes.common.utils.user.UserContext;
 import org.openwes.script.plugin.api.dto.ScriptPluginDTO;
 import org.openwes.script.plugin.api.dto.ScriptPluginRevisionDTO;
 import org.openwes.script.plugin.api.enums.RevisionOriginEnum;
+import org.openwes.script.plugin.api.enums.ScriptPluginAuditActionEnum;
 import org.openwes.script.plugin.api.enums.ScriptPluginStatusEnum;
+import org.openwes.script.plugin.core.domain.service.PluginWorkbenchAccessService;
+import org.openwes.script.plugin.core.domain.service.ScriptPluginOperationAuditService;
 import org.openwes.script.plugin.core.domain.service.ScriptPluginService;
 import org.springframework.ai.chat.metadata.EmptyUsage;
 import org.springframework.ai.chat.metadata.Usage;
@@ -47,6 +49,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class AiDraftGenerationService {
 
     private final ScriptPluginService scriptPluginService;
+    private final PluginWorkbenchAccessService workbenchAccessService;
+    private final ScriptPluginOperationAuditService operationAuditService;
     private final AiSettingsService settingsService;
     private final AiQuotaService quotaService;
     private final AiGenerationAuditService auditService;
@@ -58,7 +62,8 @@ public class AiDraftGenerationService {
     private final AiPluginProperties properties;
 
     public Flux<AiDraftStreamEvent> stream(AiDraftRequest request) {
-        String user = StringUtils.defaultIfBlank(UserContext.getCurrentUser(), "anonymous");
+        String user = workbenchAccessService.requireDeveloper(
+                request.getPluginKey(), ScriptPluginAuditActionEnum.SAVE_REVISION);
         ScriptPluginDTO plugin = scriptPluginService.detail(request.getPluginKey());
         if (plugin.getStatus() != ScriptPluginStatusEnum.DRAFT
                 && plugin.getStatus() != ScriptPluginStatusEnum.DISABLED) {
@@ -78,7 +83,7 @@ public class AiDraftGenerationService {
         ScriptPluginAiGeneration audit = auditService.start(plugin.getPluginKey(), user,
                 properties.getModel(), PluginPromptTemplates.PROMPT_VERSION);
         GenerationContext context = new GenerationContext(request.getRequirement(), plugin, baseRevision,
-                settings, maxTokens, audit.getId());
+                settings, maxTokens, audit.getId(), user);
 
         Sinks.Many<AiDraftStreamEvent> sink = Sinks.many().unicast().onBackpressureBuffer();
         AtomicBoolean terminal = new AtomicBoolean(false);
@@ -102,10 +107,12 @@ public class AiDraftGenerationService {
     }
 
     public List<AiGenerationDTO> generations(String pluginKey) {
+        workbenchAccessService.requireDeveloper();
         return auditService.recent(pluginKey);
     }
 
     public int refreshCorpus() {
+        workbenchAccessService.requireDeveloper();
         return groundingService.refreshCorpus();
     }
 
@@ -266,8 +273,13 @@ public class AiDraftGenerationService {
         revision.setExtensionPoints(document.getExtensions());
         revision.setConfigSchema(document.getConfigSchema());
         revision.setChangeSummary(document.getMeta().getChangeSummary());
-        return scriptPluginService.saveRevision(context.plugin.getPluginKey(), revision,
-                RevisionOriginEnum.AI, properties.getModel(), PluginPromptTemplates.PROMPT_VERSION);
+        ScriptPluginRevisionDTO saved = scriptPluginService.saveRevision(
+                context.plugin.getPluginKey(), revision, RevisionOriginEnum.AI,
+                properties.getModel(), PluginPromptTemplates.PROMPT_VERSION, context.user);
+        operationAuditService.recordAs(context.plugin.getPluginKey(),
+                ScriptPluginAuditActionEnum.SAVE_REVISION, saved.getId(), true,
+                "AI revision " + saved.getRevisionNo(), context.user);
+        return saved;
     }
 
     private AiDraftResult toResult(ScriptPluginRevisionDTO revision, GenerationContext context,
@@ -309,6 +321,7 @@ public class AiDraftGenerationService {
         private final AiSettings settings;
         private final int maxTokens;
         private final Long auditId;
+        private final String user;
         private final AtomicInteger attempts = new AtomicInteger();
         private final long startedAt = System.currentTimeMillis();
         private volatile Integer promptTokens;
@@ -316,13 +329,14 @@ public class AiDraftGenerationService {
 
         private GenerationContext(String requirement, ScriptPluginDTO plugin,
                                   ScriptPluginRevisionDTO baseRevision, AiSettings settings,
-                                  int maxTokens, Long auditId) {
+                                  int maxTokens, Long auditId, String user) {
             this.requirement = requirement;
             this.plugin = plugin;
             this.baseRevision = baseRevision;
             this.settings = settings;
             this.maxTokens = maxTokens;
             this.auditId = auditId;
+            this.user = user;
         }
 
         private long elapsed() {

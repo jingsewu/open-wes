@@ -18,8 +18,12 @@ import org.openwes.script.engine.GroovyScriptEngine;
 import org.openwes.script.plugin.api.dto.ScriptPluginDTO;
 import org.openwes.script.plugin.api.dto.ScriptPluginRevisionDTO;
 import org.openwes.script.plugin.api.enums.RevisionOriginEnum;
+import org.openwes.script.plugin.api.enums.ScriptPluginAuditActionEnum;
 import org.openwes.script.plugin.api.enums.ScriptPluginStatusEnum;
+import org.openwes.script.plugin.core.domain.service.PluginWorkbenchAccessService;
+import org.openwes.script.plugin.core.domain.service.ScriptPluginOperationAuditService;
 import org.openwes.script.plugin.core.domain.service.ScriptPluginService;
+import org.openwes.script.plugin.core.exception.ScriptPluginWorkbenchErrorDescEnum;
 import org.openwes.script.plugin.runtime.materialize.ScriptRevisionContextManager;
 import org.openwes.script.plugin.runtime.validation.ScriptPluginMaterializationValidatorImpl;
 import org.springframework.ai.chat.messages.AssistantMessage;
@@ -52,6 +56,10 @@ import static org.mockito.Mockito.when;
 class AiDraftGenerationServiceTest {
 
     private final ScriptPluginService scriptPluginService = mock(ScriptPluginService.class);
+    private final PluginWorkbenchAccessService workbenchAccessService =
+            mock(PluginWorkbenchAccessService.class);
+    private final ScriptPluginOperationAuditService operationAuditService =
+            mock(ScriptPluginOperationAuditService.class);
     private final AiSettingsService settingsService = mock(AiSettingsService.class);
     private final AiQuotaService quotaService = mock(AiQuotaService.class);
     private final AiGenerationAuditService auditService = mock(AiGenerationAuditService.class);
@@ -70,6 +78,8 @@ class AiDraftGenerationServiceTest {
         validator = new AiDraftValidator(engine, List.of(new ScriptPluginMaterializationValidatorImpl(
                 engine, new ScriptRevisionContextManager(parent, engine), "wes")));
         properties.setModel("fake-model");
+        when(workbenchAccessService.requireDeveloper(eq("packing-wave"),
+                eq(ScriptPluginAuditActionEnum.SAVE_REVISION))).thenReturn("alice");
 
         when(settingsService.current()).thenReturn(new AiSettings(20, 4096, 3));
         when(quotaService.tryAcquire(anyString(), anyInt())).thenReturn(true);
@@ -83,7 +93,7 @@ class AiDraftGenerationServiceTest {
         when(auditService.start(anyString(), anyString(), anyString(), anyString())).thenReturn(audit);
 
         when(scriptPluginService.saveRevision(anyString(), any(), eq(RevisionOriginEnum.AI),
-                anyString(), anyString())).thenAnswer(invocation -> {
+                anyString(), anyString(), anyString())).thenAnswer(invocation -> {
             ScriptPluginRevisionDTO dto = invocation.getArgument(1);
             dto.setId(55L);
             dto.setRevisionNo(4);
@@ -132,8 +142,9 @@ class AiDraftGenerationServiceTest {
     }
 
     private AiDraftGenerationService serviceWith(ChatModel chatModel) {
-        return new AiDraftGenerationService(scriptPluginService, settingsService, quotaService,
-                auditService, new AiPromptAssembler(properties), new AiDraftDocumentParser(),
+        return new AiDraftGenerationService(scriptPluginService, workbenchAccessService,
+                operationAuditService, settingsService, quotaService, auditService,
+                new AiPromptAssembler(properties), new AiDraftDocumentParser(),
                 validator, groundingService, chatModel, properties);
     }
 
@@ -174,7 +185,7 @@ class AiDraftGenerationServiceTest {
         assertEquals(PluginPromptTemplates.PROMPT_VERSION, last.getResult().getPromptVersion());
 
         verify(scriptPluginService).saveRevision(eq("packing-wave"), any(), eq(RevisionOriginEnum.AI),
-                eq("fake-model"), eq(PluginPromptTemplates.PROMPT_VERSION));
+                eq("fake-model"), eq(PluginPromptTemplates.PROMPT_VERSION), eq("alice"));
         verify(scriptPluginService, never()).enable(anyString());
         verify(auditService).recordAttempt(1L, 1);
         verify(auditService).recordAttempt(1L, 2);
@@ -192,7 +203,8 @@ class AiDraftGenerationServiceTest {
         assertEquals("PL001006", last.getCode());
         assertTrue(last.getText().contains("after 3 attempts"));
         verify(auditService).fail(eq(1L), eq(3), anyString(), anyLong());
-        verify(scriptPluginService, never()).saveRevision(anyString(), any(), any(), anyString(), anyString());
+        verify(scriptPluginService, never()).saveRevision(anyString(), any(), any(),
+                anyString(), anyString(), anyString());
     }
 
     @Test
@@ -201,7 +213,8 @@ class AiDraftGenerationServiceTest {
 
         assertThrows(WmsException.class, () -> serviceWith(modelReturning(validWaveDraft())).stream(request()));
         verify(auditService, never()).start(anyString(), anyString(), anyString(), anyString());
-        verify(scriptPluginService, never()).saveRevision(anyString(), any(), any(), anyString(), anyString());
+        verify(scriptPluginService, never()).saveRevision(anyString(), any(), any(),
+                anyString(), anyString(), anyString());
     }
 
     @Test
@@ -260,5 +273,46 @@ class AiDraftGenerationServiceTest {
         assertNotNull(events);
         assertEquals("result", events.get(events.size() - 1).getType());
         verify(auditService).succeed(eq(1L), eq(2), isNull(), isNull(), anyLong());
+    }
+
+    @Test
+    void stream_withoutDeveloperRole_isRejectedBeforeAnyWork() {
+        when(workbenchAccessService.requireDeveloper(eq("packing-wave"),
+                eq(ScriptPluginAuditActionEnum.SAVE_REVISION)))
+                .thenThrow(new WmsException(
+                        ScriptPluginWorkbenchErrorDescEnum.DEVELOPER_ROLE_REQUIRED));
+
+        assertThrows(WmsException.class,
+                () -> serviceWith(modelReturning(validWaveDraft())).stream(request()));
+
+        verify(scriptPluginService, never()).detail(anyString());
+        verify(quotaService, never()).tryAcquire(anyString(), anyInt());
+        verify(auditService, never()).start(anyString(), anyString(), anyString(), anyString());
+    }
+
+    @Test
+    void successfulGeneration_recordsSaveRevisionAuditForTheInitiatingActor() {
+        serviceWith(modelReturning(validWaveDraft())).stream(request())
+                .collectList().block(Duration.ofSeconds(10));
+
+        verify(operationAuditService).recordAs(eq("packing-wave"),
+                eq(ScriptPluginAuditActionEnum.SAVE_REVISION), eq(55L), eq(true),
+                anyString(), eq("alice"));
+    }
+
+    @Test
+    void generations_requiresDeveloperRole() {
+        serviceWith(modelReturning(validWaveDraft())).generations("packing-wave");
+
+        verify(workbenchAccessService).requireDeveloper();
+        verify(auditService).recent("packing-wave");
+    }
+
+    @Test
+    void refreshCorpus_requiresDeveloperRole() {
+        serviceWith(modelReturning(validWaveDraft())).refreshCorpus();
+
+        verify(workbenchAccessService).requireDeveloper();
+        verify(groundingService).refreshCorpus();
     }
 }

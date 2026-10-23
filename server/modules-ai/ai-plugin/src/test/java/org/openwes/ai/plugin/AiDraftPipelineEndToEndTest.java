@@ -22,7 +22,10 @@ import org.openwes.script.engine.GroovyScriptEngine;
 import org.openwes.script.plugin.api.dto.ScriptPluginDTO;
 import org.openwes.script.plugin.api.dto.ScriptPluginRevisionDTO;
 import org.openwes.script.plugin.api.enums.RevisionOriginEnum;
+import org.openwes.script.plugin.api.enums.ScriptPluginAuditActionEnum;
 import org.openwes.script.plugin.api.enums.ScriptPluginStatusEnum;
+import org.openwes.script.plugin.core.domain.service.PluginWorkbenchAccessService;
+import org.openwes.script.plugin.core.domain.service.ScriptPluginOperationAuditService;
 import org.openwes.script.plugin.core.domain.service.ScriptPluginService;
 import org.openwes.script.plugin.runtime.materialize.ScriptRevisionContextManager;
 import org.openwes.script.plugin.runtime.validation.ScriptPluginMaterializationValidatorImpl;
@@ -53,6 +56,10 @@ import static org.mockito.Mockito.when;
 class AiDraftPipelineEndToEndTest {
 
     private final ScriptPluginService scriptPluginService = mock(ScriptPluginService.class);
+    private final PluginWorkbenchAccessService workbenchAccessService =
+            mock(PluginWorkbenchAccessService.class);
+    private final ScriptPluginOperationAuditService operationAuditService =
+            mock(ScriptPluginOperationAuditService.class);
     private final AiSettingsService settingsService = mock(AiSettingsService.class);
     private final AiQuotaService quotaService = mock(AiQuotaService.class);
     private final AiGenerationAuditService auditService = mock(AiGenerationAuditService.class);
@@ -66,6 +73,8 @@ class AiDraftPipelineEndToEndTest {
         parent = new AnnotationConfigApplicationContext();
         parent.refresh();
         properties.setModel("fake-model");
+        when(workbenchAccessService.requireDeveloper(eq("packing-wave"),
+                eq(ScriptPluginAuditActionEnum.SAVE_REVISION))).thenReturn("alice");
         UserContext.setAccount("alice");
 
         when(settingsService.current()).thenReturn(new AiSettings(20, 4096, 3));
@@ -85,7 +94,7 @@ class AiDraftPipelineEndToEndTest {
         audit.setId(1L);
         when(auditService.start(anyString(), anyString(), anyString(), anyString())).thenReturn(audit);
         when(scriptPluginService.saveRevision(anyString(), any(), eq(RevisionOriginEnum.AI),
-                anyString(), anyString())).thenAnswer(invocation -> {
+                anyString(), anyString(), anyString())).thenAnswer(invocation -> {
             ScriptPluginRevisionDTO dto = invocation.getArgument(1);
             dto.setId(55L);
             dto.setRevisionNo(4);
@@ -128,9 +137,10 @@ class AiDraftPipelineEndToEndTest {
         AiDraftValidator validator = new AiDraftValidator(engine, List.of(
                 new ScriptPluginMaterializationValidatorImpl(engine,
                         new ScriptRevisionContextManager(parent, engine), "wes")));
-        AiDraftGenerationService service = new AiDraftGenerationService(scriptPluginService, settingsService,
-                quotaService, auditService, new AiPromptAssembler(properties), new AiDraftDocumentParser(),
-                validator, groundingService, model, properties);
+        AiDraftGenerationService service = new AiDraftGenerationService(scriptPluginService,
+                workbenchAccessService, operationAuditService, settingsService,
+                quotaService, auditService, new AiPromptAssembler(properties),
+                new AiDraftDocumentParser(), validator, groundingService, model, properties);
 
         AiDraftRequest request = new AiDraftRequest();
         request.setPluginKey("packing-wave");
@@ -148,7 +158,7 @@ class AiDraftPipelineEndToEndTest {
                         "class Wave { Object wave(Object orders, Object ctx) { return orders } }"),
                 result.getResult().getScripts());
         verify(scriptPluginService).saveRevision(eq("packing-wave"), any(), eq(RevisionOriginEnum.AI),
-                eq("fake-model"), eq(PluginPromptTemplates.PROMPT_VERSION));
+                eq("fake-model"), eq(PluginPromptTemplates.PROMPT_VERSION), eq("alice"));
         verify(scriptPluginService, never()).enable(anyString());
     }
 }
