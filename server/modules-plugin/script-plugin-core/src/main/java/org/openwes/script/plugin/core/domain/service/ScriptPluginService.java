@@ -276,6 +276,50 @@ public class ScriptPluginService {
         return toDto(plugin);
     }
 
+    public ScriptPluginConfigDTO getConfig(String pluginKey) {
+        ScriptPlugin plugin = require(pluginKey);
+        ScriptPluginConfigDTO dto = new ScriptPluginConfigDTO();
+        dto.setValues(resolveConfig(plugin));
+        dto.setSchema(readConfigSchema(plugin));
+        dto.setLockVersion(configRepository.findByPluginId(plugin.getId())
+                .map(ScriptPluginConfig::getLockVersion).orElse(null));
+        return dto;
+    }
+
+    public ScriptPluginConfigDTO saveConfig(String pluginKey, Map<String, Object> values, Long lockVersion) {
+        ScriptPlugin plugin = require(pluginKey);
+        if (plugin.getStatus() == ScriptPluginStatusEnum.ARCHIVED) {
+            throw new CommonException("archived plugins are read-only");
+        }
+        Map<String, Object> safeValues = values == null ? Map.of() : values;
+        ScriptPluginConfigValidator.validate(readConfigSchema(plugin), safeValues);
+
+        ScriptPluginConfig row = configRepository.findByPluginId(plugin.getId()).orElse(null);
+        if (row == null) {
+            if (lockVersion != null) {
+                throw new CommonException(
+                        "config was modified by another user; current lockVersion is null");
+            }
+            row = new ScriptPluginConfig();
+            row.setPluginId(plugin.getId());
+        } else if (!Objects.equals(row.getLockVersion(), lockVersion)) {
+            throw new CommonException("config was modified by another user; current lockVersion is "
+                    + row.getLockVersion());
+        }
+        row.setConfigJson(writeJson(safeValues));
+        configRepository.save(row);
+        publishManagementMessage(plugin);
+        return getConfig(pluginKey);
+    }
+
+    private List<ConfigFieldDTO> readConfigSchema(ScriptPlugin plugin) {
+        if (plugin.getConfigSchema() == null) {
+            return List.of();
+        }
+        return readJson(plugin.getConfigSchema(), new TypeReference<>() {
+        });
+    }
+
     public ScriptPluginBundleDTO getBundle(String pluginKey) {
         return pluginRepository.findByPluginKey(pluginKey).map(this::toBundle).orElse(null);
     }
