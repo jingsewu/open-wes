@@ -434,6 +434,34 @@ class ScriptPluginServiceTest {
     }
 
     @Test
+    void updateMetadata_changesFieldsAndPublishes() {
+        ScriptPlugin plugin = plugin("packing-wave", "wes", ScriptPluginStatusEnum.DRAFT);
+        when(pluginRepository.findByPluginKey("packing-wave")).thenReturn(Optional.of(plugin));
+        when(pluginRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+
+        ScriptPluginDTO dto = service.updateMetadata("packing-wave", "New name", "desc", "outbound");
+
+        assertEquals("New name", dto.getName());
+        assertEquals("desc", dto.getDescription());
+        assertEquals("outbound", dto.getApplyModule());
+        verify(pluginRepository).save(plugin);
+        verify(redisUtils).publish(any(), any());
+    }
+
+    @Test
+    void updateMetadata_onArchivedPlugin_isRejectedWithoutWriting() {
+        ScriptPlugin plugin = plugin("packing-wave", "wes", ScriptPluginStatusEnum.ARCHIVED);
+        when(pluginRepository.findByPluginKey("packing-wave")).thenReturn(Optional.of(plugin));
+
+        CommonException e = assertThrows(CommonException.class,
+                () -> service.updateMetadata("packing-wave", "New name", null, null));
+
+        assertEquals("archived plugins are read-only", e.getMessage());
+        verify(pluginRepository, never()).save(any());
+        verify(redisUtils, never()).publish(any(), any());
+    }
+
+    @Test
     void getEnabledBundles_returnsBundlesOrderedByPluginKey() {
         ScriptPlugin b = plugin("b-plugin", "wes", ScriptPluginStatusEnum.ENABLED);
         b.setId(2L);

@@ -92,4 +92,16 @@ public class ScriptPlugin extends UpdateUserPO {
         }
         this.status = ScriptPluginStatusEnum.ARCHIVED;
     }
+
+    public void updateMetadata(String name, String description, String applyModule) {
+        if (status == ScriptPluginStatusEnum.ARCHIVED) {
+            throw new IllegalStateException("archived plugins cannot be modified");
+        }
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("name is required");
+        }
+        this.name = name;
+        this.description = description == null ? "" : description;
+        this.applyModule = applyModule == null ? "" : applyModule;
+    }
 }

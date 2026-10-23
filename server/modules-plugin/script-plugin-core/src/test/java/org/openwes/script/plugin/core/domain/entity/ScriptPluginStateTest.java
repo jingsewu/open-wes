@@ -56,4 +56,32 @@ class ScriptPluginStateTest {
     void archive_isTerminal() {
         assertThrows(IllegalStateException.class, () -> plugin(ScriptPluginStatusEnum.ARCHIVED).archive());
     }
+
+    @Test
+    void updateMetadata_changesOnlyMetadataFields() {
+        ScriptPlugin plugin = plugin(ScriptPluginStatusEnum.DRAFT);
+        plugin.setApplySystem("wes");
+        plugin.setApplyModule("old");
+
+        plugin.updateMetadata("New name", "New description", "outbound");
+
+        assertEquals("New name", plugin.getName());
+        assertEquals("New description", plugin.getDescription());
+        assertEquals("outbound", plugin.getApplyModule());
+        assertEquals("wes", plugin.getApplySystem());
+        assertEquals("packing-wave", plugin.getPluginKey());
+    }
+
+    @Test
+    void updateMetadata_onArchivedPlugin_throws() {
+        assertThrows(IllegalStateException.class,
+                () -> plugin(ScriptPluginStatusEnum.ARCHIVED)
+                        .updateMetadata("New name", null, null));
+    }
+
+    @Test
+    void updateMetadata_requiresName() {
+        assertThrows(IllegalArgumentException.class,
+                () -> plugin(ScriptPluginStatusEnum.DRAFT).updateMetadata(" ", null, null));
+    }
 }
