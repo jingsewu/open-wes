@@ -262,6 +262,20 @@ public class ScriptPluginService {
         return toDto(plugin);
     }
 
+    public ScriptPluginDTO updateMetadata(String pluginKey, String name, String description, String applyModule) {
+        ScriptPlugin plugin = require(pluginKey);
+        if (plugin.getStatus() == ScriptPluginStatusEnum.ARCHIVED) {
+            throw new CommonException("archived plugins are read-only");
+        }
+        if (StringUtils.isBlank(name)) {
+            throw new CommonException("name is required");
+        }
+        plugin.updateMetadata(name, description, applyModule);
+        pluginRepository.save(plugin);
+        publishManagementMessage(plugin);
+        return toDto(plugin);
+    }
+
     public ScriptPluginBundleDTO getBundle(String pluginKey) {
         return pluginRepository.findByPluginKey(pluginKey).map(this::toBundle).orElse(null);
     }
