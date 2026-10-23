@@ -14,6 +14,7 @@ import org.openwes.script.plugin.api.ScriptPluginApiConstants;
 import org.openwes.script.plugin.api.ScriptPluginMaterializationValidator;
 import org.openwes.script.plugin.api.dto.PluginManagementMessage;
 import org.openwes.script.plugin.api.dto.ScriptPluginBundleDTO;
+import org.openwes.script.plugin.api.dto.ScriptPluginConfigDTO;
 import org.openwes.script.plugin.api.dto.ScriptPluginDTO;
 import org.openwes.script.plugin.api.dto.ScriptPluginRevisionDTO;
 import org.openwes.script.plugin.api.dto.ValidationReportDTO;
@@ -21,6 +22,7 @@ import org.openwes.script.plugin.api.enums.PluginManagementMessageType;
 import org.openwes.script.plugin.api.enums.RevisionOriginEnum;
 import org.openwes.script.plugin.api.enums.ScriptPluginStatusEnum;
 import org.openwes.script.plugin.core.domain.entity.ScriptPlugin;
+import org.openwes.script.plugin.core.domain.entity.ScriptPluginConfig;
 import org.openwes.script.plugin.core.domain.entity.ScriptPluginRevision;
 import org.openwes.script.plugin.core.domain.repository.ScriptPluginConfigRepository;
 import org.openwes.script.plugin.core.domain.repository.ScriptPluginRepository;
@@ -459,6 +461,89 @@ class ScriptPluginServiceTest {
         assertEquals("archived plugins are read-only", e.getMessage());
         verify(pluginRepository, never()).save(any());
         verify(redisUtils, never()).publish(any(), any());
+    }
+
+    @Test
+    void getConfig_mergesSchemaDefaultsAndReturnsLockVersion() {
+        ScriptPlugin plugin = plugin("packing-wave", "wes", ScriptPluginStatusEnum.DRAFT);
+        plugin.setConfigSchema("[{\"field\":\"maxPerWave\",\"type\":\"INT\",\"required\":true,\"defaultValue\":\"20\"}]");
+        ScriptPluginConfig row = new ScriptPluginConfig();
+        row.setPluginId(1L);
+        row.setConfigJson("{\"maxPerWave\":25}");
+        row.setLockVersion(3L);
+        when(pluginRepository.findByPluginKey("packing-wave")).thenReturn(Optional.of(plugin));
+        when(configRepository.findByPluginId(1L)).thenReturn(Optional.of(row));
+
+        ScriptPluginConfigDTO dto = service.getConfig("packing-wave");
+
+        assertEquals(25, dto.getValues().get("maxPerWave"));
+        assertEquals("maxPerWave", dto.getSchema().get(0).getField());
+        assertEquals(3L, dto.getLockVersion());
+    }
+
+    @Test
+    void saveConfig_withMatchingLockVersion_updatesAndPublishes() {
+        ScriptPlugin plugin = plugin("packing-wave", "wes", ScriptPluginStatusEnum.DRAFT);
+        plugin.setConfigSchema("[{\"field\":\"maxPerWave\",\"type\":\"INT\",\"required\":true}]");
+        ScriptPluginConfig row = new ScriptPluginConfig();
+        row.setPluginId(1L);
+        row.setConfigJson("{\"maxPerWave\":20}");
+        row.setLockVersion(3L);
+        when(pluginRepository.findByPluginKey("packing-wave")).thenReturn(Optional.of(plugin));
+        when(configRepository.findByPluginId(1L)).thenReturn(Optional.of(row));
+        when(configRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+
+        ScriptPluginConfigDTO saved = service.saveConfig("packing-wave", Map.of("maxPerWave", 30), 3L);
+
+        assertEquals(30, saved.getValues().get("maxPerWave"));
+        verify(configRepository).save(row);
+        verify(redisUtils).publish(any(), any());
+    }
+
+    @Test
+    void saveConfig_withStaleLockVersion_isRejectedWithoutWriting() {
+        ScriptPlugin plugin = plugin("packing-wave", "wes", ScriptPluginStatusEnum.DRAFT);
+        plugin.setConfigSchema("[{\"field\":\"maxPerWave\",\"type\":\"INT\",\"required\":true}]");
+        ScriptPluginConfig row = new ScriptPluginConfig();
+        row.setPluginId(1L);
+        row.setConfigJson("{\"maxPerWave\":20}");
+        row.setLockVersion(4L);
+        when(pluginRepository.findByPluginKey("packing-wave")).thenReturn(Optional.of(plugin));
+        when(configRepository.findByPluginId(1L)).thenReturn(Optional.of(row));
+
+        CommonException e = assertThrows(CommonException.class,
+                () -> service.saveConfig("packing-wave", Map.of("maxPerWave", 30), 3L));
+
+        assertEquals("config was modified by another user; current lockVersion is 4", e.getMessage());
+        verify(configRepository, never()).save(any());
+        verify(redisUtils, never()).publish(any(), any());
+    }
+
+    @Test
+    void saveConfig_withUnknownField_isRejected() {
+        ScriptPlugin plugin = plugin("packing-wave", "wes", ScriptPluginStatusEnum.DRAFT);
+        plugin.setConfigSchema("[]");
+        when(pluginRepository.findByPluginKey("packing-wave")).thenReturn(Optional.of(plugin));
+
+        assertThrows(CommonException.class,
+                () -> service.saveConfig("packing-wave", Map.of("unknown", 1), null));
+        verify(configRepository, never()).save(any());
+    }
+
+    @Test
+    void saveConfig_whenAbsent_insertsARowWithThePluginId() {
+        ScriptPlugin plugin = plugin("packing-wave", "wes", ScriptPluginStatusEnum.DRAFT);
+        plugin.setConfigSchema("[{\"field\":\"maxPerWave\",\"type\":\"INT\",\"required\":true}]");
+        when(pluginRepository.findByPluginKey("packing-wave")).thenReturn(Optional.of(plugin));
+        when(configRepository.findByPluginId(1L)).thenReturn(Optional.empty());
+        when(configRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+
+        service.saveConfig("packing-wave", Map.of("maxPerWave", 30), null);
+
+        ArgumentCaptor<ScriptPluginConfig> captor = ArgumentCaptor.forClass(ScriptPluginConfig.class);
+        verify(configRepository).save(captor.capture());
+        assertEquals(1L, captor.getValue().getPluginId());
+        assertTrue(captor.getValue().getConfigJson().contains("30"));
     }
 
     @Test
