@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="create_p_script_plugin_operation_audit" author="dev">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="p_script_plugin_operation_audit"/>
+            </not>
+        </preConditions>
+        <sql>
+            CREATE TABLE p_script_plugin_operation_audit (
+                id          BIGINT        NOT NULL,
+                plugin_key  VARCHAR(64)   NOT NULL,
+                action      VARCHAR(32)   NOT NULL,
+                revision_id BIGINT        NULL,
+                operator    VARCHAR(64)   NOT NULL,
+                success     TINYINT(1)    NOT NULL,
+                detail      VARCHAR(1024) NULL,
+                created_at  BIGINT        NOT NULL,
+                PRIMARY KEY (id),
+                KEY idx_script_audit_plugin (plugin_key, id),
+                KEY idx_script_audit_created (created_at)
+            ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4
+              COMMENT = 'Script plugin operation audit';
+        </sql>
+        <rollback>
+            <sql>DROP TABLE p_script_plugin_operation_audit;</sql>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>
