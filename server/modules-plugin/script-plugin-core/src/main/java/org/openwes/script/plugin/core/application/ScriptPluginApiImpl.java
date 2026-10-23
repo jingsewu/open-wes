@@ -9,6 +9,7 @@ import org.openwes.script.plugin.api.dto.ScriptPluginBundleDTO;
 import org.openwes.script.plugin.api.dto.ValidationReportDTO;
 import org.openwes.script.plugin.core.domain.service.ScriptPluginExecutionLogService;
 import org.openwes.script.plugin.core.domain.service.ScriptPluginService;
+import org.openwes.script.plugin.core.domain.service.ScriptPluginWorkbenchService;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -23,6 +24,7 @@ public class ScriptPluginApiImpl implements IScriptPluginApi {
 
     private final ScriptPluginService scriptPluginService;
     private final ScriptPluginExecutionLogService executionLogService;
+    private final ScriptPluginWorkbenchService workbenchService;
 
     @Override
     public List<ScriptPluginBundleDTO> getEnabledPlugins(String applySystem) {
@@ -56,6 +58,6 @@ public class ScriptPluginApiImpl implements IScriptPluginApi {
 
     @Override
     public void disable(String pluginKey, String reason) {
-        scriptPluginService.disable(pluginKey, reason);
+        workbenchService.disableBySystem(pluginKey, reason);
     }
 }
