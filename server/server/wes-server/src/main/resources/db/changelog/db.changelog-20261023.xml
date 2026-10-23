@@ -32,4 +32,136 @@
         </rollback>
     </changeSet>
 
+    <changeSet id="seed_script_plugin_workbench_roles" author="dev">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM u_role WHERE code IN ('pluginDeveloper', 'pluginAdmin')
+            </sqlCheck>
+        </preConditions>
+        <sql>
+            INSERT INTO u_role
+                (id, create_time, create_user, update_time, update_user, code, description, name,
+                 status, warehouse_codes)
+            SELECT 1900000100, UNIX_TIMESTAMP() * 1000, 'system',
+                   UNIX_TIMESTAMP() * 1000, 'system', 'pluginDeveloper',
+                   'Can create, edit, validate and test-run script plugins',
+                   'Plugin Developer', 1, '[]'
+            FROM DUAL
+            WHERE NOT EXISTS (SELECT 1 FROM u_role WHERE code = 'pluginDeveloper');
+
+            INSERT INTO u_role
+                (id, create_time, create_user, update_time, update_user, code, description, name,
+                 status, warehouse_codes)
+            SELECT 1900000101, UNIX_TIMESTAMP() * 1000, 'system',
+                   UNIX_TIMESTAMP() * 1000, 'system', 'pluginAdmin',
+                   'Can enable, disable, archive, roll back and configure script plugins',
+                   'Plugin Administrator', 1, '[]'
+            FROM DUAL
+            WHERE NOT EXISTS (SELECT 1 FROM u_role WHERE code = 'pluginAdmin');
+        </sql>
+        <rollback>
+            <sql>DELETE FROM u_role WHERE id IN (1900000100, 1900000101);</sql>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="seed_script_plugin_workbench_menus" author="dev">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM u_menu WHERE id BETWEEN 1900000000 AND 1900000004
+            </sqlCheck>
+        </preConditions>
+        <sql>
+            INSERT INTO u_menu
+                (id, create_user, system_code, parent_id, type, title, description, permissions,
+                 order_num, icon, path, enable, create_time, update_time, update_user, iframe_show)
+            SELECT 1900000000, 'system', 'plugin-platform', 0, 1, 'pluginPlatform.system.title',
+                   NULL, 'plugin-platform', 10, 'pluginapp', '', 1,
+                   UNIX_TIMESTAMP() * 1000, UNIX_TIMESTAMP() * 1000, 'system', 0
+            FROM DUAL
+            WHERE NOT EXISTS (SELECT 1 FROM u_menu WHERE id = 1900000000);
+
+            INSERT INTO u_menu
+                (id, create_user, system_code, parent_id, type, title, description, permissions,
+                 order_num, icon, path, enable, create_time, update_time, update_user, iframe_show)
+            SELECT 1900000001, 'system', 'plugin-platform', 1900000000, 2,
+                   'pluginPlatform.menu.plugins', NULL, '/plugin-platform/plugins', 1, NULL,
+                   '/plugin-platform/plugins', 1,
+                   UNIX_TIMESTAMP() * 1000, UNIX_TIMESTAMP() * 1000, 'system', 0
+            FROM DUAL
+            WHERE NOT EXISTS (SELECT 1 FROM u_menu WHERE id = 1900000001);
+
+            INSERT INTO u_menu
+                (id, create_user, system_code, parent_id, type, title, description, permissions,
+                 order_num, icon, path, enable, create_time, update_time, update_user, iframe_show)
+            SELECT 1900000002, 'system', 'plugin-platform', 1900000000, 2,
+                   'pluginPlatform.menu.audit', NULL, '/plugin-platform/audit', 2, NULL,
+                   '/plugin-platform/audit', 1,
+                   UNIX_TIMESTAMP() * 1000, UNIX_TIMESTAMP() * 1000, 'system', 0
+            FROM DUAL
+            WHERE NOT EXISTS (SELECT 1 FROM u_menu WHERE id = 1900000002);
+
+            INSERT INTO u_menu
+                (id, create_user, system_code, parent_id, type, title, description, permissions,
+                 order_num, icon, path, enable, create_time, update_time, update_user, iframe_show)
+            SELECT 1900000003, 'system', 'plugin-platform', 1900000000, 3,
+                   'pluginPlatform.permission.get', NULL, 'get:/plugin-platform/', 3, NULL,
+                   NULL, 1, UNIX_TIMESTAMP() * 1000, UNIX_TIMESTAMP() * 1000, 'system', 0
+            FROM DUAL
+            WHERE NOT EXISTS (SELECT 1 FROM u_menu WHERE id = 1900000003);
+
+            INSERT INTO u_menu
+                (id, create_user, system_code, parent_id, type, title, description, permissions,
+                 order_num, icon, path, enable, create_time, update_time, update_user, iframe_show)
+            SELECT 1900000004, 'system', 'plugin-platform', 1900000000, 3,
+                   'pluginPlatform.permission.post', NULL, 'post:/plugin-platform/', 4, NULL,
+                   NULL, 1, UNIX_TIMESTAMP() * 1000, UNIX_TIMESTAMP() * 1000, 'system', 0
+            FROM DUAL
+            WHERE NOT EXISTS (SELECT 1 FROM u_menu WHERE id = 1900000004);
+        </sql>
+        <rollback>
+            <sql>DELETE FROM u_menu WHERE id BETWEEN 1900000000 AND 1900000004;</sql>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="seed_script_plugin_workbench_grants" author="dev">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM u_role_menu WHERE id BETWEEN 1900000301 AND 1900000315
+            </sqlCheck>
+        </preConditions>
+        <sql>
+            INSERT INTO u_role_menu (id, menu_id, role_id)
+            SELECT 1900000301, 1900000000, 1900000100 FROM DUAL
+            WHERE NOT EXISTS (SELECT 1 FROM u_role_menu WHERE id = 1900000301);
+            INSERT INTO u_role_menu (id, menu_id, role_id)
+            SELECT 1900000302, 1900000001, 1900000100 FROM DUAL
+            WHERE NOT EXISTS (SELECT 1 FROM u_role_menu WHERE id = 1900000302);
+            INSERT INTO u_role_menu (id, menu_id, role_id)
+            SELECT 1900000303, 1900000003, 1900000100 FROM DUAL
+            WHERE NOT EXISTS (SELECT 1 FROM u_role_menu WHERE id = 1900000303);
+            INSERT INTO u_role_menu (id, menu_id, role_id)
+            SELECT 1900000304, 1900000004, 1900000100 FROM DUAL
+            WHERE NOT EXISTS (SELECT 1 FROM u_role_menu WHERE id = 1900000304);
+
+            INSERT INTO u_role_menu (id, menu_id, role_id)
+            SELECT 1900000311, 1900000000, 1900000101 FROM DUAL
+            WHERE NOT EXISTS (SELECT 1 FROM u_role_menu WHERE id = 1900000311);
+            INSERT INTO u_role_menu (id, menu_id, role_id)
+            SELECT 1900000312, 1900000001, 1900000101 FROM DUAL
+            WHERE NOT EXISTS (SELECT 1 FROM u_role_menu WHERE id = 1900000312);
+            INSERT INTO u_role_menu (id, menu_id, role_id)
+            SELECT 1900000313, 1900000002, 1900000101 FROM DUAL
+            WHERE NOT EXISTS (SELECT 1 FROM u_role_menu WHERE id = 1900000313);
+            INSERT INTO u_role_menu (id, menu_id, role_id)
+            SELECT 1900000314, 1900000003, 1900000101 FROM DUAL
+            WHERE NOT EXISTS (SELECT 1 FROM u_role_menu WHERE id = 1900000314);
+            INSERT INTO u_role_menu (id, menu_id, role_id)
+            SELECT 1900000315, 1900000004, 1900000101 FROM DUAL
+            WHERE NOT EXISTS (SELECT 1 FROM u_role_menu WHERE id = 1900000315);
+        </sql>
+        <rollback>
+            <sql>DELETE FROM u_role_menu WHERE id BETWEEN 1900000301 AND 1900000315;</sql>
+        </rollback>
+    </changeSet>
+
 </databaseChangeLog>
