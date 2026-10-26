@@ -9,6 +9,7 @@ import ConfigTab from "./tabs/ConfigTab"
 import OverviewTab from "./tabs/OverviewTab"
 import RevisionsTab from "./tabs/RevisionsTab"
 import ScriptsTab from "./tabs/ScriptsTab"
+import TestRunTab from "./tabs/TestRunTab"
 
 const WorkbenchShell: React.FC = () => {
     const { t } = useTranslation()
@@ -36,6 +37,11 @@ const WorkbenchShell: React.FC = () => {
             key: "config",
             label: t("pluginPlatform.workbench.tab.config"),
             children: <ConfigTab />
+        },
+        {
+            key: "testRun",
+            label: t("pluginPlatform.workbench.tab.testRun"),
+            children: <TestRunTab />
         }
     ]
 

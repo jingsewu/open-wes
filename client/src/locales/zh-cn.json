@@ -864,6 +864,7 @@
     "pluginPlatform.config.unsupportedType": "不支持的配置类型“{{type}}”。",
 
     "pluginPlatform.testRun.title": "试运行",
+    "pluginPlatform.testRun.noPermission": "需要插件开发者角色才能试运行。",
     "pluginPlatform.testRun.warning": "试运行会使用下方参数调用真实宿主服务，请勿使用生产数据。",
     "pluginPlatform.testRun.wesOnly": "仅 WES 插件支持试运行。",
     "pluginPlatform.testRun.noRevision": "该插件暂无可用版本。",
