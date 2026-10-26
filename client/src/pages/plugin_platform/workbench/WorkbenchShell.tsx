@@ -4,6 +4,7 @@ import { ArrowLeftOutlined } from "@ant-design/icons"
 import { useTranslation } from "react-i18next"
 import { useHistory } from "react-router"
 import PluginStatusTag from "../PluginStatusTag"
+import ChatDrawer from "./ChatDrawer"
 import { useWorkbench } from "./context"
 import AiHistoryTab from "./tabs/AiHistoryTab"
 import AuditTab from "./tabs/AuditTab"
@@ -17,8 +18,9 @@ import TestRunTab from "./tabs/TestRunTab"
 const WorkbenchShell: React.FC = () => {
     const { t } = useTranslation()
     const history = useHistory()
-    const { plugin, loading, error, reload } = useWorkbench()
+    const { plugin, capabilities, loading, error, reload } = useWorkbench()
     const [activeTab, setActiveTab] = useState("overview")
+    const [chatOpen, setChatOpen] = useState(false)
 
     const tabs = [
         {
@@ -84,6 +86,11 @@ const WorkbenchShell: React.FC = () => {
                         {plugin && <PluginStatusTag status={plugin.status} />}
                     </Space>
                     <Space wrap>
+                        {capabilities.canDevelop && (
+                            <Button onClick={() => setChatOpen(true)}>
+                                {t("pluginPlatform.workbench.aiAssistant")}
+                            </Button>
+                        )}
                         <Button onClick={refresh} loading={loading}>
                             {t("pluginPlatform.workbench.refresh")}
                         </Button>
@@ -101,6 +108,7 @@ const WorkbenchShell: React.FC = () => {
                         <Button onClick={refresh}>{t("pluginPlatform.workbench.refresh")}</Button>
                     </div>
                 )}
+                <ChatDrawer open={chatOpen} onClose={() => setChatOpen(false)} />
             </Space>
         </Card>
     )
