@@ -982,17 +982,11 @@
     "pluginPlatform.wizard.cancelConfirm": "Close the wizard? The draft is kept.",
     "pluginPlatform.wizard.noPermission": "You need the plugin developer role to create plugins.",
 
-    "pluginSystem.pluginManagement.title": "Plugin management",
-    "pluginSystem.pluginManagement.table.pluginCoding": "Plugin code",
-    "pluginSystem.pluginManagement.table.pluginName": "Plugin name",
-    "pluginSystem.pluginManagement.table.developers": "Developers",
-    "pluginSystem.pluginManagement.table.pluginVersion": "Plugin version",
-
-    "pluginSystem.pluginStore.title": "Plugin store",
-    "pluginSystem.pluginStore.table.installation": "Installation",
-    "pluginSystem.pluginStore.table.unload": "Unload",
-    "pluginSystem.pluginStore.table.parameterSettings": "Parameter settings",
-    "pluginSystem.pluginStore.table.pluginConfiguration": "Plugin configuration",
+    "pluginPlatform.system.title": "Plugin platform",
+    "pluginPlatform.menu.plugins": "Plugins",
+    "pluginPlatform.menu.audit": "Plugin audit",
+    "pluginPlatform.permission.get": "Plugin platform read access",
+    "pluginPlatform.permission.post": "Plugin platform write access",
 
     "wms.menu.dashboard": "Dashboard",
     "wms.menu.dataCenters": "Data centers",

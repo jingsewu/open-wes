@@ -604,23 +604,19 @@ const menuRouter = [
 
     // Plugin Platform
     {
-        path: "/plugin-platform/plugin-management",
+        path: "/plugin-platform/plugins",
         name: (
-            <Translation>
-                {(t) => t("pluginPlatform.plugin.management.title")}
-            </Translation>
+            <Translation>{(t) => t("pluginPlatform.list.title")}</Translation>
         ),
-        component: lazy(() => import("@/pages/plugin_platform/plugin_management"))
+        component: lazy(() => import("@/pages/plugin_platform/list"))
     },
-    // Plugin Platform
+    // Not in the sidebar: opened from the list or a deep link with ?mode=new / ?pluginKey=...
     {
-        path: "/plugin-platform/plugin-store",
+        path: "/plugin-platform/plugin-workbench",
         name: (
-            <Translation>
-                {(t) => t("pluginPlatform.plugin.store.title")}
-            </Translation>
+            <Translation>{(t) => t("pluginPlatform.workbench.title")}</Translation>
         ),
-        component: lazy(() => import("@/pages/plugin_platform/plugin_store"))
+        component: lazy(() => import("@/pages/plugin_platform/workbench"))
     },
 
     // Monitoring

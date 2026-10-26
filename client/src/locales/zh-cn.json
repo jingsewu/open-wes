@@ -982,17 +982,11 @@
     "pluginPlatform.wizard.cancelConfirm": "关闭向导？草稿会保留。",
     "pluginPlatform.wizard.noPermission": "创建插件需要插件开发者角色。",
 
-    "pluginSystem.pluginManagement.title": "插件管理",
-    "pluginSystem.pluginManagement.table.pluginCoding": "插件编码",
-    "pluginSystem.pluginManagement.table.pluginName": "插件名称",
-    "pluginSystem.pluginManagement.table.developers": "开发者",
-    "pluginSystem.pluginManagement.table.pluginVersion": "插件版本",
-
-    "pluginSystem.pluginStore.title": "插件商店",
-    "pluginSystem.pluginStore.table.installation": "安装",
-    "pluginSystem.pluginStore.table.unload": "卸载",
-    "pluginSystem.pluginStore.table.parameterSettings": "参数设置",
-    "pluginSystem.pluginStore.table.pluginConfiguration": "插件配置",
+    "pluginPlatform.system.title": "插件平台",
+    "pluginPlatform.menu.plugins": "插件",
+    "pluginPlatform.menu.audit": "插件审计",
+    "pluginPlatform.permission.get": "插件平台读取权限",
+    "pluginPlatform.permission.post": "插件平台操作权限",
 
     "wms.menu.dashboard": "仪表盘",
     "wms.menu.dataCenters": "数据中心",
