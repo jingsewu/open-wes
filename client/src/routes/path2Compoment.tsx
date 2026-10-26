@@ -618,6 +618,13 @@ const menuRouter = [
         ),
         component: lazy(() => import("@/pages/plugin_platform/workbench"))
     },
+    {
+        path: "/plugin-platform/audit",
+        name: (
+            <Translation>{(t) => t("pluginPlatform.audit.title")}</Translation>
+        ),
+        component: lazy(() => import("@/pages/plugin_platform/audit"))
+    },
 
     // Monitoring
     {
