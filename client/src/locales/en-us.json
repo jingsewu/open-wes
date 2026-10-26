@@ -736,6 +736,8 @@
     "pluginPlatform.common.confirm": "Confirm",
     "pluginPlatform.common.all": "All",
     "pluginPlatform.common.readOnly": "Read only",
+    "pluginPlatform.common.yes": "Yes",
+    "pluginPlatform.common.no": "No",
 
     "pluginPlatform.applySystem.wes": "WES",
     "pluginPlatform.applySystem.station": "Station",
