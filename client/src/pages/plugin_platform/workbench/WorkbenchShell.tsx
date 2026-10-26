@@ -5,6 +5,8 @@ import { useTranslation } from "react-i18next"
 import { useHistory } from "react-router"
 import PluginStatusTag from "../PluginStatusTag"
 import { useWorkbench } from "./context"
+import AiHistoryTab from "./tabs/AiHistoryTab"
+import AuditTab from "./tabs/AuditTab"
 import ConfigTab from "./tabs/ConfigTab"
 import ExecutionsTab from "./tabs/ExecutionsTab"
 import OverviewTab from "./tabs/OverviewTab"
@@ -48,6 +50,16 @@ const WorkbenchShell: React.FC = () => {
             key: "executions",
             label: t("pluginPlatform.workbench.tab.executions"),
             children: <ExecutionsTab />
+        },
+        {
+            key: "aiHistory",
+            label: t("pluginPlatform.workbench.tab.aiHistory"),
+            children: <AiHistoryTab />
+        },
+        {
+            key: "audit",
+            label: t("pluginPlatform.workbench.tab.audit"),
+            children: <AuditTab />
         }
     ]
 
