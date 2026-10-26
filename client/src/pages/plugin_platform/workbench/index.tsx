@@ -1,25 +1,53 @@
-import React from "react"
-import { Card, Space, Typography } from "antd"
+import React, { useRef } from "react"
+import { Button, Card, Empty, Typography } from "antd"
 import { useTranslation } from "react-i18next"
-import { useLocation } from "react-router"
+import { useHistory, useLocation } from "react-router"
+import { WorkbenchProvider } from "./context"
+import WorkbenchShell from "./WorkbenchShell"
 
 const Workbench: React.FC = () => {
     const { t } = useTranslation()
+    const history = useHistory()
     const location = useLocation()
     const params = new URLSearchParams(location.search)
+    const mode = params.get("mode")
     const pluginKey = params.get("pluginKey")
-    const isNew = params.get("mode") === "new"
+    // Keeps the current plugin when TabsLayout restores this tab without its query string.
+    const lastPluginKeyRef = useRef<string | null>(null)
+
+    if (pluginKey) {
+        lastPluginKeyRef.current = pluginKey
+    }
+
+    if (mode === "new") {
+        // Replaced by the real wizard in Task 12.
+        return (
+            <Card>
+                <Typography.Title level={4}>{t("pluginPlatform.wizard.title")}</Typography.Title>
+            </Card>
+        )
+    }
+
+    const activePluginKey = pluginKey || lastPluginKeyRef.current
+    if (!activePluginKey) {
+        return (
+            <Card>
+                <Empty description={t("pluginPlatform.workbench.noPlugin")}>
+                    <Typography.Paragraph type="secondary">
+                        {t("pluginPlatform.workbench.noPluginHint")}
+                    </Typography.Paragraph>
+                    <Button type="primary" onClick={() => history.push("/plugin-platform/plugins")}>
+                        {t("pluginPlatform.workbench.backToList")}
+                    </Button>
+                </Empty>
+            </Card>
+        )
+    }
+
     return (
-        <Card>
-            <Space direction="vertical">
-                <Typography.Title level={4}>{t("pluginPlatform.workbench.title")}</Typography.Title>
-                <Typography.Text type="secondary">
-                    {isNew
-                        ? t("pluginPlatform.workbench.newPlugin")
-                        : pluginKey || t("pluginPlatform.workbench.noPlugin")}
-                </Typography.Text>
-            </Space>
-        </Card>
+        <WorkbenchProvider key={activePluginKey} pluginKey={activePluginKey}>
+            <WorkbenchShell />
+        </WorkbenchProvider>
     )
 }
 
