@@ -864,6 +864,7 @@
     "pluginPlatform.config.unsupportedType": "Unsupported config field type \"{{type}}\".",
 
     "pluginPlatform.testRun.title": "Test run",
+    "pluginPlatform.testRun.noPermission": "You need the plugin developer role to run tests.",
     "pluginPlatform.testRun.warning": "Test runs invoke real host services with the arguments below. Do not use production data.",
     "pluginPlatform.testRun.wesOnly": "Test run is available only for WES plugins.",
     "pluginPlatform.testRun.noRevision": "This plugin has no revision to test.",
