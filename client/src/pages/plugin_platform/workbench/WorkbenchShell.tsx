@@ -6,6 +6,7 @@ import { useHistory } from "react-router"
 import PluginStatusTag from "../PluginStatusTag"
 import { useWorkbench } from "./context"
 import OverviewTab from "./tabs/OverviewTab"
+import ScriptsTab from "./tabs/ScriptsTab"
 
 const WorkbenchShell: React.FC = () => {
     const { t } = useTranslation()
@@ -18,6 +19,11 @@ const WorkbenchShell: React.FC = () => {
             key: "overview",
             label: t("pluginPlatform.workbench.tab.overview"),
             children: <OverviewTab />
+        },
+        {
+            key: "scripts",
+            label: t("pluginPlatform.workbench.tab.scripts"),
+            children: <ScriptsTab />
         }
     ]
 
