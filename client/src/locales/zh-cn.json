@@ -736,6 +736,8 @@
     "pluginPlatform.common.confirm": "确认",
     "pluginPlatform.common.all": "全部",
     "pluginPlatform.common.readOnly": "只读",
+    "pluginPlatform.common.yes": "是",
+    "pluginPlatform.common.no": "否",
 
     "pluginPlatform.applySystem.wes": "WES",
     "pluginPlatform.applySystem.station": "工位",
