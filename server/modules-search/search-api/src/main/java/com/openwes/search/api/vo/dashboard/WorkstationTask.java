@@ -20,9 +20,9 @@ public class WorkstationTask {
     @DbField(value = "COUNT(t.id)")
     private Integer taskCount;
 
-    @DbField(value = "COUNT(t.required_qty)")
+    @DbField(value = "SUM(t.required_qty)")
     private Integer requiredQty;
 
-    @DbField(value = "COUNT(t.operated_qty)")
+    @DbField(value = "SUM(t.operated_qty)")
     private Integer operatedQty;
 }
