@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next"
 import { useHistory } from "react-router"
 import PluginStatusTag from "../PluginStatusTag"
 import { useWorkbench } from "./context"
+import ConfigTab from "./tabs/ConfigTab"
 import OverviewTab from "./tabs/OverviewTab"
 import RevisionsTab from "./tabs/RevisionsTab"
 import ScriptsTab from "./tabs/ScriptsTab"
@@ -30,6 +31,11 @@ const WorkbenchShell: React.FC = () => {
             key: "revisions",
             label: t("pluginPlatform.workbench.tab.revisions"),
             children: <RevisionsTab />
+        },
+        {
+            key: "config",
+            label: t("pluginPlatform.workbench.tab.config"),
+            children: <ConfigTab />
         }
     ]
 
