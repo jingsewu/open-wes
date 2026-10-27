@@ -18,7 +18,7 @@ modules-ai/           # AI integration (ai-core, ai-api, ai-plugin — script pl
 modules-user/         # Auth, user management
 modules-station/      # Workstation operations
 modules-gateway/      # API gateway
-modules-plugin/       # Plugin implementations
+modules-plugin/       # Plugin platform: script-plugin-api/core/runtime, legacy PF4J jar modules, plugin-example sample
 modules-search/       # Search functionality
 modules-api-platform/ # External API platform
 modules-utils/        # Shared utilities (must NOT depend on other modules) — includes monitoring module
@@ -96,6 +96,17 @@ public class EntityApiImpl implements IEntityApi { }
 - **DB columns**: Code=64, Name=128, Description=255, Remark=500, Enum=20 chars
 - **POJO**: Use `@Comment("...")` not `columnDefinition` for column comments
 - **Plugins**: One `IPlugin` interface per domain with before/after lifecycle hooks
+
+## Script Plugin Platform
+
+Script plugins are database-backed Groovy bundles — no jar packaging and no restart. The legacy PF4J jar-plugin path is frozen.
+
+- **Modules**: `script-plugin-api` — contract catalog, DTOs and static validation; `script-plugin-core` — persistence, management services and `/plugin-platform/**`; `script-plugin-runtime` — materialization, invocation, dispatchers and registry; `plugin-api`/`plugin-core`/`plugin-sdk`/`plugin-extension` — legacy jar path; `plugin-example` — non-built sample (not in `settings.gradle`).
+- **Hosts**: `wes-server` hosts management + runtime (`script-plugin.registry.mode: local`); `station-server` hosts runtime only (`mode: remote`).
+- **Lookup**: `PluginSdkUtils.getExtractObject(Class<T>)` merges jar extensions with materialized script proxies, sorts by priority descending; an empty list means "use the built-in behavior".
+- **Workbench**: `/plugin-platform/plugins`, `/plugin-platform/plugin-workbench?mode=new` (or `?pluginKey=<key>`), `/plugin-platform/audit`; client code lives in `client/src/pages/plugin_platform/`.
+- **Tests**: `cd server && ./gradlew :modules-plugin:script-plugin-api:test`
+- **Rules**: `docs/standards/backend.md` §Script Plugin Rules; the archetype table is generated from `PluginContractCatalog` and checked by `PluginDocumentationConsistencyTest`.
 
 ## Frontend Conventions
 
@@ -236,3 +247,9 @@ All schema and data changes **must** use Liquibase changelogs — never ad-hoc S
 | Monitoring design spec | `docs/superpowers/specs/2026-05-23-monitoring-alerting-framework-design.md` |
 | Domain event system | `server/modules-utils/domain-event/` |
 | Script plugin AI pipeline | `server/modules-ai/ai-plugin/` |
+| Script plugin contract catalog | `server/modules-plugin/script-plugin-api/src/main/java/org/openwes/script/plugin/api/contract/PluginContractCatalog.java` |
+| Script plugin management plane | `server/modules-plugin/script-plugin-core/` |
+| Script plugin runtime | `server/modules-plugin/script-plugin-runtime/` |
+| Script plugin sample | `server/modules-plugin/plugin-example/` |
+| Script plugin workbench (client) | `client/src/pages/plugin_platform/` |
+| Script plugin rules chapter | `docs/standards/backend.md` (§Script Plugin Rules) |
