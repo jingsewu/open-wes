@@ -353,7 +353,7 @@ if (!plugins.isEmpty()) {
 // built-in wave grouping
 ```
 
-4. **Jar Plugin Configuration and Packaging**: A jar plugin is packaged with a `plugin.properties` descriptor and implementations are annotated with PF4J's `@Extension`; the module processes `org.pf4j:pf4j` through `annotationProcessor`. Its configuration is read with `PluginUtils.getPluginConfig(pluginId, Class<T>)`, which resolves the stored config through `IPluginApi.getPluginConfig` and returns a fresh instance when no config is stored. The former jar sample inside `server/modules-plugin/plugin-example/` has been replaced by the script-plugin sample; the jar path receives no new samples.
+4. **Jar Plugin Configuration and Packaging**: A jar plugin is packaged with a `plugin.properties` descriptor and implementations are annotated with PF4J's `@Extension`; the module depends on `org.pf4j:pf4j`. Its configuration is read with `PluginUtils.getPluginConfig(pluginId, Class<T>)`, which resolves the stored config through `IPluginApi.getPluginConfig` and returns a fresh instance when no config is stored. The former jar sample inside `server/modules-plugin/plugin-example/` has been replaced by the script-plugin sample; the jar path receives no new samples.
 
 ## Unit Test Rules
 
