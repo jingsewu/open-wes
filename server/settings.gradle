@@ -25,7 +25,6 @@ include 'modules-plugin:plugin-extension'
 include 'modules-plugin:script-plugin-api'
 include 'modules-plugin:script-plugin-core'
 include 'modules-plugin:script-plugin-runtime'
-include 'modules-plugin:plugin-example'
 
 include 'modules-gateway:gateway-core'
 
