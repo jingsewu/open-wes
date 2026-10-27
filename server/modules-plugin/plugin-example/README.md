@@ -45,6 +45,8 @@ The sample is not seeded automatically. Create it through the workbench:
 
 ## Validation
 
+Java 17 is required.
+
 ```bash
 cd server
 ./gradlew :modules-plugin:script-plugin-api:test --tests '*ScriptPluginExampleValidationTest'
@@ -54,4 +56,4 @@ The test compiles the Groovy script and runs the same static validation stages a
 (`sdkVersion`, `declarations`, `compile`). It does not start an application context or touch a
 database.
 
-See `docs/standards/backend.md` §Script Plugin Rules for the full contract.
+See [Script Plugin Rules](../../../docs/standards/backend.md#script-plugin-rules) for the full contract.
