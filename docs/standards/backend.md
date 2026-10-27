@@ -19,6 +19,7 @@ These are a set of coding standards and best practices to be followed during dev
 - [Validation Rules](#validation-rules)
 - [Plugin Rules](#plugin-rules)
   - [Script Plugin Rules](#script-plugin-rules)
+  - [Jar Plugin Rules (Legacy)](#jar-plugin-rules-legacy)
 - [Unit Test Rules](#unit-test-rules)
 - [Logging and Configuration](#logging-and-configuration)
 
@@ -233,66 +234,13 @@ containerRepository.save(container);
 
 ## Plugin Rules
 
-1. **Plugin Definition and Scope**: Plugins must be defined once per domain. This means that each domain should have a dedicated plugin interface that encapsulates all the functionality related to that domain's lifecycle. For example, the ContainerTask domain should have an IContainerTaskPlugin interface that covers all the operations and behaviors related to container tasks.
-```java
-public interface IContainerTaskPlugin extends IContainerTaskGeneratorAction, IPlugin {
-   // Default methods for various stages of the container task lifecycle
-   default void beforeCreate(List<CreateContainerTaskDTO> createContainerTaskDTOs) { ... }
-   default void afterCreate(List<CreateContainerTaskDTO> createContainerTaskDTOs) { ... }
-   default void beforeFinish(List<ContainerTaskDTO> updateContainerTaskDTOs) { ... }
-   default void afterFinish(List<ContainerTaskDTO> updateContainerTaskDTOs) { ... }
-   default void beforeCancel(List<ContainerTaskDTO> containerTaskDTOs) { ... }
-   default void afterCancel(List<ContainerTaskDTO> containerTaskDTOs) { ... }
-
-   // Method for retrieving the generator plugin (if applicable)
-   default IContainerTaskGeneratorAction getGeneratorPlugin() {
-      return null;
-   }
-}
-
-```
-2. **Plugin Extensions and Actions**: If there is a need for additional functionality or extensions within a domain, you can create separate interfaces representing specific actions or behaviors. These interfaces can then be implemented by the main domain plugin interface.
-   For example, if the ContainerTask domain requires generating different tasks based on the warehouse structure, you can create an IContainerTaskGeneratorAction interface and add a method in the IContainerTaskPlugin interface to retrieve an instance of the generator plugin.
-```java
-public interface IContainerTaskGeneratorAction {
-    List<ContainerTaskDTO> generateContainerTasks(List<CreateContainerTaskDTO> createContainerTaskDTOs);
-}
-```
-```java
-public interface IContainerTaskPlugin extends IContainerTaskGeneratorAction, IPlugin {
-   // ...
-   default IContainerTaskGeneratorAction getGeneratorPlugin() {
-      return null;
-   }
-}
-```
-3. **Plugin Integration**: The integration of plugins into the application's business logic can be achieved by using a utility class like PluginUtils. This class can provide methods to retrieve instances of the required plugins.
-```java
-public List<ContainerTask> groupContainerTasks(List<CreateContainerTaskDTO> createContainerTaskDTOs) {
-   List<IContainerTaskPlugin> containerTaskPlugins = pluginUtils.getExtractObject(IContainerTaskPlugin.class);
-
-   if (!containerTaskPlugins.isEmpty()) {
-      IContainerTaskPlugin containerTaskPlugin = containerTaskPlugins.get(0);
-      IContainerTaskGeneratorAction generatorPlugin = containerTaskPlugin.getGeneratorPlugin();
-      if (generatorPlugin != null) {
-         List<ContainerTaskDTO> containerTaskDTOs = generatorPlugin.generateContainerTasks(createContainerTaskDTOs);
-         return containerTaskTransfer.dto2Dos(containerTaskDTOs);
-      }
-   }
-
-   // Default implementation if no generator plugin is available
-   List<ContainerTask> containerTasks = new ArrayList<>();
-   createContainerTaskDTOs.stream()
-           .collect(Collectors.groupingBy(dto -> getGroupKey(dto)))
-           .forEach((key, values) -> containerTasks.addAll(generateTasks(values)));
-   return containerTasks;
-}
-```
+Script plugins are the default for new plugin work: a plugin is a versioned bundle of Groovy scripts plus extension declarations, stored in the database and materialized into a running server at enable time. The PF4J jar-plugin path is kept for existing plugins and is frozen; do not add new jar plugins.
 
 ### Script Plugin Rules
 
-4. **Script Plugins Are Declared Against the Contract Catalog**: A script plugin is a versioned bundle of Groovy scripts plus extension declarations that is materialized into a running server at enable time. The allowed extension points, script methods and blocking semantics are defined once in `PluginContractCatalog.ARCHETYPES` (`org.openwes.script.plugin.api.contract`). The AI prompt, the generated documentation and the enable-time validation all read that catalog, so never duplicate the table below in code.
+1. **Contract Catalog Is the Single Source of Truth**: The allowed extension points, script methods and blocking semantics are defined once in `PluginContractCatalog.ARCHETYPES` (`org.openwes.script.plugin.api.contract`). The AI prompt, this documentation and the enable-time validation all read that catalog. The table below is generated by `PluginContractCatalog.toMarkdownTable()` and enforced by `PluginDocumentationConsistencyTest` — never edit it by hand; change the catalog and regenerate.
 
+<!-- BEGIN GENERATED: script-plugin-archetypes -->
 | Archetype | Host extension point | Script method | Blocking |
 |-----------|----------------------|---------------|----------|
 | `OUTBOUND_WAVE_WAVE_ACTION` | `org.openwes.plugin.extension.business.wes.outbound.action.IOutboundWaveWaveAction` | `wave` | yes |
@@ -305,8 +253,9 @@ public List<ContainerTask> groupContainerTasks(List<CreateContainerTaskDTO> crea
 | `LIFECYCLE_LISTENER` | `org.openwes.plugin.extension.business.IEntityLifecycleListener` | `afterStatusChange` | no |
 | `HTTP_ENDPOINT` | dispatcher (`/plugin-platform/ext/{pluginKey}/**`) | `handle` | yes |
 | `CRON` | dispatcher (scheduler) | `run` | no |
+<!-- END GENERATED: script-plugin-archetypes -->
 
-5. **Script Method Signature: `ctx` Is Always the Last Parameter**: The runtime appends the extension's `ScriptContext` as the final argument of every invocation, after the host method arguments. Declare every script method with the host parameters first and `ctx` last; a method that does not accept the appended argument fails at invocation time (the smoke stage only checks that the declared method exists). Script instances are created with Spring's `createBean` inside a child context whose parent is the application context, so `@Autowired`, `@Resource`, `@Value` and `@PostConstruct` all work. Use `ctx.log()` for logging, `ctx.bean(...)` or the facade methods (`ctx.outbound()`, `ctx.pickingOrder()`, `ctx.callback()`, `ctx.station()`) for host beans, and `ctx.configString/configInt/configBool` for plugin config. Secrets come from `ctx.config` only — never hardcode them in a script.
+2. **Script Method Signature: `ctx` Is Always the Last Parameter**: The runtime appends the extension's `ScriptContext` as the final argument of every invocation, after the host method arguments. Declare every script method with the host parameters first and `ctx` last; a method that does not accept the appended argument fails at invocation time (the smoke stage only checks that the declared method exists). Script instances are created with Spring's `createBean` inside a child context whose parent is the application context, so `@Autowired`, `@Resource`, `@Value` and `@PostConstruct` all work. Use `ctx.log()` for logging, `ctx.bean(...)` or the facade methods (`ctx.outbound()`, `ctx.pickingOrder()`, `ctx.callback()`, `ctx.station()`) for host beans, and `ctx.configString/configInt/configBool` for plugin config. Secrets come from `ctx.config` only — never hardcode them in a script.
 
 ```groovy
 import org.openwes.wes.api.outbound.IOutboundPlanOrderApi
@@ -323,7 +272,7 @@ class Wave {
 }
 ```
 
-6. **Script Plugin Failure Policy**: Failures never disappear silently, and only blocking archetypes propagate the failure to the host. Blocking means the `ScriptPluginInvocationException` reaches the host, which then decides how to react: the `OUTBOUND_WAVE_WAVE_ACTION` and `OUTBOUND_WAVE_SPLIT_ACTION` hosts catch any exception from the plugin (and accept a `null` return) and fall back to the built-in grouping/splitting, so a wave plugin never aborts wave creation.
+3. **Script Plugin Failure Policy**: Failures never disappear silently, and only blocking archetypes propagate the failure to the host. Blocking means the `ScriptPluginInvocationException` reaches the host, which then decides how to react: the `OUTBOUND_WAVE_WAVE_ACTION` and `OUTBOUND_WAVE_SPLIT_ACTION` hosts catch any exception from the plugin (and accept a `null` return) and fall back to the built-in grouping/splitting, so a wave plugin never aborts wave creation.
 
 | Situation | Behavior |
 |-----------|----------|
@@ -334,9 +283,9 @@ class Wave {
 
 Every invocation is reported to `p_script_plugin_execution_log` with plugin key, revision, extension type, success flag, duration and error message. Shipping the log must never break the invocation path; a failed shipment is only warned. Script execution is bounded by `script-plugin.execution.timeout-ms` (default `2000`).
 
-7. **Priority and Built-in Fallback**: `IPlugin.priority()` returns `0` by default; the higher value wins when several plugins can serve the same extension point. `PluginSdkUtils.getExtractObject` and `LifecycleListenerRegistry` merge PF4J jar plugins with materialized script extensions and sort them by priority descending. Ties are broken by stable order: jar plugins are appended first, then script plugins in registry order (plugin key ascending). A script proxy answers `priority()` from its declaration's `priority` field. When no plugin for an extension point is enabled, the extracted list is empty and the calling code must keep its built-in behavior — a plugin never replaces the default unless it is enabled.
+4. **Priority and Built-in Fallback**: `IPlugin.priority()` returns `0` by default; the higher value wins when several plugins can serve the same extension point. `PluginSdkUtils.getExtractObject` and `LifecycleListenerRegistry` merge PF4J jar plugins with materialized script extensions and sort them by priority descending. Ties are broken by stable order: jar plugins are appended first, then script plugins in registry order (plugin key ascending). A script proxy answers `priority()` from its declaration's `priority` field. When no plugin for an extension point is enabled, the extracted list is empty and the calling code must keep its built-in behavior — a plugin never replaces the default unless it is enabled.
 
-8. **Enable, Disable and Rollback Flow**: A plugin starts as a draft and receives immutable revisions, each with a content hash; `current_revision_id` points at the active revision. A revision can be saved only while the plugin is `DRAFT` or `DISABLED`; saving on an `ENABLED` plugin is rejected because the runtime would hot-deploy an unvalidated revision, and saving on an `ARCHIVED` plugin is rejected because archived plugins are read-only. To deploy a changed revision of an enabled plugin, disable it, save the new revision, then enable it again (validation runs). Enable is accepted only from `DRAFT` or `DISABLED`, only when a current revision exists, and only when the plugin's `sdk_version` equals the platform contract (`ScriptPluginApiConstants.CONTRACT_VERSION`, currently `1.0`). Validation runs on the node whose app matches `apply_system`: wes validates in-process; a remote app such as station is asked through the pending-validation channel — the management plane registers the pending request and publishes a management message, and the target node's `StationValidationPoller` polls `getPendingValidation` every `script-plugin.validation.poll-interval-ms` (default `5000` ms), dry-runs the bundle and reports the verdict back within the configured timeout. The Redis message itself wakes `ScriptPluginRegistry.refreshAll`; it is not what delivers the validation request. A failed validation leaves the plugin disabled and records the failing stage and message.
+5. **Enable, Disable and Rollback Flow**: A plugin starts as a draft and receives immutable revisions, each with a content hash; `current_revision_id` points at the active revision. A revision can be saved only while the plugin is `DRAFT` or `DISABLED`; saving on an `ENABLED` plugin is rejected because the runtime would hot-deploy an unvalidated revision, and saving on an `ARCHIVED` plugin is rejected because archived plugins are read-only. To deploy a changed revision of an enabled plugin, disable it, save the new revision, then enable it again (validation runs). Enable is accepted only from `DRAFT` or `DISABLED`, only when a current revision exists, and only when the plugin's `sdk_version` equals the platform contract (`ScriptPluginApiConstants.CONTRACT_VERSION`, currently `1.0`). Validation runs on the node whose app matches `apply_system`: wes validates in-process; a remote app such as station is asked through the pending-validation channel — the management plane registers the pending request and publishes a management message, and the target node's `StationValidationPoller` polls `getPendingValidation` every `script-plugin.validation.poll-interval-ms` (default `5000` ms), dry-runs the bundle and reports the verdict back within the configured timeout. The Redis message itself wakes `ScriptPluginRegistry.refreshAll`; it is not what delivers the validation request. A failed validation leaves the plugin disabled and records the failing stage and message.
 
    The five validation stages are:
    1. `sdkVersion` — the plugin's `sdk_version` equals the platform contract version.
@@ -347,15 +296,64 @@ Every invocation is reported to `p_script_plugin_execution_log` with plugin key,
 
    On success, `enable` publishes the management message; running nodes rematerialize without a restart (Redis message, with a 60 s registry-version poll as the safety net). A failed rematerialization keeps the previous revision running. `disable` only applies to an `ENABLED` plugin and makes every node drop the materialization, restoring the built-in behavior. `rollback` is a pointer switch to any revision that belongs to the plugin — earlier, current or later (archived plugins cannot be rolled back) — and republishes the bundle; revision history is never mutated. Rollback does not re-run the five validation stages, so operators should only roll back to a revision that already passed enable-time validation.
 
-9. **Lifecycle Listeners Are Not `IPlugin`s**: `IEntityLifecycleListener` intentionally does **not** extend `IPlugin`. In the merge it therefore keeps priority `0` and stable order. Listeners are dispatched by `getEntityName()` matching the entity name through `LifecycleListenerRegistry`, one call per registered listener; a script `LIFECYCLE_LISTENER` declaration must set `entityName` and expose the `afterStatusChange` method.
+6. **Lifecycle Listeners Are Not `IPlugin`s**: `IEntityLifecycleListener` intentionally does **not** extend `IPlugin`. In the merge it therefore keeps priority `0` and stable order. Listeners are dispatched by `getEntityName()` matching the entity name through `LifecycleListenerRegistry`, one call per registered listener; a script `LIFECYCLE_LISTENER` declaration must set `entityName` and expose the `afterStatusChange` method.
 
-10. **Runtime Wiring**: `wes-server` depends on both `script-plugin-core` (management plane) and `script-plugin-runtime`, and sets `script-plugin.registry.mode: local` so enable-time validation runs in-process. `station-server` depends on `script-plugin-runtime` only and sets `mode: remote`; it must also be annotated with `@EnableScheduling`, because registry polling, cron dispatch and the validation poller are `@Scheduled`. Both applications scan `org.openwes`, which covers `org.openwes.script.plugin.runtime`. Any other server embedding the runtime uses `mode: remote` and a Dubbo reference to the management plane.
+7. **Runtime Wiring**: `wes-server` depends on both `script-plugin-core` (management plane) and `script-plugin-runtime`, and sets `script-plugin.registry.mode: local` so enable-time validation runs in-process. `station-server` depends on `script-plugin-runtime` only and sets `mode: remote`; it must also be annotated with `@EnableScheduling`, because registry polling, cron dispatch and the validation poller are `@Scheduled`. Both applications scan `org.openwes`, which covers `org.openwes.script.plugin.runtime`. Any other server embedding the runtime uses `mode: remote` and a Dubbo reference to the management plane.
 
    **v1 limitations:** (a) `apply_module` is stored and displayed but not enforced — a node materializes every enabled plugin for its `apply_system`, because the frozen `IScriptPluginApi.getEnabledBundles(String applySystem)` has no module argument; (b) compile/context dry-run and `@PostConstruct` are not time-bounded — only script invocations honour `script-plugin.execution.timeout-ms`; (c) self-provided HTTP endpoints are served by the app hosting the plugin — the gateway routes `/plugin-platform/**` to wes, so station HTTP endpoints are only reachable directly; (d) the workbench authorizes with server-side role checks against configurable role codes (`plugin.security.developer-role-codes`, default `pluginDeveloper`; `plugin.security.admin-role-codes`, default `pluginAdmin`; the existing super role is implicit). The configured codes are read at startup, so changing a code requires a wes-server restart. Every state-changing workbench action is appended to `p_script_plugin_operation_audit`; the gateway's `get:/plugin-platform/` and `post:/plugin-platform/` permissions only gate broad access, not individual actions; (e) a hot revision switch closes the previous child context, so an in-flight invocation on the old revision can fail during the switch (failure policies contain it).
 
-11. **AI Draft Pipeline (`ai-plugin`)** — AI may only save revisions, never enable, disable, roll back or archive. Model output is untrusted: it is parsed into `AiDraftDocument`, checked against `PluginContractCatalog.typesForApp`, then run through the same static validation as enable-time; on wes it also gets the in-process materialization dry-run, while station drafts are static-only in v2 (preview handshake lands with the workbench). Every AI revision stores `RevisionOriginEnum.AI`, the model id and `PluginPromptTemplates.PROMPT_VERSION`. Never log requirements, prompts, model output or generated sources at info level. Generated scripts must read secrets through `ctx.config`, never hardcode them; prompts state the same rule. The SSE endpoint is `/plugin-platform/ai/draft/stream`; the gateway and any reverse proxy must disable response buffering for it. Every AI endpoint (`stream`, `generations`, `refreshCorpus`) requires the developer role through `PluginWorkbenchAccessService`, and each accepted AI revision is audited as `SAVE_REVISION` with actor, revision id and origin.
+8. **AI Draft Pipeline (`ai-plugin`)** — AI may only save revisions, never enable, disable, roll back or archive. Model output is untrusted: it is parsed into `AiDraftDocument`, checked against `PluginContractCatalog.typesForApp`, then run through the same static validation as enable-time; on wes it also gets the in-process materialization dry-run, while station drafts are static-only in v2 (preview handshake lands with the workbench). Every AI revision stores `RevisionOriginEnum.AI`, the model id and `PluginPromptTemplates.PROMPT_VERSION`. Never log requirements, prompts, model output or generated sources at info level. Generated scripts must read secrets through `ctx.config`, never hardcode them; prompts state the same rule. The SSE endpoint is `/plugin-platform/ai/draft/stream`; the gateway and any reverse proxy must disable response buffering for it. Every AI endpoint (`stream`, `generations`, `refreshCorpus`) requires the developer role through `PluginWorkbenchAccessService`, and each accepted AI revision is audited as `SAVE_REVISION` with actor, revision id and origin.
 
-12. **Workbench Authorization and Audit** — `PluginWorkbenchAccessService` is the single authorization point for the workbench; controllers and domain services never read roles directly. Administrator implies developer, and the configured super role is implicitly both. Every management action (`createDraft`, `saveRevision`, `validate`, `enable`, `disable`, `archive`, `rollback`, `updateMetadata`, config save, test-run) goes through a workbench service (`ScriptPluginWorkbenchService`, `ScriptPluginConfigService`, or `ScriptPluginTestRunService`) and is appended to `p_script_plugin_operation_audit` with actor, action, plugin key, revision id, success and a short detail. Audit failures are logged and never change the business result. Denials are audited only for state-changing actions; read-only denials are logged at warn level. Audit details must never contain script bodies, prompts, config values, request bodies, test arguments or test results. `disableBySystem` is the only path that skips the role check, and only for internal callers such as the cron circuit breaker. Test-run executes the real script on the wes node inside a throwaway revision context, writes no execution log and is rejected for non-wes plugins; config saves use the `lockVersion` optimistic lock, and validation never echoes values.
+9. **Workbench Authorization and Audit** — `PluginWorkbenchAccessService` is the single authorization point for the workbench; controllers and domain services never read roles directly. Administrator implies developer, and the configured super role is implicitly both. Every management action (`createDraft`, `saveRevision`, `validate`, `enable`, `disable`, `archive`, `rollback`, `updateMetadata`, config save, test-run) goes through a workbench service (`ScriptPluginWorkbenchService`, `ScriptPluginConfigService`, or `ScriptPluginTestRunService`) and is appended to `p_script_plugin_operation_audit` with actor, action, plugin key, revision id, success and a short detail. Audit failures are logged and never change the business result. Denials are audited only for state-changing actions; read-only denials are logged at warn level. Audit details must never contain script bodies, prompts, config values, request bodies, test arguments or test results. `disableBySystem` is the only path that skips the role check, and only for internal callers such as the cron circuit breaker. Test-run executes the real script on the wes node inside a throwaway revision context, writes no execution log and is rejected for non-wes plugins; config saves use the `lockVersion` optimistic lock, and validation never echoes values.
+
+10. **Example: Lazy Waving**: `server/modules-plugin/plugin-example/README.md` is a runnable sample, not a built module. It declares one `OUTBOUND_WAVE_WAVE_ACTION` whose `wave` method lives in `lazy-waving.groovy`, plus two string config fields: `packingStatusApiCode` (default `GET_PACKING_STATUS`) and `packingStatusOnlineValue` (default `1`). It is not seeded automatically: create the draft in the workbench (`/plugin-platform/plugin-workbench?mode=new`), save a revision, validate it and enable it as an administrator. `ctx.outbound()` and `ctx.callback()` are wes-only facade methods; read secrets through `ctx.config` only.
+
+### Jar Plugin Rules (Legacy)
+
+The jar-plugin path is frozen: it remains for plugins already packaged with PF4J, but new work must use a script plugin. These rules describe the real interfaces.
+
+1. **One Domain Plugin Interface per Domain**: Every business domain has one extension-point interface that extends `IPlugin` and exposes that domain's lifecycle hooks. `IPlugin` extends PF4J's `ExtensionPoint` and provides default no-op `initialize()` and `destory()` methods and a `priority()` that defaults to `0` (higher wins).
+
+```java
+public interface IOutboundWavePlugin extends IPlugin, IEntityLifecycleListener<Long, String> {
+    default String getEntityName() {
+        return "OutboundWave";
+    }
+}
+```
+
+   `IEntityLifecycleListener<U, V>` supplies `afterStatusChange(U entityId, V entityOrderNo, String newStatus)` and requires `getEntityName()`. Implementations return the host entity name they listen to: `IOutboundPlanOrderPlugin` returns `OutboundPlanOrder`, `IOutboundWavePlugin` returns `OutboundWave`, and `IContainerTaskPlugin` returns `ContainerTask`.
+
+2. **Action Interfaces Extend the Domain Interface**: Additional capabilities are separate action interfaces that extend the domain interface, so an implementation registered for the domain is also discoverable through the action. Methods default to `null`, and the caller treats `null` as "no plugin result, use built-in behavior".
+
+```java
+public interface IOutboundWaveWaveAction extends IOutboundWavePlugin {
+    default List<List<OutboundPlanOrderDTO>> wave(List<OutboundPlanOrderDTO> orders) {
+        return null;
+    }
+}
+
+public interface IOutboundWaveSplitAction extends IOutboundWavePlugin {
+    default List<PickingOrderDTO> split(OutboundWaveDTO wave) {
+        return null;
+    }
+}
+```
+
+3. **Lookup, Priority and Fallback**: Business code looks up extensions through the injected `PluginSdkUtils.getExtractObject(Class<T>)`. It merges PF4J jar extensions with materialized script-plugin proxies, sorts by `priority()` descending, and keeps jar plugins first for equal priorities. When no plugin is enabled the returned list is empty; the caller must then run its built-in logic. A plugin result of `null` means "no result" as well.
+
+```java
+List<IOutboundWaveWaveAction> plugins = pluginSdkUtils.getExtractObject(IOutboundWaveWaveAction.class);
+if (!plugins.isEmpty()) {
+    List<List<OutboundPlanOrderDTO>> waves = plugins.get(0).wave(orders);
+    if (waves != null) {
+        return waves;
+    }
+}
+// built-in wave grouping
+```
+
+4. **Jar Plugin Configuration and Packaging**: A jar plugin is packaged with a `plugin.properties` descriptor and implementations are annotated with PF4J's `@Extension`; the module processes `org.pf4j:pf4j` through `annotationProcessor`. Its configuration is read with `PluginUtils.getPluginConfig(pluginId, Class<T>)`, which resolves the stored config through `IPluginApi.getPluginConfig` and returns a fresh instance when no config is stored. The former jar sample inside `server/modules-plugin/plugin-example/` has been replaced by the script-plugin sample; the jar path receives no new samples.
 
 ## Unit Test Rules
 
