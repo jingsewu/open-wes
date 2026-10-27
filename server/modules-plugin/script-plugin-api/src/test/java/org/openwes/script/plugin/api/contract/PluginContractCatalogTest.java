@@ -103,4 +103,20 @@ class PluginContractCatalogTest {
         assertTrue(fragment.contains("OutboundWave"));
         assertTrue(fragment.contains("ContainerTask"));
     }
+
+    @Test
+    void markdownTable_rendersEveryArchetypeWithHostPointAndBlocking() {
+        String table = PluginContractCatalog.toMarkdownTable();
+
+        assertEquals((long) PluginContractCatalog.archetypes().size() + 2, table.lines().count());
+        for (PluginContractCatalog.ArchetypeDescriptor archetype : PluginContractCatalog.archetypes()) {
+            assertTrue(table.contains("| `" + archetype.type() + "` |"),
+                    archetype.type() + " row is missing");
+            assertTrue(table.contains("`" + archetype.scriptMethod() + "` |"),
+                    archetype.type() + " script method is missing");
+        }
+        assertTrue(table.contains("| `org.openwes.plugin.extension.business.wes.outbound.action.IOutboundWaveWaveAction` | `wave` | yes |"));
+        assertTrue(table.contains("| dispatcher (`/plugin-platform/ext/{pluginKey}/**`) | `handle` | yes |"));
+        assertTrue(table.contains("| dispatcher (scheduler) | `run` | no |"));
+    }
 }

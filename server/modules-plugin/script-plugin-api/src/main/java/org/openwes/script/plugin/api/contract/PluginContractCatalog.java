@@ -77,6 +77,29 @@ public final class PluginContractCatalog {
         return ARCHETYPES;
     }
 
+    /** Renders the archetype contract as the Markdown table embedded in docs/standards/backend.md. */
+    public static String toMarkdownTable() {
+        StringBuilder table = new StringBuilder();
+        table.append("| Archetype | Host extension point | Script method | Blocking |\n");
+        table.append("|-----------|----------------------|---------------|----------|\n");
+        for (ArchetypeDescriptor archetype : ARCHETYPES) {
+            table.append("| `").append(archetype.type()).append("` | ")
+                    .append(hostExtensionPoint(archetype)).append(" | `")
+                    .append(archetype.scriptMethod()).append("` | ")
+                    .append(archetype.blocking() ? "yes" : "no").append(" |\n");
+        }
+        return table.toString();
+    }
+
+    private static String hostExtensionPoint(ArchetypeDescriptor archetype) {
+        if (archetype.extensionPointClassName() != null) {
+            return "`" + archetype.extensionPointClassName() + "`";
+        }
+        return archetype.type() == ExtensionType.HTTP_ENDPOINT
+                ? "dispatcher (`/plugin-platform/ext/{pluginKey}/**`)"
+                : "dispatcher (scheduler)";
+    }
+
     public static Optional<ArchetypeDescriptor> archetype(ExtensionType type) {
         return ARCHETYPES.stream().filter(a -> a.type() == type).findFirst();
     }
