@@ -24,9 +24,10 @@ spring:
     database-change-log-table: l_change_log
     database-change-log-lock-table: l_change_log_lock
   ai:
-    zhipuai:
-      api-key: xxx
-      chat.options.model: GLM-4-air
+    openai:
+      api-key: ${DEEPSEEK_API_KEY:}
+      base-url: https://api.deepseek.com
+      chat.options.model: deepseek-chat
       chat.options.temperature: 0
 
     vectorstore:

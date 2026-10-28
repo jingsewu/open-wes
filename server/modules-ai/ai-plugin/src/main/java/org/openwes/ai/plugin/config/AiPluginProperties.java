@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 public class AiPluginProperties {
 
     /** Model id recorded on every AI revision; also sent as the per-call model option. */
-    private String model = "GLM-4-air";
+    private String model = "deepseek-chat";
 
     /** Hard ceiling applied on top of the DB max_tokens_per_call value. */
     private int maxTokensCeiling = 8192;

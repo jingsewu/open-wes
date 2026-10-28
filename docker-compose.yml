@@ -23,10 +23,9 @@ services:
     container_name: gateway
     environment:
       # Secrets are not stored in the repo. The seeded Nacos gateway config holds
-      # ${AZURE_CLIENT_SECRET} / ${ZHIPUAI_API_KEY} placeholders, resolved from here.
-      # Supply them in a gitignored .env file next to this compose file.
+      # the ${AZURE_CLIENT_SECRET} placeholder, resolved from here.
+      # Supply it in a gitignored .env file next to this compose file.
       AZURE_CLIENT_SECRET: ${AZURE_CLIENT_SECRET:-}
-      ZHIPUAI_API_KEY: ${ZHIPUAI_API_KEY:-}
     build:
       context: ./server/
       target: gateway
@@ -67,6 +66,10 @@ services:
   # WES Server
   wes-server:
     container_name: wes
+    # The seeded Nacos wes config holds the ${DEEPSEEK_API_KEY} placeholder,
+    # resolved from the container environment. Supply it in a gitignored .env file.
+    environment:
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
     build:
       context: ./server/
       target: wes

@@ -11,7 +11,7 @@ import org.openwes.script.plugin.api.enums.ScriptPluginStatusEnum;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.prompt.Prompt;
-import org.springframework.ai.zhipuai.ZhiPuAiChatOptions;
+import org.springframework.ai.openai.OpenAiChatOptions;
 
 import java.util.List;
 import java.util.Map;
@@ -51,12 +51,12 @@ class AiPromptAssemblerTest {
 
     @Test
     void assemble_usesTemperatureZeroAndTheConfiguredModel() {
-        properties.setModel("GLM-4-air");
+        properties.setModel("deepseek-chat");
 
         Prompt prompt = assembler.assemble("group orders", plugin(), null, List.of(), List.of(), 2048);
 
-        ZhiPuAiChatOptions options = assertInstanceOf(ZhiPuAiChatOptions.class, prompt.getOptions());
-        assertEquals("GLM-4-air", options.getModel());
+        OpenAiChatOptions options = assertInstanceOf(OpenAiChatOptions.class, prompt.getOptions());
+        assertEquals("deepseek-chat", options.getModel());
         assertEquals(0.0, options.getTemperature());
         assertEquals(2048, options.getMaxTokens());
     }

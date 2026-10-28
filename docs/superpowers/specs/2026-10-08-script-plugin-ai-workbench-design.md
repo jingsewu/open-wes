@@ -197,7 +197,7 @@ Machine-readable contract in `script-plugin-api`: archetype method signatures, f
 6. **Retry ≤ 3** with validator errors fed back — same pattern as the existing `AiPromptTemplate` SQL retry loop. After 3 failures, generation stops and surfaces a diagnosis to the human.
 7. **Grounding**: plugin docs, bean catalog and examples added to the existing Pinecone corpus.
 
-Existing AI infrastructure is reused: Spring AI + ZhipuAI GLM-4-air (temperature 0), streaming SSE consumption pattern from `generateCode`.
+Existing AI infrastructure is reused: Spring AI with the OpenAI-compatible DeepSeek endpoint (`deepseek-chat`, temperature 0), streaming SSE consumption pattern from `generateCode`.
 
 ### Draft document
 
@@ -282,7 +282,7 @@ Each fix ships with a test. Item 4 (singleton semantics) and item 5 (priority se
 
 ## Risks & Mitigations
 
-- **GLM-4-air Groovy generation quality** → retry loop + few-shot examples + the human review gate; manual editing is always available as the fallback.
+- **DeepSeek Groovy generation quality** → retry loop + few-shot examples + the human review gate; manual editing is always available as the fallback.
 - **Multi-node refresh lag** → Redis pub/sub eventual consistency (seconds); the window is accepted; execution logs carry the revision for diagnosis.
 - **wes/station contract differences** → `apply_system` isolation + target-node validation; a single plugin spanning both apps is explicitly unsupported in v1 (create one plugin per app).
 
