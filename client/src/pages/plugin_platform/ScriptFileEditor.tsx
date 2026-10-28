@@ -30,6 +30,19 @@ const ScriptFileEditor: React.FC<ScriptFileEditorProps> = ({ scripts, onChange, 
         setNewFileName("")
     }, [seedKey])
 
+    // The current revision is fetched after this editor mounts, so the seed effect above runs
+    // while `scripts` is still empty. Select the first file once the revision content arrives;
+    // otherwise an existing revision renders as "no script files".
+    useEffect(() => {
+        if (activeFile !== null) {
+            return
+        }
+        const names = Object.keys(scripts)
+        if (names.length > 0) {
+            setActiveFile(names[0])
+        }
+    }, [scripts, activeFile])
+
     const fileNames = Object.keys(scripts)
 
     const selectFile = (name: string) => {
