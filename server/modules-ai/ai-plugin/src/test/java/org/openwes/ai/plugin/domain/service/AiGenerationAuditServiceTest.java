@@ -26,7 +26,7 @@ class AiGenerationAuditServiceTest {
         when(repository.save(any(ScriptPluginAiGeneration.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
-        ScriptPluginAiGeneration row = service.start("packing-wave", "alice", "GLM-4-air", "v1");
+        ScriptPluginAiGeneration row = service.start("packing-wave", "alice", "deepseek-chat", "v1");
 
         assertEquals(AiGenerationStatusEnum.RUNNING, row.getStatus());
         assertEquals("packing-wave", row.getPluginKey());
@@ -38,7 +38,7 @@ class AiGenerationAuditServiceTest {
     @Test
     void succeed_completesTheRowWithUsage() {
         ScriptPluginAiGeneration row = ScriptPluginAiGeneration.start(
-                "packing-wave", "alice", "GLM-4-air", "v1");
+                "packing-wave", "alice", "deepseek-chat", "v1");
         row.setId(1L);
         when(repository.findById(1L)).thenReturn(Optional.of(row));
         when(repository.save(row)).thenReturn(row);
@@ -57,7 +57,7 @@ class AiGenerationAuditServiceTest {
     @Test
     void fail_truncatesTheErrorMessage() {
         ScriptPluginAiGeneration row = ScriptPluginAiGeneration.start(
-                "packing-wave", "alice", "GLM-4-air", "v1");
+                "packing-wave", "alice", "deepseek-chat", "v1");
         row.setId(2L);
         when(repository.findById(2L)).thenReturn(Optional.of(row));
         when(repository.save(row)).thenReturn(row);
@@ -71,7 +71,7 @@ class AiGenerationAuditServiceTest {
     @Test
     void recent_mapsRowsInRepositoryOrder() {
         ScriptPluginAiGeneration row = ScriptPluginAiGeneration.start(
-                "packing-wave", "alice", "GLM-4-air", "v1");
+                "packing-wave", "alice", "deepseek-chat", "v1");
         row.setId(3L);
         when(repository.findTop50ByPluginKeyOrderByIdDesc("packing-wave")).thenReturn(List.of(row));
 

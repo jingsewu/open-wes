@@ -11,7 +11,7 @@ import org.openwes.script.plugin.api.enums.ExtensionType;
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.prompt.Prompt;
-import org.springframework.ai.zhipuai.ZhiPuAiChatOptions;
+import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.stereotype.Component;
 
 import java.util.LinkedHashMap;
@@ -56,7 +56,7 @@ public class AiPromptAssembler {
                 .append(previousErrors.isEmpty() ? "(none)" : String.join("\n", previousErrors))
                 .append('\n');
 
-        ZhiPuAiChatOptions options = ZhiPuAiChatOptions.builder()
+        OpenAiChatOptions options = OpenAiChatOptions.builder()
                 .model(properties.getModel())
                 .temperature(0.0)
                 .maxTokens(maxTokens)
