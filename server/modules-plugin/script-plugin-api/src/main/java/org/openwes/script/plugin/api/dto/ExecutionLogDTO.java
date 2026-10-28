@@ -3,8 +3,10 @@ package org.openwes.script.plugin.api.dto;
 import lombok.Data;
 import org.openwes.script.plugin.api.enums.ExtensionType;
 
+import java.io.Serializable;
+
 @Data
-public class ExecutionLogDTO {
+public class ExecutionLogDTO implements Serializable {
     /** Populated by queries; ignored on ingest. Stable React key for the UI. */
     private Long id;
     private String pluginKey;
