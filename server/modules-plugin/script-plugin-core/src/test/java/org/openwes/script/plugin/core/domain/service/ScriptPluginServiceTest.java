@@ -28,10 +28,11 @@ import org.openwes.script.plugin.core.domain.repository.ScriptPluginConfigReposi
 import org.openwes.script.plugin.core.domain.repository.ScriptPluginRepository;
 import org.openwes.script.plugin.core.domain.repository.ScriptPluginRevisionRepository;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -45,6 +46,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
@@ -347,32 +349,54 @@ class ScriptPluginServiceTest {
         when(pluginRepository.findByPluginKey("station-api")).thenReturn(Optional.of(plugin));
         when(revisionRepository.findById(11L)).thenReturn(Optional.of(revision()));
         when(configRepository.findByPluginId(1L)).thenReturn(Optional.empty());
-        org.springframework.test.util.ReflectionTestUtils.setField(service, "validationTimeoutMs", 3000L);
+        org.springframework.test.util.ReflectionTestUtils.setField(service, "validationTimeoutMs", 30_000L);
 
-        ExecutorService executor = Executors.newFixedThreadPool(2);
-        try {
-            CountDownLatch start = new CountDownLatch(1);
-            Callable<ValidationReportDTO> validation = () -> {
+        CountDownLatch start = new CountDownLatch(1);
+        List<ValidationReportDTO> reports = Collections.synchronizedList(new ArrayList<>());
+        List<Throwable> failures = Collections.synchronizedList(new ArrayList<>());
+        Runnable validation = () -> {
+            try {
                 start.await();
-                return service.validate("station-api");
-            };
-            Future<ValidationReportDTO> first = executor.submit(validation);
-            Future<ValidationReportDTO> second = executor.submit(validation);
+                reports.add(service.validate("station-api"));
+            } catch (Throwable e) {
+                failures.add(e);
+            }
+        };
+        Thread first = new Thread(validation, "phase5-validation-1");
+        Thread second = new Thread(validation, "phase5-validation-2");
+        first.start();
+        second.start();
+        start.countDown();
 
-            start.countDown();
-            awaitPendingValidation("station");
-            Thread.sleep(100);
-            service.reportValidation(ValidationReportDTO.passed("station-api", 11L, "station"));
+        awaitPendingValidation("station");
+        awaitBothCallersWaitingOnPendingValidation(first, second);
+        service.reportValidation(ValidationReportDTO.passed("station-api", 11L, "station"));
 
-            ValidationReportDTO firstReport = first.get(2, TimeUnit.SECONDS);
-            ValidationReportDTO secondReport = second.get(2, TimeUnit.SECONDS);
-            assertTrue(firstReport.isPassed());
-            assertTrue(secondReport.isPassed());
-            assertSame(firstReport, secondReport, "both callers must receive the shared report");
-            verify(redisUtils, times(1)).publish(any(), any());
-        } finally {
-            executor.shutdownNow();
+        first.join(5_000L);
+        second.join(5_000L);
+        assertFalse(first.isAlive(), "first caller must return");
+        assertFalse(second.isAlive(), "second caller must return");
+        assertTrue(failures.isEmpty(), () -> "validation failed: " + failures);
+        assertEquals(2, reports.size());
+        assertTrue(reports.get(0).isPassed());
+        assertTrue(reports.get(1).isPassed());
+        assertSame(reports.get(0), reports.get(1), "both callers must receive the shared report");
+        verify(redisUtils, times(1)).publish(any(), any());
+    }
+
+    private void awaitBothCallersWaitingOnPendingValidation(Thread... threads) throws InterruptedException {
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(10);
+        while (System.nanoTime() < deadline) {
+            boolean allWaiting = true;
+            for (Thread thread : threads) {
+                allWaiting &= thread.getState() == Thread.State.TIMED_WAITING;
+            }
+            if (allWaiting) {
+                return;
+            }
+            Thread.sleep(10);
         }
+        fail("both validation callers must be waiting on the shared pending validation");
     }
 
     @Test
