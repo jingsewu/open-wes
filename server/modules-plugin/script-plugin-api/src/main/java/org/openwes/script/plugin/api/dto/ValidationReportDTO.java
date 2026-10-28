@@ -4,13 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ValidationReportDTO {
+public class ValidationReportDTO implements Serializable {
 
     private String pluginKey;
     private Long revisionId;
@@ -22,7 +23,7 @@ public class ValidationReportDTO {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class ValidationFailureDTO {
+    public static class ValidationFailureDTO implements Serializable {
         private String stage;
         private String message;
     }

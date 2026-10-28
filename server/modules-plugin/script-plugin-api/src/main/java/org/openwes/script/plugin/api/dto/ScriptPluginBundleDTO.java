@@ -2,6 +2,7 @@ package org.openwes.script.plugin.api.dto;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -10,7 +11,7 @@ import java.util.Map;
  * script sources and the current configuration values.
  */
 @Data
-public class ScriptPluginBundleDTO {
+public class ScriptPluginBundleDTO implements Serializable {
     private String pluginKey;
     private String name;
     private String applySystem;

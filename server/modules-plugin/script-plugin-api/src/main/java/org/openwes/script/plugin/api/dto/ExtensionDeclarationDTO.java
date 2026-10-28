@@ -3,6 +3,8 @@ package org.openwes.script.plugin.api.dto;
 import lombok.Data;
 import org.openwes.script.plugin.api.enums.ExtensionType;
 
+import java.io.Serializable;
+
 /**
  * One declared extension point of a plugin. Field usage depends on `type`:
  * apiType (REQUEST_*), entityName (LIFECYCLE_LISTENER), customApiCode (CUSTOM_API),
@@ -10,7 +12,7 @@ import org.openwes.script.plugin.api.enums.ExtensionType;
  * `method` is the script method to invoke.
  */
 @Data
-public class ExtensionDeclarationDTO {
+public class ExtensionDeclarationDTO implements Serializable {
     private ExtensionType type;
     private int priority;
     private String script;
