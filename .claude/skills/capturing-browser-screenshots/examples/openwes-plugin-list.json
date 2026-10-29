@@ -1,0 +1,17 @@
+{
+  "viewport": { "width": 1440, "height": 900 },
+  "timeout": 30000,
+  "steps": [
+    { "navigate": "http://localhost:3000/login" },
+    { "wait": 1500 },
+    {
+      "eval": "fetch('http://localhost:8090/user/api/auth/signin', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ username: '{{ENV:OPENWES_USER}}', password: '{{ENV:OPENWES_PASS}}' }) }).then((r) => r.json()).then((d) => { if (!d.token) throw new Error('signin failed: ' + JSON.stringify(d)); localStorage.setItem('ws_token', d.token); localStorage.setItem('Authorization', 'admin'); localStorage.setItem('i18nextLng', 'zh-CN'); return 'signed in'; })"
+    },
+    { "navigate": "http://localhost:3000/wms/dashboard" },
+    { "waitForText": "插件平台" },
+    { "clickText": "插件平台", "scope": ".ant-menu-horizontal" },
+    { "waitForText": "插件标识" },
+    { "waitForGone": ".cxd-Table-placeholder" },
+    { "screenshot": "plugin-list" }
+  ]
+}
