@@ -14,6 +14,21 @@
     font-family: var(--font-family);
 }
 
+/* Icon fonts must keep their own family: the universal rule above also
+   matches ::before, which would otherwise render Font Awesome glyphs with
+   Plus Jakarta Sans and show them as empty squares. The glyph font comes
+   from the FA class on the <i>, so let the pseudo-element inherit it. */
+.fa::before,
+.fas::before,
+.far::before,
+.fa-solid::before,
+.fa-regular::before,
+.fa-classic::before,
+.fab::before,
+.fa-brands::before {
+    font-family: inherit;
+}
+
 .routes-wrapper {
     position: absolute;
     width: 100%;
