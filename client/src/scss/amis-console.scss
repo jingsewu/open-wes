@@ -95,6 +95,67 @@
     --dialog-header-fontWeight: 600;
 }
 
+/* ── Dark tokens (dormant) ───────────────────────────────────────────── */
+
+/* Wave 4 only prepares the token layer. Nothing sets data-owes-theme yet;
+   activating it later flips AMIS pages without touching any page schema.
+   The numeric neutral scale is inverted so text-1 stays "strongest" and
+   fill-11 stays "surface" in both themes. */
+:root[data-owes-theme="dark"],
+.AMISCSSWrapper[data-owes-theme="dark"],
+:root[data-owes-theme="dark"] .AMISCSSWrapper {
+    color-scheme: dark;
+
+    --colors-brand-4: #93c5fd;
+    --colors-brand-5: #60a5fa;
+    --colors-brand-6: #3b82f6;
+    --colors-brand-9: #1e3a8a;
+    --colors-brand-10: #172554;
+
+    --colors-neutral-text-1: #f8fafc;
+    --colors-neutral-text-2: #f1f5f9;
+    --colors-neutral-text-3: #e2e8f0;
+    --colors-neutral-text-4: #cbd5e1;
+    --colors-neutral-text-5: #94a3b8;
+    --colors-neutral-text-6: #64748b;
+    --colors-neutral-text-7: #475569;
+    --colors-neutral-text-8: #334155;
+    --colors-neutral-text-9: #1e293b;
+    --colors-neutral-text-10: #0f172a;
+    --colors-neutral-text-11: #020617;
+
+    --colors-neutral-line-6: #475569;
+    --colors-neutral-line-7: #334155;
+    --colors-neutral-line-8: #1e293b;
+    --colors-neutral-line-9: #1e293b;
+    --colors-neutral-line-10: #0f172a;
+    --colors-neutral-line-11: #020617;
+
+    --colors-neutral-fill-8: #334155;
+    --colors-neutral-fill-9: #1e293b;
+    --colors-neutral-fill-10: #1e293b;
+    --colors-neutral-fill-11: #0f172a;
+    --colors-neutral-fill-12: #172554;
+
+    --colors-success-4: #6ee7b7;
+    --colors-success-5: #34d399;
+    --colors-success-6: #10b981;
+    --colors-warning-4: #fcd34d;
+    --colors-warning-5: #fbbf24;
+    --colors-warning-6: #f59e0b;
+    --colors-error-4: #fca5a5;
+    --colors-error-5: #f87171;
+    --colors-error-6: #ef4444;
+    --colors-info-5: #60a5fa;
+
+    --table-header-bg-color: #1e293b;
+    --table-header-color: #cbd5e1;
+    --table-body-color: #e2e8f0;
+    --table-body-hover-bg-color: #1e293b;
+    --table-border-color: #334155;
+    --Drawer-footer-borderColor: #334155;
+}
+
 /* The shell already paints the content background; keep the page surface
    quiet so the table, not the chrome, carries the hierarchy. */
 .cxd-Page {

@@ -404,6 +404,13 @@ and provides these helper classes:
 Add a class here only when it is used by at least two pages. Page-specific CSS is
 a code smell: fix the schema or the shared token instead.
 
+The same file owns two root-level switches: `data-owes-density` on `<html>`
+(`standard` / `compact`, persisted by the store) and a dormant dark token layer
+behind `data-owes-theme="dark"`. Nothing sets the theme attribute yet; activating
+it later must go through the token layer, never through per-page colour overrides.
+cxd redeclares its variables on `.AMISCSSWrapper`, so overrides must match
+`:root[...]` and `:root[...] .AMISCSSWrapper` together.
+
 ## 14. Lint and definition of done
 
 Run:
@@ -473,11 +480,29 @@ warehouse under test has rows. Seed at least one record per page, or verify the
 shared preset on a page that has data (role management) and the locale keys in
 the JSON, before signing the wave off.
 
-**Wave 4 — polish**
+**Wave 4 — polish (done)**
 
 Column visibility defaults, keyboard shortcuts for scanners, inline validation
 copy, table density preferences, and dark-mode readiness (tokens only; no
 per-page colour overrides).
+
+- Audit columns from `auditColumns()` default to `toggled: false`; `crudPage`
+  forces the column toggler on whenever a column is hidden by default.
+- `/` focuses the page search input (explicit `.cxd-Crud-filter` panels and
+  auto-generated `.cxd-Table-searchableForm` panels) and `Alt+N` clicks the
+  page's primary action. Keydowns in editable controls, inside an open
+  drawer/modal, or within 50 ms of the previous key (scanner bursts) are ignored.
+- `requiredField(messageKey)` supplies domain-specific required copy;
+  `formDrawer` sets `messages.validateFailed`. Inline feedback plus the
+  form-level message replace the generic AMIS text.
+- Table density is persisted per browser (`owesTableDensity`) and applied via
+  `data-owes-density` on `<html>`; the user menu exposes 标准 / 紧凑.
+- `amis-console.scss` carries a dormant dark token layer behind
+  `data-owes-theme="dark"` — tokens only, no toggle and no page overrides.
+
+Verified at 1440×900 and 1024×768: shortcuts, toggler defaults and reveal,
+density switch and persistence, required copy on role and container drawers,
+dark tokens, no console errors and no "renderer not found".
 
 Do not mass-format or mass-rename schemas in a functional PR. One wave, one kind
 of change, verified with screenshots.
