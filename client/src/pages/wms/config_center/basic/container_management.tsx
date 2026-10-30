@@ -4,10 +4,13 @@ import {
     warehouse_area_id,
     warehouse_logic_code
 } from "@/pages/wms/constants/select_search_api_contant"
+import { true_false_options } from "@/utils/commonContants"
 import {
-    create_update_columns,
-    true_false_options
-} from "@/utils/commonContants"
+    auditColumns,
+    codeColumn,
+    requiredField,
+    statusColumn
+} from "@/utils/amis/presets"
 import { api_container_batch_add } from "@/pages/wms/config_center/constants/api_constant"
 import {
     api_crud_search_by_warehouseCode,
@@ -30,7 +33,7 @@ const fromBody = [
         type: "select",
         name: "containerType",
         source: "${dictionary.ContainerType}",
-        required: true
+        ...requiredField("validation.container.typeRequired")
     },
     {
         label: "workLocationArea.containerSpecification",
@@ -43,31 +46,31 @@ const fromBody = [
                 container_spec.url +
                 "&containerType-op=eq&containerType=${containerType}"
         },
-        required: true
+        ...requiredField("validation.container.specRequired")
     },
     {
         label: "table.numberOfDigits",
         type: "input-text",
         name: "indexNumber",
-        required: true
+        ...requiredField("validation.container.indexNumberRequired")
     },
     {
         label: "table.numberingPrefix",
         type: "input-text",
         name: "containerCodePrefix",
-        required: true
+        ...requiredField("validation.container.prefixRequired")
     },
     {
         label: "table.startNumber",
         type: "input-number",
         name: "startIndex",
-        required: true
+        ...requiredField("validation.container.startNumberRequired")
     },
     {
         label: "table.createdNumber",
         type: "input-text",
         name: "createNumber",
-        required: true
+        ...requiredField("validation.container.countRequired")
     },
     {
         type: "hidden",
@@ -86,12 +89,13 @@ const form = {
 const add = {
     type: "button",
     actionType: "drawer",
+    level: "primary",
     icon: "fa fa-plus",
     label: "button.batchCreation",
     target: "ContainerTable",
     drawer: {
         size: "lg",
-        title: "button.batchCreation",
+        title: "containerManagement.batchCreateTitle",
         closeOnEsc: true,
         body: form
     }
@@ -113,11 +117,7 @@ const columns = [
         label: "Version",
         hidden: true
     },
-    {
-        name: "containerCode",
-        label: "table.containerCode",
-        searchable: true
-    },
+    codeColumn("containerCode", "table.containerCode", { searchable: true }),
     {
         name: "containerSpecCode",
         label: "workLocationArea.containerSpecification",
@@ -133,12 +133,16 @@ const columns = [
             }
         }
     },
-    {
-        name: "containerStatus",
-        label: "table.containerStatus",
-        type: "mapping",
-        source: "${dictionary.ContainerStatus}"
-    },
+    statusColumn("containerStatus", "table.containerStatus", {
+        labels: {
+            IN_SIDE: "status.containerInSide",
+            OUT_SIDE: "status.containerOutSide"
+        },
+        tones: {
+            IN_SIDE: "success",
+            OUT_SIDE: "muted"
+        }
+    }),
     {
         name: "warehouseAreaId",
         label: "table.warehouseAreaName",
@@ -167,12 +171,8 @@ const columns = [
         type: "mapping",
         map: true_false_options
     },
-    {
-        name: "locationCode",
-        label: "table.locationCode",
-        searchable: true
-    },
-    ...create_update_columns
+    codeColumn("locationCode", "table.locationCode", { searchable: true }),
+    ...auditColumns()
 ]
 
 const searchIdentity = "WContainer"
@@ -181,7 +181,7 @@ const showColumns = columns
 const schema = {
     type: "page",
     title: "containerManagement.title",
-    toolbar: [],
+    toolbar: [add],
     data: {
         dictionary: "${ls:dictionary}"
     },
@@ -239,7 +239,6 @@ const schema = {
             ],
             headerToolbar: [
                 "reload",
-                add,
                 "bulkActions",
                 {
                     type: "export-excel",
@@ -249,6 +248,7 @@ const schema = {
                 }
             ],
             footerToolbar: ["switch-per-page", "statistics", "pagination"],
+            placeholder: "emptyState.containerManagement",
             columns: [
                 ...columns
                 // {

@@ -1,9 +1,12 @@
 import schema2component from "@/utils/schema2component"
 import { warehouse_area_id } from "@/pages/wms/constants/select_search_api_contant"
+import { true_false_options } from "@/utils/commonContants"
 import {
-    create_update_columns,
-    true_false_options
-} from "@/utils/commonContants"
+    auditColumns,
+    codeColumn,
+    requiredField,
+    statusColumn
+} from "@/utils/amis/presets"
 import {
     api_work_station_add,
     api_work_station_config_add,
@@ -27,20 +30,20 @@ const baseInfoForm = [
         label: "table.workstationCoding",
         name: "stationCode",
         type: "input-text",
-        required: true
+        ...requiredField("validation.workstation.codeRequired")
     },
     {
         label: "table.workstationName",
         name: "stationName",
         type: "input-text",
-        required: true
+        ...requiredField("validation.workstation.nameRequired")
     },
     {
         label: "table.warehouseAreaBelongs",
         name: "warehouseAreaId",
         type: "select",
         source: warehouse_area_id,
-        required: true
+        ...requiredField("validation.workstation.areaRequired")
     },
     {
         label: "table.taskRules",
@@ -83,11 +86,9 @@ const baseInfoForm = [
                 title: "table.robotWorkstations",
                 body: [
                     {
-                        label: "工作位类型",
+                        type: "hidden",
                         name: "workLocations[0].workLocationType",
-                        type: "input-text",
-                        value: "ROBOT",
-                        hidden: true
+                        value: "ROBOT"
                     },
                     {
                         label: "table.workBitEncoding",
@@ -106,11 +107,9 @@ const baseInfoForm = [
                 title: "table.conveyorLines",
                 body: [
                     {
-                        label: "工作位类型",
+                        type: "hidden",
                         name: "workLocations[1].workLocationType",
-                        type: "input-text",
-                        value: "CONVEYOR",
-                        hidden: true
+                        value: "CONVEYOR"
                     },
                     {
                         label: "table.workBitEncoding",
@@ -129,15 +128,13 @@ const baseInfoForm = [
                 title: "table.cacheShelves",
                 body: [
                     {
-                        label: "工作位类型",
+                        type: "hidden",
                         name: "workLocations[2].workLocationType",
-                        type: "input-text",
-                        value: "BUFFER_SHELVING",
-                        hidden: true
+                        value: "BUFFER_SHELVING"
                     },
                     {
                         label: "table.workBitEncoding",
-                        name: "workLocations[2].workLocationCode}",
+                        name: "workLocations[2].workLocationCode",
                         type: "input-text",
                         requiredOn: "${workLocations[2].enable}"
                     },
@@ -175,7 +172,7 @@ const baseInfoForm = [
                             },
                             {
                                 name: "bay",
-                                label: "table.colum"
+                                label: "table.column"
                             },
                             {
                                 name: "enable",
@@ -191,7 +188,6 @@ const baseInfoForm = [
     {
         type: "hidden",
         name: "warehouseCode",
-        label: "仓库编码",
         value: warehouseCode
     }
 ]
@@ -295,7 +291,7 @@ const configInfoForm = [
                                         type: "input-text",
                                         name: "fieldName",
                                         label: "table.fieldName",
-                                        hidden: "true"
+                                        hidden: true
                                     },
                                     {
                                         type: "input-text",
@@ -452,16 +448,34 @@ const configInfoForm = [
     }
 ]
 
+const drawerActions = [
+    {
+        type: "button",
+        actionType: "cancel",
+        label: "common.cancel"
+    },
+    {
+        type: "button",
+        actionType: "confirm",
+        level: "primary",
+        label: "common.save",
+        reload: "WorkStationTable"
+    }
+]
+
 const add = {
     type: "button",
-    actionType: "dialog",
+    actionType: "drawer",
+    level: "primary",
     icon: "fa fa-plus",
     label: "button.add",
-    target: "role",
-    dialog: {
-        title: "button.add",
-        size: "lg",
+    target: "WorkStationTable",
+    drawer: {
+        title: "workstationManagement.addTitle",
+        size: "xl",
         closeOnEsc: true,
+        closeOnOutside: false,
+        actions: drawerActions,
         body: {
             type: "form",
             api: api_work_station_add,
@@ -496,11 +510,9 @@ const columns = [
             source: warehouse_area_id
         }
     },
-    {
-        name: "stationCode",
-        label: "table.workstationCoding",
+    codeColumn("stationCode", "table.workstationCoding", {
         searchable: true
-    },
+    }),
     {
         name: "stationName",
         label: "table.workstationName"
@@ -511,21 +523,27 @@ const columns = [
         type: "mapping",
         source: "${dictionary.WorkStationMode}"
     },
-    {
-        name: "workStationStatus",
-        label: "table.status",
-        type: "mapping",
-        source: "${dictionary.WorkStationStatus}",
+    statusColumn("workStationStatus", "table.status", {
+        labels: {
+            ONLINE: "status.workstationOnline",
+            PAUSED: "status.workstationPaused",
+            OFFLINE: "status.workstationOffline"
+        },
+        tones: {
+            ONLINE: "success",
+            PAUSED: "warning",
+            OFFLINE: "muted"
+        },
         searchable: {
             type: "select",
             source: "${dictionary.WorkStationStatus}"
         }
-    },
+    }),
     {
         name: "workLocations",
         hidden: true
     },
-    ...create_update_columns
+    ...auditColumns()
 ]
 
 const searchIdentity = "WWorkStation"
@@ -534,7 +552,7 @@ const showColumns = columns
 const schema = {
     type: "page",
     title: "workstationManagement.title",
-    toolbar: [],
+    toolbar: [add],
     data: {
         dictionary: "${ls:dictionary}"
     },
@@ -542,7 +560,7 @@ const schema = {
         {
             type: "crud",
             syncLocation: false,
-            name: "role",
+            name: "WorkStationTable",
             api: api_crud_search_by_warehouseCode,
             defaultParams: {
                 searchIdentity: searchIdentity,
@@ -556,8 +574,9 @@ const schema = {
                 columnsNum: 3,
                 showBtnToolbar: true
             },
-            headerToolbar: [add],
+            headerToolbar: ["reload"],
             footerToolbar: ["switch-per-page", "statistics", "pagination"],
+            placeholder: "emptyState.workstation",
             columns: [
                 ...columns,
                 {
@@ -568,29 +587,42 @@ const schema = {
                         {
                             label: "button.modify",
                             type: "button",
-                            actionType: "dialog",
-                            dialog: {
-                                title: "button.modify",
-                                size: "lg",
+                            actionType: "drawer",
+                            level: "link",
+                            className: "owes-action",
+                            drawer: {
+                                title: "workstationManagement.editTitle",
+                                size: "xl",
                                 closeOnEsc: true,
-                                closeOnOutside: true,
+                                closeOnOutside: false,
+                                actions: drawerActions,
                                 body: {
                                     type: "form",
                                     api: api_work_station_add,
                                     initApi: api_work_station_get,
-                                    body: baseInfoForm
+                                    body: [
+                                        {
+                                            type: "tpl",
+                                            tpl: "${stationCode} · ${stationName}",
+                                            className: "owes-drawer-context"
+                                        },
+                                        ...baseInfoForm
+                                    ]
                                 }
                             }
                         },
                         {
                             label: "table.workstationConfiguration",
                             type: "button",
-                            actionType: "dialog",
-                            dialog: {
+                            actionType: "drawer",
+                            level: "link",
+                            className: "owes-action",
+                            drawer: {
                                 title: "table.workstationConfiguration",
-                                size: "lg",
+                                size: "xl",
                                 closeOnEsc: true,
-                                closeOnOutside: true,
+                                closeOnOutside: false,
+                                actions: drawerActions,
                                 body: {
                                     type: "form",
                                     api: api_work_station_config_add,
@@ -607,7 +639,14 @@ const schema = {
                                             return payload
                                         }
                                     },
-                                    body: configInfoForm
+                                    body: [
+                                        {
+                                            type: "tpl",
+                                            tpl: "${stationCode} · ${stationName}",
+                                            className: "owes-drawer-context"
+                                        },
+                                        ...configInfoForm
+                                    ]
                                 }
                             }
                         }

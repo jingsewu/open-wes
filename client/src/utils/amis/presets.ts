@@ -169,6 +169,23 @@ export function remarkColumn(
     )
 }
 
+/**
+ * Required field with a domain-specific message instead of AMIS's generic
+ * "cannot be empty" copy. The message names the field and the expected action,
+ * e.g. "请扫描或输入容器编码".
+ *
+ *   { name: "containerCode", label: "table.containerCode", ...requiredField("validation.container.codeRequired") }
+ */
+export function requiredField(messageKey: string): {
+    required: true
+    validationErrors: { isRequired: string }
+} {
+    return {
+        required: true,
+        validationErrors: { isRequired: messageKey }
+    }
+}
+
 /** Standard operation column. Keep at most three visible actions. */
 export function operationColumn(
     buttons: SchemaLike[],
@@ -361,6 +378,9 @@ export function formDrawer(options: FormDrawerOptions): SchemaLike {
             mode: "horizontal",
             labelWidth: 108,
             columnCount,
+            messages: {
+                validateFailed: "validation.formFailed"
+            },
             ...(options.api ? { api: options.api } : {}),
             ...(options.initApi ? { initApi: options.initApi } : {}),
             body: options.body
