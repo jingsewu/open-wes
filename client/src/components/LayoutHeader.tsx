@@ -15,6 +15,7 @@ import { workStationEventLoop } from "@/pages/wms/station/event-loop/eventLoopIn
 
 import Language from "@/pages/components/Language"
 import ChangePasswordForm from "@/pages/components/ChangePassword"
+import { useConsoleShortcuts } from "@/utils/amis/useConsoleShortcuts"
 
 const Divider = () => (
     <div style={{ width: 1, height: 18, background: "#e5e7eb", margin: "0 4px", flexShrink: 0 }} />
@@ -136,6 +137,7 @@ const Header = ({
     onWarehouseChange,
     onLanguageChange
 }: HeaderProps) => {
+    useConsoleShortcuts()
     const history = useHistory()
     const { t } = useTranslation()
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
