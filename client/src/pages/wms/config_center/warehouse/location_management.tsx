@@ -117,17 +117,19 @@ const columns = [
         name: "warehouseAreaId",
         label: "table.reservoirAreaName",
         type: "mapping",
-        source: warehouse_area_id
+        source: warehouse_area_id,
+        searchable: { type: "select", source: warehouse_area_id }
     },
     {
         name: "warehouseLogicId",
         label: "table.logicalAreaName",
         type: "mapping",
-        source: warehouse_logic_id
+        source: warehouse_logic_id,
+        searchable: { type: "select", source: warehouse_logic_id }
     },
-    codeColumn("aisleCode", "table.roadwayCoding"),
-    codeColumn("shelfCode", "table.shelfCoding"),
-    codeColumn("locationCode", "table.locationCode"),
+    codeColumn("aisleCode", "table.roadwayCoding", { searchable: true }),
+    codeColumn("shelfCode", "table.shelfCoding", { searchable: true }),
+    codeColumn("locationCode", "table.locationCode", { searchable: true }),
     {
         name: "locationType",
         label: "table.locationType",
@@ -152,43 +154,12 @@ const columns = [
     ...auditColumns()
 ]
 
-const filters = [
-    {
-        label: "table.locationCode",
-        name: "locationCode",
-        type: "input-text"
-    },
-    {
-        label: "table.reservoirAreaName",
-        name: "warehouseAreaId",
-        type: "select",
-        source: warehouse_area_id
-    },
-    {
-        label: "table.warehouseLogicName",
-        name: "warehouseLogicId",
-        type: "select",
-        source: warehouse_logic_id
-    },
-    {
-        label: "table.roadwayCoding",
-        name: "aisleCode",
-        type: "input-text"
-    },
-    {
-        label: "table.shelfCoding",
-        name: "shelfCode",
-        type: "input-text"
-    }
-]
-
 const schema = crudPage({
     title: "locationManagement.title",
     name: "role",
     searchIdentity: "WLocation",
     api: api_crud_search_by_warehouseCode,
     columns,
-    filters,
     pageActions: [addButton({ target: "role", drawer: addDrawer })],
     rowActions: [editButton(editDrawer)],
     empty: "emptyState.locationManagement"
