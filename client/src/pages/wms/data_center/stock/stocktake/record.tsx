@@ -2,19 +2,21 @@ const recordColumns = [
     {
         name: "id",
         dbField: "k.id",
-        label: "盘点记录ID",
+        label: "ID",
         hidden: true
     },
     {
         dbField: "k.stocktake_order_id",
         name: "stocktakeOrderId",
-        label: "盘点单ID",
+        label: "ID",
         hidden: true
     },
     {
         dbField: "a.sku_code",
         name: "skuCode",
-        label: "skuArea.skuCode"
+        label: "skuArea.skuCode",
+        className: "owes-code",
+        copyable: true
     },
     {
         dbField: "a.sku_name",
@@ -24,7 +26,9 @@ const recordColumns = [
     {
         dbField: "k.container_code",
         name: "containerCode",
-        label: "table.containerCode"
+        label: "table.containerCode",
+        className: "owes-code",
+        copyable: true
     },
     {
         dbField: "k.container_face",
@@ -39,29 +43,38 @@ const recordColumns = [
     {
         dbField: "k.qty_original",
         name: "qtyOriginal",
-        label: "table.inventoryQuantity"
+        label: "table.inventoryQuantity",
+        align: "right",
+        className: "owes-number"
     },
     {
         dbField: "k.qty_stocktake",
         name: "qtyStocktake",
-        label: "table.countQty"
+        label: "table.countQty",
+        align: "right",
+        className: "owes-number"
     },
     {
         dbField: "k.stocktake_record_status",
         name: "stocktakeRecordStatus",
         label: "table.status",
         type: "mapping",
-        source: "${StocktakeRecordStatus}"
+        source: "${dictionary.StocktakeRecordStatus}"
     }
 ]
 
-export const recordDialog = {
+export const recordDrawer = {
     title: "button.inventoryRecord",
     actions: [],
     closeOnEsc: true,
     closeOnOutside: true,
     size: "xl",
     body: [
+        {
+            type: "tpl",
+            tpl: "${orderNo}",
+            className: "owes-drawer-context"
+        },
         {
             type: "crud",
             syncLocation: false,

@@ -185,7 +185,7 @@ export const owner_code_barcode_analysis = {
         ]
     },
     responseData: {
-        options: "${CONCAT([{value: '*',label: 'ALL'}],options)}"
+        options: "${CONCAT([{value: '*',label: 'common.all'}],options)}"
     }
 }
 

@@ -14,19 +14,14 @@ const columns = [
     {
         dbField: "r.order_no",
         name: "abnormalOrderNo",
-        label: "table.exceptionTrackingNumber",
-        searchable: true
+        label: "table.exceptionTrackingNumber"
     },
     {
         dbField: "r.stock_abnormal_type",
         name: "stockAbnormalType",
         label: "table.exceptionType",
         type: "mapping",
-        source: "${dictionary.StockAbnormalType}",
-        searchable: {
-            type: "select",
-            source: "${dictionary.StockAbnormalType}"
-        }
+        source: "${dictionary.StockAbnormalType}"
     },
     {
         dbField: "r.abnormal_order_no",
@@ -44,11 +39,7 @@ const columns = [
         name: "stockAbnormalStatus",
         label: "table.status",
         type: "mapping",
-        source: "${dictionary.StockAbnormalStatus}",
-        searchable: {
-            type: "select",
-            source: "${dictionary.StockAbnormalStatus}"
-        }
+        source: "${dictionary.StockAbnormalStatus}"
     },
     {
         dbField: "r.warehouse_code",
@@ -59,8 +50,7 @@ const columns = [
     {
         dbField: "r.container_code",
         name: "containerCode",
-        label: "table.containerCode",
-        searchable: true
+        label: "table.containerCode"
     },
     {
         dbField: "r.container_slot_code",
@@ -70,8 +60,7 @@ const columns = [
     {
         dbField: "g.bar_code_list",
         name: "barCodeList",
-        label: "skuArea.barcode",
-        searchable: true
+        label: "skuArea.barcode"
     },
     {
         dbField: "r.sku_code",
@@ -125,11 +114,7 @@ const columns = [
         dbField: "r.create_time",
         name: "createTime",
         label: "table.creationTime",
-        tpl: "${createTime/1000|date:YYYY-MM-DD HH\\:mm\\:ss}",
-        searchable: {
-            type: "input-date-range",
-            valueFormat: "x"
-        }
+        tpl: "${createTime/1000|date:YYYY-MM-DD HH\\:mm\\:ss}"
     },
     {
         dbField: "r.update_time",
@@ -164,9 +149,54 @@ const schema = {
                 }
             },
             autoFillHeight: true,
-            autoGenerateFilter: {
-                columnsNum: 3,
-                showBtnToolbar: true
+            filterTogglable: true,
+            filterDefaultVisible: true,
+            filter: {
+                title: "common.filter",
+                mode: "inline",
+                body: [
+                    {
+                        label: "table.exceptionTrackingNumber",
+                        name: "abnormalOrderNo",
+                        type: "input-text"
+                    },
+                    {
+                        label: "table.containerCode",
+                        name: "containerCode",
+                        type: "input-text"
+                    },
+                    {
+                        label: "skuArea.barcode",
+                        name: "barCodeList",
+                        type: "input-text"
+                    },
+                    {
+                        label: "table.exceptionType",
+                        name: "stockAbnormalType",
+                        type: "select",
+                        source: "${dictionary.StockAbnormalType}"
+                    },
+                    {
+                        label: "table.status",
+                        name: "stockAbnormalStatus",
+                        type: "select",
+                        source: "${dictionary.StockAbnormalStatus}"
+                    },
+                    {
+                        label: "table.creationTime",
+                        name: "createTime",
+                        type: "input-date-range",
+                        valueFormat: "x"
+                    }
+                ],
+                actions: [
+                    { type: "reset", label: "button.reset" },
+                    {
+                        type: "submit",
+                        level: "primary",
+                        label: "common.search"
+                    }
+                ]
             },
             headerToolbar: [
                 "reload",
@@ -174,10 +204,11 @@ const schema = {
                     type: "export-excel",
                     label: "button.export",
                     api: api_crud_search_by_warehouseCode_total,
-                    fileName: "stock_abnormal"
+                    filename: "stock_abnormal"
                 }
             ],
             footerToolbar: ["switch-per-page", "statistics", "pagination"],
+            placeholder: "emptyState.stockAbnormal",
             columns: [
                 ...columns,
                 {

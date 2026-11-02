@@ -1,30 +1,34 @@
+import { codeColumn } from "@/utils/amis/presets"
+
 const detailColumns = [
     {
         name: "stocktakeOrderId",
-        label: "盘点单ID",
+        label: "ID",
         hidden: true
     },
     {
         name: "stocktakeUnitType",
         label: "table.stocktakeUnitType"
     },
-    {
-        name: "unitCode",
-        label: "table.unitCode"
-    },
+    codeColumn("unitCode", "table.unitCode"),
     {
         name: "unitId",
         label: "table.unitId"
     }
 ]
 
-export const detailDialog = {
+export const detailDrawer = {
     title: "inventoryCounting.detail.modal.title",
     actions: [],
     closeOnEsc: true,
     closeOnOutside: true,
     size: "xl",
     body: [
+        {
+            type: "tpl",
+            tpl: "${orderNo}",
+            className: "owes-drawer-context"
+        },
         {
             type: "crud",
             syncLocation: false,

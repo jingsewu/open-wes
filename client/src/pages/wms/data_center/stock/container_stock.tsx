@@ -9,7 +9,6 @@ import {
 } from "@/pages/constantApi"
 
 const permissions = localStorage.getItem("permissions")?.split(",")
-console.log("permissions", permissions?.includes("15230"))
 
 const form = [
     {
@@ -38,24 +37,18 @@ const columns = [
     {
         name: "skuCode",
         label: "skuArea.skuCode",
-        dbField: "a.sku_code",
-        searchable: true
+        dbField: "a.sku_code"
     },
     {
         name: "barcode",
         label: "skuArea.barcode",
-        dbField: "f.bar_code",
-        searchable: true
+        dbField: "f.bar_code"
     },
     {
         name: "ownerCode",
         label: "skuArea.ownerCode",
         dbField: "a.owner_code",
-        source: owner_code,
-        searchable: {
-            type: "select",
-            source: owner_code
-        }
+        source: owner_code
     },
     {
         name: "brand",
@@ -100,17 +93,12 @@ const columns = [
         name: "warehouseAreaCode",
         label: "workLocationArea.warehouseArea",
         dbField: "wa.warehouse_area_code",
-        source: warehouse_area_code,
-        searchable: {
-            type: "select",
-            source: warehouse_area_code
-        }
+        source: warehouse_area_code
     },
     {
         name: "containerCode",
         label: "table.containerCode",
-        dbField: "k.container_code",
-        searchable: true
+        dbField: "k.container_code"
     },
     {
         name: "containerSlotCode",
@@ -146,11 +134,7 @@ const columns = [
         name: "createTime",
         label: "table.creationTime",
         dbField: "k.create_time",
-        tpl: "${createTime/1000|date:YYYY-MM-DD HH\\:mm\\:ss}",
-        searchable: {
-            type: "input-date-range",
-            valueFormat: "x"
-        }
+        tpl: "${createTime/1000|date:YYYY-MM-DD HH\\:mm\\:ss}"
     },
     {
         name: "updateTime",
@@ -188,9 +172,54 @@ const schema = {
                 }
             },
             autoFillHeight: true,
-            autoGenerateFilter: {
-                columnsNum: 3,
-                showBtnToolbar: true
+            filterTogglable: true,
+            filterDefaultVisible: true,
+            filter: {
+                title: "common.filter",
+                mode: "inline",
+                body: [
+                    {
+                        label: "table.containerCode",
+                        name: "containerCode",
+                        type: "input-text"
+                    },
+                    {
+                        label: "skuArea.skuCode",
+                        name: "skuCode",
+                        type: "input-text"
+                    },
+                    {
+                        label: "skuArea.barcode",
+                        name: "barcode",
+                        type: "input-text"
+                    },
+                    {
+                        label: "skuArea.ownerCode",
+                        name: "ownerCode",
+                        type: "select",
+                        source: owner_code
+                    },
+                    {
+                        label: "workLocationArea.warehouseArea",
+                        name: "warehouseAreaCode",
+                        type: "select",
+                        source: warehouse_area_code
+                    },
+                    {
+                        label: "table.creationTime",
+                        name: "createTime",
+                        type: "input-date-range",
+                        valueFormat: "x"
+                    }
+                ],
+                actions: [
+                    { type: "reset", label: "button.reset" },
+                    {
+                        type: "submit",
+                        level: "primary",
+                        label: "common.search"
+                    }
+                ]
             },
             headerToolbar: [
                 "reload",
@@ -198,10 +227,11 @@ const schema = {
                     type: "export-excel",
                     label: "button.export",
                     api: api_crud_search_by_warehouseCode_total,
-                    fileName: "container_stock"
+                    filename: "container_stock"
                 }
             ],
             footerToolbar: ["switch-per-page", "statistics", "pagination"],
+            placeholder: "emptyState.containerStock",
             columns: [
                 ...columns,
                 {

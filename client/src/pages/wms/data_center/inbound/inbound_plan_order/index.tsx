@@ -1,6 +1,11 @@
 import schema2component from "@/utils/schema2component"
-import {create_update_columns} from "@/utils/commonContants"
-import {detailDialog} from "./detail"
+import {
+    auditColumns,
+    codeColumn,
+    numberColumn,
+    operationColumn
+} from "@/utils/amis/presets"
+import {detailDrawer} from "./detail"
 import {
     api_crud_search_by_warehouseCode,
     api_crud_search_by_warehouseCode_total
@@ -18,71 +23,35 @@ const columns = [
         label: "仓库",
         hidden: true
     },
-    {
-        name: "lpnCode",
-        label: "table.LPNNo",
-        searchable: true
-    },
-    {
-        name: "customerOrderNo",
-        label: "table.customerOrderNo",
-        searchable: true
-    },
+    codeColumn("lpnCode", "table.LPNNo"),
+    codeColumn("customerOrderNo", "table.customerOrderNo"),
     {
         name: "inboundPlanOrderStatus",
         label: "table.status",
         type: "mapping",
-        source: "${dictionary.InboundPlanOrderStatus}",
-        searchable: {
-            type: "select",
-            source: "${dictionary.InboundPlanOrderStatus}"
-        }
+        source: "${dictionary.InboundPlanOrderStatus}"
     },
 
-    {
-        name: "orderNo",
-        label: "table.orderNo",
-        searchable: true
-    },
+    codeColumn("orderNo", "table.orderNo"),
     {
         name: "sender",
-        label: "table.shipper",
-        searchable: true
+        label: "table.shipper"
     },
-    {
-        name: "skuKindNum",
-        label: "table.skuTypes",
-        searchable: true
-    },
+    numberColumn("skuKindNum", "table.skuTypes"),
     {
         name: "storageType",
         label: "table.storageType",
         type: "mapping",
-        source: "${dictionary.StorageType}",
-        searchable: {
-            type: "select",
-            source: "${dictionary.StorageType}"
-        }
+        source: "${dictionary.StorageType}"
     },
-    {
-        name: "totalBox",
-        label: "table.boxesNumber"
-    },
-    {
-        name: "totalQty",
-        label: "table.totalQuantity"
-    },
-    {
-        name: "trackingNumber",
-        label: "table.theTrackingNumber",
-        searchable: true
-    },
+    numberColumn("totalBox", "table.boxesNumber"),
+    numberColumn("totalQty", "table.totalQuantity"),
+    codeColumn("trackingNumber", "table.theTrackingNumber"),
     {
         name: "shippingMethod",
-        label: "table.modeOfCarriage",
-        searchable: true
+        label: "table.modeOfCarriage"
     },
-    ...create_update_columns,
+    ...auditColumns(),
     {
         type: "tpl",
         name: "remark",
@@ -280,8 +249,9 @@ const import_excel = {
                             tpl: "importExcel.importantNotes"
                         },
                         {
-                            type: "html",
-                            html: "importExcel.notesList"
+                            type: "tpl",
+                            tpl: "importExcel.notesList",
+                            className: "owes-note-list"
                         }
                     ],
                     className: "mt-4"
@@ -324,9 +294,68 @@ const schema = {
                 }
             },
             autoFillHeight: true,
-            autoGenerateFilter: {
-                columnsNum: 3,
-                showBtnToolbar: true
+            filterTogglable: true,
+            filterDefaultVisible: true,
+            filter: {
+                title: "common.filter",
+                mode: "inline",
+                body: [
+                    {
+                        label: "table.orderNo",
+                        name: "orderNo",
+                        type: "input-text"
+                    },
+                    {
+                        label: "table.customerOrderNo",
+                        name: "customerOrderNo",
+                        type: "input-text"
+                    },
+                    {
+                        label: "table.LPNNo",
+                        name: "lpnCode",
+                        type: "input-text"
+                    },
+                    {
+                        label: "table.theTrackingNumber",
+                        name: "trackingNumber",
+                        type: "input-text"
+                    },
+                    {
+                        label: "table.status",
+                        name: "inboundPlanOrderStatus",
+                        type: "select",
+                        source: "${dictionary.InboundPlanOrderStatus}"
+                    },
+                    {
+                        label: "table.storageType",
+                        name: "storageType",
+                        type: "select",
+                        source: "${dictionary.StorageType}"
+                    },
+                    {
+                        label: "table.shipper",
+                        name: "sender",
+                        type: "input-text"
+                    },
+                    {
+                        label: "table.modeOfCarriage",
+                        name: "shippingMethod",
+                        type: "input-text"
+                    },
+                    {
+                        label: "table.skuTypes",
+                        name: "skuKindNum",
+                        type: "input-text"
+                    }
+                ],
+                actions: [
+                    { type: "reset", label: "button.reset" },
+                    {
+                        type: "submit",
+                        level: "primary",
+                        label: "common.search"
+                    }
+                ]
             },
             multiple: true,
             headerToolbar: [
@@ -349,15 +378,22 @@ const schema = {
                 close
             ],
             footerToolbar: ["switch-per-page", "statistics", "pagination"],
+            placeholder: "emptyState.inboundPlanOrder",
             columns: [
                 ...columns,
-                {
-                    label: "button.detail",
-                    type: "button",
-                    level: "link",
-                    actionType: "dialog",
-                    dialog: detailDialog
-                }
+                operationColumn(
+                    [
+                        {
+                            label: "button.detail",
+                            type: "button",
+                            level: "link",
+                            className: "owes-action",
+                            actionType: "drawer",
+                            drawer: detailDrawer
+                        }
+                    ],
+                    { width: 80 }
+                )
             ]
         }
     ]

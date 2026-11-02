@@ -17,13 +17,11 @@ const columns = [
     },
     {
         name: "containerCode",
-        label: "table.containerNumber",
-        searchable: true
+        label: "table.containerNumber"
     },
     {
         name: "containerSpecCode",
-        label: "table.containerSpecificationNumber",
-        searchable: true
+        label: "table.containerSpecificationNumber"
     },
     {
         name: "locationCode",
@@ -31,33 +29,23 @@ const columns = [
     },
     {
         name: "taskNo",
-        label: "table.putAwayTaskNo",
-        searchable: true
+        label: "table.putAwayTaskNo"
     },
     {
         name: "taskType",
         label: "table.putAwayMethod",
         type: "mapping",
-        source: "${dictionary.PutAwayTaskType}",
-        searchable: {
-            type: "select",
-            source: "${dictionary.PutAwayTaskType}"
-        }
+        source: "${dictionary.PutAwayTaskType}"
     },
     {
         name: "taskStatus",
         label: "table.putAwayStatus",
         type: "mapping",
-        source: "${dictionary.PutAwayTaskStatus}",
-        searchable: {
-            type: "select",
-            source: "${dictionary.PutAwayTaskStatus}"
-        }
+        source: "${dictionary.PutAwayTaskStatus}"
     },
     {
         name: "workStationId",
-        label: "station.operatingStation",
-        searchable: true
+        label: "station.operatingStation"
     },
     {
         label: "table.createdBy",
@@ -66,21 +54,13 @@ const columns = [
     {
         name: "createTime",
         label: "table.creationTime",
-        tpl: "${createTime/1000|date:YYYY-MM-DD HH\\:mm\\:ss}",
-        searchable: {
-            type: "input-date-range",
-            valueFormat: "x"
-        }
+        tpl: "${createTime/1000|date:YYYY-MM-DD HH\\:mm\\:ss}"
     },
     {
         name: "updateTime",
         label: "table.completionTime",
         // tpl: "${auditTime/1000|date:YYYY-MM-DD HH\\:mm\\:ss}",
-        tpl: "${updateTime/1000|date:YYYY-MM-DD HH\\:mm\\:ss}",
-        searchable: {
-            type: "input-date-range",
-            valueFormat: "x"
-        }
+        tpl: "${updateTime/1000|date:YYYY-MM-DD HH\\:mm\\:ss}"
     }
 ]
 
@@ -174,9 +154,65 @@ const schema = {
                 }
             },
             autoFillHeight: true,
-            autoGenerateFilter: {
-                columnsNum: 3,
-                showBtnToolbar: true
+            filterTogglable: true,
+            filterDefaultVisible: true,
+            filter: {
+                title: "common.filter",
+                mode: "inline",
+                body: [
+                    {
+                        label: "table.putAwayTaskNo",
+                        name: "taskNo",
+                        type: "input-text"
+                    },
+                    {
+                        label: "table.containerNumber",
+                        name: "containerCode",
+                        type: "input-text"
+                    },
+                    {
+                        label: "table.containerSpecificationNumber",
+                        name: "containerSpecCode",
+                        type: "input-text"
+                    },
+                    {
+                        label: "station.operatingStation",
+                        name: "workStationId",
+                        type: "input-text"
+                    },
+                    {
+                        label: "table.putAwayStatus",
+                        name: "taskStatus",
+                        type: "select",
+                        source: "${dictionary.PutAwayTaskStatus}"
+                    },
+                    {
+                        label: "table.putAwayMethod",
+                        name: "taskType",
+                        type: "select",
+                        source: "${dictionary.PutAwayTaskType}"
+                    },
+                    {
+                        label: "table.creationTime",
+                        name: "createTime",
+                        type: "input-date-range",
+                        valueFormat: "x"
+                    },
+                    {
+                        label: "table.completionTime",
+                        name: "updateTime",
+                        type: "input-date-range",
+                        valueFormat: "x"
+                    }
+                ],
+                actions: [
+                    { type: "reset", label: "button.reset" },
+                    {
+                        type: "submit",
+                        level: "primary",
+                        label: "common.search"
+                    }
+                ]
             },
             headerToolbar: [
                 "reload",
@@ -193,6 +229,7 @@ const schema = {
                 }
             ],
             footerToolbar: ["switch-per-page", "statistics", "pagination"],
+            placeholder: "emptyState.putAwayTask",
             columns: [
                 ...columns,
                 {

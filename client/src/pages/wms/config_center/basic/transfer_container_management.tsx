@@ -127,6 +127,7 @@ const schema = {
                 }
             ],
             footerToolbar: ["switch-per-page", "statistics", "pagination"],
+            placeholder: "emptyState.transferContainer",
             columns: [...columns]
         }
     ]

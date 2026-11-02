@@ -5,6 +5,7 @@ import history from "history/browser"
 import classNames from "classnames/bind"
 import type {FunctionComponent} from "react"
 import React, {createElement, memo, useRef, useState} from "react"
+import {useTranslation} from "react-i18next"
 import {DEBOUNCE_TIME} from "@/pages/wms/station/constants/constant"
 import {useWorkStation} from "@/pages/wms/station/state"
 import type {ToastFn, WorkStationConfig} from "@/pages/wms/station/instances/types"
@@ -26,6 +27,7 @@ const actionHandler = new ActionHandler()
 
 const WorkStationLayoutToolbar = (props: FooterProps) => {
     // const history = props
+    const {t} = useTranslation()
     const { workStationEvent } = useWorkStation()
     const [isModalFullScreen, setIsModalFullScreen] = useState(false)
     const [isModalVisible, setModalVisible] = useState(false)
@@ -175,8 +177,7 @@ const WorkStationLayoutToolbar = (props: FooterProps) => {
                                 case TabActionModalType.CONFIRM:
                                     resetModal()
                                     confirm({
-                                        title: "确认提交？",
-                                        // <IntlMessages id="inventoryManagement.confirm.submit" />
+                                        title: t("modal.confirmSubmit"),
                                         onOk() {
                                             emitter &&
                                             emitter({

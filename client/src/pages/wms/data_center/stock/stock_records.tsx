@@ -170,10 +170,11 @@ const schema = {
                     type: "export-excel",
                     label: "button.export",
                     api: api_crud_search_by_warehouseCode_total,
-                    fileName: "stock_records"
+                    filename: "stock_records"
                 }
             ],
             footerToolbar: ["switch-per-page", "statistics", "pagination"],
+            placeholder: "emptyState.stockRecords",
             columns: showColumns
         }
     ]

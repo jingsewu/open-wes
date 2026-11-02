@@ -106,6 +106,7 @@ function App() {
         const newWidget: DashboardWidget = {
             id: generateUUID(),
             type: activeView === 'table' ? 'table' : 'chart',
+            // amis-lint-disable: widget model field; page i18n is deferred to a full pass
             title: 'New Widget',
             query: query,
             visualization: activeView === 'table' ? undefined : activeView,

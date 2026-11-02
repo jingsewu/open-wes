@@ -78,7 +78,7 @@ const form = [
         }
     },
     {
-        label: "table.district/county",
+        label: "table.districtCounty",
         type: "select",
         name: "addressDTO.district",
         initFetchOn: "data.addressDTO.city",
@@ -128,11 +128,13 @@ const form = [
 const add = {
     type: "button",
     actionType: "drawer",
+    level: "primary",
     icon: "fa fa-plus",
     label: "button.add",
     target: "role",
     drawer: {
-        title: "button.add",
+        size: "lg",
+        title: "shipperManagement.addTitle",
         closeOnEsc: true,
         body: {
             type: "form",
@@ -192,7 +194,7 @@ const columns = [
     },
     {
         name: "district",
-        label: "table.district/county"
+        label: "table.districtCounty"
     },
     {
         name: "name",
@@ -219,7 +221,7 @@ const showColumns = columns
 const schema = {
     type: "page",
     title: "shipperManagement.title",
-    toolbar: [],
+    toolbar: [add],
     data: {
         dictionary: "${ls:dictionary}"
     },
@@ -241,8 +243,9 @@ const schema = {
                 columnsNum: 3,
                 showBtnToolbar: true
             },
-            headerToolbar: [add],
+            headerToolbar: ["reload"],
             footerToolbar: ["switch-per-page", "statistics", "pagination"],
+            placeholder: "emptyState.shipper",
             columns: [
                 ...columns,
                 {
@@ -255,7 +258,8 @@ const schema = {
                             type: "button",
                             actionType: "drawer",
                             drawer: {
-                                title: "button.modify",
+                                size: "lg",
+                                title: "shipperManagement.editTitle",
                                 closeOnEsc: true,
                                 closeOnOutside: true,
                                 body: {

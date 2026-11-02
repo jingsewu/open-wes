@@ -108,6 +108,7 @@ const columns = [
 ]
 
 const headerToolbar = [
+    "reload",
     {
         type: "columns-toggler",
         draggable: true,
@@ -116,7 +117,6 @@ const headerToolbar = [
         hideExpandIcon: false,
         size: "sm"
     },
-    "reload",
     {
         type: "export-csv",
         label: "button.exportOrder",
@@ -143,8 +143,6 @@ const headerToolbar = [
         filename: "outbound_plan_order_details",
         exportColumns: JSON.parse(JSON.stringify(detailColumns))
     },
-    // add
-    add
 ]
 
 const searchIdentity = "WOutboundPlanOrder"
@@ -153,7 +151,7 @@ const showColumns = columns
 const schema = {
     type: "page",
     title: "outboundOrder.title",
-    toolbar: [],
+    toolbar: [add],
     data: {
         dictionary: "${ls:dictionary}"
     },
@@ -177,6 +175,7 @@ const schema = {
             },
             headerToolbar: headerToolbar,
             footerToolbar: ["switch-per-page", "statistics", "pagination"],
+            placeholder: "emptyState.outboundPlanOrder",
             columns: [
                 ...columns,
                 {

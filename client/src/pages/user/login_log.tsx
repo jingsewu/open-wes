@@ -60,6 +60,7 @@ const schema = {
             },
             headerToolbar: ["reload"],
             footerToolbar: ["switch-per-page", "statistics", "pagination"],
+            placeholder: "emptyState.loginLog",
             columns: columns
         }
     ]

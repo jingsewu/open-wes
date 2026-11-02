@@ -174,11 +174,12 @@ const formBody = [
 const add = {
     type: "button",
     actionType: "dialog",
+    level: "primary",
     icon: "fa fa-plus",
     label: "button.add",
     target: "PutWallTable",
     dialog: {
-        title: "button.add",
+        title: "seedingWallManagement.addTitle",
         size: "lg",
         body: {
             type: "form",
@@ -239,7 +240,7 @@ const showColumns = columns
 const schema = {
     type: "page",
     title: "seedingWallManagement.title",
-    toolbar: [],
+    toolbar: [add],
     data: {
         dictionary: "${ls:dictionary}"
     },
@@ -262,8 +263,9 @@ const schema = {
                 columnsNum: 3,
                 showBtnToolbar: true
             },
-            headerToolbar: [add],
+            headerToolbar: ["reload"],
             footerToolbar: ["switch-per-page", "statistics", "pagination"],
+            placeholder: "emptyState.seedingWall",
             columns: [
                 ...columns,
                 {
@@ -276,7 +278,7 @@ const schema = {
                             type: "button",
                             actionType: "dialog",
                             dialog: {
-                                title: "button.modify",
+                                title: "seedingWallManagement.editTitle",
                                 size: "lg",
                                 body: {
                                     type: "form",
@@ -290,7 +292,8 @@ const schema = {
                             label: "button.delete",
                             type: "button",
                             actionType: "ajax",
-                            level: "danger",
+                            level: "link",
+                            className: "owes-action owes-action--danger",
                             confirmText: "toast.sureDelete",
                             confirmTitle: "button.delete",
                             api: api_put_wall_delete,

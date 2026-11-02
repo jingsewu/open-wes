@@ -12,20 +12,17 @@ const columns = [
         name: "module",
         label: "printRecord.module",
         type: "mapping",
-        source: "${dictionary.ModuleEnum}",
-        searchable: true
+        source: "${dictionary.ModuleEnum}"
     },
     {
         name: "printNode",
         label: "printRecord.printNode",
         type: "mapping",
-        source: "${dictionary.PrintNodeEnum}",
-        searchable: true
+        source: "${dictionary.PrintNodeEnum}"
     },
     {
         name: "templateCode",
-        label: "printRecord.templateCode",
-        searchable: true
+        label: "printRecord.templateCode"
     },
     {
         name: "templateName",
@@ -33,36 +30,30 @@ const columns = [
     },
     {
         name: "workStationId",
-        label: "printRecord.workStationId",
-        searchable: true
+        label: "printRecord.workStationId"
     },
     {
         name: "printTime",
         label: "printRecord.printTime",
         type: "datetime",
-        tpl: "${createTime/1000|date:YYYY-MM-DD HH\\:mm\\:ss}",
-        searchable: {
-            type: "input-date-range",
-            valueFormat: "x"
-        }
+        tpl: "${printTime/1000|date:YYYY-MM-DD HH\\:mm\\:ss}"
     },
     {
         name: "printer",
-        label: "printRecord.printer",
-        searchable: true
+        label: "printRecord.printer"
     },
     {
         name: "printStatus",
         label: "printRecord.printStatus",
         type: "mapping",
-        source: "${dictionary.PrintStatusEnum}",
-        searchable: true
+        source: "${dictionary.PrintStatusEnum}"
     },
     {
         name: "errorMessage",
         label: "printRecord.errorMessage",
-        type: "html",
-        html: "<span class='text-danger'>${errorMessage}</span>"
+        type: "tpl",
+        tpl: "${errorMessage}",
+        className: "owes-text-danger"
     },
     ...create_update_columns
 ]
@@ -91,11 +82,64 @@ const schema = {
                 }
             },
             autoFillHeight: true,
-            autoGenerateFilter: {
-                columnsNum: 3,
-                showBtnToolbar: true
+            filterTogglable: true,
+            filterDefaultVisible: true,
+            filter: {
+                title: "common.filter",
+                mode: "inline",
+                body: [
+                    {
+                        label: "printRecord.templateCode",
+                        name: "templateCode",
+                        type: "input-text"
+                    },
+                    {
+                        label: "printRecord.printStatus",
+                        name: "printStatus",
+                        type: "select",
+                        source: "${dictionary.PrintStatusEnum}"
+                    },
+                    {
+                        label: "printRecord.module",
+                        name: "module",
+                        type: "select",
+                        source: "${dictionary.ModuleEnum}"
+                    },
+                    {
+                        label: "printRecord.printNode",
+                        name: "printNode",
+                        type: "select",
+                        source: "${dictionary.PrintNodeEnum}"
+                    },
+                    {
+                        label: "printRecord.printer",
+                        name: "printer",
+                        type: "input-text"
+                    },
+                    {
+                        label: "printRecord.workStationId",
+                        name: "workStationId",
+                        type: "input-text"
+                    },
+                    {
+                        label: "printRecord.printTime",
+                        name: "printTime",
+                        type: "input-date-range",
+                        valueFormat: "x"
+                    }
+                ],
+                actions: [
+                    { type: "reset", label: "button.reset" },
+                    {
+                        type: "submit",
+                        level: "primary",
+                        label: "common.search"
+                    }
+                ]
             },
+            headerToolbar: ["reload"],
             footerToolbar: ["switch-per-page", "statistics", "pagination"],
+            placeholder: "emptyState.printRecord",
             columns: [
                 ...columns
             ]

@@ -44,6 +44,7 @@ const form = [
 const add = {
     type: "button",
     actionType: "dialog",
+    level: "primary",
     icon: "fa fa-plus",
     label: "button.add",
     target: "emptyContainerInboundOrderTable",
@@ -163,7 +164,7 @@ const detailDialog = {
 const schema = {
     type: "page",
     title: "menu.emptyContainerInboundOrder",
-    toolbar: [],
+    toolbar: [add],
     data: {
         dictionary: "${ls:dictionary}"
     },
@@ -185,8 +186,9 @@ const schema = {
                 columnsNum: 3,
                 showBtnToolbar: true
             },
-            headerToolbar: [add],
+            headerToolbar: ["reload"],
             footerToolbar: ["switch-per-page", "statistics", "pagination"],
+            placeholder: "emptyState.emptyContainerInbound",
             columns: [
                 ...columns,
                 {

@@ -11,7 +11,7 @@ const form = [
         type: "input-text",
         name: "apiKeyName",
         label: "interfacePlatform.interfaceManagement.table.apiKeyName",
-        require: true
+        required: true
     }
 ]
 
@@ -28,7 +28,7 @@ const columns = [
     },
     {
         name: "apiKey",
-        label: "API Key"
+        label: "interfacePlatform.apiKeys.table.apiKey"
     },
     {
         label: "table.createdBy",
@@ -48,6 +48,7 @@ const columns = [
 const add = {
     type: "button",
     actionType: "dialog",
+    level: "primary",
     icon: "fa fa-plus",
     label: "button.add",
     target: "Table",
@@ -70,7 +71,7 @@ const showColumns = columns
 const schema = {
     type: "page",
     title: "interfacePlatform.apiKeys.title",
-    toolbar: [],
+    toolbar: [add],
     data: {
         dictionary: "${ls:dictionary}"
     },
@@ -92,8 +93,9 @@ const schema = {
                 columnsNum: 3,
                 showBtnToolbar: true
             },
-            headerToolbar: ["reload", add],
+            headerToolbar: ["reload"],
             footerToolbar: ["switch-per-page", "statistics", "pagination"],
+            placeholder: "emptyState.apiKey",
             columns: [
                 ...columns,
                 {
@@ -105,7 +107,8 @@ const schema = {
                             label: "button.delete",
                             type: "button",
                             actionType: "ajax",
-                            level: "danger",
+                            level: "link",
+                            className: "owes-action owes-action--danger",
                             confirmText: "toast.sureDelete",
                             confirmTitle: "button.delete",
                             api: api_api_keys_delete,

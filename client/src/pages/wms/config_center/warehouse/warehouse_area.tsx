@@ -96,11 +96,13 @@ const form = {
 const add = {
     type: "button",
     actionType: "drawer",
+    level: "primary",
     icon: "fa fa-plus",
     label: "button.add",
     target: "role",
     drawer: {
-        title: "button.add",
+        size: "lg",
+        title: "reservoirAreaManagement.addTitle",
         closeOnEsc: true,
         body: form
     }
@@ -196,7 +198,7 @@ const searchIdentity = "WWarehouseArea"
 const schema = {
     type: "page",
     title: "reservoirAreaManagement.title",
-    toolbar: [],
+    toolbar: [add],
     data: {
         dictionary: "${ls:dictionary}"
     },
@@ -218,8 +220,9 @@ const schema = {
                 columnsNum: 3,
                 showBtnToolbar: true
             },
-            headerToolbar: [add],
+            headerToolbar: ["reload"],
             footerToolbar: ["switch-per-page", "statistics", "pagination"],
+            placeholder: "emptyState.reservoirAreaManagement",
             columns: [
                 ...columns,
                 {
@@ -232,7 +235,8 @@ const schema = {
                             type: "button",
                             actionType: "drawer",
                             drawer: {
-                                title: "button.modify",
+                                size: "lg",
+                                title: "reservoirAreaManagement.editTitle",
                                 closeOnEsc: true,
                                 closeOnOutside: true,
                                 body: form

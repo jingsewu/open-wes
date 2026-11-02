@@ -2,7 +2,7 @@ import schema2component from '@/utils/schema2component';
 
 const schema = {
     type: 'page',
-    title: 'API Analytics Dashboard',
+    title: 'interfacePlatform.dashboard.pageTitle',
     data: {
         apiUrl: '/wms/api/analytics/dashboard'
     },
@@ -16,7 +16,7 @@ const schema = {
                     className: 'stats-card',
                     body: {
                         type: 'tpl',
-                        tpl: '<div class="stat-card"><div class="stat-title">Total Requests</div><div class="stat-value">${stats.totalRequests | number}</div>',
+                        tpl: '<div class="stat-card"><div class="stat-title">interfacePlatform.dashboard.totalRequests</div><div class="stat-value">${stats.totalRequests | number}</div></div>',
                     },
                     md: 4,
                 },
@@ -25,7 +25,7 @@ const schema = {
                     className: 'stats-card',
                     body: {
                         type: 'tpl',
-                        tpl: '<div class="stat-card"><div class="stat-title">Error Rate</div><div class="stat-value">${stats.errorRate | number: 2}%</div></div>',
+                        tpl: '<div class="stat-card"><div class="stat-title">interfacePlatform.dashboard.errorRate</div><div class="stat-value">${stats.errorRate | number: 2}%</div></div>',
                     },
                     md: 4,
                 },
@@ -34,7 +34,7 @@ const schema = {
                     className: 'stats-card',
                     body: {
                         type: 'tpl',
-                        tpl: '<div class="stat-card"><div class="stat-title">Avg Response Time</div><div class="stat-value">${stats.avgResponseTime | number: 0}ms</div></div>',
+                        tpl: '<div class="stat-card"><div class="stat-title">interfacePlatform.dashboard.avgResponseTime</div><div class="stat-value">${stats.avgResponseTime | number: 0}ms</div></div>',
                     },
                     md: 4,
                 }
@@ -46,7 +46,7 @@ const schema = {
                 {
                     type: 'card',
                     header: {
-                        title: 'Response Time & Requests'
+                        title: 'interfacePlatform.dashboard.responseTimeRequests'
                     },
                     body: {
                         type: 'chart',
@@ -69,6 +69,8 @@ const schema = {
                                 type: 'category',
                                 data: '${timeSlots}'
                             },
+                            // ECharts names are global identifiers: AMIS replaceText
+                            // skips "name" keys, so chart labels stay in one language.
                             yAxis: [
                                 {
                                     type: 'value',
@@ -104,7 +106,7 @@ const schema = {
                 {
                     type: 'card',
                     header: {
-                        title: 'Top Endpoints',
+                        title: 'interfacePlatform.dashboard.topEndpoints',
                     },
                     body: {
                         type: 'chart',
@@ -163,7 +165,7 @@ const schema = {
                 {
                     type: 'card',
                     header: {
-                        title: 'Error Distribution'
+                        title: 'interfacePlatform.dashboard.errorDistribution'
                     },
                     body: {
                         type: 'chart',
@@ -214,7 +216,7 @@ const schema = {
                 {
                     type: 'card',
                     header: {
-                        title: 'Recent API Calls'
+                        title: 'interfacePlatform.dashboard.recentApiCalls'
                     },
                     body: {
                         type: 'table',
@@ -222,23 +224,23 @@ const schema = {
                         columns: [
                             {
                                 name: 'endpoint',
-                                label: 'Endpoint',
+                                label: 'interfacePlatform.dashboard.endpoint',
                             },
                             {
                                 name: 'method',
-                                label: 'Method',
+                                label: 'interfacePlatform.dashboard.method',
                             },
                             {
                                 name: 'status',
-                                label: 'Status',
+                                label: 'table.status',
                             },
                             {
                                 name: 'responseTime',
-                                label: 'Response Time (ms)',
+                                label: 'interfacePlatform.dashboard.responseTimeMs',
                             },
                             {
                                 name: 'timestamp',
-                                label: 'Timestamp',
+                                label: 'interfacePlatform.dashboard.timestamp',
                                 type: 'datetime',
                                 format: 'YYYY-MM-DD HH:mm:ss'
                             },

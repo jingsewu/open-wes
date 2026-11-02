@@ -160,7 +160,7 @@ const dialog = {
             ],
             actions: [
                 {
-                    label: "Next",
+                    label: "button.next",
                     type: "button",
                     actionType: "next",
                     level: "primary",
@@ -346,7 +346,7 @@ const dialog = {
             },
             actions: [
                 {
-                    label: "Prev",
+                    label: "button.previous",
                     type: "button",
                     onEvent: {
                         click: {
@@ -390,10 +390,11 @@ const dialog = {
 export const add = {
     type: "button",
     actionType: "dialog",
+    level: "primary",
     icon: "fa fa-plus",
     label: "button.add",
     dialog: {
-        title: "button.add",
+        title: "outboundOrder.addTitle",
         actions: [],
         closeOnEsc: true,
         size: "xl",

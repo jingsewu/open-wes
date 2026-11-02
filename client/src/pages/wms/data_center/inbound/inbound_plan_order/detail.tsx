@@ -1,29 +1,22 @@
+import { codeColumn, numberColumn } from "@/utils/amis/presets"
+
 const detailColumns = [
     {
         name: "inboundPlanOrderId",
-        label: "入库通知单ID",
+        label: "ID",
         hidden: true
     },
-    {
-        name: "skuCode",
-        label: "table.skuCode"
-    },
+    codeColumn("skuCode", "table.skuCode"),
     {
         name: "skuName",
         label: "table.skuName"
     },
-    {
-        name: "ownerCode",
-        label: "table.productOwner"
-    },
+    codeColumn("ownerCode", "table.productOwner"),
     {
         name: "batchAttributes",
         label: "table.batchAttributes"
     },
-    {
-        name: "boxNo",
-        label: "table.lpnNumber"
-    },
+    codeColumn("boxNo", "table.lpnNumber"),
     {
         name: "brand",
         label: "table.brand"
@@ -40,31 +33,27 @@ const detailColumns = [
         name: "style",
         label: "table.style"
     },
-    {
-        name: "qtyAbnormal",
-        label: "skuArea.qtyAbnormal"
-    },
-    {
-        name: "qtyAccepted",
-        label: "table.acceptanceQuantity"
-    },
-    {
-        name: "qtyRestocked",
-        label: "table.plannedQuantity"
-    },
+    numberColumn("qtyAbnormal", "skuArea.qtyAbnormal"),
+    numberColumn("qtyAccepted", "table.acceptanceQuantity"),
+    numberColumn("qtyRestocked", "table.plannedQuantity"),
     {
         name: "responsibleParty",
         label: "table.responsibleParty"
     }
 ]
 
-export const detailDialog = {
+export const detailDrawer = {
     title: "table.inboundPlanDetails",
     actions: [],
     closeOnEsc: true,
     closeOnOutside: true,
     size: "xl",
     body: [
+        {
+            type: "tpl",
+            tpl: "${orderNo}",
+            className: "owes-drawer-context"
+        },
         {
             type: "crud",
             syncLocation: false,

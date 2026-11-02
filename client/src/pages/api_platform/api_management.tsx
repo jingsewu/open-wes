@@ -188,7 +188,7 @@ const configForm = [
                             {
                                 md: 5,
                                 body: [
-                                    {type: "textarea", label: "interfacePlatform.interfaceManagement.form.testInputJson", name: "testParamInput", placeholder: "Enter input JSON to test the param converter script"},
+                                    {type: "textarea", label: "interfacePlatform.interfaceManagement.form.testInputJson", name: "testParamInput", placeholder: "interfacePlatform.interfaceManagement.form.testParamInput.placeholder"},
                                     {
                                         type: "button",
                                         label: "interfacePlatform.interfaceManagement.button.testConverter",
@@ -226,7 +226,7 @@ const configForm = [
                             {
                                 md: 5,
                                 body: [
-                                    {type: "textarea", label: "interfacePlatform.interfaceManagement.form.testInputJson", name: "testParamInput", placeholder: "Enter input JSON to test the param converter script"},
+                                    {type: "textarea", label: "interfacePlatform.interfaceManagement.form.testInputJson", name: "testParamInput", placeholder: "interfacePlatform.interfaceManagement.form.testParamInput.placeholder"},
                                     {
                                         type: "button",
                                         label: "interfacePlatform.interfaceManagement.button.testConverter",
@@ -295,7 +295,7 @@ const configForm = [
                             {
                                 md: 5,
                                 body: [
-                                    {type: "textarea", label: "interfacePlatform.interfaceManagement.form.testInputJson", name: "testResponseInput", placeholder: "Enter input JSON to test the response converter script"},
+                                    {type: "textarea", label: "interfacePlatform.interfaceManagement.form.testInputJson", name: "testResponseInput", placeholder: "interfacePlatform.interfaceManagement.form.testResponseInput.placeholder"},
                                     {
                                         type: "button",
                                         label: "interfacePlatform.interfaceManagement.button.testConverter",
@@ -333,7 +333,7 @@ const configForm = [
                             {
                                 md: 5,
                                 body: [
-                                    {type: "textarea", label: "interfacePlatform.interfaceManagement.form.testInputJson", name: "testResponseInput", placeholder: "Enter input JSON to test the response converter script"},
+                                    {type: "textarea", label: "interfacePlatform.interfaceManagement.form.testInputJson", name: "testResponseInput", placeholder: "interfacePlatform.interfaceManagement.form.testResponseInput.placeholder"},
                                     {
                                         type: "button",
                                         label: "interfacePlatform.interfaceManagement.button.testConverter",
@@ -373,12 +373,13 @@ const configForm = [
 const add = {
     type: "button",
     actionType: "drawer",
+    level: "primary",
     icon: "fa fa-plus",
     label: "button.add",
     target: "ApiTable",
     drawer: {
         size: "lg",
-        title: "button.add",
+        title: "interfacePlatform.interfaceManagement.addTitle",
         closeOnEsc: true,
         body: {
             type: "form",
@@ -499,7 +500,7 @@ const showColumns = columns
 const schema = {
     type: "page",
     title: "interfacePlatform.interfaceManagement.title",
-    toolbar: [],
+    toolbar: [add],
     data: {
         dictionary: "${ls:dictionary}"
     },
@@ -523,7 +524,6 @@ const schema = {
             },
             headerToolbar: [
                 "reload",
-                add,
                 {
                     type: "export-excel",
                     label: "button.export",
@@ -547,6 +547,7 @@ const schema = {
                 }
             ],
             footerToolbar: ["switch-per-page", "statistics", "pagination"],
+            placeholder: "emptyState.apiManagement",
             columns: [
                 ...columns,
                 {
@@ -559,7 +560,7 @@ const schema = {
                             type: "button",
                             actionType: "drawer",
                             drawer: {
-                                title: "button.modify",
+                                title: "interfacePlatform.interfaceManagement.editTitle",
                                 closeOnEsc: true,
                                 closeOnOutside: true,
                                 body: {
@@ -590,7 +591,8 @@ const schema = {
                             label: "button.delete",
                             type: "button",
                             actionType: "ajax",
-                            level: "danger",
+                            level: "link",
+                            className: "owes-action owes-action--danger",
                             confirmText: "toast.sureDelete",
                             confirmTitle: "button.delete",
                             api: api_api_delete,

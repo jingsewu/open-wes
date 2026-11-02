@@ -114,10 +114,11 @@ const form = [
 const add = {
     type: "button",
     actionType: "dialog",
+    level: "primary",
     icon: "fa fa-plus",
     label: "button.add",
     dialog: {
-        title: "button.add",
+        title: "batchManagement.addTitle",
         size: "lg",
         closeOnEsc: true,
         body: {
@@ -184,7 +185,7 @@ const showColumns = columns
 const schema = {
     type: "page",
     title: "batchManagement.title",
-    toolbar: [],
+    toolbar: [add],
     data: {
         dictionary: "${ls:dictionary}"
     },
@@ -206,8 +207,9 @@ const schema = {
                 columnsNum: 3,
                 showBtnToolbar: true
             },
-            headerToolbar: [add],
+            headerToolbar: ["reload"],
             footerToolbar: ["switch-per-page", "statistics", "pagination"],
+            placeholder: "emptyState.batchAttribute",
             columns: [
                 ...columns,
                 {
@@ -220,7 +222,7 @@ const schema = {
                             type: "button",
                             actionType: "dialog",
                             dialog: {
-                                title: "button.modify",
+                                title: "batchManagement.editTitle",
                                 size: "lg",
                                 closeOnEsc: true,
                                 closeOnOutside: true,

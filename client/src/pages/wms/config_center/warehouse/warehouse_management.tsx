@@ -131,7 +131,7 @@ const form = [
         }
     },
     {
-        label: "table.district/county",
+        label: "table.districtCounty",
         type: "select",
         name: "addressDTO.district",
         initFetchOn: "data.addressDTO.city",
@@ -183,11 +183,13 @@ const form = [
 const add = {
     type: "button",
     actionType: "drawer",
+    level: "primary",
     icon: "fa fa-plus",
     label: "button.add",
     target: "role",
     drawer: {
-        title: "button.add",
+        size: "lg",
+        title: "warehouseManagement.addTitle",
         closeOnEsc: true,
         body: {
             type: "form",
@@ -212,73 +214,47 @@ const columns = [
     },
     {
         name: "warehouseCode",
-        label: "table.warehouseCode",
-        searchable: true
+        label: "table.warehouseCode"
     },
     {
         name: "warehouseName",
-        label: "table.warehouseName",
-        searchable: true
+        label: "table.warehouseName"
     },
     {
         name: "warehouseType",
         label: "table.warehouseType",
         type: "mapping",
-        source: "${dictionary.WarehouseType}",
-        searchable: {
-            type: "select",
-            source: "${dictionary.WarehouseType}"
-        }
+        source: "${dictionary.WarehouseType}"
     },
     {
         name: "warehouseAttrType",
         label: "table.warehouseProperties",
         type: "mapping",
-        source: "${dictionary.WarehouseAttrType}",
-        searchable: {
-            type: "select",
-            source: "${dictionary.WarehouseAttrType}"
-        }
+        source: "${dictionary.WarehouseAttrType}"
     },
     {
         name: "warehouseLevel",
         label: "table.warehouseLevel",
         type: "mapping",
-        source: "${dictionary.WarehouseLevel}",
-        searchable: {
-            type: "select",
-            source: "${dictionary.WarehouseLevel}"
-        }
+        source: "${dictionary.WarehouseLevel}"
     },
     {
         name: "warehouseLabel",
         label: "table.warehouseLables",
         type: "mapping",
-        source: "${dictionary.WarehouseLabel}",
-        searchable: {
-            type: "select",
-            source: "${dictionary.WarehouseLabel}"
-        }
+        source: "${dictionary.WarehouseLabel}"
     },
     {
         name: "businessType",
         label: "table.mainBusiness",
         type: "mapping",
-        source: "${dictionary.WarehouseBusinessType}",
-        searchable: {
-            type: "select",
-            source: "${dictionary.WarehouseBusinessType}"
-        }
+        source: "${dictionary.WarehouseBusinessType}"
     },
     {
         name: "structureType",
         label: "table.warehouseStructure",
         type: "mapping",
-        source: "${dictionary.WarehouseStructureType}",
-        searchable: {
-            type: "select",
-            source: "${dictionary.WarehouseStructureType}"
-        }
+        source: "${dictionary.WarehouseStructureType}"
     },
     {
         name: "virtualWarehouse",
@@ -300,7 +276,7 @@ const columns = [
     },
     {
         name: "district",
-        label: "table.district/county"
+        label: "table.districtCounty"
     },
     {
         name: "name",
@@ -327,7 +303,7 @@ const showColumns = columns
 const schema = {
     type: "page",
     title: "warehouseManagement.title",
-    toolbar: [],
+    toolbar: [add],
     data: {
         dictionary: "${ls:dictionary}"
     },
@@ -345,12 +321,71 @@ const schema = {
                 }
             },
             autoFillHeight: true,
-            autoGenerateFilter: {
-                columnsNum: 3,
-                showBtnToolbar: true
+            filterTogglable: true,
+            filterDefaultVisible: true,
+            filter: {
+                title: "common.filter",
+                mode: "inline",
+                body: [
+                    {
+                        label: "table.warehouseCode",
+                        name: "warehouseCode",
+                        type: "input-text"
+                    },
+                    {
+                        label: "table.warehouseName",
+                        name: "warehouseName",
+                        type: "input-text"
+                    },
+                    {
+                        label: "table.warehouseType",
+                        name: "warehouseType",
+                        type: "select",
+                        source: "${dictionary.WarehouseType}"
+                    },
+                    {
+                        label: "table.warehouseProperties",
+                        name: "warehouseAttrType",
+                        type: "select",
+                        source: "${dictionary.WarehouseAttrType}"
+                    },
+                    {
+                        label: "table.warehouseLevel",
+                        name: "warehouseLevel",
+                        type: "select",
+                        source: "${dictionary.WarehouseLevel}"
+                    },
+                    {
+                        label: "table.warehouseLables",
+                        name: "warehouseLabel",
+                        type: "select",
+                        source: "${dictionary.WarehouseLabel}"
+                    },
+                    {
+                        label: "table.mainBusiness",
+                        name: "businessType",
+                        type: "select",
+                        source: "${dictionary.WarehouseBusinessType}"
+                    },
+                    {
+                        label: "table.warehouseStructure",
+                        name: "structureType",
+                        type: "select",
+                        source: "${dictionary.WarehouseStructureType}"
+                    }
+                ],
+                actions: [
+                    { type: "reset", label: "button.reset" },
+                    {
+                        type: "submit",
+                        level: "primary",
+                        label: "common.search"
+                    }
+                ]
             },
-            headerToolbar: [add],
+            headerToolbar: ["reload"],
             footerToolbar: ["switch-per-page", "statistics", "pagination"],
+            placeholder: "emptyState.warehouseManagement",
             columns: [
                 ...columns,
                 {
@@ -363,7 +398,8 @@ const schema = {
                             type: "button",
                             actionType: "drawer",
                             drawer: {
-                                title: "button.modify",
+                                size: "lg",
+                                title: "warehouseManagement.editTitle",
                                 closeOnEsc: true,
                                 closeOnOutside: true,
                                 body: {

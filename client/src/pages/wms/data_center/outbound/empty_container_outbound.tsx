@@ -72,6 +72,7 @@ const form = [
 const add = {
     type: "button",
     actionType: "dialog",
+    level: "primary",
     icon: "fa fa-plus",
     label: "button.add",
     target: "emptyContainerOutboundOrderTable",
@@ -187,7 +188,7 @@ const detailDialog = {
 const schema = {
     type: "page",
     title: "menu.emptyContainerOutboundOrder",
-    toolbar: [],
+    toolbar: [add],
     data: {
         dictionary: "${ls:dictionary}"
     },
@@ -209,7 +210,7 @@ const schema = {
                 columnsNum: 3,
                 showBtnToolbar: true
             },
-            headerToolbar: ["reload", add, "bulkActions"],
+            headerToolbar: ["reload", "bulkActions"],
             footerToolbar: ["switch-per-page", "statistics", "pagination"],
             bulkActions: [
                 {
@@ -239,6 +240,7 @@ const schema = {
                     confirmText: "confirm.title.emptyContainerOutbound.cancel"
                 }
             ],
+            placeholder: "emptyState.emptyContainerOutbound",
             columns: [
                 ...columns,
                 {

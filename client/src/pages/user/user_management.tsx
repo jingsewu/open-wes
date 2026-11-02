@@ -7,7 +7,7 @@ import {
     api_user_reset_password,
     api_user_update
 } from "@/pages/user/constants/api_constant"
-import { create_update_columns, yes_no_options } from "@/utils/commonContants"
+import { create_update_columns } from "@/utils/commonContants"
 import { api_crud_search, api_crud_search_total } from "@/pages/constantApi"
 
 const form = [
@@ -59,12 +59,13 @@ const form = [
 const add = {
     type: "button",
     actionType: "drawer",
+    level: "primary",
     icon: "fa fa-plus",
     label: "button.add",
     target: "UserTable",
     drawer: {
         size: "lg",
-        title: "button.add",
+        title: "userCenter.userManagement.addTitle",
         closeOnEsc: true,
         body: {
             type: "form",
@@ -104,8 +105,17 @@ const columns = [
     {
         name: "status",
         label: "table.status",
-        type: "mapping",
-        map: yes_no_options
+        type: "status",
+        source: {
+            "1": {
+                label: "common.enabled",
+                className: "owes-status owes-status--success"
+            },
+            "0": {
+                label: "common.disabled",
+                className: "owes-status owes-status--muted"
+            }
+        }
     },
     {
         name: "lastLoginIp",
@@ -120,7 +130,7 @@ const showColumns = columns
 const schema = {
     type: "page",
     title: "userCenter.userManagement.title",
-    toolbar: [],
+    toolbar: [add],
     body: [
         {
             type: "crud",
@@ -138,15 +148,15 @@ const schema = {
             },
             headerToolbar: [
                 "reload",
-                add,
                 {
                     type: "export-excel",
                     label: "button.export",
                     api: api_crud_search_total,
-                    fileName: "user"
+                    filename: "user"
                 }
             ],
             footerToolbar: ["switch-per-page", "statistics", "pagination"],
+            placeholder: "emptyState.userManagement",
             columns: [
                 ...columns,
                 {
@@ -159,7 +169,8 @@ const schema = {
                             type: "button",
                             actionType: "drawer",
                             drawer: {
-                                title: "button.modify",
+                                size: "lg",
+                                title: "userCenter.userManagement.editTitle",
                                 closeOnEsc: true,
                                 closeOnOutside: true,
                                 body: {
@@ -175,7 +186,8 @@ const schema = {
                             label: "button.delete",
                             type: "button",
                             actionType: "ajax",
-                            level: "danger",
+                            level: "link",
+                            className: "owes-action owes-action--danger",
                             confirmText: "toast.sureDelete",
                             confirmTitle: "button.delete",
                             api: api_user_delete

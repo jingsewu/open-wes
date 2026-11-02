@@ -102,10 +102,11 @@ const form = [
 const add = {
     type: "button",
     actionType: "dialog",
+    level: "primary",
     icon: "fa fa-plus",
     label: "button.add",
     dialog: {
-        title: "button.add",
+        title: "dictionaryManagement.addTitle",
         size: "lg",
         closeOnEsc: true,
         body: {
@@ -156,7 +157,7 @@ const showColumns = columns
 const schema = {
     type: "page",
     title: "dictionaryManagement.title",
-    toolbar: [],
+    toolbar: [add],
     body: [
         {
             type: "crud",
@@ -179,8 +180,9 @@ const schema = {
                 columnsNum: 3,
                 showBtnToolbar: true
             },
-            headerToolbar: [add],
+            headerToolbar: ["reload"],
             footerToolbar: ["switch-per-page", "statistics", "pagination"],
+            placeholder: "emptyState.dictionaryManagement",
             columns: [
                 ...columns,
                 {
@@ -193,7 +195,7 @@ const schema = {
                             type: "button",
                             actionType: "dialog",
                             dialog: {
-                                title: "button.modify",
+                                title: "dictionaryManagement.editTitle",
                                 size: "lg",
                                 closeOnEsc: true,
                                 closeOnOutside: true,

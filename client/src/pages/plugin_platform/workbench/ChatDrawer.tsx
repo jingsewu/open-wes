@@ -24,6 +24,7 @@ const ChatDrawer: React.FC<ChatDrawerProps> = ({ open, onClose }) => {
         { label: t("pluginPlatform.chat.baseRevisionNone"), value: "" }
     ].concat(
         revisions.map((revision) => ({
+            // amis-lint-disable: revision label is data composed at runtime, not copy
             label: "v" + revision.revisionNo + " · " + formatMillis(revision.createdAt),
             value: revision.id
         }))

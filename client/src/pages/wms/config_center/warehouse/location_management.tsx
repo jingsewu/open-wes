@@ -87,11 +87,13 @@ const form = {
 const add = {
     type: "button",
     actionType: "drawer",
+    level: "primary",
     icon: "fa fa-plus",
     label: "button.add",
     target: "role",
     drawer: {
-        title: "button.add",
+        size: "lg",
+        title: "locationManagement.addTitle",
         closeOnEsc: true,
         body: form
     }
@@ -117,36 +119,25 @@ const columns = [
         name: "warehouseAreaId",
         label: "table.warehouseLogicName",
         type: "mapping",
-        source: warehouse_area_id,
-        searchable: {
-            type: "select",
-            source: warehouse_area_id
-        }
+        source: warehouse_area_id
     },
     {
         name: "warehouseLogicId",
         label: "table.logicalAreaEncoding",
         type: "mapping",
-        source: warehouse_logic_id,
-        searchable: {
-            type: "select",
-            source: warehouse_logic_id
-        }
+        source: warehouse_logic_id
     },
     {
         name: "aisleCode",
-        label: "table.roadwayCoding",
-        searchable: true
+        label: "table.roadwayCoding"
     },
     {
         name: "shelfCode",
-        label: "table.shelfCoding",
-        searchable: true
+        label: "table.shelfCoding"
     },
     {
         name: "locationCode",
-        label: "table.locationCode",
-        searchable: true
+        label: "table.locationCode"
     },
     {
         name: "locationType",
@@ -180,7 +171,7 @@ const showColumns = columns
 const schema = {
     type: "page",
     title: "locationManagement.title",
-    toolbar: [],
+    toolbar: [add],
     data: {
         dictionary: "${ls:dictionary}"
     },
@@ -195,12 +186,52 @@ const schema = {
                 showColumns: showColumns
             },
             autoFillHeight: true,
-            autoGenerateFilter: {
-                columnsNum: 3,
-                showBtnToolbar: true
+            filterTogglable: true,
+            filterDefaultVisible: true,
+            filter: {
+                title: "common.filter",
+                mode: "inline",
+                body: [
+                    {
+                        label: "table.locationCode",
+                        name: "locationCode",
+                        type: "input-text"
+                    },
+                    {
+                        label: "table.reservoirAreaCode",
+                        name: "warehouseAreaId",
+                        type: "select",
+                        source: warehouse_area_id
+                    },
+                    {
+                        label: "table.warehouseLogicName",
+                        name: "warehouseLogicId",
+                        type: "select",
+                        source: warehouse_logic_id
+                    },
+                    {
+                        label: "table.roadwayCoding",
+                        name: "aisleCode",
+                        type: "input-text"
+                    },
+                    {
+                        label: "table.shelfCoding",
+                        name: "shelfCode",
+                        type: "input-text"
+                    }
+                ],
+                actions: [
+                    { type: "reset", label: "button.reset" },
+                    {
+                        type: "submit",
+                        level: "primary",
+                        label: "common.search"
+                    }
+                ]
             },
-            headerToolbar: [add],
+            headerToolbar: ["reload"],
             footerToolbar: ["switch-per-page", "statistics", "pagination"],
+            placeholder: "emptyState.locationManagement",
             columns: [
                 ...columns,
                 {
@@ -225,7 +256,8 @@ const schema = {
                             type: "button",
                             actionType: "drawer",
                             drawer: {
-                                title: "button.modify",
+                                size: "lg",
+                                title: "locationManagement.editTitle",
                                 closeOnEsc: true,
                                 closeOnOutside: true,
                                 body: form

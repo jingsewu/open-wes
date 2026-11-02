@@ -110,7 +110,8 @@ Script plugins are database-backed Groovy bundles — no jar packaging and no re
 
 ## Frontend Conventions
 
-- **AMIS pages**: Most CRUD/form pages are JSON schema definitions using `schema2component()`. Prefer this pattern for standard pages.
+- **AMIS pages**: Most CRUD/form pages are JSON schema definitions using `schema2component()`. Prefer this pattern for standard pages. Compose `@/utils/amis/presets` (`crudPage`, `formDrawer`, column helpers) instead of copying schema boilerplate.
+- **AMIS lint**: Run `npm run lint:amis` in `client/` after changing a schema; errors block a merge.
 - **State management**: MobX + mobx-state-tree (`src/stores/`). Use `@inject @observer` decorators.
 - **HTTP requests**: Always use `request` from `@/utils/requestInterceptor`. Never use raw `fetch` or `axios`.
 - **i18n**: Use `useTranslation()` hook or `t()` function. All user-facing strings must be translated.
@@ -122,6 +123,7 @@ Script plugins are database-backed Groovy bundles — no jar packaging and no re
 - **SVG IDs**: Use namespaced module-scoped constants for gradient/clipPath IDs to prevent duplicates across renders.
 
 **Read `docs/standards/frontend.md`** for detailed rules, anti-patterns, and examples.
+**Read `docs/standards/amis.md`** before writing or migrating an AMIS schema.
 
 ## Security Guidelines
 
@@ -233,6 +235,7 @@ All schema and data changes **must** use Liquibase changelogs — never ad-hoc S
 |---------|------|
 | Backend coding standards | `docs/standards/backend.md` |
 | Frontend standards (detailed) | `docs/standards/frontend.md` |
+| AMIS schema standards | `docs/standards/amis.md` |
 | Repository hygiene standards | `docs/standards/repository.md` |
 | Database migration standards | `docs/standards/liquibase.md` |
 | Gradle build config | `server/build.gradle`, `server/settings.gradle` |

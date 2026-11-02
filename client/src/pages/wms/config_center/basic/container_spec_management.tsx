@@ -63,7 +63,7 @@ const fromBody = [
             },
             {
                 name: "face",
-                label: "table.face/wall_coding",
+                label: "table.faceWallCoding",
                 type: "input-text",
                 value: "",
                 hiddenOn:
@@ -107,12 +107,13 @@ const form = {
 const add = {
     type: "button",
     actionType: "dialog",
+    level: "primary",
     icon: "fa fa-plus",
     label: "button.add",
     target: "role",
     dialog: {
         size: "full",
-        title: "button.add",
+        title: "containerSpec.addTitle",
         closeOnEsc: true,
         body: form
     }
@@ -155,22 +156,22 @@ const columns = [
         }
     },
     {
-        label: "table.volume(mm³)",
+        label: "table.volumeMm3",
         name: "volume",
         tpl: "${volume} mm³"
     },
     {
-        label: "table.length(mm)",
+        label: "table.lengthMm",
         name: "length",
         tpl: "${length} mm"
     },
     {
-        label: "table.width(mm)",
+        label: "table.widthMm",
         name: "width",
         tpl: "${width} mm"
     },
     {
-        label: "table.height(mm)",
+        label: "table.heightMm",
         name: "height",
         tpl: "${height} mm"
     },
@@ -181,7 +182,7 @@ const searchIdentity = "WContainerSpec"
 const schema = {
     type: "page",
     title: "containerSpec.title",
-    toolbar: [],
+    toolbar: [add],
     data: {
         dictionary: "${ls:dictionary}"
     },
@@ -205,15 +206,15 @@ const schema = {
             },
             headerToolbar: [
                 "reload",
-                add,
                 {
                     type: "export-excel",
                     label: "button.export",
                     api: api_crud_search_by_warehouseCode_total,
-                    fileName: "container_spec"
+                    filename: "container_spec"
                 }
             ],
             footerToolbar: ["switch-per-page", "statistics", "pagination"],
+            placeholder: "emptyState.containerSpec",
             columns: [
                 ...columns,
                 {
@@ -226,7 +227,7 @@ const schema = {
                             type: "button",
                             actionType: "dialog",
                             dialog: {
-                                title: "button.modify",
+                                title: "containerSpec.editTitle",
                                 closeOnEsc: true,
                                 closeOnOutside: true,
                                 size: "xl",
@@ -242,7 +243,8 @@ const schema = {
                             label: "button.delete",
                             type: "button",
                             actionType: "ajax",
-                            level: "danger",
+                            level: "link",
+                            className: "owes-action owes-action--danger",
                             confirmText: "toast.sureDelete",
                             confirmTitle: "button.delete",
                             api: api_container_spec_delete,

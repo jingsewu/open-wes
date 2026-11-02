@@ -102,11 +102,12 @@ const form = [
 const add = {
     type: "button",
     actionType: "dialog",
+    level: "primary",
     icon: "fa fa-plus",
     label: "button.add",
     dialog: {
         name: "addDialog",
-        title: "button.add",
+        title: "barcodeParsingManagement.addTitle",
         closeOnEsc: true,
         size: "lg",
         body: {
@@ -173,7 +174,7 @@ const showColumns = columns
 const schema = {
     type: "page",
     title: "barcodeParsingManagement.title",
-    toolbar: [],
+    toolbar: [add],
     data: {
         dictionary: "${ls:dictionary}"
     },
@@ -195,8 +196,9 @@ const schema = {
                 columnsNum: 3,
                 showBtnToolbar: true
             },
-            headerToolbar: [add],
+            headerToolbar: ["reload"],
             footerToolbar: ["switch-per-page", "statistics", "pagination"],
+            placeholder: "emptyState.barcodeParsingManagement",
             columns: [
                 ...columns,
                 {
@@ -209,7 +211,7 @@ const schema = {
                             type: "button",
                             actionType: "dialog",
                             dialog: {
-                                title: "button.modify",
+                                title: "barcodeParsingManagement.editTitle",
                                 closeOnEsc: true,
                                 closeOnOutside: true,
                                 size: "lg",

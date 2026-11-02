@@ -149,6 +149,7 @@ const schema = {
             },
             headerToolbar: ["reload"],
             footerToolbar: ["switch-per-page", "statistics", "pagination"],
+            placeholder: "emptyState.stockAdjust",
             columns: [
                 ...columns,
                 {

@@ -51,11 +51,13 @@ const form = {
 const add = {
     type: "button",
     actionType: "drawer",
+    level: "primary",
     icon: "fa fa-plus",
     label: "button.add",
     target: "role",
     drawer: {
-        title: "button.add",
+        size: "md",
+        title: "warehouseAreaManagement.addTitle",
         closeOnEsc: true,
         body: form
     }
@@ -105,7 +107,7 @@ const showColumns = columns
 const schema = {
     type: "page",
     title: "warehouseAreaManagement.title",
-    toolbar: [],
+    toolbar: [add],
     body: [
         {
             type: "crud",
@@ -124,8 +126,9 @@ const schema = {
                 columnsNum: 3,
                 showBtnToolbar: true
             },
-            headerToolbar: [add],
+            headerToolbar: ["reload"],
             footerToolbar: ["switch-per-page", "statistics", "pagination"],
+            placeholder: "emptyState.warehouseAreaManagement",
             columns: [
                 ...columns,
                 {
@@ -138,9 +141,10 @@ const schema = {
                             type: "button",
                             actionType: "drawer",
                             drawer: {
+                                size: "md",
                                 closeOnEsc: true,
                                 closeOnOutside: true,
-                                title: "button.modify",
+                                title: "warehouseAreaManagement.editTitle",
                                 body: form
                             }
                         }

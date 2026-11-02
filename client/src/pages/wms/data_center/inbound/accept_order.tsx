@@ -18,23 +18,17 @@ const columns = [
     },
     {
         name: "identifyNo",
-        label: "table.containerCode",
-        searchable: true
+        label: "table.containerCode"
     },
     {
         name: "acceptOrderStatus",
         label: "table.status",
         type: "mapping",
-        source: "${dictionary.AcceptOrderStatus}",
-        searchable: {
-            type: "select",
-            source: "${dictionary.AcceptOrderStatus}"
-        }
+        source: "${dictionary.AcceptOrderStatus}"
     },
     {
         name: "orderNo",
-        label: "table.orderNo",
-        searchable: true
+        label: "table.orderNo"
     },
     // {
     //     name: "acceptType",
@@ -92,18 +86,15 @@ const detailColumns = [
     },
     {
         name: "ownerCode",
-        label: "table.productOwner",
-        searchable: true
+        label: "table.productOwner"
     },
     {
         name: "skuCode",
-        label: "skuArea.skuCode",
-        searchable: true
+        label: "skuArea.skuCode"
     },
     {
         name: "skuName",
-        label: "skuArea.productName",
-        searchable: true
+        label: "skuArea.productName"
     },
     {
         name: "qtyAccepted",
@@ -163,9 +154,52 @@ const schema = {
                 }
             },
             autoFillHeight: true,
-            autoGenerateFilter: {
-                columnsNum: 3,
-                showBtnToolbar: true
+            filterTogglable: true,
+            filterDefaultVisible: true,
+            filter: {
+                title: "common.filter",
+                mode: "inline",
+                body: [
+                    {
+                        label: "table.containerCode",
+                        name: "identifyNo",
+                        type: "input-text"
+                    },
+                    {
+                        label: "table.productOwner",
+                        name: "ownerCode",
+                        type: "input-text"
+                    },
+                    {
+                        label: "skuArea.skuCode",
+                        name: "skuCode",
+                        type: "input-text"
+                    },
+                    {
+                        label: "skuArea.productName",
+                        name: "skuName",
+                        type: "input-text"
+                    },
+                    {
+                        label: "table.orderNo",
+                        name: "orderNo",
+                        type: "input-text"
+                    },
+                    {
+                        label: "table.status",
+                        name: "acceptOrderStatus",
+                        type: "select",
+                        source: "${dictionary.AcceptOrderStatus}"
+                    }
+                ],
+                actions: [
+                    { type: "reset", label: "button.reset" },
+                    {
+                        type: "submit",
+                        level: "primary",
+                        label: "common.search"
+                    }
+                ]
             },
             headerToolbar: [
                 "reload",
@@ -182,6 +216,7 @@ const schema = {
                 }
             ],
             footerToolbar: ["switch-per-page", "statistics", "pagination"],
+            placeholder: "emptyState.acceptOrder",
             columns: [
                 ...columns,
                 {

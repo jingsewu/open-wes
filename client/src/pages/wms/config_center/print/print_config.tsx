@@ -57,11 +57,12 @@ const form = [
 const add = {
     type: "button",
     actionType: "dialog",
+    level: "primary",
     icon: "fa fa-plus",
     label: "button.add",
     target: "Table",
     dialog: {
-        title: "button.add",
+        title: "printConfig.addTitle",
         closeOnEsc: true,
         size: "lg",
         body: {
@@ -103,7 +104,7 @@ const showColumns = columns
 const schema = {
     type: "page",
     title: "printConfig.title",
-    toolbar: [],
+    toolbar: [add],
     data: {
         dictionary: "${ls:dictionary}"
     },
@@ -125,8 +126,9 @@ const schema = {
                 columnsNum: 3,
                 showBtnToolbar: true
             },
-            headerToolbar: [add],
+            headerToolbar: ["reload"],
             footerToolbar: ["switch-per-page", "statistics", "pagination"],
+            placeholder: "emptyState.printConfig",
             columns: [
                 ...columns,
                 {
@@ -139,7 +141,8 @@ const schema = {
                             type: "button",
                             actionType: "drawer",
                             drawer: {
-                                title: "button.modify",
+                                size: "md",
+                                title: "printConfig.editTitle",
                                 closeOnEsc: true,
                                 closeOnOutside: true,
                                 body: {

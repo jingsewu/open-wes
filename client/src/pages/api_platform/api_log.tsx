@@ -16,7 +16,7 @@ const form = [
     {
         type: "input-text",
         name: "costTime",
-        label: "interfacePlatform.interfaceLogs.table.duration(ms)",
+        label: "interfacePlatform.interfaceLogs.table.durationMs",
         readOnly: true
     },
     {
@@ -60,7 +60,7 @@ const columns = [
     },
     {
         name: "costTime",
-        label: "interfacePlatform.interfaceLogs.table.duration(ms)"
+        label: "interfacePlatform.interfaceLogs.table.durationMs"
     },
     {
         name: "retryCount",
@@ -121,6 +121,7 @@ const schema = {
             },
             headerToolbar: ["reload"],
             footerToolbar: ["switch-per-page", "statistics", "pagination"],
+            placeholder: "emptyState.apiLog",
             columns: [
                 ...columns,
                 {

@@ -4,10 +4,16 @@ import {
     warehouse_logic_id
 } from "@/pages/wms/constants/select_search_api_contant"
 import { api_crud_search_by_warehouseCode } from "@/pages/constantApi"
-import { create_update_columns, yes_no_options } from "@/utils/commonContants"
+import { yes_no_options } from "@/utils/commonContants"
+import {
+    auditColumns,
+    codeColumn,
+    operationColumn,
+    statusColumn
+} from "@/utils/amis/presets"
 import { add } from "./add"
-import { detailDialog } from "./detail"
-import { recordDialog } from "./record"
+import { detailDrawer } from "./detail"
+import { recordDrawer } from "./record"
 
 const columns = [
     {
@@ -20,84 +26,60 @@ const columns = [
         label: "table.warehouse",
         hidden: true
     },
-    {
-        name: "orderNo",
-        label: "table.countOrderNumber",
-        searchable: true
-    },
+    codeColumn("orderNo", "table.countOrderNumber"),
     {
         name: "stocktakeType",
         label: "table.orderType",
         type: "mapping",
-        source: "${dictionary.StocktakeType}",
-        searchable: {
-            type: "select",
-            source: "${dictionary.StocktakeType}"
-        }
+        source: "${dictionary.StocktakeType}"
     },
     {
         name: "stocktakeCreateMethod",
         label: "table.howItWasCreated",
         type: "mapping",
-        source: "${dictionary.StocktakeCreateMethod}",
-        searchable: {
-            type: "select",
-            source: "dictionary.StocktakeCreateMethod}"
-        }
+        source: "${dictionary.StocktakeCreateMethod}"
     },
     {
         name: "stocktakeUnitType",
         label: "table.creationType",
         type: "mapping",
-        source: "${dictionary.StocktakeUnitType}",
-        searchable: {
-            type: "select",
-            source: "${dictionary.StocktakeUnitType}"
-        }
+        source: "${dictionary.StocktakeUnitType}"
     },
-    {
-        name: "stocktakeOrderStatus",
-        label: "table.status",
-        type: "mapping",
-        source: "${dictionary.StocktakeOrderStatus}",
-        searchable: {
-            type: "select",
-            source: "${dictionary.StocktakeOrderStatus}"
+    statusColumn("stocktakeOrderStatus", "table.status", {
+        labels: {
+            NEW: "status.stocktakeNew",
+            STARTED: "status.stocktakeStarted",
+            PARTIAL_DONE: "status.stocktakePartialDone",
+            DONE: "status.stocktakeDone",
+            CANCELED: "status.stocktakeCanceled"
         },
-        classNameExpr:
-            "${ stocktakeOrderStatus === 'STARTED' ? 'startStatus' : '' }"
-    },
+        tones: {
+            NEW: "info",
+            STARTED: "warning",
+            PARTIAL_DONE: "warning",
+            DONE: "success",
+            CANCELED: "muted"
+        }
+    }),
     {
         name: "warehouseAreaId",
         label: "table.warehouseAreaBelongs",
         type: "mapping",
-        source: warehouse_area_id,
-        searchable: {
-            type: "select",
-            source: warehouse_area_id
-        }
+        source: warehouse_area_id
     },
     {
         name: "warehouseLogicId",
         label: "table.logicalAreaName",
         type: "mapping",
-        source: warehouse_logic_id,
-        searchable: {
-            type: "select",
-            source: warehouse_logic_id
-        }
+        source: warehouse_logic_id
     },
     {
         name: "abnormal",
         label: "table.exceptionIdentification",
         type: "mapping",
-        map: yes_no_options,
-        searchable: {
-            type: "select",
-            options: yes_no_options
-        }
+        map: yes_no_options
     },
-    ...create_update_columns
+    ...auditColumns()
 ]
 
 const searchIdentity = "WStocktakeOrder"
@@ -105,7 +87,7 @@ const searchIdentity = "WStocktakeOrder"
 const schema = {
     type: "page",
     title: "wms.menu.inventoryCheck",
-    toolbar: [],
+    toolbar: [add],
     data: {
         dictionary: "${ls:dictionary}"
     },
@@ -123,11 +105,70 @@ const schema = {
                 }
             },
             autoFillHeight: true,
-            autoGenerateFilter: {
-                columnsNum: 3,
-                showBtnToolbar: true
+            filterTogglable: true,
+            filterDefaultVisible: true,
+            filter: {
+                title: "common.filter",
+                mode: "inline",
+                body: [
+                    {
+                        label: "table.countOrderNumber",
+                        name: "orderNo",
+                        type: "input-text"
+                    },
+                    {
+                        label: "table.status",
+                        name: "stocktakeOrderStatus",
+                        type: "select",
+                        source: "${dictionary.StocktakeOrderStatus}"
+                    },
+                    {
+                        label: "table.warehouseAreaBelongs",
+                        name: "warehouseAreaId",
+                        type: "select",
+                        source: warehouse_area_id
+                    },
+                    {
+                        label: "table.logicalAreaName",
+                        name: "warehouseLogicId",
+                        type: "select",
+                        source: warehouse_logic_id
+                    },
+                    {
+                        label: "table.orderType",
+                        name: "stocktakeType",
+                        type: "select",
+                        source: "${dictionary.StocktakeType}"
+                    },
+                    {
+                        label: "table.creationType",
+                        name: "stocktakeUnitType",
+                        type: "select",
+                        source: "${dictionary.StocktakeUnitType}"
+                    },
+                    {
+                        label: "table.howItWasCreated",
+                        name: "stocktakeCreateMethod",
+                        type: "select",
+                        source: "${dictionary.StocktakeCreateMethod}"
+                    },
+                    {
+                        label: "table.exceptionIdentification",
+                        name: "abnormal",
+                        type: "select",
+                        options: yes_no_options
+                    }
+                ],
+                actions: [
+                    { type: "reset", label: "button.reset" },
+                    {
+                        type: "submit",
+                        level: "primary",
+                        label: "common.search"
+                    }
+                ]
             },
-            headerToolbar: ["reload", add, "bulkActions"],
+            headerToolbar: ["reload", "bulkActions"],
             footerToolbar: ["switch-per-page", "statistics", "pagination"],
             bulkActions: [
                 {
@@ -147,27 +188,30 @@ const schema = {
                     confirmText: "confirm.stocktake.order.execute"
                 }
             ],
+            placeholder: "emptyState.stocktake",
             columns: [
                 ...columns,
-                {
-                    type: "operation",
-                    label: "table.operation",
-                    // width: 130,
-                    buttons: [
+                operationColumn(
+                    [
                         {
                             label: "button.detail",
                             type: "button",
-                            actionType: "dialog",
-                            dialog: detailDialog
+                            actionType: "drawer",
+                            level: "link",
+                            className: "owes-action",
+                            drawer: detailDrawer
                         },
                         {
                             label: "button.inventoryRecord",
                             type: "button",
-                            actionType: "dialog",
-                            dialog: recordDialog
+                            actionType: "drawer",
+                            level: "link",
+                            className: "owes-action",
+                            drawer: recordDrawer
                         }
-                    ]
-                }
+                    ],
+                    { width: 130 }
+                )
             ]
         }
     ]

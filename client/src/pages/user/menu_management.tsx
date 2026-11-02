@@ -88,12 +88,13 @@ const form = [
 const add = {
     type: "button",
     actionType: "drawer",
+    level: "primary",
     icon: "fa fa-plus",
     label: "button.add",
     target: "MenuTable",
     drawer: {
         size: "lg",
-        title: "button.add",
+        title: "userCenter.menuManagement.addTitle",
         closeOnEsc: true,
         body: {
             type: "form",
@@ -182,7 +183,7 @@ const showColumns = columns
 const schema = {
     type: "page",
     title: "userCenter.menuManagement.title",
-    toolbar: [],
+    toolbar: [add],
     data: {
         dictionary: "${ls:dictionary}"
     },
@@ -203,15 +204,15 @@ const schema = {
             },
             headerToolbar: [
                 "reload",
-                add,
                 {
                     type: "export-excel",
                     label: "button.export",
                     api: api_crud_search_total,
-                    fileName: "container"
+                    filename: "menu"
                 }
             ],
             footerToolbar: ["switch-per-page", "statistics", "pagination"],
+            placeholder: "emptyState.menuManagement",
             columns: [
                 ...columns,
                 {
@@ -224,7 +225,8 @@ const schema = {
                             type: "button",
                             actionType: "drawer",
                             drawer: {
-                                title: "button.modify",
+                                size: "lg",
+                                title: "userCenter.menuManagement.editTitle",
                                 closeOnEsc: true,
                                 closeOnOutside: true,
                                 body: {
@@ -239,7 +241,8 @@ const schema = {
                             label: "button.delete",
                             type: "button",
                             actionType: "ajax",
-                            level: "danger",
+                            level: "link",
+                            className: "owes-action owes-action--danger",
                             confirmText: "toast.sureDelete",
                             confirmTitle: "button.delete",
                             api: api_menu_delete
