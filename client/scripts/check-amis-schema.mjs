@@ -135,14 +135,15 @@ for (const file of schemaFiles) {
         /\btype\s*:\s*["']crud["']/.test(text)
 
     if (isListPageCandidate) {
-        const legacyAuditLine = lines.findIndex((line) =>
-            line.includes("create_update_columns")
-        )
+        // Allowlisted embedded tables are out of scope for the preset migration.
+        const legacyAuditLine = LIST_PAGE_EXCEPTIONS.has(relativeFile)
+            ? -1
+            : lines.findIndex((line) => line.includes("create_update_columns"))
         if (legacyAuditLine >= 0) {
             add(
                 file,
                 legacyAuditLine + 1,
-                "warning",
+                "error",
                 "audit-columns-preset",
                 "create_update_columns is legacy; use auditColumns()"
             )

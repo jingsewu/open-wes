@@ -8,8 +8,19 @@ import {
     api_api_update,
     editorDidMount
 } from "@/pages/api_platform/constants/api_constant"
-import {create_update_columns, true_false_options} from "@/utils/commonContants"
-import {api_crud_search, api_crud_search_total} from "@/pages/constantApi"
+import { true_false_options } from "@/utils/commonContants"
+import { api_crud_search, api_crud_search_total } from "@/pages/constantApi"
+import {
+    addButton,
+    auditColumns,
+    codeColumn,
+    crudPage,
+    deleteButton,
+    editButton,
+    exportButton,
+    formDrawer,
+    statusColumn
+} from "@/utils/amis/presets"
 
 const baseform = [
     {
@@ -152,7 +163,7 @@ const configForm = [
     {
         type: "tabs",
         tabs: [
-            // ── Tab 1: 请求转换脚本 ──────────────────────────────────────
+            // ── Tab 1: request conversion script ────────────────────────
             {
                 title: "interfacePlatform.interfaceManagement.form.requestTransformationScript",
                 body: [
@@ -167,7 +178,7 @@ const configForm = [
                     {type: "hidden", name: "testParamStatus", id: "testParamStatusComp"},
                     {type: "hidden", name: "testParamOutput", id: "testParamOutputComp"},
 
-                    // JS 模式
+                    // JS mode
                     {
                         type: "grid",
                         visibleOn: "${paramConverterType === 'JS'}",
@@ -205,7 +216,7 @@ const configForm = [
                         ]
                     },
 
-                    // JAVA 模式
+                    // JAVA mode
                     {
                         type: "grid",
                         visibleOn: "${paramConverterType === 'JAVA'}",
@@ -243,7 +254,7 @@ const configForm = [
                         ]
                     },
 
-                    // TEMPLATE 模式
+                    // TEMPLATE mode
                     {
                         label: "interfacePlatform.interfaceManagement.form.requestTransformationScript",
                         type: "textarea",
@@ -251,7 +262,7 @@ const configForm = [
                         visibleOn: "${paramConverterType === 'TEMPLATE'}"
                     },
 
-                    // NONE 模式
+                    // NONE mode
                     {
                         type: "tpl",
                         visibleOn: "${paramConverterType === 'NONE' || !paramConverterType}",
@@ -260,7 +271,7 @@ const configForm = [
                 ]
             },
 
-            // ── Tab 2: 响应转换脚本 ──────────────────────────────────────
+            // ── Tab 2: response conversion script ───────────────────────
             {
                 title: "interfacePlatform.interfaceManagement.form.responseTransformationScriptType",
                 body: [
@@ -274,7 +285,7 @@ const configForm = [
                     {type: "hidden", name: "testResponseStatus", id: "testResponseStatusComp"},
                     {type: "hidden", name: "testResponseOutput", id: "testResponseOutputComp"},
 
-                    // JS 模式
+                    // JS mode
                     {
                         type: "grid",
                         visibleOn: "${responseConverterType === 'JS'}",
@@ -312,7 +323,7 @@ const configForm = [
                         ]
                     },
 
-                    // JAVA 模式
+                    // JAVA mode
                     {
                         type: "grid",
                         visibleOn: "${responseConverterType === 'JAVA'}",
@@ -350,7 +361,7 @@ const configForm = [
                         ]
                     },
 
-                    // TEMPLATE 模式
+                    // TEMPLATE mode
                     {
                         label: "interfacePlatform.interfaceManagement.form.responseTransformationScripts",
                         type: "textarea",
@@ -358,7 +369,7 @@ const configForm = [
                         visibleOn: "${responseConverterType === 'TEMPLATE'}"
                     },
 
-                    // NONE 模式
+                    // NONE mode
                     {
                         type: "tpl",
                         visibleOn: "${responseConverterType === 'NONE' || !responseConverterType}",
@@ -370,22 +381,33 @@ const configForm = [
     }
 ]
 
-const add = {
-    type: "button",
-    actionType: "drawer",
-    level: "primary",
-    icon: "fa fa-plus",
-    label: "button.add",
-    target: "ApiTable",
-    drawer: {
-        size: "lg",
-        title: "interfacePlatform.interfaceManagement.addTitle",
-        closeOnEsc: true,
-        body: {
-            type: "form",
-            api: api_api_add,
-            body: baseform
-        }
+const addDrawer = formDrawer({
+    title: "interfacePlatform.interfaceManagement.addTitle",
+    size: "lg",
+    body: baseform,
+    api: api_api_add,
+    reload: "ApiTable"
+})
+
+const editDrawer = formDrawer({
+    title: "interfacePlatform.interfaceManagement.editTitle",
+    size: "lg",
+    context: "${code} · ${name}",
+    body: baseform,
+    api: api_api_update,
+    reload: "ApiTable"
+})
+
+const configDialog = {
+    title: "interfacePlatform.interfaceManagement.dialog.modifyParameterConversionConfiguration",
+    closeOnEsc: true,
+    size: "xl",
+    style: {height: "90vh"},
+    body: {
+        type: "form",
+        initApi: api_api_config_get,
+        api: api_api_config_update,
+        body: configForm
     }
 }
 
@@ -395,11 +417,9 @@ const columns = [
         label: "ID",
         hidden: true
     },
-    {
-        name: "code",
-        label: "interfacePlatform.interfaceManagement.table.interfaceCode",
+    codeColumn("code", "interfacePlatform.interfaceManagement.table.interfaceCode", {
         searchable: true
-    },
+    }),
     {
         name: "name",
         label: "interfacePlatform.interfaceManagement.table.interfaceName",
@@ -439,12 +459,16 @@ const columns = [
         type: "mapping",
         map: true_false_options
     },
-    {
-        name: "enabled",
-        label: "table.whetherEnabled",
-        type: "mapping",
-        map: true_false_options
-    },
+    statusColumn("enabled", "table.whetherEnabled", {
+        labels: {
+            "1": "common.enabled",
+            "0": "common.disabled"
+        },
+        tones: {
+            "1": "success",
+            "0": "muted"
+        }
+    }),
     {
         name: "syncCallback",
         label: "table.syncCallback",
@@ -453,7 +477,7 @@ const columns = [
     },
     {
         name: "url",
-        label: "请求url",
+        label: "interfacePlatform.interfaceManagement.table.interfaceAddress",
         hidden: true
     },
     {
@@ -491,119 +515,46 @@ const columns = [
         label: "interfacePlatform.interfaceManagement.form.interfaceDescription",
         hidden: true
     },
-    ...create_update_columns
+    ...auditColumns()
 ]
 
-const searchIdentity = "AApi"
-const showColumns = columns
-
-const schema = {
-    type: "page",
+const schema = crudPage({
     title: "interfacePlatform.interfaceManagement.title",
-    toolbar: [add],
-    data: {
-        dictionary: "${ls:dictionary}"
-    },
-    body: [
+    name: "ApiTable",
+    searchIdentity: "AApi",
+    api: api_crud_search,
+    columns,
+    orderBy: "update_time desc",
+    operationWidth: 230,
+    pageActions: [
+        addButton({
+            target: "ApiTable",
+            drawer: addDrawer
+        })
+    ],
+    tableActions: [
+        exportButton({
+            api: api_crud_search_total,
+            filename: "api"
+        })
+    ],
+    rowActions: [
+        editButton(editDrawer),
         {
-            type: "crud",
-            syncLocation: false,
-            name: "ApiTable",
-            api: api_crud_search,
-            defaultParams: {
-                searchIdentity: searchIdentity,
-                showColumns: showColumns,
-                searchObject: {
-                    orderBy: "update_time desc"
-                }
-            },
-            autoFillHeight: true,
-            autoGenerateFilter: {
-                columnsNum: 3,
-                showBtnToolbar: true
-            },
-            headerToolbar: [
-                "reload",
-                {
-                    type: "export-excel",
-                    label: "button.export",
-                    method: "POST",
-                    api: api_crud_search_total,
-                    columns: [
-                        "code",
-                        "name",
-                        "apiType",
-                        "method",
-                        "format",
-                        "encoding",
-                        "auth",
-                        "enabled"
-                    ],
-                    filename: "api",
-                    defaultParams: {
-                        searchIdentity: searchIdentity,
-                        showColumns: showColumns
-                    }
-                }
-            ],
-            footerToolbar: ["switch-per-page", "statistics", "pagination"],
-            placeholder: "emptyState.apiManagement",
-            columns: [
-                ...columns,
-                {
-                    type: "operation",
-                    label: "table.operation",
-                    width: 230,
-                    buttons: [
-                        {
-                            label: "button.modify",
-                            type: "button",
-                            actionType: "drawer",
-                            drawer: {
-                                title: "interfacePlatform.interfaceManagement.editTitle",
-                                closeOnEsc: true,
-                                closeOnOutside: true,
-                                body: {
-                                    type: "form",
-                                    api: api_api_update,
-                                    body: baseform
-                                }
-                            }
-                        },
-                        {
-                            label: "interfacePlatform.interfaceManagement.button.parameterConversionConfiguration",
-                            type: "button",
-                            actionType: "dialog",
-                            dialog: {
-                                title: "interfacePlatform.interfaceManagement.dialog.modifyParameterConversionConfiguration",
-                                closeOnEsc: true,
-                                size: "xl",
-                                style: {height: "90vh"},
-                                body: {
-                                    type: "form",
-                                    initApi: api_api_config_get,
-                                    api: api_api_config_update,
-                                    body: configForm
-                                }
-                            }
-                        },
-                        {
-                            label: "button.delete",
-                            type: "button",
-                            actionType: "ajax",
-                            level: "link",
-                            className: "owes-action owes-action--danger",
-                            confirmText: "toast.sureDelete",
-                            confirmTitle: "button.delete",
-                            api: api_api_delete,
-                            reload: "ApiTable"
-                        }
-                    ],
-                    toggled: true
-                }
-            ]
-        }
-    ]
-}
+            label: "interfacePlatform.interfaceManagement.button.parameterConversionConfiguration",
+            type: "button",
+            actionType: "dialog",
+            level: "link",
+            className: "owes-action",
+            dialog: configDialog
+        },
+        deleteButton({
+            api: api_api_delete,
+            confirmText: "confirm.deleteApi",
+            reload: "ApiTable"
+        })
+    ],
+    empty: "emptyState.apiManagement"
+})
 
 export default schema2component(schema)

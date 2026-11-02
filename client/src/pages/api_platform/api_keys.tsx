@@ -1,6 +1,17 @@
 import schema2component from "@/utils/schema2component"
-import {api_crud_search} from "@/pages/constantApi"
-import {api_api_keys_create, api_api_keys_delete} from "@/pages/api_platform/constants/api_constant";
+import { api_crud_search } from "@/pages/constantApi"
+import {
+    api_api_keys_create,
+    api_api_keys_delete
+} from "@/pages/api_platform/constants/api_constant"
+import {
+    addButton,
+    auditColumns,
+    codeColumn,
+    crudPage,
+    deleteButton,
+    formDrawer
+} from "@/utils/amis/presets"
 
 const form = [
     {
@@ -15,6 +26,14 @@ const form = [
     }
 ]
 
+const addDrawer = formDrawer({
+    title: "interfacePlatform.apiKeys.addTitle",
+    body: form,
+    api: api_api_keys_create,
+    reload: "ApiKeysTable",
+    preventEnterSubmit: true
+})
+
 const columns = [
     {
         name: "id",
@@ -26,100 +45,39 @@ const columns = [
         label: "interfacePlatform.interfaceManagement.table.apiKeyName",
         searchable: true
     },
-    {
-        name: "apiKey",
-        label: "interfacePlatform.apiKeys.table.apiKey"
-    },
-    {
-        label: "table.createdBy",
-        name: "createUser"
-    },
-    {
-        name: "createTime",
-        label: "table.creationTime",
-        tpl: "${createTime/1000|date:YYYY-MM-DD HH\\:mm\\:ss}",
-        searchable: {
+    codeColumn("apiKey", "interfacePlatform.apiKeys.table.apiKey"),
+    ...auditColumns({
+        visible: true,
+        createdOnly: true,
+        seconds: true,
+        createdSearchable: {
             type: "input-date-range",
             valueFormat: "x"
         }
-    }
+    })
 ]
 
-const add = {
-    type: "button",
-    actionType: "dialog",
-    level: "primary",
-    icon: "fa fa-plus",
-    label: "button.add",
-    target: "Table",
-    dialog: {
-        title: "interfacePlatform.apiKeys.title",
-        closeOnEsc: true,
-        body: {
-            id: "inputForm",
-            type: "form",
-            api: api_api_keys_create,
-            preventEnterSubmit: true,
-            body: form
-        }
-    }
-}
-
-const searchIdentity = "AApiKey"
-const showColumns = columns
-
-const schema = {
-    type: "page",
+const schema = crudPage({
     title: "interfacePlatform.apiKeys.title",
-    toolbar: [add],
-    data: {
-        dictionary: "${ls:dictionary}"
-    },
-    body: [
-        {
-            type: "crud",
-            syncLocation: false,
-            name: "ApiKeysTable",
-            api: api_crud_search,
-            defaultParams: {
-                searchIdentity: searchIdentity,
-                showColumns: showColumns,
-                searchObject: {
-                    orderBy: "create_time desc"
-                }
-            },
-            autoFillHeight: true,
-            autoGenerateFilter: {
-                columnsNum: 3,
-                showBtnToolbar: true
-            },
-            headerToolbar: ["reload"],
-            footerToolbar: ["switch-per-page", "statistics", "pagination"],
-            placeholder: "emptyState.apiKey",
-            columns: [
-                ...columns,
-                {
-                    type: "operation",
-                    label: "table.operation",
-                    width: 230,
-                    buttons: [
-                        {
-                            label: "button.delete",
-                            type: "button",
-                            actionType: "ajax",
-                            level: "link",
-                            className: "owes-action owes-action--danger",
-                            confirmText: "toast.sureDelete",
-                            confirmTitle: "button.delete",
-                            api: api_api_keys_delete,
-                            reload: "ApiKeysTable"
-                        }
-                    ],
-                    toggled: true
-                }
-            ]
-        }
-    ]
-}
+    name: "ApiKeysTable",
+    searchIdentity: "AApiKey",
+    api: api_crud_search,
+    columns,
+    orderBy: "create_time desc",
+    pageActions: [
+        addButton({
+            target: "ApiKeysTable",
+            drawer: addDrawer
+        })
+    ],
+    rowActions: [
+        deleteButton({
+            api: api_api_keys_delete,
+            confirmText: "confirm.deleteApiKey",
+            reload: "ApiKeysTable"
+        })
+    ],
+    empty: "emptyState.apiKey"
+})
 
 export default schema2component(schema)

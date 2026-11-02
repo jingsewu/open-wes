@@ -1,6 +1,12 @@
 import schema2component from "@/utils/schema2component"
 import { listRevisions } from "../api"
 import { ScriptPlugin, ScriptPluginRevision } from "../types"
+import {
+    codeColumn,
+    crudPage,
+    dateTimeColumn,
+    statusColumn
+} from "@/utils/amis/presets"
 
 interface PluginListRow extends ScriptPlugin {
     currentRevisionNo: number | null
@@ -48,11 +54,9 @@ const newPluginButton = {
 }
 
 const columns = [
-    {
-        name: "pluginKey",
-        label: "pluginPlatform.list.column.pluginKey",
+    codeColumn("pluginKey", "pluginPlatform.list.column.pluginKey", {
         width: 200
-    },
+    }),
     {
         name: "name",
         label: "pluginPlatform.list.column.name",
@@ -74,131 +78,115 @@ const columns = [
         width: 140,
         tpl: "${applyModule || '-'}"
     },
-    {
-        name: "status",
-        label: "pluginPlatform.list.column.status",
-        type: "mapping",
-        width: 110,
-        map: {
+    statusColumn("status", "pluginPlatform.list.column.status", {
+        labels: {
             DRAFT: "pluginPlatform.status.draft",
             ENABLED: "pluginPlatform.status.enabled",
             DISABLED: "pluginPlatform.status.disabled",
             ARCHIVED: "pluginPlatform.status.archived"
+        },
+        tones: {
+            DRAFT: "info",
+            ENABLED: "success",
+            DISABLED: "muted",
+            ARCHIVED: "muted"
+        },
+        width: 110
+    }),
+    statusColumn(
+        "lastValidationStatus",
+        "pluginPlatform.list.column.lastValidation",
+        {
+            labels: {
+                PASSED: "pluginPlatform.validation.passed",
+                FAILED: "pluginPlatform.validation.failed"
+            },
+            tones: {
+                PASSED: "success",
+                FAILED: "danger"
+            },
+            placeholder: "pluginPlatform.validation.notValidated",
+            width: 130
         }
-    },
-    {
-        name: "lastValidationStatus",
-        label: "pluginPlatform.list.column.lastValidation",
-        type: "mapping",
-        width: 130,
-        map: {
-            PASSED: "pluginPlatform.validation.passed",
-            FAILED: "pluginPlatform.validation.failed",
-            "*": "pluginPlatform.validation.notValidated"
-        }
-    },
-    {
-        name: "lastValidationAt",
-        label: "pluginPlatform.validation.lastAt",
-        width: 170,
-        tpl: "${lastValidationAt|millis}"
-    },
+    ),
+    dateTimeColumn("lastValidationAt", "pluginPlatform.validation.lastAt", {
+        seconds: true,
+        width: 170
+    }),
     {
         name: "currentRevisionNo",
         label: "pluginPlatform.list.column.currentRevision",
         width: 130,
         tpl: "${currentRevisionNo ? 'v' + currentRevisionNo : '-'}"
     },
+    dateTimeColumn("updateTime", "pluginPlatform.list.column.updateTime", {
+        seconds: true,
+        width: 170
+    })
+]
+
+const filters = [
     {
-        name: "updateTime",
-        label: "pluginPlatform.list.column.updateTime",
-        width: 170,
-        tpl: "${updateTime|millis}"
+        type: "input-text",
+        name: "pluginKey",
+        label: "pluginPlatform.list.column.pluginKey",
+        clearable: true
     },
     {
-        type: "operation",
-        label: "pluginPlatform.list.column.actions",
-        width: 90,
-        buttons: [
-            {
-                type: "button",
-                level: "link",
-                label: "pluginPlatform.list.open",
-                actionType: "link",
-                link: "/plugin-platform/plugin-workbench?pluginKey=${pluginKey}"
-            }
-        ],
-        toggled: true
+        type: "input-text",
+        name: "name",
+        label: "pluginPlatform.list.column.name",
+        clearable: true
+    },
+    {
+        type: "select",
+        name: "status",
+        label: "pluginPlatform.list.column.status",
+        clearable: true,
+        options: [
+            { label: "pluginPlatform.status.draft", value: "DRAFT" },
+            { label: "pluginPlatform.status.enabled", value: "ENABLED" },
+            { label: "pluginPlatform.status.disabled", value: "DISABLED" },
+            { label: "pluginPlatform.status.archived", value: "ARCHIVED" }
+        ]
+    },
+    {
+        type: "select",
+        name: "applySystem",
+        label: "pluginPlatform.list.column.applySystem",
+        clearable: true,
+        options: [
+            { label: "pluginPlatform.applySystem.wes", value: "wes" },
+            { label: "pluginPlatform.applySystem.station", value: "station" }
+        ]
     }
 ]
 
-const schema = {
-    type: "page",
+const schema = crudPage({
     title: "pluginPlatform.list.title",
-    toolbar: [],
-    body: [
+    name: "PluginTable",
+    // Custom endpoint: it returns the whole collection, not a paged /search result.
+    api: {
+        method: "get",
+        url: "/plugin-platform/scriptPlugin/list",
+        adaptor: adaptPluginList
+    },
+    loadDataOnce: true,
+    columns,
+    filters,
+    operationWidth: 90,
+    pageActions: [newPluginButton],
+    rowActions: [
         {
-            type: "crud",
-            name: "PluginTable",
-            syncLocation: false,
-            api: {
-                method: "get",
-                url: "/plugin-platform/scriptPlugin/list",
-                adaptor: adaptPluginList
-            },
-            // One fetch; filter changes apply client-side because the endpoint is not paged.
-            loadDataOnce: true,
-            loadDataOnceFetchOnFilter: false,
-            autoFillHeight: true,
-            placeholder: "pluginPlatform.list.empty",
-            filterTogglable: true,
-            filterDefaultVisible: true,
-            filter: {
-                title: "pluginPlatform.list.filterTitle",
-                mode: "inline",
-                submitText: "pluginPlatform.list.search",
-                body: [
-                    {
-                        type: "input-text",
-                        name: "pluginKey",
-                        label: "pluginPlatform.list.column.pluginKey",
-                        clearable: true
-                    },
-                    {
-                        type: "input-text",
-                        name: "name",
-                        label: "pluginPlatform.list.column.name",
-                        clearable: true
-                    },
-                    {
-                        type: "select",
-                        name: "status",
-                        label: "pluginPlatform.list.column.status",
-                        clearable: true,
-                        options: [
-                            { label: "pluginPlatform.status.draft", value: "DRAFT" },
-                            { label: "pluginPlatform.status.enabled", value: "ENABLED" },
-                            { label: "pluginPlatform.status.disabled", value: "DISABLED" },
-                            { label: "pluginPlatform.status.archived", value: "ARCHIVED" }
-                        ]
-                    },
-                    {
-                        type: "select",
-                        name: "applySystem",
-                        label: "pluginPlatform.list.column.applySystem",
-                        clearable: true,
-                        options: [
-                            { label: "pluginPlatform.applySystem.wes", value: "wes" },
-                            { label: "pluginPlatform.applySystem.station", value: "station" }
-                        ]
-                    }
-                ]
-            },
-            headerToolbar: ["reload", newPluginButton],
-            footerToolbar: ["switch-per-page", "statistics", "pagination"],
-            columns: columns
+            type: "button",
+            level: "link",
+            className: "owes-action",
+            label: "pluginPlatform.list.open",
+            actionType: "link",
+            link: "/plugin-platform/plugin-workbench?pluginKey=${pluginKey}"
         }
-    ]
-}
+    ],
+    empty: "pluginPlatform.list.empty"
+})
 
 export default schema2component(schema)

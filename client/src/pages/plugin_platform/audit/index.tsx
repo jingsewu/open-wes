@@ -1,5 +1,11 @@
 import schema2component from "@/utils/schema2component"
 import { PluginAudit } from "../types"
+import {
+    codeColumn,
+    crudPage,
+    dateTimeColumn,
+    statusColumn
+} from "@/utils/amis/presets"
 
 interface AuditPagePayload {
     items?: PluginAudit[]
@@ -20,17 +26,13 @@ async function adaptAuditPage(payload: unknown): Promise<{ items: PluginAudit[];
 }
 
 const columns = [
-    {
-        name: "createdAt",
-        label: "pluginPlatform.audit.createdAt",
-        width: 170,
-        tpl: "${createdAt|millis}"
-    },
-    {
-        name: "pluginKey",
-        label: "pluginPlatform.audit.plugin",
+    dateTimeColumn("createdAt", "pluginPlatform.audit.createdAt", {
+        seconds: true,
+        width: 170
+    }),
+    codeColumn("pluginKey", "pluginPlatform.audit.plugin", {
         width: 220
-    },
+    }),
     {
         name: "action",
         label: "pluginPlatform.audit.action",
@@ -54,16 +56,17 @@ const columns = [
         label: "pluginPlatform.audit.operator",
         width: 160
     },
-    {
-        name: "success",
-        label: "pluginPlatform.audit.success",
-        type: "mapping",
-        width: 110,
-        map: {
-            "true": "pluginPlatform.audit.successValue",
-            "false": "pluginPlatform.audit.failureValue"
-        }
-    },
+    statusColumn("success", "pluginPlatform.audit.success", {
+        labels: {
+            "1": "pluginPlatform.audit.successValue",
+            "0": "pluginPlatform.audit.failureValue"
+        },
+        tones: {
+            "1": "success",
+            "0": "danger"
+        },
+        width: 110
+    }),
     {
         name: "revisionId",
         label: "pluginPlatform.audit.revision",
@@ -77,29 +80,20 @@ const columns = [
     }
 ]
 
-const schema = {
-    type: "page",
+const schema = crudPage({
     title: "pluginPlatform.audit.title",
-    toolbar: [],
-    body: [
-        {
-            type: "crud",
-            name: "PluginAuditTable",
-            syncLocation: false,
-            api: {
-                method: "get",
-                url: "/plugin-platform/scriptPlugin/audit",
-                adaptor: adaptAuditPage
-            },
-            // AMIS CRUD names the page-size field perPage; the endpoint expects pageSize.
-            perPageField: "pageSize",
-            autoFillHeight: true,
-            placeholder: "pluginPlatform.audit.empty",
-            headerToolbar: ["reload"],
-            footerToolbar: ["switch-per-page", "statistics", "pagination"],
-            columns: columns
-        }
-    ]
-}
+    name: "PluginAuditTable",
+    // Custom endpoint: it returns its own paged payload, not a /search result.
+    api: {
+        method: "get",
+        url: "/plugin-platform/scriptPlugin/audit",
+        adaptor: adaptAuditPage
+    },
+    // AMIS CRUD names the page-size field perPage; the endpoint expects pageSize.
+    perPageField: "pageSize",
+    columns,
+    pageActions: [],
+    empty: "pluginPlatform.audit.empty"
+})
 
 export default schema2component(schema)

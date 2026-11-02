@@ -1,31 +1,35 @@
 import schema2component from "@/utils/schema2component"
 import { api_crud_search } from "@/pages/constantApi"
-import {success_or_fail} from "@/utils/commonContants";
+import {
+    crudPage,
+    dateTimeColumn,
+    statusColumn
+} from "@/utils/amis/presets"
+import { loginResultStatus } from "@/utils/amis/statusMaps"
+
 const columns = [
     {
         name: "id",
-        label: "ID"
+        label: "ID",
+        hidden: true
     },
     {
         name: "account",
         label: "userCenter.userManagement.table.loginUsername",
         searchable: true
     },
-    {
-        name: "loginTime",
-        label: "userCenter.loginLogs.table.loginTime",
-        tpl: "${loginTime/1000|date:YYYY-MM-DD HH\\:mm\\:ss}",
+    dateTimeColumn("loginTime", "userCenter.loginLogs.table.loginTime", {
+        seconds: true,
         searchable: {
             type: "input-date-range",
             valueFormat: "x"
         }
-    },
-    {
-        name: "loginResult",
-        label: "userCenter.loginLogs.table.loginResults",
-        type: "mapping",
-        map: success_or_fail
-    },
+    }),
+    statusColumn(
+        "loginResult",
+        "userCenter.loginLogs.table.loginResults",
+        loginResultStatus
+    ),
     {
         name: "loginAddress",
         label: "userCenter.loginLogs.table.loginAddress"
@@ -36,34 +40,14 @@ const columns = [
     }
 ]
 
-const searchIdentity = "ULoginLog"
-const showColumns = columns
-
-const schema = {
-    type: "page",
+const schema = crudPage({
     title: "userCenter.loginLogs.title",
-    toolbar: [],
-    body: [
-        {
-            type: "crud",
-            syncLocation: false,
-            name: "LoginLogTable",
-            api: api_crud_search,
-            defaultParams: {
-                searchIdentity: searchIdentity,
-                showColumns: showColumns
-            },
-            autoFillHeight: true,
-            autoGenerateFilter: {
-                columnsNum: 3,
-                showBtnToolbar: true
-            },
-            headerToolbar: ["reload"],
-            footerToolbar: ["switch-per-page", "statistics", "pagination"],
-            placeholder: "emptyState.loginLog",
-            columns: columns
-        }
-    ]
-}
+    name: "LoginLogTable",
+    searchIdentity: "ULoginLog",
+    api: api_crud_search,
+    columns,
+    pageActions: [],
+    empty: "emptyState.loginLog"
+})
 
 export default schema2component(schema)

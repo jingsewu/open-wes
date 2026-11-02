@@ -215,6 +215,11 @@
     "confirm.deleteRole": "This deletes the role and its permission assignments permanently. Delete?",
     "confirm.deleteContainerSpec": "Delete container spec \"${containerSpecCode}\"? This cannot be undone.",
     "confirm.deletePutWall": "Delete seeding wall \"${putWallCode}\"? This cannot be undone.",
+    "confirm.deleteMenu": "Delete menu \"${title}\"? This cannot be undone and roles will lose access to it.",
+    "confirm.deleteUser": "Delete user \"${account}\"? The account will no longer be able to sign in.",
+    "confirm.resetUserPassword": "Reset the password for \"${account}\"? Their current password stops working immediately.",
+    "confirm.deleteApiKey": "Delete API key \"${apiKeyName}\"? Integrations using this key will fail authentication immediately.",
+    "confirm.deleteApi": "Delete interface \"${code}\"? Integrations that call it will stop working.",
 
     "menu.emptyContainerInboundOrder": "Empty container inbound order",
     "menu.emptyContainerOutboundOrder": "Empty container outbound order",
@@ -650,6 +655,7 @@
 
     "interfacePlatform.interfaceLogs.title": "Interface logs",
     "interfacePlatform.apiKeys.title": "API Keys",
+    "interfacePlatform.apiKeys.addTitle": "Create API key",
     "interfacePlatform.apiKeys.table.apiKey": "API Key",
     "interfacePlatform.interfaceLogs.table.duration": "Duration",
     "interfacePlatform.interfaceLogs.table.durationMs": "Duration (ms)",
@@ -1520,6 +1526,8 @@
     "status.apiLogNew": "Pending",
     "status.apiLogSuccess": "Succeeded",
     "status.apiLogFail": "Failed",
+    "status.loginSuccess": "Success",
+    "status.loginFail": "Failed",
     "status.stocktakeStarted": "Counting",
     "status.stocktakePartialDone": "Partially done",
     "status.stocktakeDone": "Done",

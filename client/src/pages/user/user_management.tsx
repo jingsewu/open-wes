@@ -7,8 +7,19 @@ import {
     api_user_reset_password,
     api_user_update
 } from "@/pages/user/constants/api_constant"
-import { create_update_columns } from "@/utils/commonContants"
 import { api_crud_search, api_crud_search_total } from "@/pages/constantApi"
+import {
+    addButton,
+    auditColumns,
+    codeColumn,
+    crudPage,
+    deleteButton,
+    editButton,
+    exportButton,
+    formDrawer,
+    linkAction,
+    statusColumn
+} from "@/utils/amis/presets"
 
 const form = [
     {
@@ -56,25 +67,23 @@ const form = [
     }
 ]
 
-const add = {
-    type: "button",
-    actionType: "drawer",
-    level: "primary",
-    icon: "fa fa-plus",
-    label: "button.add",
-    target: "UserTable",
-    drawer: {
-        size: "lg",
-        title: "userCenter.userManagement.addTitle",
-        closeOnEsc: true,
-        body: {
-            type: "form",
-            api: api_user_add,
-            body: form,
-            reload: "UserTable"
-        }
-    }
-}
+const addDrawer = formDrawer({
+    title: "userCenter.userManagement.addTitle",
+    size: "lg",
+    body: form,
+    api: api_user_add,
+    reload: "UserTable"
+})
+
+const editDrawer = formDrawer({
+    title: "userCenter.userManagement.editTitle",
+    size: "lg",
+    context: "${account}",
+    body: form,
+    initApi: api_user_get,
+    api: api_user_update,
+    reload: "UserTable"
+})
 
 const columns = [
     {
@@ -87,11 +96,9 @@ const columns = [
         label: "userCenter.userManagement.table.name",
         searchable: true
     },
-    {
-        name: "account",
-        label: "userCenter.userManagement.table.loginUsername",
+    codeColumn("account", "userCenter.userManagement.table.loginUsername", {
         searchable: true
-    },
+    }),
     {
         name: "email",
         label: "table.email",
@@ -102,110 +109,56 @@ const columns = [
         label: "userCenter.userManagement.table.mobilePhoneNumber",
         searchable: true
     },
-    {
-        name: "status",
-        label: "table.status",
-        type: "status",
-        source: {
-            "1": {
-                label: "common.enabled",
-                className: "owes-status owes-status--success"
-            },
-            "0": {
-                label: "common.disabled",
-                className: "owes-status owes-status--muted"
-            }
+    statusColumn("status", "table.status", {
+        labels: {
+            "1": "common.enabled",
+            "0": "common.disabled"
+        },
+        tones: {
+            "1": "success",
+            "0": "muted"
         }
-    },
+    }),
     {
         name: "lastLoginIp",
         label: "userCenter.userManagement.table.LoginIP"
     },
-    ...create_update_columns
+    ...auditColumns()
 ]
 
-const searchIdentity = "UUser"
-const showColumns = columns
-
-const schema = {
-    type: "page",
+const schema = crudPage({
     title: "userCenter.userManagement.title",
-    toolbar: [add],
-    body: [
-        {
-            type: "crud",
-            syncLocation: false,
-            name: "UserTable",
-            api: api_crud_search,
-            defaultParams: {
-                searchIdentity: searchIdentity,
-                showColumns: showColumns
-            },
-            autoFillHeight: true,
-            autoGenerateFilter: {
-                columnsNum: 3,
-                showBtnToolbar: true
-            },
-            headerToolbar: [
-                "reload",
-                {
-                    type: "export-excel",
-                    label: "button.export",
-                    api: api_crud_search_total,
-                    filename: "user"
-                }
-            ],
-            footerToolbar: ["switch-per-page", "statistics", "pagination"],
-            placeholder: "emptyState.userManagement",
-            columns: [
-                ...columns,
-                {
-                    type: "operation",
-                    label: "table.operation",
-                    width: 200,
-                    buttons: [
-                        {
-                            label: "button.modify",
-                            type: "button",
-                            actionType: "drawer",
-                            drawer: {
-                                size: "lg",
-                                title: "userCenter.userManagement.editTitle",
-                                closeOnEsc: true,
-                                closeOnOutside: true,
-                                body: {
-                                    type: "form",
-                                    initApi: api_user_get,
-                                    api: api_user_update,
-                                    body: form,
-                                    reload: "UserTable"
-                                }
-                            }
-                        },
-                        {
-                            label: "button.delete",
-                            type: "button",
-                            actionType: "ajax",
-                            level: "link",
-                            className: "owes-action owes-action--danger",
-                            confirmText: "toast.sureDelete",
-                            confirmTitle: "button.delete",
-                            api: api_user_delete
-                        },
-                        {
-                            label: "button.resetPassword",
-                            type: "button",
-                            actionType: "ajax",
-                            confirmText: "toast.sureResetPassword",
-                            confirmTitle: "button.reset",
-                            api: api_user_reset_password
-                        }
-                    ],
-                    toggled: true
-                }
-            ]
-        }
-    ]
-}
+    name: "UserTable",
+    searchIdentity: "UUser",
+    api: api_crud_search,
+    columns,
+    pageActions: [
+        addButton({
+            target: "UserTable",
+            drawer: addDrawer
+        })
+    ],
+    tableActions: [
+        exportButton({
+            api: api_crud_search_total,
+            filename: "user"
+        })
+    ],
+    rowActions: [
+        editButton(editDrawer),
+        deleteButton({
+            api: api_user_delete,
+            confirmText: "confirm.deleteUser",
+            reload: "UserTable"
+        }),
+        linkAction({
+            label: "button.resetPassword",
+            api: api_user_reset_password,
+            confirmText: "confirm.resetUserPassword",
+            confirmTitle: "button.resetPassword"
+        })
+    ],
+    empty: "emptyState.userManagement"
+})
 
 export default schema2component(schema)

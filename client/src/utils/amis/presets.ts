@@ -33,6 +33,8 @@ export interface ColumnOptions {
     sortable?: boolean
     /** Whether the column is visible by default. Hidden columns stay in the column toggler. */
     toggled?: boolean
+    /** Fallback copy when the cell has no value or no matching status source. */
+    placeholder?: string
 }
 
 export type StatusTone = "success" | "warning" | "danger" | "info" | "muted"
@@ -48,7 +50,10 @@ function withOptions(base: SchemaLike, options: ColumnOptions): SchemaLike {
         ...(options.sortable !== undefined
             ? { sortable: options.sortable }
             : {}),
-        ...(options.toggled !== undefined ? { toggled: options.toggled } : {})
+        ...(options.toggled !== undefined ? { toggled: options.toggled } : {}),
+        ...(options.placeholder !== undefined
+            ? { placeholder: options.placeholder }
+            : {})
     }
 }
 
@@ -255,7 +260,11 @@ export function auditColumns(
 export interface CrudPageOptions {
     title: string
     name: string
-    searchIdentity: string
+    /**
+     * Search framework identity. Omit only for custom endpoints that do not
+     * query `/search`; the page then sends no search params at all.
+     */
+    searchIdentity?: string
     columns: SchemaLike[]
     /** Columns sent to the search backend; defaults to `columns`. */
     showColumns?: SchemaLike[]
@@ -263,6 +272,13 @@ export interface CrudPageOptions {
     orderBy?: string
     /** Extra search-object fields; joins and fixed `where` clauses live here. */
     searchObject?: Record<string, unknown>
+    /**
+     * Fetch once and filter client-side. For endpoints that return the whole
+     * collection instead of a paged search result.
+     */
+    loadDataOnce?: boolean
+    /** Page-size query parameter name for custom endpoints (AMIS defaults to `perPage`). */
+    perPageField?: string
     /** Page-level actions, rendered right-aligned in the page header. */
     pageActions?: SchemaLike[]
     /** Table utilities, rendered in the CRUD toolbar after "reload". */
@@ -295,26 +311,36 @@ export function crudPage(options: CrudPageOptions): Schema {
             : [])
     ]
 
+    const defaultParams: Record<string, unknown> = {}
+    if (options.searchIdentity) {
+        defaultParams.searchIdentity = options.searchIdentity
+        defaultParams.showColumns = showColumns
+    }
+    if (options.orderBy || options.searchObject) {
+        defaultParams.searchObject = {
+            ...options.searchObject,
+            ...(options.orderBy ? { orderBy: options.orderBy } : {})
+        }
+    }
+
     const crud: Schema = {
         type: "crud",
         name: options.name,
         syncLocation: false,
         api: options.api,
-        defaultParams: {
-            searchIdentity: options.searchIdentity,
-            showColumns,
-            ...(options.orderBy || options.searchObject
-                ? {
-                      searchObject: {
-                          ...options.searchObject,
-                          ...(options.orderBy
-                              ? { orderBy: options.orderBy }
-                              : {})
-                      }
-                  }
-                : {})
-        },
+        ...(Object.keys(defaultParams).length
+            ? { defaultParams }
+            : {}),
         autoFillHeight: true,
+        ...(options.loadDataOnce
+            ? {
+                  loadDataOnce: true,
+                  loadDataOnceFetchOnFilter: false
+              }
+            : {}),
+        ...(options.perPageField
+            ? { perPageField: options.perPageField }
+            : {}),
         // Hidden-by-default columns are only reachable through the toggler, so
         // force it on; otherwise keep AMIS's auto threshold (5+ columns).
         columnsTogglable: hasHiddenByDefault ? true : "auto",

@@ -215,6 +215,11 @@
     "confirm.deleteRole": "删除后该角色及其权限分配将无法恢复，确定删除？",
     "confirm.deleteContainerSpec": "删除容器规格“${containerSpecCode}”？删除后不可恢复。",
     "confirm.deletePutWall": "删除播种墙“${putWallCode}”？删除后不可恢复。",
+    "confirm.deleteMenu": "删除菜单“${title}”？删除后不可恢复，相关角色将失去该菜单权限。",
+    "confirm.deleteUser": "删除用户“${account}”？删除后该账号将无法登录。",
+    "confirm.resetUserPassword": "重置用户“${account}”的密码？该用户当前密码将立即失效。",
+    "confirm.deleteApiKey": "删除 API Key“${apiKeyName}”？使用该密钥的集成将立即无法通过认证。",
+    "confirm.deleteApi": "删除接口“${code}”？依赖该接口的业务将无法继续调用。",
 
     "menu.emptyContainerInboundOrder": "空箱入库单",
     "menu.emptyContainerOutboundOrder": "空箱出库单",
@@ -650,6 +655,7 @@
 
     "interfacePlatform.interfaceLogs.title": "接口日志",
     "interfacePlatform.apiKeys.title": "API Keys",
+    "interfacePlatform.apiKeys.addTitle": "新建 API Key",
     "interfacePlatform.apiKeys.table.apiKey": "API 密钥",
     "interfacePlatform.interfaceLogs.table.duration": "花费时长",
     "interfacePlatform.interfaceLogs.table.durationMs": "花费时长 (ms)",
@@ -1520,6 +1526,8 @@
     "status.apiLogNew": "未处理",
     "status.apiLogSuccess": "处理成功",
     "status.apiLogFail": "处理失败",
+    "status.loginSuccess": "成功",
+    "status.loginFail": "失败",
     "status.stocktakeStarted": "盘点中",
     "status.stocktakePartialDone": "部分完成",
     "status.stocktakeDone": "完成",

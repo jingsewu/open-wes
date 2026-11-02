@@ -29,6 +29,17 @@ export const apiLogStatus: StatusMap = {
     }
 }
 
+export const loginResultStatus: StatusMap = {
+    labels: {
+        "1": "status.loginSuccess",
+        "0": "status.loginFail"
+    },
+    tones: {
+        "1": "success",
+        "0": "danger"
+    }
+}
+
 export const acceptOrderStatus: StatusMap = {
     labels: {
         NEW: "status.acceptOrderNew",
