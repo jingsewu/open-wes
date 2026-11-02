@@ -193,29 +193,44 @@ search for it; otherwise join the display name.
 - A filter that returns nothing shows "没有符合条件的记录，调整筛选条件".
 - Errors are shown as an inline alert with a retry action, not only a toast.
 
-## 5. Filters
+## 5. Search bands
 
-- Up to four searchable fields: `autoGenerateFilter` is acceptable.
-- More than four: pass explicit `filters` to `crudPage`. Order by how often
-  operators use them, not by database order.
+Every list page uses the same search band: AMIS `autoGenerateFilter`, emitted
+by `crudPage()` with `columnsNum: 3` and `showBtnToolbar: true`. It provides
+展开/收起, 设置查询字段, 查询, and 重置. Do not pass an explicit `filters`
+array and do not set `autoGenerateFilter` per page.
+
+### Declaring a query field
+
+A query field is a column marked `searchable`:
+
+| UI control | Column definition |
+|---|---|
+| Text | `searchable: true` |
+| Select / dictionary | `searchable: { type: "select", source: "${dictionary.X}" }` or `options` |
+| Date range | `searchable: { type: "input-date-range", valueFormat: "x" }` |
+
+The column's label is the query label; every query field has a visible label.
+Column order determines the collapsed priority: the first two active
+`searchable` columns fill the collapsed row. 设置查询字段 lets each operator
+disable fields, and AMIS persists that selection per table page path.
+
+### Audit dates and hidden columns
+
+Use `auditColumns({ createdSearchable: { type: "input-date-range", valueFormat: "x" } })`
+for a creation-time query. The column may be hidden by default; hidden columns
+still reach the backend through `showColumns`. A field with no display column
+can be declared as `{ name, label, hidden: true, searchable: ... }` and kept in
+`showColumns`.
+
+### Search semantics
+
+- Search submits on Enter and on 查询; 重置 restores the default state.
 - Date ranges use `input-date-range` with `valueFormat: "x"`.
-- Every filter has a visible label; placeholders never replace labels.
-- `filterTogglable` is on when there are more than four filters; it is off for
-  short, frequently used filter rows.
-- Search submits on Enter and on the explicit 查询 button. Reset restores the
-  default range and clears all fields.
-- An explicit filter must declare its own `actions`. AMIS 6.13 ignores
-  `resetText`/`submitText` on the CRUD `filter`, so without this the panel
-  renders only the default 查询 button and there is no way to reset:
-
-  ```ts
-  actions: [
-      { type: "reset", label: "button.reset" },
-      { type: "submit", level: "primary", label: "common.search" }
-  ]
-  ```
-
-  `crudPage` in `client/src/utils/amis/presets.ts` already emits this.
+- Do not set `filterTogglable` or an explicit filter `actions`; AMIS manages
+  the auto-filter toolbar.
+- Query values are ordinary search params, identical to what the column names
+  produced before the migration.
 
 ## 6. Forms and drawers
 
@@ -462,11 +477,13 @@ Replace raw Chinese and hardcoded English labels with keys; convert status
 columns to `statusColumn`; apply `codeColumn` / `numberColumn` /
 `dateTimeColumn`; add copy-to-clipboard for identifiers; fix 1970 seed dates.
 
-**Wave 2 — page anatomy (done)**
+**Wave 2 — page anatomy (done; filter rule superseded 2026-11-02)**
 
 Move create actions to the page toolbar, export/import to the CRUD toolbar,
-replace auto-generated filters with explicit filters where there are more than
-four fields, add empty states, and set drawer sizes/titles.
+add empty states, and set drawer sizes/titles. The old rule that replaced
+auto-generated filters with explicit filters above four fields is superseded
+by the unified search band in §5; every list page now uses `searchable`
+columns and `crudPage()` always emits `autoGenerateFilter`.
 
 **Wave 3 — high-traffic pages (done)**
 
