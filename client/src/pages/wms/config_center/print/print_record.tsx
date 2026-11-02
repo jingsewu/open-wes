@@ -20,15 +20,19 @@ const columns = [
         name: "module",
         label: "printRecord.module",
         type: "mapping",
-        source: "${dictionary.ModuleEnum}"
+        source: "${dictionary.ModuleEnum}",
+        searchable: { type: "select", source: "${dictionary.ModuleEnum}" }
     },
     {
         name: "printNode",
         label: "printRecord.printNode",
         type: "mapping",
-        source: "${dictionary.PrintNodeEnum}"
+        source: "${dictionary.PrintNodeEnum}",
+        searchable: { type: "select", source: "${dictionary.PrintNodeEnum}" }
     },
-    codeColumn("templateCode", "printRecord.templateCode"),
+    codeColumn("templateCode", "printRecord.templateCode", {
+        searchable: true
+    }),
     {
         name: "templateName",
         label: "printRecord.templateName"
@@ -37,14 +41,25 @@ const columns = [
         name: "workStationId",
         label: "printRecord.workStationId",
         type: "mapping",
-        source: work_station
+        source: work_station,
+        searchable: { type: "select", source: work_station }
     },
-    dateTimeColumn("printTime", "printRecord.printTime", { seconds: true }),
+    dateTimeColumn("printTime", "printRecord.printTime", {
+        seconds: true,
+        searchable: { type: "input-date-range", valueFormat: "x" }
+    }),
     {
         name: "printer",
-        label: "printRecord.printer"
+        label: "printRecord.printer",
+        searchable: true
     },
-    statusColumn("printStatus", "printRecord.printStatus", printStatus),
+    statusColumn("printStatus", "printRecord.printStatus", {
+        ...printStatus,
+        searchable: {
+            type: "select",
+            source: "${dictionary.PrintStatusEnum}"
+        }
+    }),
     {
         name: "errorMessage",
         label: "printRecord.errorMessage",
@@ -55,56 +70,12 @@ const columns = [
     ...auditColumns({ visible: true, createdOnly: true })
 ]
 
-const filters = [
-    {
-        label: "printRecord.templateCode",
-        name: "templateCode",
-        type: "input-text"
-    },
-    {
-        label: "printRecord.printStatus",
-        name: "printStatus",
-        type: "select",
-        source: "${dictionary.PrintStatusEnum}"
-    },
-    {
-        label: "printRecord.module",
-        name: "module",
-        type: "select",
-        source: "${dictionary.ModuleEnum}"
-    },
-    {
-        label: "printRecord.printNode",
-        name: "printNode",
-        type: "select",
-        source: "${dictionary.PrintNodeEnum}"
-    },
-    {
-        label: "printRecord.printer",
-        name: "printer",
-        type: "input-text"
-    },
-    {
-        label: "printRecord.workStationId",
-        name: "workStationId",
-        type: "select",
-        source: work_station
-    },
-    {
-        label: "printRecord.printTime",
-        name: "printTime",
-        type: "input-date-range",
-        valueFormat: "x"
-    }
-]
-
 const schema = crudPage({
     title: "printRecord.title",
     name: "PPrintRecord",
     searchIdentity: "PPrintRecord",
     api: api_crud_search,
     columns,
-    filters,
     orderBy: "create_time desc",
     empty: "emptyState.printRecord"
 })
