@@ -27,28 +27,53 @@ const columns = [
         label: "table.warehouseCode",
         hidden: true
     },
-    codeColumn("containerCode", "table.containerNumber"),
+    codeColumn("containerCode", "table.containerNumber", {
+        searchable: true
+    }),
     {
         name: "containerSpecCode",
-        label: "table.containerSpecificationNumber"
+        label: "table.containerSpecificationNumber",
+        searchable: true
     },
     codeColumn("locationCode", "table.locationCode"),
-    codeColumn("taskNo", "table.putAwayTaskNo"),
+    codeColumn("taskNo", "table.putAwayTaskNo", { searchable: true }),
     {
         name: "taskType",
         label: "table.putAwayMethod",
         type: "mapping",
-        source: "${dictionary.PutAwayTaskType}"
+        source: "${dictionary.PutAwayTaskType}",
+        searchable: {
+            type: "select",
+            source: "${dictionary.PutAwayTaskType}"
+        }
     },
-    statusColumn("taskStatus", "table.putAwayStatus", putAwayTaskStatus),
+    statusColumn("taskStatus", "table.putAwayStatus", {
+        ...putAwayTaskStatus,
+        searchable: {
+            type: "select",
+            source: "${dictionary.PutAwayTaskStatus}"
+        }
+    }),
     {
         name: "workStationId",
-        label: "station.operatingStation"
+        label: "station.operatingStation",
+        searchable: true
     },
-    ...auditColumns({ seconds: true, createdOnly: true }),
+    ...auditColumns({
+        seconds: true,
+        createdOnly: true,
+        createdSearchable: {
+            type: "input-date-range",
+            valueFormat: "x"
+        }
+    }),
     dateTimeColumn("updateTime", "table.completionTime", {
         seconds: true,
-        toggled: true
+        toggled: true,
+        searchable: {
+            type: "input-date-range",
+            valueFormat: "x"
+        }
     })
 ]
 
@@ -100,60 +125,12 @@ const detailDrawer = {
     ]
 }
 
-const filters = [
-    {
-        label: "table.putAwayTaskNo",
-        name: "taskNo",
-        type: "input-text"
-    },
-    {
-        label: "table.containerNumber",
-        name: "containerCode",
-        type: "input-text"
-    },
-    {
-        label: "table.containerSpecificationNumber",
-        name: "containerSpecCode",
-        type: "input-text"
-    },
-    {
-        label: "station.operatingStation",
-        name: "workStationId",
-        type: "input-text"
-    },
-    {
-        label: "table.putAwayStatus",
-        name: "taskStatus",
-        type: "select",
-        source: "${dictionary.PutAwayTaskStatus}"
-    },
-    {
-        label: "table.putAwayMethod",
-        name: "taskType",
-        type: "select",
-        source: "${dictionary.PutAwayTaskType}"
-    },
-    {
-        label: "table.creationTime",
-        name: "createTime",
-        type: "input-date-range",
-        valueFormat: "x"
-    },
-    {
-        label: "table.completionTime",
-        name: "updateTime",
-        type: "input-date-range",
-        valueFormat: "x"
-    }
-]
-
 const schema = crudPage({
     title: "wms.menu.putAwayTasks",
     name: "PutAwayTaskTable",
     searchIdentity: "WPutAwayTask",
     api: api_crud_search_by_warehouseCode,
     columns,
-    filters,
     orderBy: "task_status, update_time desc",
     pageActions: [],
     tableActions: [
