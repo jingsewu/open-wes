@@ -11,13 +11,11 @@ import { useEffect } from "react"
 const SCAN_KEY_GAP_MS = 50
 
 /**
- * AMIS renders an explicit `filter` panel inside `.cxd-Crud-filter`, but
- * auto-generated filters (the default in `crudPage`) live in the table's
- * searchable form panel. Cover both so `/` works on every CRUD page.
+ * `crudPage` renders its query controls in AMIS's auto-generated searchable
+ * form; there is no explicit `filter` panel anymore. `/` focuses the first
+ * visible control in that form.
  */
 const SEARCH_INPUT_SELECTOR = [
-    ".cxd-Crud-filter input:not([type='hidden']):not([disabled])",
-    ".cxd-Crud-filter textarea:not([disabled])",
     ".cxd-Table-searchableForm input:not([type='hidden']):not([disabled])",
     ".cxd-Table-searchableForm textarea:not([disabled])"
 ].join(", ")

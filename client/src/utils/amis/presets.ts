@@ -283,8 +283,6 @@ export interface CrudPageOptions {
     pageActions?: SchemaLike[]
     /** Table utilities, rendered in the CRUD toolbar after "reload". */
     tableActions?: SchemaLike[]
-    /** Explicit filter controls. Omit only when there are four or fewer searchable columns. */
-    filters?: SchemaLike[]
     rowActions?: SchemaLike[]
     bulkActions?: SchemaLike[]
     /** Required: every list page explains its empty state. */
@@ -344,30 +342,12 @@ export function crudPage(options: CrudPageOptions): Schema {
         // Hidden-by-default columns are only reachable through the toggler, so
         // force it on; otherwise keep AMIS's auto threshold (5+ columns).
         columnsTogglable: hasHiddenByDefault ? true : "auto",
-        ...(options.filters
-            ? {
-                  filterTogglable: options.filters.length > 4,
-                  filterDefaultVisible: true,
-                  filter: {
-                      title: "common.filter",
-                      mode: "inline",
-                      body: options.filters,
-                      actions: [
-                          { type: "reset", label: "button.reset" },
-                          {
-                              type: "submit",
-                              level: "primary",
-                              label: "common.search"
-                          }
-                      ]
-                  }
-              }
-            : {
-                  autoGenerateFilter: {
-                      columnsNum: 3,
-                      showBtnToolbar: true
-                  }
-              }),
+        // Query controls come from columns marked `searchable`; column order
+        // sets the collapsed priority. See docs/standards/amis.md §5.
+        autoGenerateFilter: {
+            columnsNum: 3,
+            showBtnToolbar: true
+        },
         headerToolbar: [
             "reload",
             ...(options.tableActions ?? []),
