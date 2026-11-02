@@ -28,6 +28,20 @@ const LOCALES = ["zh-cn", "en-us"].map((name) => ({
 const strict = process.argv.includes("--strict")
 const findings = []
 
+/**
+ * List pages that still compose raw page + CRUD schemas. The ratchet fails on
+ * any candidate that is neither converted to `crudPage()` nor explicitly
+ * allowlisted; each wave removes its migrated entries. See docs/standards/amis.md.
+ */
+const LIST_PAGE_EXCEPTIONS = new Set(
+    JSON.parse(
+        fs.readFileSync(
+            path.join(ROOT, "scripts", "amis-list-page-exceptions.json"),
+            "utf8"
+        )
+    ).entries.map((entry) => entry.file)
+)
+
 const LABEL_PROPS = [
     "label",
     "title",
@@ -115,6 +129,41 @@ const schemaFiles = walk(PAGES)
 for (const file of schemaFiles) {
     const text = fs.readFileSync(file, "utf8")
     const lines = text.split(/\r?\n/)
+    const relativeFile = path.relative(ROOT, file).replaceAll("\\", "/")
+    const isListPageCandidate =
+        /\btype\s*:\s*["']page["']/.test(text) &&
+        /\btype\s*:\s*["']crud["']/.test(text)
+
+    if (isListPageCandidate) {
+        const legacyAuditLine = lines.findIndex((line) =>
+            line.includes("create_update_columns")
+        )
+        if (legacyAuditLine >= 0) {
+            add(
+                file,
+                legacyAuditLine + 1,
+                "warning",
+                "audit-columns-preset",
+                "create_update_columns is legacy; use auditColumns()"
+            )
+        }
+
+        if (
+            !/\bcrudPage\s*\(/.test(text) &&
+            !LIST_PAGE_EXCEPTIONS.has(relativeFile)
+        ) {
+            const pageLine = lines.findIndex((line) =>
+                /\btype\s*:\s*["']page["']/.test(line)
+            )
+            add(
+                file,
+                pageLine + 1,
+                "error",
+                "list-page-preset",
+                "raw page + crud schema; use crudPage() from @/utils/amis/presets or add an allowlist entry in scripts/amis-list-page-exceptions.json"
+            )
+        }
+    }
 
     lines.forEach((line, index) => {
         const lineNo = index + 1

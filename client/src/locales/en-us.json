@@ -212,6 +212,7 @@
     "orderArea.scanLpnNo": "Please scan the LPN number",
     "menu.inboundOrder": "Inbound order",
     "confirm.close": "Are you sure to close inbound plan orders?",
+    "confirm.deleteRole": "This deletes the role and its permission assignments permanently. Delete?",
 
     "menu.emptyContainerInboundOrder": "Empty container inbound order",
     "menu.emptyContainerOutboundOrder": "Empty container outbound order",
@@ -1333,6 +1334,9 @@
     "validation.sku.codeRequired": "Enter the SKU code",
     "validation.sku.nameRequired": "Enter the product name",
     "validation.sku.ownerRequired": "Select the owner",
+    "validation.owner.codeRequired": "Enter the shipper code",
+    "validation.owner.nameRequired": "Enter the shipper name",
+    "validation.owner.typeRequired": "Select the shipper type",
     "validation.workstation.codeRequired": "Enter the workstation code",
     "validation.workstation.nameRequired": "Enter the workstation name",
     "validation.workstation.areaRequired": "Select the warehouse area",
@@ -1500,6 +1504,9 @@
     "emptyState.roleManagement": "No roles yet. Click Add to create one.",
 
     "status.stocktakeNew": "New",
+    "status.apiLogNew": "Pending",
+    "status.apiLogSuccess": "Succeeded",
+    "status.apiLogFail": "Failed",
     "status.stocktakeStarted": "Counting",
     "status.stocktakePartialDone": "Partially done",
     "status.stocktakeDone": "Done",

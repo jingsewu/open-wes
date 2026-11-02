@@ -212,6 +212,7 @@
     "orderArea.scanLpnNo": "请扫描LPN号",
     "menu.inboundOrder": "入库单",
     "confirm.close": "确定要关闭入库单?",
+    "confirm.deleteRole": "删除后该角色及其权限分配将无法恢复，确定删除？",
 
     "menu.emptyContainerInboundOrder": "空箱入库单",
     "menu.emptyContainerOutboundOrder": "空箱出库单",
@@ -1333,6 +1334,9 @@
     "validation.sku.codeRequired": "请输入商品编码",
     "validation.sku.nameRequired": "请输入商品名称",
     "validation.sku.ownerRequired": "请选择货主",
+    "validation.owner.codeRequired": "请输入货主编码",
+    "validation.owner.nameRequired": "请输入货主名称",
+    "validation.owner.typeRequired": "请选择货主类型",
     "validation.workstation.codeRequired": "请输入工作站编码",
     "validation.workstation.nameRequired": "请输入工作站名称",
     "validation.workstation.areaRequired": "请选择所属库区",
@@ -1500,6 +1504,9 @@
     "emptyState.roleManagement": "尚无角色，点击新增创建",
 
     "status.stocktakeNew": "新单据",
+    "status.apiLogNew": "未处理",
+    "status.apiLogSuccess": "处理成功",
+    "status.apiLogFail": "处理失败",
     "status.stocktakeStarted": "盘点中",
     "status.stocktakePartialDone": "部分完成",
     "status.stocktakeDone": "完成",

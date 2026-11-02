@@ -209,16 +209,35 @@ export function operationColumn(
  * audit-focused pages (logs, history) where the block is the point.
  */
 export function auditColumns(
-    options: { seconds?: boolean; visible?: boolean } = {}
+    options: {
+        seconds?: boolean
+        visible?: boolean
+        /** Append-only records have no update columns; render only the creator/timestamp pair. */
+        createdOnly?: boolean
+        /** Filter control for createTime; logs usually need a date range. */
+        createdSearchable?: boolean | SchemaLike
+    } = {}
 ): SchemaLike[] {
-    const { visible: _visible, ...columnOptions } = options
+    const {
+        visible: _visible,
+        createdOnly,
+        createdSearchable,
+        ...columnOptions
+    } = options
     const toggled = options.visible ?? false
-    return [
+    const created = [
         { name: "createUser", label: "table.createdBy", toggled },
         dateTimeColumn("createTime", "table.creationTime", {
             ...columnOptions,
-            toggled
-        }),
+            toggled,
+            ...(createdSearchable !== undefined
+                ? { searchable: createdSearchable }
+                : {})
+        })
+    ]
+    if (createdOnly) return created
+    return [
+        ...created,
         { name: "updateUser", label: "table.modifiedBy", toggled },
         dateTimeColumn("updateTime", "table.updated", {
             ...columnOptions,
@@ -244,9 +263,12 @@ export interface CrudPageOptions {
     filters?: SchemaLike[]
     rowActions?: SchemaLike[]
     bulkActions?: SchemaLike[]
-    empty?: string | SchemaLike
+    /** Required: every list page explains its empty state. */
+    empty: string | SchemaLike
     selectable?: boolean
     operationWidth?: number
+    /** Page data merged over the default dictionary. */
+    data?: Record<string, unknown>
 }
 
 export function crudPage(options: CrudPageOptions): Schema {
@@ -307,7 +329,7 @@ export function crudPage(options: CrudPageOptions): Schema {
               }),
         headerToolbar: ["reload", ...(options.tableActions ?? [])],
         footerToolbar: ["switch-per-page", "statistics", "pagination"],
-        ...(options.empty ? { placeholder: options.empty } : {}),
+        placeholder: options.empty,
         ...(options.selectable || options.bulkActions?.length
             ? { multiple: true }
             : {}),
@@ -322,7 +344,8 @@ export function crudPage(options: CrudPageOptions): Schema {
         title: options.title,
         toolbar: options.pageActions ?? [],
         data: {
-            dictionary: "${ls:dictionary}"
+            dictionary: "${ls:dictionary}",
+            ...options.data
         },
         body: [crud]
     }
@@ -331,6 +354,12 @@ export function crudPage(options: CrudPageOptions): Schema {
 export interface FormDrawerOptions {
     title: string
     body: SchemaLike[]
+    /**
+     * Record identity rendered as a full-width line above the form, e.g.
+     * `"${ownerCode} · ${ownerName}"` in an edit drawer. Keeping it outside the
+     * form prevents a two-column layout from putting the first field beside it.
+     */
+    context?: string
     api?: ApiLike
     initApi?: ApiLike
     reload?: string
@@ -353,6 +382,18 @@ export function formDrawer(options: FormDrawerOptions): SchemaLike {
     const columnCount =
         options.columnCount ??
         (options.body.length > 6 ? 2 : 1)
+    const form: SchemaLike = {
+        type: "form",
+        mode: "horizontal",
+        labelWidth: 108,
+        columnCount,
+        messages: {
+            validateFailed: "validation.formFailed"
+        },
+        ...(options.api ? { api: options.api } : {}),
+        ...(options.initApi ? { initApi: options.initApi } : {}),
+        body: options.body
+    }
     return {
         size: options.size ?? (columnCount === 1 ? "md" : "lg"),
         title: options.title,
@@ -373,18 +414,16 @@ export function formDrawer(options: FormDrawerOptions): SchemaLike {
                 ...(options.reload ? { reload: options.reload } : {})
             }
         ],
-        body: {
-            type: "form",
-            mode: "horizontal",
-            labelWidth: 108,
-            columnCount,
-            messages: {
-                validateFailed: "validation.formFailed"
-            },
-            ...(options.api ? { api: options.api } : {}),
-            ...(options.initApi ? { initApi: options.initApi } : {}),
-            body: options.body
-        }
+        body: options.context
+            ? [
+                  {
+                      type: "tpl",
+                      tpl: options.context,
+                      className: "owes-drawer-context"
+                  },
+                  form
+              ]
+            : form
     }
 }
 
@@ -423,6 +462,8 @@ export function editButton(
 /** Row-level destructive action. Never use a filled danger button in a table row. */
 export function deleteButton(options: {
     api: ApiLike
+    /** Names the object and the consequence; the generic "sure?" copy is not enough. */
+    confirmText: string
     reload?: string
 }): Schema {
     return {
@@ -431,7 +472,7 @@ export function deleteButton(options: {
         level: "link",
         className: "owes-action owes-action--danger",
         label: "button.delete",
-        confirmText: "toast.sureDelete",
+        confirmText: options.confirmText,
         confirmTitle: "button.delete",
         ...(options.reload ? { reload: options.reload } : {}),
         api: options.api

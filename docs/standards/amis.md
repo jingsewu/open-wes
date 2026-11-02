@@ -289,6 +289,9 @@ statusColumn("status", "table.status", {
 - Do not use `yes_no_options` for a status field.
 - Do not map an enum to raw numbers in a table.
 - Do not use colour alone; the dot and the label always travel together.
+- Shared label/tone maps live in `client/src/utils/amis/statusMaps.ts`. Pass a
+  map straight to `statusColumn`; add it only when the first page needs it, and
+  add its labels to both locale files in the same change.
 - Timestamps render in the operator's locale, minute precision by default.
 - Seed data must not produce 1970 dates. Fix the seed or hide the field.
 
@@ -379,6 +382,10 @@ boilerplate.
 
 When a page needs a variant, extend the preset with an option instead of copying
 the schema. Presets are typed; do not add `any` to work around a schema type.
+
+Shared status maps live in `client/src/utils/amis/statusMaps.ts`. Append-only
+logs use `auditColumns({ visible: true, createdOnly: true })`: their records
+have a creator and creation time but no update columns.
 
 One AMIS detail the preset already handles: a drawer renders its form body with
 `wrapWithPanel: false`, which drops the form's own `actions` array. Put footer
@@ -471,9 +478,10 @@ Converted: stocktake (order list, detail and record drawers, add wizard),
 inbound plan order (list and detail drawer), SKU management, workstation
 management (add/edit/config drawers), container management. These pages now use
 `statusColumn`, `codeColumn`, `numberColumn`, `auditColumns`, drawer-level
-actions with `reload`, and `owes-drawer-context` lines. Drawer context is a
-`type: "tpl"` row placed as the first child of the drawer form/body; it inherits
-the row scope, so reference the identifying fields directly.
+actions with `reload`, and `owes-drawer-context` lines. Drawer context inherits
+the row scope, so reference the identifying fields directly. Prefer
+`formDrawer({ context: "${code} · ${name}" })` so the line spans the drawer above
+the form; only hand-built bodies place a `type: "tpl"` row first in the body.
 
 Data-dependent states (status dots, drawer context) only appear when the
 warehouse under test has rows. Seed at least one record per page, or verify the
@@ -503,6 +511,34 @@ per-page colour overrides).
 Verified at 1440×900 and 1024×768: shortcuts, toggler defaults and reveal,
 density switch and persistence, required copy on role and container drawers,
 dark tokens, no console errors and no "renderer not found".
+
+**Wave 5 — list-page unification (in progress)**
+
+Converge every top-level list page onto `crudPage()`, `formDrawer()`, the shared
+column helpers, and one presets contract. The lint rule `list-page-preset` is a
+ratchet: a file that still contains a raw `type: "page"` + `type: "crud"` schema
+must be converted or listed in `client/scripts/amis-list-page-exceptions.json`.
+
+- 5A (done): owner management (create page) and API log (read-only log) pilots.
+  `crudPage` now requires `empty` and merges page `data` over the default
+  dictionary; `deleteButton` requires a specific `confirmText`;
+  `auditColumns({ createdOnly: true })` covers append-only logs;
+  `statusMaps.ts` owns shared label/tone maps; `formDrawer({ context })` renders
+  the record identity above a multi-column form instead of inside its first
+  cell; read-only detail drawers set `actions` to a single `actionType: "close"`
+  button; and the lint ratchet lands with the 37 remaining pages plus the five
+  permanent workstation tables. Verified with a create round-trip, required-copy
+  messages, an edit round-trip, a filtered empty state, and the read-only detail
+  drawer at both widths.
+  AMIS 6.13 also has a pre-existing Table unmount race between CRUD routes
+  (`updateAutoFillHeight` / `initTableWidth` after the store is detached). It
+  reproduces on unconverted pages, so it is not caused by this migration; the
+  dev overlay hides screenshots and must be dismissed during verification.
+- 5B (pending): data center, 12 pages.
+- 5C (pending): configuration center, 18 pages.
+- 5D (pending): user, API platform, and plugin platform, 7 pages. Remove the
+  non-permanent allowlist entries and promote the `create_update_columns`
+  warning to an error.
 
 Do not mass-format or mass-rename schemas in a functional PR. One wave, one kind
 of change, verified with screenshots.

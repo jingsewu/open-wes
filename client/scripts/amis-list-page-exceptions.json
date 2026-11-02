@@ -1,0 +1,216 @@
+{
+    "version": 1,
+    "updated": "2026-11-02",
+    "entries": [
+        {
+            "file": "src/pages/wms/data_center/inbound/inbound_plan_order/index.tsx",
+            "reason": "Pending Wave 5B migration.",
+            "wave": "5B"
+        },
+        {
+            "file": "src/pages/wms/data_center/inbound/accept_order.tsx",
+            "reason": "Pending Wave 5B migration.",
+            "wave": "5B"
+        },
+        {
+            "file": "src/pages/wms/data_center/inbound/empty_container_inbound.tsx",
+            "reason": "Pending Wave 5B migration.",
+            "wave": "5B"
+        },
+        {
+            "file": "src/pages/wms/data_center/inbound/put_away_task.tsx",
+            "reason": "Pending Wave 5B migration.",
+            "wave": "5B"
+        },
+        {
+            "file": "src/pages/wms/data_center/outbound/outbound_plan_order/index.tsx",
+            "reason": "Pending Wave 5B migration.",
+            "wave": "5B"
+        },
+        {
+            "file": "src/pages/wms/data_center/outbound/picking_order.tsx",
+            "reason": "Pending Wave 5B migration.",
+            "wave": "5B"
+        },
+        {
+            "file": "src/pages/wms/data_center/outbound/empty_container_outbound.tsx",
+            "reason": "Pending Wave 5B migration.",
+            "wave": "5B"
+        },
+        {
+            "file": "src/pages/wms/data_center/stock/stocktake/index.tsx",
+            "reason": "Pending Wave 5B migration.",
+            "wave": "5B"
+        },
+        {
+            "file": "src/pages/wms/data_center/stock/stock_adjust.tsx",
+            "reason": "Pending Wave 5B migration.",
+            "wave": "5B"
+        },
+        {
+            "file": "src/pages/wms/data_center/stock/stock_records.tsx",
+            "reason": "Pending Wave 5B migration.",
+            "wave": "5B"
+        },
+        {
+            "file": "src/pages/wms/data_center/stock/container_stock.tsx",
+            "reason": "Pending Wave 5B migration.",
+            "wave": "5B"
+        },
+        {
+            "file": "src/pages/wms/data_center/stock/stock_abnormal.tsx",
+            "reason": "Pending Wave 5B migration.",
+            "wave": "5B"
+        },
+        {
+            "file": "src/pages/wms/config_center/basic/batch_attribute_management.tsx",
+            "reason": "Pending Wave 5C migration.",
+            "wave": "5C"
+        },
+        {
+            "file": "src/pages/wms/config_center/basic/container_management.tsx",
+            "reason": "Pending Wave 5C migration.",
+            "wave": "5C"
+        },
+        {
+            "file": "src/pages/wms/config_center/basic/container_spec_management.tsx",
+            "reason": "Pending Wave 5C migration.",
+            "wave": "5C"
+        },
+        {
+            "file": "src/pages/wms/config_center/basic/put_wall_management.tsx",
+            "reason": "Pending Wave 5C migration.",
+            "wave": "5C"
+        },
+        {
+            "file": "src/pages/wms/config_center/basic/sku_management.tsx",
+            "reason": "Pending Wave 5C migration.",
+            "wave": "5C"
+        },
+        {
+            "file": "src/pages/wms/config_center/basic/transfer_container_management.tsx",
+            "reason": "Pending Wave 5C migration.",
+            "wave": "5C"
+        },
+        {
+            "file": "src/pages/wms/config_center/basic/work_station.tsx",
+            "reason": "Pending Wave 5C migration.",
+            "wave": "5C"
+        },
+        {
+            "file": "src/pages/wms/config_center/print/print_config.tsx",
+            "reason": "Pending Wave 5C migration.",
+            "wave": "5C"
+        },
+        {
+            "file": "src/pages/wms/config_center/print/print_record.tsx",
+            "reason": "Pending Wave 5C migration.",
+            "wave": "5C"
+        },
+        {
+            "file": "src/pages/wms/config_center/print/print_rule.tsx",
+            "reason": "Pending Wave 5C migration.",
+            "wave": "5C"
+        },
+        {
+            "file": "src/pages/wms/config_center/print/print_template.tsx",
+            "reason": "Pending Wave 5C migration.",
+            "wave": "5C"
+        },
+        {
+            "file": "src/pages/wms/config_center/rule/barcode_parse_rule.tsx",
+            "reason": "Pending Wave 5C migration.",
+            "wave": "5C"
+        },
+        {
+            "file": "src/pages/wms/config_center/rule/dictionary_management.tsx",
+            "reason": "Pending Wave 5C migration.",
+            "wave": "5C"
+        },
+        {
+            "file": "src/pages/wms/config_center/warehouse/location_management.tsx",
+            "reason": "Pending Wave 5C migration.",
+            "wave": "5C"
+        },
+        {
+            "file": "src/pages/wms/config_center/warehouse/warehouse_area.tsx",
+            "reason": "Pending Wave 5C migration.",
+            "wave": "5C"
+        },
+        {
+            "file": "src/pages/wms/config_center/warehouse/warehouse_area_group.tsx",
+            "reason": "Pending Wave 5C migration.",
+            "wave": "5C"
+        },
+        {
+            "file": "src/pages/wms/config_center/warehouse/warehouse_logic.tsx",
+            "reason": "Pending Wave 5C migration.",
+            "wave": "5C"
+        },
+        {
+            "file": "src/pages/wms/config_center/warehouse/warehouse_management.tsx",
+            "reason": "Pending Wave 5C migration.",
+            "wave": "5C"
+        },
+        {
+            "file": "src/pages/user/login_log.tsx",
+            "reason": "Pending Wave 5D migration.",
+            "wave": "5D"
+        },
+        {
+            "file": "src/pages/user/menu_management.tsx",
+            "reason": "Pending Wave 5D migration.",
+            "wave": "5D"
+        },
+        {
+            "file": "src/pages/user/user_management.tsx",
+            "reason": "Pending Wave 5D migration.",
+            "wave": "5D"
+        },
+        {
+            "file": "src/pages/api_platform/api_keys.tsx",
+            "reason": "Pending Wave 5D migration.",
+            "wave": "5D"
+        },
+        {
+            "file": "src/pages/api_platform/api_management.tsx",
+            "reason": "Pending Wave 5D migration.",
+            "wave": "5D"
+        },
+        {
+            "file": "src/pages/plugin_platform/list/index.tsx",
+            "reason": "Pending Wave 5D migration.",
+            "wave": "5D"
+        },
+        {
+            "file": "src/pages/plugin_platform/audit/index.tsx",
+            "reason": "Pending Wave 5D migration.",
+            "wave": "5D"
+        },
+        {
+            "file": "src/pages/wms/station/instances/outbound/custom-actions/TaskDetail/OutboundTaskDetail.tsx",
+            "reason": "Embedded workstation table; not a top-level list page.",
+            "permanent": true
+        },
+        {
+            "file": "src/pages/wms/station/instances/receive/custom-actions/CallContainer/Content.tsx",
+            "reason": "Embedded workstation table; not a top-level list page.",
+            "permanent": true
+        },
+        {
+            "file": "src/pages/wms/station/instances/receive/custom-actions/TaskDetail/Content.tsx",
+            "reason": "Embedded workstation table; not a top-level list page.",
+            "permanent": true
+        },
+        {
+            "file": "src/pages/wms/station/instances/stocktake/custom-actions/RecieveTask/Content.tsx",
+            "reason": "Embedded workstation table; not a top-level list page.",
+            "permanent": true
+        },
+        {
+            "file": "src/pages/wms/station/instances/stocktake/operations/components/Process.tsx",
+            "reason": "Embedded workstation table; not a top-level list page.",
+            "permanent": true
+        }
+    ]
+}

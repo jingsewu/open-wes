@@ -153,7 +153,8 @@ const schema = crudPage({
         editButton(editDrawer),
         deleteButton({
             api: api_role_delete,
-            reload: "RoleTable"
+            reload: "RoleTable",
+            confirmText: "confirm.deleteRole"
         }),
         {
             type: "button",
