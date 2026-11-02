@@ -214,46 +214,73 @@ const columns = [
         label: "Version",
         hidden: true
     },
-    codeColumn("warehouseCode", "table.warehouseCode"),
+    codeColumn("warehouseCode", "table.warehouseCode", {
+        searchable: true
+    }),
     {
         name: "warehouseName",
-        label: "table.warehouseName"
+        label: "table.warehouseName",
+        searchable: true
     },
     {
         name: "warehouseType",
         label: "table.warehouseType",
         type: "mapping",
-        source: "${dictionary.WarehouseType}"
+        source: "${dictionary.WarehouseType}",
+        searchable: {
+            type: "select",
+            source: "${dictionary.WarehouseType}"
+        }
     },
     {
         name: "warehouseAttrType",
         label: "table.warehouseProperties",
         type: "mapping",
-        source: "${dictionary.WarehouseAttrType}"
+        source: "${dictionary.WarehouseAttrType}",
+        searchable: {
+            type: "select",
+            source: "${dictionary.WarehouseAttrType}"
+        }
     },
     {
         name: "warehouseLevel",
         label: "table.warehouseLevel",
         type: "mapping",
-        source: "${dictionary.WarehouseLevel}"
+        source: "${dictionary.WarehouseLevel}",
+        searchable: {
+            type: "select",
+            source: "${dictionary.WarehouseLevel}"
+        }
     },
     {
         name: "warehouseLabel",
         label: "table.warehouseLables",
         type: "mapping",
-        source: "${dictionary.WarehouseLabel}"
+        source: "${dictionary.WarehouseLabel}",
+        searchable: {
+            type: "select",
+            source: "${dictionary.WarehouseLabel}"
+        }
     },
     {
         name: "businessType",
         label: "table.mainBusiness",
         type: "mapping",
-        source: "${dictionary.WarehouseBusinessType}"
+        source: "${dictionary.WarehouseBusinessType}",
+        searchable: {
+            type: "select",
+            source: "${dictionary.WarehouseBusinessType}"
+        }
     },
     {
         name: "structureType",
         label: "table.warehouseStructure",
         type: "mapping",
-        source: "${dictionary.WarehouseStructureType}"
+        source: "${dictionary.WarehouseStructureType}",
+        searchable: {
+            type: "select",
+            source: "${dictionary.WarehouseStructureType}"
+        }
     },
     {
         name: "virtualWarehouse",
@@ -296,62 +323,12 @@ const columns = [
     ...auditColumns()
 ]
 
-const filters = [
-    {
-        label: "table.warehouseCode",
-        name: "warehouseCode",
-        type: "input-text"
-    },
-    {
-        label: "table.warehouseName",
-        name: "warehouseName",
-        type: "input-text"
-    },
-    {
-        label: "table.warehouseType",
-        name: "warehouseType",
-        type: "select",
-        source: "${dictionary.WarehouseType}"
-    },
-    {
-        label: "table.warehouseProperties",
-        name: "warehouseAttrType",
-        type: "select",
-        source: "${dictionary.WarehouseAttrType}"
-    },
-    {
-        label: "table.warehouseLevel",
-        name: "warehouseLevel",
-        type: "select",
-        source: "${dictionary.WarehouseLevel}"
-    },
-    {
-        label: "table.warehouseLables",
-        name: "warehouseLabel",
-        type: "select",
-        source: "${dictionary.WarehouseLabel}"
-    },
-    {
-        label: "table.mainBusiness",
-        name: "businessType",
-        type: "select",
-        source: "${dictionary.WarehouseBusinessType}"
-    },
-    {
-        label: "table.warehouseStructure",
-        name: "structureType",
-        type: "select",
-        source: "${dictionary.WarehouseStructureType}"
-    }
-]
-
 const schema = crudPage({
     title: "warehouseManagement.title",
     name: "role",
     searchIdentity: "MWarehouseMainData",
     api: api_crud_search,
     columns,
-    filters,
     orderBy: "update_time desc",
     pageActions: [addButton({ target: "role", drawer: addDrawer })],
     rowActions: [editButton(editDrawer)],
