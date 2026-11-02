@@ -298,6 +298,19 @@
     margin-bottom: 16px;
 }
 
+/*
+ * Auto-filter toolbar: below 1200px the 查询/重置/展开 controls no longer fit
+ * beside two fields, and AMIS squeezes the first input to ~25px. Give the
+ * toolbar its own row; the fields keep the full width. Re-check after an AMIS
+ * upgrade (the class names are AMIS-owned).
+ */
+@media (max-width: 1199.98px) {
+    .cxd-Table-searchableForm
+        .cxd-Form-groupColumn:has(> .cxd-AutoFilterToolbar) {
+        flex-basis: 100% !important;
+    }
+}
+
 /* Multi-line guidance: import rules, empty-state instructions. */
 .owes-note-list {
     white-space: pre-line;
