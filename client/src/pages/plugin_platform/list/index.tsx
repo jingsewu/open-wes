@@ -55,12 +55,14 @@ const newPluginButton = {
 
 const columns = [
     codeColumn("pluginKey", "pluginPlatform.list.column.pluginKey", {
-        width: 200
+        width: 200,
+        searchable: true
     }),
     {
         name: "name",
         label: "pluginPlatform.list.column.name",
-        width: 180
+        width: 180,
+        searchable: true
     },
     {
         name: "applySystem",
@@ -70,6 +72,13 @@ const columns = [
         map: {
             wes: "pluginPlatform.applySystem.wes",
             station: "pluginPlatform.applySystem.station"
+        },
+        searchable: {
+            type: "select",
+            options: [
+                { label: "pluginPlatform.applySystem.wes", value: "wes" },
+                { label: "pluginPlatform.applySystem.station", value: "station" }
+            ]
         }
     },
     {
@@ -91,7 +100,16 @@ const columns = [
             DISABLED: "muted",
             ARCHIVED: "muted"
         },
-        width: 110
+        width: 110,
+        searchable: {
+            type: "select",
+            options: [
+                { label: "pluginPlatform.status.draft", value: "DRAFT" },
+                { label: "pluginPlatform.status.enabled", value: "ENABLED" },
+                { label: "pluginPlatform.status.disabled", value: "DISABLED" },
+                { label: "pluginPlatform.status.archived", value: "ARCHIVED" }
+            ]
+        }
     }),
     statusColumn(
         "lastValidationStatus",
@@ -125,43 +143,6 @@ const columns = [
     })
 ]
 
-const filters = [
-    {
-        type: "input-text",
-        name: "pluginKey",
-        label: "pluginPlatform.list.column.pluginKey",
-        clearable: true
-    },
-    {
-        type: "input-text",
-        name: "name",
-        label: "pluginPlatform.list.column.name",
-        clearable: true
-    },
-    {
-        type: "select",
-        name: "status",
-        label: "pluginPlatform.list.column.status",
-        clearable: true,
-        options: [
-            { label: "pluginPlatform.status.draft", value: "DRAFT" },
-            { label: "pluginPlatform.status.enabled", value: "ENABLED" },
-            { label: "pluginPlatform.status.disabled", value: "DISABLED" },
-            { label: "pluginPlatform.status.archived", value: "ARCHIVED" }
-        ]
-    },
-    {
-        type: "select",
-        name: "applySystem",
-        label: "pluginPlatform.list.column.applySystem",
-        clearable: true,
-        options: [
-            { label: "pluginPlatform.applySystem.wes", value: "wes" },
-            { label: "pluginPlatform.applySystem.station", value: "station" }
-        ]
-    }
-]
-
 const schema = crudPage({
     title: "pluginPlatform.list.title",
     name: "PluginTable",
@@ -173,7 +154,6 @@ const schema = crudPage({
     },
     loadDataOnce: true,
     columns,
-    filters,
     operationWidth: 90,
     pageActions: [newPluginButton],
     rowActions: [
