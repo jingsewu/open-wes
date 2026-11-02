@@ -1,14 +1,25 @@
 import schema2component from "@/utils/schema2component"
-import {
-    create_update_columns,
-    true_false_options
-} from "@/utils/commonContants"
-
+import { true_false_options } from "@/utils/commonContants"
 import {
     api_crud_search_by_warehouseCode,
     api_crud_search_by_warehouseCode_total
 } from "@/pages/constantApi"
-import { detailDialog, detailColumns, searchDetailIdentity } from "./detail"
+import {
+    auditColumns,
+    codeColumn,
+    crudPage,
+    dateTimeColumn,
+    detailButton,
+    exportButton,
+    numberColumn,
+    statusColumn
+} from "@/utils/amis/presets"
+import { outboundPlanOrderStatus } from "@/utils/amis/statusMaps"
+import {
+    detailColumns,
+    detailDrawer,
+    searchDetailIdentity
+} from "./detail"
 import { add } from "./add"
 
 const columns = [
@@ -19,14 +30,12 @@ const columns = [
     },
     {
         name: "warehouseCode",
-        label: "仓库",
+        label: "table.warehouseCode",
         hidden: true
     },
-    {
-        name: "customerOrderNo",
-        label: "table.customerOrderNo",
+    codeColumn("customerOrderNo", "table.customerOrderNo", {
         searchable: true
-    },
+    }),
     {
         name: "customerOrderType",
         label: "table.orderType",
@@ -37,51 +46,26 @@ const columns = [
             source: "${dictionary.CustomerOrderType}"
         }
     },
-    {
-        name: "orderNo",
-        label: "table.orderNo"
-    },
-    {
-        name: "customerWaveNo",
-        label: "table.customerWaveNumber"
-    },
-    {
-        name: "waveNo",
-        label: "table.waveNumber"
-    },
-    {
-        name: "priority",
-        label: "table.priority"
-    },
+    codeColumn("orderNo", "table.orderNo"),
+    codeColumn("customerWaveNo", "table.customerWaveNumber"),
+    codeColumn("waveNo", "table.waveNumber"),
+    numberColumn("priority", "table.priority"),
     {
         name: "shortOutbound",
         label: "table.shortOut",
         type: "mapping",
         map: true_false_options
     },
-    {
-        name: "outboundPlanOrderStatus",
-        label: "table.status",
-        type: "mapping",
-        source: "${dictionary.OutboundPlanOrderStatus}",
+    statusColumn("outboundPlanOrderStatus", "table.status", {
+        ...outboundPlanOrderStatus,
         searchable: {
             type: "select",
             source: "${dictionary.OutboundPlanOrderStatus}"
         }
-    },
-    {
-        name: "expiredTime",
-        label: "table.cut-off_time",
-        tpl: "${createTime/1000|date:YYYY-MM-DD HH\\:mm\\:ss}"
-    },
-    {
-        name: "skuKindNum",
-        label: "table.skuTypes"
-    },
-    {
-        name: "totalQty",
-        label: "table.totalQuantity"
-    },
+    }),
+    dateTimeColumn("expiredTime", "table.cut-off_time"),
+    numberColumn("skuKindNum", "table.skuTypes"),
+    numberColumn("totalQty", "table.totalQuantity"),
     {
         name: "abnormal",
         label: "table.whetherAbnormal",
@@ -100,34 +84,20 @@ const columns = [
         name: "carrierCode",
         label: "table.carriers"
     },
-    {
-        name: "waybillNo",
-        label: "table.theTrackingNumber"
-    },
-    ...create_update_columns
+    codeColumn("waybillNo", "table.theTrackingNumber"),
+    ...auditColumns()
 ]
 
-const headerToolbar = [
-    "reload",
-    {
-        type: "columns-toggler",
-        draggable: true,
-        overlay: true,
-        icon: "fas fa-cog",
-        hideExpandIcon: false,
-        size: "sm"
-    },
-    {
+const tableActions = [
+    exportButton({
         type: "export-csv",
-        label: "button.exportOrder",
-        method: "POST",
         api: api_crud_search_by_warehouseCode_total,
-        filename: "outbound_plan_orders"
-    },
-    {
+        filename: "outbound_plan_orders",
+        label: "button.exportOrder",
+        method: "POST"
+    }),
+    exportButton({
         type: "export-csv",
-        label: "button.exportDetail",
-        method: "POST",
         api: {
             method: "POST",
             url: "/search/search?page=${1}&perPage=${100000}&warehouseCode-op=eq&warehouseCode=${ls:warehouseCode}",
@@ -141,53 +111,23 @@ const headerToolbar = [
             }
         },
         filename: "outbound_plan_order_details",
-        exportColumns: JSON.parse(JSON.stringify(detailColumns))
-    },
+        label: "button.exportDetail",
+        method: "POST",
+        exportColumns: detailColumns.map((column) => ({ ...column }))
+    })
 ]
 
-const searchIdentity = "WOutboundPlanOrder"
-const showColumns = columns
-
-const schema = {
-    type: "page",
+const schema = crudPage({
     title: "outboundOrder.title",
-    toolbar: [add],
-    data: {
-        dictionary: "${ls:dictionary}"
-    },
-    body: [
-        {
-            type: "crud",
-            syncLocation: false,
-            name: "OutboundOrderTable",
-            api: api_crud_search_by_warehouseCode,
-            defaultParams: {
-                searchIdentity: searchIdentity,
-                showColumns: showColumns,
-                searchObject: {
-                    orderBy: "update_time desc"
-                }
-            },
-            autoFillHeight: true,
-            autoGenerateFilter: {
-                columnsNum: 3,
-                showBtnToolbar: true
-            },
-            headerToolbar: headerToolbar,
-            footerToolbar: ["switch-per-page", "statistics", "pagination"],
-            placeholder: "emptyState.outboundPlanOrder",
-            columns: [
-                ...columns,
-                {
-                    label: "button.detail",
-                    type: "button",
-                    level: "link",
-                    actionType: "dialog",
-                    dialog: detailDialog
-                }
-            ]
-        }
-    ]
-}
+    name: "OutboundOrderTable",
+    searchIdentity: "WOutboundPlanOrder",
+    api: api_crud_search_by_warehouseCode,
+    columns,
+    orderBy: "update_time desc",
+    pageActions: [add],
+    tableActions,
+    rowActions: [detailButton(detailDrawer)],
+    empty: "emptyState.outboundPlanOrder"
+})
 
 export default schema2component(schema)

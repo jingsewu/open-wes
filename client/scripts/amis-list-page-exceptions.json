@@ -3,41 +3,6 @@
     "updated": "2026-11-02",
     "entries": [
         {
-            "file": "src/pages/wms/data_center/inbound/inbound_plan_order/index.tsx",
-            "reason": "Pending Wave 5B migration.",
-            "wave": "5B"
-        },
-        {
-            "file": "src/pages/wms/data_center/inbound/accept_order.tsx",
-            "reason": "Pending Wave 5B migration.",
-            "wave": "5B"
-        },
-        {
-            "file": "src/pages/wms/data_center/inbound/empty_container_inbound.tsx",
-            "reason": "Pending Wave 5B migration.",
-            "wave": "5B"
-        },
-        {
-            "file": "src/pages/wms/data_center/inbound/put_away_task.tsx",
-            "reason": "Pending Wave 5B migration.",
-            "wave": "5B"
-        },
-        {
-            "file": "src/pages/wms/data_center/outbound/outbound_plan_order/index.tsx",
-            "reason": "Pending Wave 5B migration.",
-            "wave": "5B"
-        },
-        {
-            "file": "src/pages/wms/data_center/outbound/picking_order.tsx",
-            "reason": "Pending Wave 5B migration.",
-            "wave": "5B"
-        },
-        {
-            "file": "src/pages/wms/data_center/outbound/empty_container_outbound.tsx",
-            "reason": "Pending Wave 5B migration.",
-            "wave": "5B"
-        },
-        {
             "file": "src/pages/wms/data_center/stock/stocktake/index.tsx",
             "reason": "Pending Wave 5B migration.",
             "wave": "5B"

@@ -1,4 +1,4 @@
-import { codeColumn, numberColumn } from "@/utils/amis/presets"
+import { codeColumn, nestedTable, numberColumn } from "@/utils/amis/presets"
 
 const detailColumns = [
     {
@@ -43,32 +43,33 @@ const detailColumns = [
 ]
 
 export const detailDrawer = {
+    size: "xl",
     title: "table.inboundPlanDetails",
-    actions: [],
     closeOnEsc: true,
     closeOnOutside: true,
-    size: "xl",
+    actions: [
+        {
+            type: "button",
+            actionType: "close",
+            label: "button.close"
+        }
+    ],
     body: [
         {
             type: "tpl",
             tpl: "${orderNo}",
             className: "owes-drawer-context"
         },
-        {
-            type: "crud",
-            syncLocation: false,
-            name: "inboundPlanOrderDetailTable",
+        nestedTable({
+            name: "InboundPlanOrderDetailTable",
             api: {
                 method: "POST",
                 url: "/search/search?page=${page}&perPage=${perPage}&inboundPlanOrderId=${id}&inboundPlanOrderId-op=eq",
                 dataType: "application/json"
             },
-            defaultParams: {
-                searchIdentity: "WInboundPlanOrderDetail",
-                showColumns: detailColumns
-            },
-            footerToolbar: ["switch-per-page", "statistics", "pagination"],
-            columns: detailColumns
-        }
+            searchIdentity: "WInboundPlanOrderDetail",
+            columns: detailColumns,
+            empty: "emptyState.inboundPlanDetail"
+        })
     ]
 }

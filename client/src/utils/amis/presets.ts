@@ -86,21 +86,27 @@ export function numberColumn(
     )
 }
 
-/** Millisecond timestamp rendered at minute precision; seconds are opt-in. */
+/**
+ * Millisecond timestamp rendered at minute precision; seconds are opt-in.
+ * The AMIS date renderer auto-detects the 13-digit millisecond value and shows
+ * the placeholder for null, so unset timestamps never render as 1970.
+ */
 export function dateTimeColumn(
     name: string,
     label: string,
     options: ColumnOptions & { seconds?: boolean } = {}
 ): SchemaLike {
     const format = options.seconds
-        ? "YYYY-MM-DD HH\\:mm\\:ss"
-        : "YYYY-MM-DD HH\\:mm"
+        ? "YYYY-MM-DD HH:mm:ss"
+        : "YYYY-MM-DD HH:mm"
     const { seconds: _seconds, ...columnOptions } = options
     return withOptions(
         {
             name,
             label,
-            tpl: `\${${name}/1000|date:${format}}`
+            type: "date",
+            valueFormat: "x",
+            format
         },
         columnOptions
     )
@@ -327,7 +333,11 @@ export function crudPage(options: CrudPageOptions): Schema {
                       showBtnToolbar: true
                   }
               }),
-        headerToolbar: ["reload", ...(options.tableActions ?? [])],
+        headerToolbar: [
+            "reload",
+            ...(options.tableActions ?? []),
+            ...(options.bulkActions?.length ? ["bulkActions"] : [])
+        ],
         footerToolbar: ["switch-per-page", "statistics", "pagination"],
         placeholder: options.empty,
         ...(options.selectable || options.bulkActions?.length
@@ -368,6 +378,8 @@ export interface FormDrawerOptions {
     submitLabel?: string
     /** Forms with more than three fields keep the drawer open on outside clicks. */
     closeOnOutside?: boolean
+    /** Keep Enter from submitting; use it for scan-driven forms with focus chaining. */
+    preventEnterSubmit?: boolean
 }
 
 /**
@@ -387,6 +399,7 @@ export function formDrawer(options: FormDrawerOptions): SchemaLike {
         mode: "horizontal",
         labelWidth: 108,
         columnCount,
+        ...(options.preventEnterSubmit ? { preventEnterSubmit: true } : {}),
         messages: {
             validateFailed: "validation.formFailed"
         },
@@ -459,6 +472,21 @@ export function editButton(
     }
 }
 
+/** Row-level read-only detail action. Opens a drawer with the record's data. */
+export function detailButton(
+    drawer: SchemaLike,
+    label = "button.detail"
+): Schema {
+    return {
+        type: "button",
+        actionType: "drawer",
+        level: "link",
+        className: "owes-action",
+        label,
+        drawer
+    }
+}
+
 /** Row-level destructive action. Never use a filled danger button in a table row. */
 export function deleteButton(options: {
     api: ApiLike
@@ -485,12 +513,95 @@ export function exportButton(options: {
     filename: string
     label?: string
     method?: string
+    type?: "export-excel" | "export-csv"
+    defaultParams?: Record<string, unknown>
+    exportColumns?: SchemaLike[]
 }): Schema {
     return {
-        type: "export-excel",
+        type: options.type ?? "export-excel",
         label: options.label ?? "button.export",
         ...(options.method ? { method: options.method } : {}),
         api: options.api,
-        filename: options.filename
+        filename: options.filename,
+        ...(options.defaultParams
+            ? { defaultParams: options.defaultParams }
+            : {}),
+        ...(options.exportColumns
+            ? { exportColumns: options.exportColumns }
+            : {})
+    }
+}
+
+/**
+ * Row or bulk action rendered as a text link. Custom actions keep their API
+ * payload; only the presentation is standardised.
+ */
+export function linkAction(options: {
+    label: string
+    api: ApiLike
+    confirmText?: string
+    confirmTitle?: string
+    danger?: boolean
+    reload?: string
+}): Schema {
+    return {
+        type: "button",
+        actionType: "ajax",
+        level: "link",
+        className: options.danger
+            ? "owes-action owes-action--danger"
+            : "owes-action",
+        label: options.label,
+        api: options.api,
+        ...(options.confirmText ? { confirmText: options.confirmText } : {}),
+        ...(options.confirmTitle
+            ? { confirmTitle: options.confirmTitle }
+            : {}),
+        ...(options.reload ? { reload: options.reload } : {})
+    }
+}
+
+/** Import trigger for the CRUD toolbar; the dialog itself stays page-specific. */
+export function importButton(options: {
+    dialog: SchemaLike
+    label?: string
+}): Schema {
+    return {
+        type: "button",
+        actionType: "dialog",
+        icon: "fa fa-upload",
+        label: options.label ?? "button.import",
+        dialog: options.dialog
+    }
+}
+
+/**
+ * Second CRUD rendered inside a detail drawer. It keeps the table footer and
+ * column helpers but drops the page header, filter band, and URL sync.
+ */
+export function nestedTable(options: {
+    name: string
+    api: ApiLike
+    searchIdentity: string
+    columns: SchemaLike[]
+    showColumns?: SchemaLike[]
+    searchObject?: Record<string, unknown>
+    empty?: string
+}): Schema {
+    return {
+        type: "crud",
+        syncLocation: false,
+        name: options.name,
+        api: options.api,
+        defaultParams: {
+            searchIdentity: options.searchIdentity,
+            showColumns: options.showColumns ?? options.columns,
+            ...(options.searchObject
+                ? { searchObject: options.searchObject }
+                : {})
+        },
+        footerToolbar: ["switch-per-page", "statistics", "pagination"],
+        ...(options.empty ? { placeholder: options.empty } : {}),
+        columns: options.columns
     }
 }

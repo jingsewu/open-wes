@@ -1,70 +1,20 @@
 import schema2component from "@/utils/schema2component"
-import { create_update_columns } from "@/utils/commonContants"
 import {
     api_crud_search_by_warehouseCode,
     api_crud_search_by_warehouseCode_total
 } from "@/pages/constantApi"
-
-const columns = [
-    {
-        name: "id",
-        label: "ID",
-        hidden: true
-    },
-    {
-        name: "warehouseCode",
-        label: "仓库",
-        hidden: true
-    },
-    {
-        name: "identifyNo",
-        label: "table.containerCode"
-    },
-    {
-        name: "acceptOrderStatus",
-        label: "table.status",
-        type: "mapping",
-        source: "${dictionary.AcceptOrderStatus}"
-    },
-    {
-        name: "orderNo",
-        label: "table.orderNo"
-    },
-    // {
-    //     name: "acceptType",
-    //     label: "table.acceptType",
-    //     type: "mapping",
-    //     source: "${AcceptType}",
-    //     searchable: {
-    //         type: "select",
-    //         source: "${AcceptType}"
-    //     }
-    // },
-    {
-        name: "totalBox",
-        label: "table.boxesNumber"
-    },
-    {
-        name: "totalQty",
-        label: "table.totalQuantity"
-    },
-    ...create_update_columns,
-    {
-        type: "tpl",
-        name: "remark",
-        label: "table.remark",
-        tpl: "${remark|truncate:30}",
-        popOver: {
-            trigger: "hover",
-            position: "left-top",
-            showIcon: false,
-            body: {
-                type: "tpl",
-                tpl: "${remark}"
-            }
-        }
-    }
-]
+import {
+    auditColumns,
+    codeColumn,
+    crudPage,
+    detailButton,
+    exportButton,
+    nestedTable,
+    numberColumn,
+    remarkColumn,
+    statusColumn
+} from "@/utils/amis/presets"
+import { acceptOrderStatus } from "@/utils/amis/statusMaps"
 
 const detailColumns = [
     {
@@ -84,151 +34,122 @@ const detailColumns = [
         name: "targetContainerSlotCode",
         label: "table.containerLatticeSlogan"
     },
-    {
-        name: "ownerCode",
-        label: "table.productOwner"
-    },
-    {
-        name: "skuCode",
-        label: "skuArea.skuCode"
-    },
+    codeColumn("ownerCode", "table.productOwner"),
+    codeColumn("skuCode", "skuArea.skuCode"),
     {
         name: "skuName",
         label: "skuArea.productName"
     },
-    {
-        name: "qtyAccepted",
-        label: "table.receivedQuantity"
-    }
+    numberColumn("qtyAccepted", "table.receivedQuantity")
 ]
 
-const searchIdentity = "WAcceptOrder"
-const searchDetailIdentity = "WAcceptOrderDetail"
-const showColumns = columns
-const showDetailColumns = detailColumns
-
-const detailDialog = {
+const detailDrawer = {
+    size: "xl",
     title: "table.acceptOrderDetails",
-    actions: [],
     closeOnEsc: true,
     closeOnOutside: true,
-    size: "xl",
+    actions: [
+        {
+            type: "button",
+            actionType: "close",
+            label: "button.close"
+        }
+    ],
     body: [
         {
-            type: "crud",
-            syncLocation: false,
-            name: "acceptOrderDetailTable",
+            type: "tpl",
+            tpl: "${identifyNo} · ${orderNo}",
+            className: "owes-drawer-context"
+        },
+        nestedTable({
+            name: "AcceptOrderDetailTable",
             api: {
                 method: "POST",
                 url: "/search/search?page=${page}&perPage=${perPage}&acceptOrderId=${id}&acceptOrderId-op=eq",
                 dataType: "application/json"
             },
-            defaultParams: {
-                searchIdentity: searchDetailIdentity,
-                showColumns: showDetailColumns
-            },
-            footerToolbar: ["switch-per-page", "statistics", "pagination"],
-            columns: detailColumns
-        }
+            searchIdentity: "WAcceptOrderDetail",
+            columns: detailColumns,
+            empty: "emptyState.acceptOrderDetail"
+        })
     ]
 }
 
-const schema = {
-    type: "page",
-    title: "menu.acceptOrder",
-    toolbar: [],
-    data: {
-        dictionary: "${ls:dictionary}"
+const filters = [
+    {
+        label: "table.containerCode",
+        name: "identifyNo",
+        type: "input-text"
     },
-    body: [
-        {
-            type: "crud",
-            syncLocation: false,
-            name: "acceptOrderTable",
-            api: api_crud_search_by_warehouseCode,
+    {
+        label: "table.productOwner",
+        name: "ownerCode",
+        type: "input-text"
+    },
+    {
+        label: "skuArea.skuCode",
+        name: "skuCode",
+        type: "input-text"
+    },
+    {
+        label: "skuArea.productName",
+        name: "skuName",
+        type: "input-text"
+    },
+    {
+        label: "table.orderNo",
+        name: "orderNo",
+        type: "input-text"
+    },
+    {
+        label: "table.status",
+        name: "acceptOrderStatus",
+        type: "select",
+        source: "${dictionary.AcceptOrderStatus}"
+    }
+]
+
+const columns = [
+    {
+        name: "id",
+        label: "ID",
+        hidden: true
+    },
+    {
+        name: "warehouseCode",
+        label: "table.warehouseCode",
+        hidden: true
+    },
+    codeColumn("identifyNo", "table.containerCode"),
+    statusColumn("acceptOrderStatus", "table.status", acceptOrderStatus),
+    codeColumn("orderNo", "table.orderNo"),
+    numberColumn("totalBox", "table.boxesNumber"),
+    numberColumn("totalQty", "table.totalQuantity"),
+    ...auditColumns(),
+    remarkColumn()
+]
+
+const schema = crudPage({
+    title: "menu.acceptOrder",
+    name: "AcceptOrderTable",
+    searchIdentity: "WAcceptOrder",
+    api: api_crud_search_by_warehouseCode,
+    columns,
+    orderBy: "accept_order_status, update_time desc",
+    filters,
+    pageActions: [],
+    tableActions: [
+        exportButton({
+            api: api_crud_search_by_warehouseCode_total,
+            filename: "accept_order",
             defaultParams: {
-                searchIdentity: searchIdentity,
-                showColumns: showColumns,
-                searchObject: {
-                    orderBy: "accept_order_status, update_time desc"
-                }
-            },
-            autoFillHeight: true,
-            filterTogglable: true,
-            filterDefaultVisible: true,
-            filter: {
-                title: "common.filter",
-                mode: "inline",
-                body: [
-                    {
-                        label: "table.containerCode",
-                        name: "identifyNo",
-                        type: "input-text"
-                    },
-                    {
-                        label: "table.productOwner",
-                        name: "ownerCode",
-                        type: "input-text"
-                    },
-                    {
-                        label: "skuArea.skuCode",
-                        name: "skuCode",
-                        type: "input-text"
-                    },
-                    {
-                        label: "skuArea.productName",
-                        name: "skuName",
-                        type: "input-text"
-                    },
-                    {
-                        label: "table.orderNo",
-                        name: "orderNo",
-                        type: "input-text"
-                    },
-                    {
-                        label: "table.status",
-                        name: "acceptOrderStatus",
-                        type: "select",
-                        source: "${dictionary.AcceptOrderStatus}"
-                    }
-                ],
-                actions: [
-                    { type: "reset", label: "button.reset" },
-                    {
-                        type: "submit",
-                        level: "primary",
-                        label: "common.search"
-                    }
-                ]
-            },
-            headerToolbar: [
-                "reload",
-                {
-                    type: "export-excel",
-                    label: "button.export",
-                    method: "POST",
-                    api: api_crud_search_by_warehouseCode_total,
-                    filename: "accept_order",
-                    defaultParams: {
-                        searchIdentity: searchIdentity,
-                        showColumns: showColumns
-                    }
-                }
-            ],
-            footerToolbar: ["switch-per-page", "statistics", "pagination"],
-            placeholder: "emptyState.acceptOrder",
-            columns: [
-                ...columns,
-                {
-                    label: "button.detail",
-                    type: "button",
-                    level: "link",
-                    actionType: "dialog",
-                    dialog: detailDialog
-                }
-            ]
-        }
-    ]
-}
+                searchIdentity: "WAcceptOrder",
+                showColumns: columns
+            }
+        })
+    ],
+    rowActions: [detailButton(detailDrawer)],
+    empty: "emptyState.acceptOrder"
+})
 
 export default schema2component(schema)

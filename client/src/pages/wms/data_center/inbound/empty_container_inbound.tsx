@@ -1,8 +1,19 @@
 import schema2component from "@/utils/schema2component"
 import { container_spec } from "@/pages/wms/constants/select_search_api_contant"
-import { create_update_columns } from "@/utils/commonContants"
 import { api_empty_container_inbound_add } from "@/pages/wms/data_center/constants/api_constant"
 import { api_crud_search_by_warehouseCode } from "@/pages/constantApi"
+import {
+    addButton,
+    auditColumns,
+    codeColumn,
+    crudPage,
+    detailButton,
+    formDrawer,
+    nestedTable,
+    numberColumn,
+    statusColumn
+} from "@/utils/amis/presets"
+import { putAwayTaskStatus } from "@/utils/amis/statusMaps"
 
 const form = [
     {
@@ -41,24 +52,58 @@ const form = [
     }
 ]
 
-const add = {
-    type: "button",
-    actionType: "dialog",
-    level: "primary",
-    icon: "fa fa-plus",
-    label: "button.add",
-    target: "emptyContainerInboundOrderTable",
-    dialog: {
-        title: "menu.emptyContainerInboundOrder",
-        closeOnEsc: true,
-        body: {
-            id: "inputForm",
-            type: "form",
-            api: api_empty_container_inbound_add,
-            preventEnterSubmit: true,
-            body: form
+const addDrawer = formDrawer({
+    title: "menu.emptyContainerInboundOrder",
+    body: form,
+    api: api_empty_container_inbound_add,
+    reload: "EmptyContainerInboundOrderTable",
+    preventEnterSubmit: true
+})
+
+const detailColumns = [
+    {
+        name: "emptyContainerInboundOrderId",
+        hidden: true
+    },
+    codeColumn("containerCode", "table.containerCode"),
+    {
+        name: "containerSpecCode",
+        label: "workLocationArea.containerSpecification"
+    },
+    codeColumn("locationCode", "table.locationCode"),
+    statusColumn("inboundStatus", "table.status", putAwayTaskStatus)
+]
+
+const detailDrawer = {
+    size: "xl",
+    title: "emptyContainerInboundOrder.detail.modal.title",
+    closeOnEsc: true,
+    closeOnOutside: true,
+    actions: [
+        {
+            type: "button",
+            actionType: "close",
+            label: "button.close"
         }
-    }
+    ],
+    body: [
+        {
+            type: "tpl",
+            tpl: "${orderNo}",
+            className: "owes-drawer-context"
+        },
+        nestedTable({
+            name: "EmptyContainerInboundOrderDetailTable",
+            api: {
+                method: "POST",
+                url: "/search/search?page=${page}&perPage=${perPage}&emptyContainerInboundOrderId=${id}&emptyContainerInboundOrderId-op=eq",
+                dataType: "application/json"
+            },
+            searchIdentity: "WEmptyContainerInboundOrderDetail",
+            columns: detailColumns,
+            empty: "emptyState.emptyContainerInboundDetail"
+        })
+    ]
 }
 
 const columns = [
@@ -72,11 +117,7 @@ const columns = [
         label: "table.warehouseCode",
         hidden: true
     },
-    {
-        name: "orderNo",
-        label: "table.orderNo",
-        searchable: true
-    },
+    codeColumn("orderNo", "table.orderNo", { searchable: true }),
     {
         name: "inboundWay",
         label: "table.inboundMethod",
@@ -86,121 +127,32 @@ const columns = [
             source: "${dictionary.EmptyContainerInboundWay}"
         }
     },
-    {
-        name: "planCount",
-        label: "table.plannedQuantity",
-        searchable: true
-    },
-    {
-        name: "inboundStatus",
-        label: "table.status",
-        type: "mapping",
-        source: "${dictionary.PutAwayTaskStatus}",
+    numberColumn("planCount", "table.plannedQuantity", { searchable: true }),
+    statusColumn("inboundStatus", "table.status", {
+        ...putAwayTaskStatus,
         searchable: {
             type: "select",
             source: "${dictionary.PutAwayTaskStatus}"
         }
-    },
-    ...create_update_columns
+    }),
+    ...auditColumns()
 ]
 
-const detailColumns = [
-    {
-        name: "emptyContainerInboundOrderId",
-        label: "空箱入库单id",
-        hidden: true
-    },
-    {
-        name: "containerCode",
-        label: "table.containerCode"
-    },
-    {
-        name: "containerSpecCode",
-        label: "workLocationArea.containerSpecification"
-    },
-    {
-        name: "locationCode",
-        label: "table.locationCode"
-    },
-    {
-        name: "inboundStatus",
-        label: "table.status",
-        type: "mapping",
-        source: "${dictionary.PutAwayTaskStatus}"
-    }
-]
-
-const searchIdentity = "WEmptyContainerInboundOrder"
-const searchDetailIdentity = "WEmptyContainerInboundOrderDetail"
-const showColumns = columns
-const showDetailColumns = detailColumns
-
-const detailDialog = {
-    title: "emptyContainerInboundOrder.detail.modal.title",
-    actions: [],
-    closeOnEsc: true,
-    closeOnOutside: true,
-    size: "xl",
-    body: [
-        {
-            type: "crud",
-            syncLocation: false,
-            name: "emptyContainerInboundOrderDetailTable",
-            api: {
-                method: "POST",
-                url: "/search/search?page=${page}&perPage=${perPage}&emptyContainerInboundOrderId=${id}&emptyContainerInboundOrderId-op=eq",
-                dataType: "application/json"
-            },
-            defaultParams: {
-                searchIdentity: searchDetailIdentity,
-                showColumns: showDetailColumns
-            },
-            footerToolbar: ["switch-per-page", "statistics", "pagination"],
-            columns: detailColumns
-        }
-    ]
-}
-
-const schema = {
-    type: "page",
+const schema = crudPage({
     title: "menu.emptyContainerInboundOrder",
-    toolbar: [add],
-    data: {
-        dictionary: "${ls:dictionary}"
-    },
-    body: [
-        {
-            type: "crud",
-            syncLocation: false,
-            name: "emptyContainerInboundOrderTable",
-            api: api_crud_search_by_warehouseCode,
-            defaultParams: {
-                searchIdentity: searchIdentity,
-                showColumns: showColumns,
-                searchObject: {
-                    orderBy: "inbound_status, update_time desc"
-                }
-            },
-            autoFillHeight: true,
-            autoGenerateFilter: {
-                columnsNum: 3,
-                showBtnToolbar: true
-            },
-            headerToolbar: ["reload"],
-            footerToolbar: ["switch-per-page", "statistics", "pagination"],
-            placeholder: "emptyState.emptyContainerInbound",
-            columns: [
-                ...columns,
-                {
-                    label: "button.detail",
-                    type: "button",
-                    level: "link",
-                    actionType: "dialog",
-                    dialog: detailDialog
-                }
-            ]
-        }
-    ]
-}
+    name: "EmptyContainerInboundOrderTable",
+    searchIdentity: "WEmptyContainerInboundOrder",
+    api: api_crud_search_by_warehouseCode,
+    columns,
+    orderBy: "inbound_status, update_time desc",
+    pageActions: [
+        addButton({
+            target: "EmptyContainerInboundOrderTable",
+            drawer: addDrawer
+        })
+    ],
+    rowActions: [detailButton(detailDrawer)],
+    empty: "emptyState.emptyContainerInbound"
+})
 
 export default schema2component(schema)
