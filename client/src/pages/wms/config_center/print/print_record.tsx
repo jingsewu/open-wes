@@ -1,6 +1,14 @@
 import schema2component from "@/utils/schema2component"
-import {create_update_columns} from "@/utils/commonContants"
-import {api_crud_search} from "@/pages/constantApi"
+import { api_crud_search } from "@/pages/constantApi"
+import { work_station } from "@/pages/wms/constants/select_search_api_contant"
+import {
+    auditColumns,
+    codeColumn,
+    crudPage,
+    dateTimeColumn,
+    statusColumn
+} from "@/utils/amis/presets"
+import { printStatus } from "@/utils/amis/statusMaps"
 
 const columns = [
     {
@@ -20,34 +28,23 @@ const columns = [
         type: "mapping",
         source: "${dictionary.PrintNodeEnum}"
     },
-    {
-        name: "templateCode",
-        label: "printRecord.templateCode"
-    },
+    codeColumn("templateCode", "printRecord.templateCode"),
     {
         name: "templateName",
         label: "printRecord.templateName"
     },
     {
         name: "workStationId",
-        label: "printRecord.workStationId"
+        label: "printRecord.workStationId",
+        type: "mapping",
+        source: work_station
     },
-    {
-        name: "printTime",
-        label: "printRecord.printTime",
-        type: "datetime",
-        tpl: "${printTime/1000|date:YYYY-MM-DD HH\\:mm\\:ss}"
-    },
+    dateTimeColumn("printTime", "printRecord.printTime", { seconds: true }),
     {
         name: "printer",
         label: "printRecord.printer"
     },
-    {
-        name: "printStatus",
-        label: "printRecord.printStatus",
-        type: "mapping",
-        source: "${dictionary.PrintStatusEnum}"
-    },
+    statusColumn("printStatus", "printRecord.printStatus", printStatus),
     {
         name: "errorMessage",
         label: "printRecord.errorMessage",
@@ -55,96 +52,61 @@ const columns = [
         tpl: "${errorMessage}",
         className: "owes-text-danger"
     },
-    ...create_update_columns
+    ...auditColumns({ visible: true, createdOnly: true })
 ]
 
-const searchIdentity = "PPrintRecord"
-const showColumns = columns
-
-const schema = {
-    type: "page",
-    title: "printRecord.title",
-    toolbar: [],
-    data: {
-        dictionary: "${ls:dictionary}"
+const filters = [
+    {
+        label: "printRecord.templateCode",
+        name: "templateCode",
+        type: "input-text"
     },
-    body: [
-        {
-            type: "crud",
-            syncLocation: false,
-            name: "PPrintRecord",
-            api: api_crud_search,
-            defaultParams: {
-                searchIdentity: searchIdentity,
-                showColumns: showColumns,
-                searchObject: {
-                    orderBy: "create_time desc"
-                }
-            },
-            autoFillHeight: true,
-            filterTogglable: true,
-            filterDefaultVisible: true,
-            filter: {
-                title: "common.filter",
-                mode: "inline",
-                body: [
-                    {
-                        label: "printRecord.templateCode",
-                        name: "templateCode",
-                        type: "input-text"
-                    },
-                    {
-                        label: "printRecord.printStatus",
-                        name: "printStatus",
-                        type: "select",
-                        source: "${dictionary.PrintStatusEnum}"
-                    },
-                    {
-                        label: "printRecord.module",
-                        name: "module",
-                        type: "select",
-                        source: "${dictionary.ModuleEnum}"
-                    },
-                    {
-                        label: "printRecord.printNode",
-                        name: "printNode",
-                        type: "select",
-                        source: "${dictionary.PrintNodeEnum}"
-                    },
-                    {
-                        label: "printRecord.printer",
-                        name: "printer",
-                        type: "input-text"
-                    },
-                    {
-                        label: "printRecord.workStationId",
-                        name: "workStationId",
-                        type: "input-text"
-                    },
-                    {
-                        label: "printRecord.printTime",
-                        name: "printTime",
-                        type: "input-date-range",
-                        valueFormat: "x"
-                    }
-                ],
-                actions: [
-                    { type: "reset", label: "button.reset" },
-                    {
-                        type: "submit",
-                        level: "primary",
-                        label: "common.search"
-                    }
-                ]
-            },
-            headerToolbar: ["reload"],
-            footerToolbar: ["switch-per-page", "statistics", "pagination"],
-            placeholder: "emptyState.printRecord",
-            columns: [
-                ...columns
-            ]
-        }
-    ]
-}
+    {
+        label: "printRecord.printStatus",
+        name: "printStatus",
+        type: "select",
+        source: "${dictionary.PrintStatusEnum}"
+    },
+    {
+        label: "printRecord.module",
+        name: "module",
+        type: "select",
+        source: "${dictionary.ModuleEnum}"
+    },
+    {
+        label: "printRecord.printNode",
+        name: "printNode",
+        type: "select",
+        source: "${dictionary.PrintNodeEnum}"
+    },
+    {
+        label: "printRecord.printer",
+        name: "printer",
+        type: "input-text"
+    },
+    {
+        label: "printRecord.workStationId",
+        name: "workStationId",
+        type: "select",
+        source: work_station
+    },
+    {
+        label: "printRecord.printTime",
+        name: "printTime",
+        type: "input-date-range",
+        valueFormat: "x"
+    }
+]
+
+const schema = crudPage({
+    title: "printRecord.title",
+    name: "PPrintRecord",
+    searchIdentity: "PPrintRecord",
+    api: api_crud_search,
+    columns,
+    filters,
+    orderBy: "create_time desc",
+    empty: "emptyState.printRecord"
+})
 
 export default schema2component(schema)

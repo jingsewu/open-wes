@@ -1,8 +1,22 @@
 import schema2component from "@/utils/schema2component"
-import {api_print_config_add, api_print_config_get} from "@/pages/wms/config_center/constants/api_constant"
-import {create_update_columns, enable_options} from "@/utils/commonContants"
-import {api_crud_search} from "@/pages/constantApi"
-import {select_print_rule_code, work_station} from "@/pages/wms/constants/select_search_api_contant";
+import {
+    api_print_config_add,
+    api_print_config_get
+} from "@/pages/wms/config_center/constants/api_constant"
+import { enable_options } from "@/utils/commonContants"
+import { api_crud_search } from "@/pages/constantApi"
+import {
+    select_print_rule_code,
+    work_station
+} from "@/pages/wms/constants/select_search_api_contant"
+import {
+    addButton,
+    auditColumns,
+    codeColumn,
+    crudPage,
+    editButton,
+    formDrawer
+} from "@/utils/amis/presets"
 
 const form = [
     {
@@ -54,24 +68,25 @@ const form = [
     }
 ]
 
-const add = {
-    type: "button",
-    actionType: "dialog",
-    level: "primary",
-    icon: "fa fa-plus",
-    label: "button.add",
-    target: "Table",
-    dialog: {
-        title: "printConfig.addTitle",
-        closeOnEsc: true,
-        size: "lg",
-        body: {
-            type: "form",
-            api: api_print_config_add,
-            body: form
-        }
-    }
-}
+const addDrawer = formDrawer({
+    title: "printConfig.addTitle",
+    size: "lg",
+    columnCount: 1,
+    body: form,
+    api: api_print_config_add,
+    reload: "PPrintConfig"
+})
+
+const editDrawer = formDrawer({
+    title: "printConfig.editTitle",
+    size: "md",
+    columnCount: 1,
+    context: "${configCode}",
+    body: form,
+    initApi: api_print_config_get,
+    api: api_print_config_add,
+    reload: "PPrintConfig"
+})
 
 const columns = [
     {
@@ -79,86 +94,36 @@ const columns = [
         label: "ID",
         hidden: true
     },
-    {
-        name: "configCode",
-        label: "printConfig.configCode",
-        searchable: true
-    },
+    codeColumn("configCode", "printConfig.configCode", { searchable: true }),
     {
         name: "workStationId",
         label: "printConfig.workStationId",
-        searchable: true
+        type: "mapping",
+        source: work_station,
+        searchable: {
+            type: "select",
+            source: work_station
+        }
     },
     {
         name: "enabled",
         label: "printConfig.enabled",
-        type: "switch",
-        options: enable_options
+        type: "mapping",
+        map: enable_options
     },
-    ...create_update_columns
+    ...auditColumns()
 ]
 
-const searchIdentity = "PPrintConfig"
-const showColumns = columns
-
-const schema = {
-    type: "page",
+const schema = crudPage({
     title: "printConfig.title",
-    toolbar: [add],
-    data: {
-        dictionary: "${ls:dictionary}"
-    },
-    body: [
-        {
-            type: "crud",
-            syncLocation: false,
-            name: "PPrintConfig",
-            api: api_crud_search,
-            defaultParams: {
-                searchIdentity: searchIdentity,
-                showColumns: showColumns,
-                searchObject: {
-                    orderBy: "update_time desc"
-                }
-            },
-            autoFillHeight: true,
-            autoGenerateFilter: {
-                columnsNum: 3,
-                showBtnToolbar: true
-            },
-            headerToolbar: ["reload"],
-            footerToolbar: ["switch-per-page", "statistics", "pagination"],
-            placeholder: "emptyState.printConfig",
-            columns: [
-                ...columns,
-                {
-                    type: "operation",
-                    label: "table.operation",
-                    width: 100,
-                    buttons: [
-                        {
-                            label: "button.modify",
-                            type: "button",
-                            actionType: "drawer",
-                            drawer: {
-                                size: "md",
-                                title: "printConfig.editTitle",
-                                closeOnEsc: true,
-                                closeOnOutside: true,
-                                body: {
-                                    type: "form",
-                                    initApi: api_print_config_get,
-                                    api: api_print_config_add,
-                                    controls: form
-                                }
-                            }
-                        }
-                    ],
-                    toggled: true
-                }
-            ]
-        }
-    ]
-}
+    name: "PPrintConfig",
+    searchIdentity: "PPrintConfig",
+    api: api_crud_search,
+    columns,
+    orderBy: "update_time desc",
+    pageActions: [addButton({ target: "PPrintConfig", drawer: addDrawer })],
+    rowActions: [editButton(editDrawer)],
+    empty: "emptyState.printConfig"
+})
 
 export default schema2component(schema)

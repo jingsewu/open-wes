@@ -1,112 +1,120 @@
 import schema2component from "@/utils/schema2component"
-import { create_update_columns, enable_options } from "@/utils/commonContants"
+import { enable_options } from "@/utils/commonContants"
 import { warehouse_area_group } from "@/pages/wms/constants/select_search_api_contant"
 import { api_warehouse_area_add } from "@/pages/wms/config_center/constants/api_constant"
 import { api_crud_search_by_warehouseCode } from "@/pages/constantApi"
+import {
+    addButton,
+    auditColumns,
+    codeColumn,
+    crudPage,
+    editButton,
+    formDrawer,
+    numberColumn,
+    remarkColumn
+} from "@/utils/amis/presets"
 
-let warehouseCode = localStorage.getItem("warehouseCode")
+const warehouseCode = localStorage.getItem("warehouseCode")
 
-const form = {
-    type: "form",
-    api: api_warehouse_area_add,
-    body: [
-        {
-            type: "hidden",
-            name: "id"
-        },
-        {
-            type: "hidden",
-            name: "version"
-        },
-        {
-            label: "table.warehouseAreaEncoding",
-            name: "warehouseGroupCode",
-            type: "select",
-            source: warehouse_area_group,
-            required: true
-        },
-        {
-            label: "table.reservoirAreaCode",
-            name: "warehouseAreaCode",
-            type: "input-text",
-            required: true
-        },
-        {
-            label: "table.reservoirAreaName",
-            name: "warehouseAreaName",
-            type: "input-text",
-            required: true
-        },
-        {
-            label: "table.reservoirAreaType",
-            name: "warehouseAreaType",
-            type: "select",
-            source: "${dictionary.WarehouseAreaType}",
-            required: true
-        },
-        {
-            label: "table.reservoirAreaPurpose",
-            name: "warehouseAreaUse",
-            type: "select",
-            source: "${dictionary.WarehouseAreaUse}",
-            required: true
-        },
-        {
-            label: "table.reservoirAreaWorkType",
-            name: "warehouseAreaWorkType",
-            type: "select",
-            source: "${dictionary.WarehouseAreaWorkType}",
-            required: true
-        },
-        {
-            label: "table.floor",
-            name: "level",
-            type: "input-number"
-        },
-        {
-            label: "table.temperatureLimits",
-            name: "temperatureLimit",
-            type: "input-number"
-        },
-        {
-            label: "table.humidityLimitation",
-            name: "wetLimit",
-            type: "input-number"
-        },
-        {
-            label: "table.remark",
-            name: "remark",
-            type: "input-text"
-        },
-        {
-            label: "table.status",
-            name: "enable",
-            type: "switch",
-            options: enable_options
-        },
-        {
-            label: "table.warehouseCode",
-            name: "warehouseCode",
-            type: "hidden",
-            value: warehouseCode
-        }
-    ]
-}
-
-const add = {
-    type: "button",
-    actionType: "drawer",
-    level: "primary",
-    icon: "fa fa-plus",
-    label: "button.add",
-    target: "role",
-    drawer: {
-        size: "lg",
-        title: "reservoirAreaManagement.addTitle",
-        closeOnEsc: true,
-        body: form
+const form = [
+    {
+        type: "hidden",
+        name: "id"
+    },
+    {
+        type: "hidden",
+        name: "version"
+    },
+    {
+        label: "table.warehouseAreaGroupName",
+        name: "warehouseGroupCode",
+        type: "select",
+        source: warehouse_area_group,
+        required: true
+    },
+    {
+        label: "table.reservoirAreaCode",
+        name: "warehouseAreaCode",
+        type: "input-text",
+        required: true
+    },
+    {
+        label: "table.reservoirAreaName",
+        name: "warehouseAreaName",
+        type: "input-text",
+        required: true
+    },
+    {
+        label: "table.reservoirAreaType",
+        name: "warehouseAreaType",
+        type: "select",
+        source: "${dictionary.WarehouseAreaType}",
+        required: true
+    },
+    {
+        label: "table.reservoirAreaPurpose",
+        name: "warehouseAreaUse",
+        type: "select",
+        source: "${dictionary.WarehouseAreaUse}",
+        required: true
+    },
+    {
+        label: "table.reservoirAreaWorkType",
+        name: "warehouseAreaWorkType",
+        type: "select",
+        source: "${dictionary.WarehouseAreaWorkType}",
+        required: true
+    },
+    {
+        label: "table.floor",
+        name: "level",
+        type: "input-number"
+    },
+    {
+        label: "table.temperatureLimits",
+        name: "temperatureLimit",
+        type: "input-number"
+    },
+    {
+        label: "table.humidityLimitation",
+        name: "wetLimit",
+        type: "input-number"
+    },
+    {
+        label: "table.remark",
+        name: "remark",
+        type: "input-text"
+    },
+    {
+        label: "table.status",
+        name: "enable",
+        type: "switch",
+        options: enable_options
+    },
+    {
+        label: "table.warehouseCode",
+        name: "warehouseCode",
+        type: "hidden",
+        value: warehouseCode
     }
-}
+]
+
+const addDrawer = formDrawer({
+    title: "reservoirAreaManagement.addTitle",
+    size: "lg",
+    body: form,
+    api: api_warehouse_area_add,
+    reload: "role"
+})
+
+const editDrawer = formDrawer({
+    title: "reservoirAreaManagement.editTitle",
+    size: "lg",
+    context: "${warehouseAreaCode} · ${warehouseAreaName}",
+    body: form,
+    api: api_warehouse_area_add,
+    reload: "role"
+})
 
 const columns = [
     {
@@ -126,7 +134,7 @@ const columns = [
     },
     {
         name: "warehouseGroupCode",
-        label: "table.warehouseAreaEncoding",
+        label: "table.warehouseAreaGroupName",
         type: "mapping",
         source: warehouse_area_group,
         searchable: {
@@ -134,11 +142,9 @@ const columns = [
             source: warehouse_area_group
         }
     },
-    {
-        name: "warehouseAreaCode",
-        label: "table.reservoirAreaCode",
+    codeColumn("warehouseAreaCode", "table.reservoirAreaCode", {
         searchable: true
-    },
+    }),
     {
         name: "warehouseAreaName",
         label: "table.reservoirAreaName"
@@ -165,22 +171,10 @@ const columns = [
             source: "${dictionary.WarehouseAreaWorkType}"
         }
     },
-    {
-        name: "level",
-        label: "table.floor"
-    },
-    {
-        name: "temperatureLimit",
-        label: "table.temperatureLimits"
-    },
-    {
-        name: "wetLimit",
-        label: "table.humidityLimitation"
-    },
-    {
-        name: "remark",
-        label: "table.remark"
-    },
+    numberColumn("level", "table.floor"),
+    numberColumn("temperatureLimit", "table.temperatureLimits"),
+    numberColumn("wetLimit", "table.humidityLimitation"),
+    remarkColumn(),
     {
         name: "enable",
         label: "table.status",
@@ -191,63 +185,19 @@ const columns = [
             options: enable_options
         }
     },
-    ...create_update_columns
+    ...auditColumns()
 ]
 
-const searchIdentity = "WWarehouseArea"
-const schema = {
-    type: "page",
+const schema = crudPage({
     title: "reservoirAreaManagement.title",
-    toolbar: [add],
-    data: {
-        dictionary: "${ls:dictionary}"
-    },
-    body: [
-        {
-            type: "crud",
-            syncLocation: false,
-            name: "role",
-            api: api_crud_search_by_warehouseCode,
-            defaultParams: {
-                searchIdentity: searchIdentity,
-                showColumns: columns,
-                searchObject: {
-                    orderBy: "update_time desc"
-                }
-            },
-            autoFillHeight: true,
-            autoGenerateFilter: {
-                columnsNum: 3,
-                showBtnToolbar: true
-            },
-            headerToolbar: ["reload"],
-            footerToolbar: ["switch-per-page", "statistics", "pagination"],
-            placeholder: "emptyState.reservoirAreaManagement",
-            columns: [
-                ...columns,
-                {
-                    type: "operation",
-                    label: "table.operation",
-                    width: 100,
-                    buttons: [
-                        {
-                            label: "button.modify",
-                            type: "button",
-                            actionType: "drawer",
-                            drawer: {
-                                size: "lg",
-                                title: "reservoirAreaManagement.editTitle",
-                                closeOnEsc: true,
-                                closeOnOutside: true,
-                                body: form
-                            }
-                        }
-                    ],
-                    toggled: true
-                }
-            ]
-        }
-    ]
-}
+    name: "role",
+    searchIdentity: "WWarehouseArea",
+    api: api_crud_search_by_warehouseCode,
+    columns,
+    orderBy: "update_time desc",
+    pageActions: [addButton({ target: "role", drawer: addDrawer })],
+    rowActions: [editButton(editDrawer)],
+    empty: "emptyState.reservoirAreaManagement"
+})
 
 export default schema2component(schema)

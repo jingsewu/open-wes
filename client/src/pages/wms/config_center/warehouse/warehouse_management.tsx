@@ -4,10 +4,7 @@ import {
     api_warehouse_get,
     api_warehouse_update
 } from "@/pages/wms/config_center/constants/api_constant"
-import {
-    create_update_columns,
-    true_false_options
-} from "@/utils/commonContants"
+import { true_false_options } from "@/utils/commonContants"
 import {
     city,
     country,
@@ -15,6 +12,14 @@ import {
     province
 } from "@/pages/wms/constants/select_search_api_contant"
 import { api_crud_search } from "@/pages/constantApi"
+import {
+    addButton,
+    auditColumns,
+    codeColumn,
+    crudPage,
+    editButton,
+    formDrawer
+} from "@/utils/amis/presets"
 
 const form = [
     {
@@ -31,7 +36,7 @@ const form = [
         name: "warehouseCode",
         maxLength: 64,
         required: true,
-        disabledOn: "data.mode === 'edit'" // 修改时禁用
+        disabledOn: "${id != null}"
     },
     {
         label: "table.warehouseName",
@@ -180,26 +185,23 @@ const form = [
     }
 ]
 
-const add = {
-    type: "button",
-    actionType: "drawer",
-    level: "primary",
-    icon: "fa fa-plus",
-    label: "button.add",
-    target: "role",
-    drawer: {
-        size: "lg",
-        title: "warehouseManagement.addTitle",
-        closeOnEsc: true,
-        body: {
-            type: "form",
-            api: api_warehouse_add,
-            body: form,
-            data: { mode: "add" }
-        }
-    },
+const addDrawer = formDrawer({
+    title: "warehouseManagement.addTitle",
+    size: "lg",
+    body: form,
+    api: api_warehouse_add,
     reload: "role"
-}
+})
+
+const editDrawer = formDrawer({
+    title: "warehouseManagement.editTitle",
+    size: "lg",
+    context: "${warehouseCode} · ${warehouseName}",
+    body: form,
+    initApi: api_warehouse_get,
+    api: api_warehouse_update,
+    reload: "role"
+})
 
 const columns = [
     {
@@ -212,10 +214,7 @@ const columns = [
         label: "Version",
         hidden: true
     },
-    {
-        name: "warehouseCode",
-        label: "table.warehouseCode"
-    },
+    codeColumn("warehouseCode", "table.warehouseCode"),
     {
         name: "warehouseName",
         label: "table.warehouseName"
@@ -294,129 +293,70 @@ const columns = [
         name: "fax",
         label: "table.fax"
     },
-    ...create_update_columns
+    ...auditColumns()
 ]
 
-const searchIdentity = "MWarehouseMainData"
-const showColumns = columns
-
-const schema = {
-    type: "page",
-    title: "warehouseManagement.title",
-    toolbar: [add],
-    data: {
-        dictionary: "${ls:dictionary}"
+const filters = [
+    {
+        label: "table.warehouseCode",
+        name: "warehouseCode",
+        type: "input-text"
     },
-    body: [
-        {
-            type: "crud",
-            syncLocation: false,
-            name: "role",
-            api: api_crud_search,
-            defaultParams: {
-                searchIdentity: searchIdentity,
-                showColumns: showColumns,
-                searchObject: {
-                    orderBy: "update_time desc"
-                }
-            },
-            autoFillHeight: true,
-            filterTogglable: true,
-            filterDefaultVisible: true,
-            filter: {
-                title: "common.filter",
-                mode: "inline",
-                body: [
-                    {
-                        label: "table.warehouseCode",
-                        name: "warehouseCode",
-                        type: "input-text"
-                    },
-                    {
-                        label: "table.warehouseName",
-                        name: "warehouseName",
-                        type: "input-text"
-                    },
-                    {
-                        label: "table.warehouseType",
-                        name: "warehouseType",
-                        type: "select",
-                        source: "${dictionary.WarehouseType}"
-                    },
-                    {
-                        label: "table.warehouseProperties",
-                        name: "warehouseAttrType",
-                        type: "select",
-                        source: "${dictionary.WarehouseAttrType}"
-                    },
-                    {
-                        label: "table.warehouseLevel",
-                        name: "warehouseLevel",
-                        type: "select",
-                        source: "${dictionary.WarehouseLevel}"
-                    },
-                    {
-                        label: "table.warehouseLables",
-                        name: "warehouseLabel",
-                        type: "select",
-                        source: "${dictionary.WarehouseLabel}"
-                    },
-                    {
-                        label: "table.mainBusiness",
-                        name: "businessType",
-                        type: "select",
-                        source: "${dictionary.WarehouseBusinessType}"
-                    },
-                    {
-                        label: "table.warehouseStructure",
-                        name: "structureType",
-                        type: "select",
-                        source: "${dictionary.WarehouseStructureType}"
-                    }
-                ],
-                actions: [
-                    { type: "reset", label: "button.reset" },
-                    {
-                        type: "submit",
-                        level: "primary",
-                        label: "common.search"
-                    }
-                ]
-            },
-            headerToolbar: ["reload"],
-            footerToolbar: ["switch-per-page", "statistics", "pagination"],
-            placeholder: "emptyState.warehouseManagement",
-            columns: [
-                ...columns,
-                {
-                    type: "operation",
-                    label: "table.operation",
-                    width: 150,
-                    buttons: [
-                        {
-                            label: "button.modify",
-                            type: "button",
-                            actionType: "drawer",
-                            drawer: {
-                                size: "lg",
-                                title: "warehouseManagement.editTitle",
-                                closeOnEsc: true,
-                                closeOnOutside: true,
-                                body: {
-                                    type: "form",
-                                    initApi: api_warehouse_get,
-                                    api: api_warehouse_update,
-                                    body: form
-                                }
-                            },
-                            reload: "role"
-                        }
-                    ],
-                    toggled: true
-                }
-            ]
-        }
-    ]
-}
+    {
+        label: "table.warehouseName",
+        name: "warehouseName",
+        type: "input-text"
+    },
+    {
+        label: "table.warehouseType",
+        name: "warehouseType",
+        type: "select",
+        source: "${dictionary.WarehouseType}"
+    },
+    {
+        label: "table.warehouseProperties",
+        name: "warehouseAttrType",
+        type: "select",
+        source: "${dictionary.WarehouseAttrType}"
+    },
+    {
+        label: "table.warehouseLevel",
+        name: "warehouseLevel",
+        type: "select",
+        source: "${dictionary.WarehouseLevel}"
+    },
+    {
+        label: "table.warehouseLables",
+        name: "warehouseLabel",
+        type: "select",
+        source: "${dictionary.WarehouseLabel}"
+    },
+    {
+        label: "table.mainBusiness",
+        name: "businessType",
+        type: "select",
+        source: "${dictionary.WarehouseBusinessType}"
+    },
+    {
+        label: "table.warehouseStructure",
+        name: "structureType",
+        type: "select",
+        source: "${dictionary.WarehouseStructureType}"
+    }
+]
+
+const schema = crudPage({
+    title: "warehouseManagement.title",
+    name: "role",
+    searchIdentity: "MWarehouseMainData",
+    api: api_crud_search,
+    columns,
+    filters,
+    orderBy: "update_time desc",
+    pageActions: [addButton({ target: "role", drawer: addDrawer })],
+    rowActions: [editButton(editDrawer)],
+    operationWidth: 150,
+    empty: "emptyState.warehouseManagement"
+})
 
 export default schema2component(schema)

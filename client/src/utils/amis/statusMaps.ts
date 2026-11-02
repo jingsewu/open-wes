@@ -201,3 +201,44 @@ export const stockAbnormalStatus: StatusMap = {
         CLOSED: "muted"
     }
 }
+
+export const transferContainerStatus: StatusMap = {
+    labels: {
+        IDLE: "status.transferContainerIdle",
+        OCCUPANCY: "status.transferContainerOccupancy",
+        LOCKED: "status.transferContainerLocked"
+    },
+    tones: {
+        IDLE: "muted",
+        OCCUPANCY: "warning",
+        LOCKED: "danger"
+    }
+}
+
+export const printStatus: StatusMap = {
+    labels: {
+        PRINT_SUCCESS: "status.printSuccess",
+        PRINT_FAIL: "status.printFail",
+        NOT_PRINTED: "status.printNotPrinted"
+    },
+    tones: {
+        PRINT_SUCCESS: "success",
+        PRINT_FAIL: "danger",
+        NOT_PRINTED: "muted"
+    }
+}
+
+export const locationStatus: StatusMap = {
+    labels: {
+        PUT_AWAY_ONLY: "status.locationPutAwayOnly",
+        TAKE_OFF_ONLY: "status.locationTakeOffOnly",
+        PUT_AWAY_PUT_DOWN: "status.locationPutAwayPutDown",
+        NONE: "status.locationDisabled"
+    },
+    tones: {
+        PUT_AWAY_ONLY: "info",
+        TAKE_OFF_ONLY: "warning",
+        PUT_AWAY_PUT_DOWN: "success",
+        NONE: "muted"
+    }
+}

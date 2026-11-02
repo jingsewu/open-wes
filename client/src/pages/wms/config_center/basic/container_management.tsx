@@ -6,8 +6,12 @@ import {
 } from "@/pages/wms/constants/select_search_api_contant"
 import { true_false_options } from "@/utils/commonContants"
 import {
+    addButton,
     auditColumns,
     codeColumn,
+    crudPage,
+    exportButton,
+    formDrawer,
     requiredField,
     statusColumn
 } from "@/utils/amis/presets"
@@ -17,9 +21,9 @@ import {
     api_crud_search_by_warehouseCode_total
 } from "@/pages/constantApi"
 
-let warehouseCode = localStorage.getItem("warehouseCode")
+const warehouseCode = localStorage.getItem("warehouseCode")
 
-const fromBody = [
+const formBody = [
     {
         type: "hidden",
         name: "id"
@@ -80,26 +84,14 @@ const fromBody = [
     }
 ]
 
-const form = {
-    type: "form",
+const addDrawer = formDrawer({
+    title: "containerManagement.batchCreateTitle",
+    size: "lg",
+    columnCount: 1,
+    body: formBody,
     api: api_container_batch_add,
-    body: fromBody
-}
-
-const add = {
-    type: "button",
-    actionType: "drawer",
-    level: "primary",
-    icon: "fa fa-plus",
-    label: "button.batchCreation",
-    target: "ContainerTable",
-    drawer: {
-        size: "lg",
-        title: "containerManagement.batchCreateTitle",
-        closeOnEsc: true,
-        body: form
-    }
-}
+    reload: "ContainerTable"
+})
 
 const columns = [
     {
@@ -119,8 +111,10 @@ const columns = [
     },
     codeColumn("containerCode", "table.containerCode", { searchable: true }),
     {
-        name: "containerSpecCode",
-        label: "workLocationArea.containerSpecification",
+        ...codeColumn(
+            "containerSpecCode",
+            "workLocationArea.containerSpecification"
+        ),
         type: "mapping",
         source: container_spec,
         searchable: {
@@ -175,92 +169,63 @@ const columns = [
     ...auditColumns()
 ]
 
-const searchIdentity = "WContainer"
-const showColumns = columns
-
-const schema = {
-    type: "page",
+const schema = crudPage({
     title: "containerManagement.title",
-    toolbar: [add],
-    data: {
-        dictionary: "${ls:dictionary}"
-    },
-    body: [
+    name: "ContainerTable",
+    searchIdentity: "WContainer",
+    api: api_crud_search_by_warehouseCode,
+    columns,
+    orderBy: "update_time desc",
+    pageActions: [
+        addButton({
+            target: "ContainerTable",
+            label: "button.batchCreation",
+            drawer: addDrawer
+        })
+    ],
+    tableActions: [
+        exportButton({
+            api: api_crud_search_by_warehouseCode_total,
+            filename: "container"
+        })
+    ],
+    bulkActions: [
         {
-            type: "crud",
-            name: "ContainerTable",
-            api: api_crud_search_by_warehouseCode,
-            defaultParams: {
-                searchIdentity: searchIdentity,
-                showColumns: showColumns,
-                searchObject: {
-                    orderBy: "update_time desc"
-                }
-            },
-            autoGenerateFilter: {
-                columnsNum: 3,
-                showBtnToolbar: true
-            },
-            bulkActions: [
-                {
-                    label: "button.batchChangeWarehouseLogic",
-                    type: "button",
-                    onEvent: {
-                        click: {
-                            actions: [
-                                {
-                                    actionType: "dialog",
-                                    dialog: {
-                                        title: "batchChangeWarehouseArea.title",
-                                        body: {
-                                            type: "form",
-                                            api: "post:/wms/container/changeWarehouseLogicArea",
-                                            reload: "ContainerTable",
-                                            body: [
-                                                {
-                                                    type: "select",
-                                                    label: "table.warehouseLogicName",
-                                                    name: "warehouseLogicCode",
-                                                    source: warehouse_logic_code
-                                                },
-                                                {
-                                                    type: "hidden",
-                                                    name: "containerIds",
-                                                    value: '${SPLIT(ids, ",")}'
-                                                }
-                                            ]
+            label: "button.batchChangeWarehouseLogic",
+            type: "button",
+            onEvent: {
+                click: {
+                    actions: [
+                        {
+                            actionType: "dialog",
+                            dialog: {
+                                title: "batchChangeWarehouseArea.title",
+                                body: {
+                                    type: "form",
+                                    api: "post:/wms/container/changeWarehouseLogicArea",
+                                    reload: "ContainerTable",
+                                    body: [
+                                        {
+                                            type: "select",
+                                            label: "table.warehouseLogicName",
+                                            name: "warehouseLogicCode",
+                                            source: warehouse_logic_code
+                                        },
+                                        {
+                                            type: "hidden",
+                                            name: "containerIds",
+                                            value: '${SPLIT(ids, ",")}'
                                         }
-                                    }
+                                    ]
                                 }
-                            ]
+                            }
                         }
-                    }
+                    ]
                 }
-            ],
-            headerToolbar: [
-                "reload",
-                "bulkActions",
-                {
-                    type: "export-excel",
-                    label: "button.export",
-                    api: api_crud_search_by_warehouseCode_total,
-                    filename: "container"
-                }
-            ],
-            footerToolbar: ["switch-per-page", "statistics", "pagination"],
-            placeholder: "emptyState.containerManagement",
-            columns: [
-                ...columns
-                // {
-                //     type: "operation",
-                //     label: "table.operation",
-                //     width: 100,
-                //     buttons: [],
-                //     toggled: true
-                // }
-            ]
+            }
         }
-    ]
-}
+    ],
+    empty: "emptyState.containerManagement"
+})
 
 export default schema2component(schema)

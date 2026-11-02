@@ -6,10 +6,18 @@ import {
     api_barcode_parse_rule_update
 } from "@/pages/wms/config_center/constants/api_constant"
 import {
-    create_update_columns,
+    enable_options,
     true_false_options
 } from "@/utils/commonContants"
 import { api_crud_search } from "@/pages/constantApi"
+import {
+    addButton,
+    auditColumns,
+    codeColumn,
+    crudPage,
+    editButton,
+    formDrawer
+} from "@/utils/amis/presets"
 
 const form = [
     {
@@ -89,34 +97,27 @@ const form = [
         name: "enable",
         type: "switch",
         label: "table.whetherEnabled",
-        onText: "启用",
-        offText: "禁用",
-        "en-US": {
-            onText: "Enable",
-            offText: "Disabled"
-        }
-        // offText: <Translation>{(t) => t("table.disabled")}</Translation>
+        options: enable_options
     }
 ]
 
-const add = {
-    type: "button",
-    actionType: "dialog",
-    level: "primary",
-    icon: "fa fa-plus",
-    label: "button.add",
-    dialog: {
-        name: "addDialog",
-        title: "barcodeParsingManagement.addTitle",
-        closeOnEsc: true,
-        size: "lg",
-        body: {
-            type: "form",
-            api: api_barcode_parse_rule_add,
-            body: form
-        }
-    }
-}
+const addDrawer = formDrawer({
+    title: "barcodeParsingManagement.addTitle",
+    size: "xl",
+    body: form,
+    api: api_barcode_parse_rule_add,
+    reload: "barcodeParseRule"
+})
+
+const editDrawer = formDrawer({
+    title: "barcodeParsingManagement.editTitle",
+    size: "xl",
+    context: "${code} · ${name}",
+    body: form,
+    initApi: api_barcode_parse_rule_get,
+    api: api_barcode_parse_rule_update,
+    reload: "barcodeParseRule"
+})
 
 const columns = [
     {
@@ -129,11 +130,7 @@ const columns = [
         label: "Version",
         hidden: true
     },
-    {
-        name: "code",
-        label: "table.ruleEncoding",
-        searchable: true
-    },
+    codeColumn("code", "table.ruleEncoding", { searchable: true }),
     {
         name: "name",
         label: "table.ruleName",
@@ -165,70 +162,19 @@ const columns = [
         type: "mapping",
         map: true_false_options
     },
-    ...create_update_columns
+    ...auditColumns()
 ]
 
-const searchIdentity = "MBarcodeParseRule"
-const showColumns = columns
-
-const schema = {
-    type: "page",
+const schema = crudPage({
     title: "barcodeParsingManagement.title",
-    toolbar: [add],
-    data: {
-        dictionary: "${ls:dictionary}"
-    },
-    body: [
-        {
-            type: "crud",
-            syncLocation: false,
-            name: "barcodeParseRule",
-            api: api_crud_search,
-            defaultParams: {
-                searchIdentity: searchIdentity,
-                showColumns: showColumns,
-                searchObject: {
-                    orderBy: "update_time desc"
-                }
-            },
-            autoFillHeight: true,
-            autoGenerateFilter: {
-                columnsNum: 3,
-                showBtnToolbar: true
-            },
-            headerToolbar: ["reload"],
-            footerToolbar: ["switch-per-page", "statistics", "pagination"],
-            placeholder: "emptyState.barcodeParsingManagement",
-            columns: [
-                ...columns,
-                {
-                    type: "operation",
-                    label: "table.operation",
-                    width: 100,
-                    buttons: [
-                        {
-                            label: "button.modify",
-                            type: "button",
-                            actionType: "dialog",
-                            dialog: {
-                                title: "barcodeParsingManagement.editTitle",
-                                closeOnEsc: true,
-                                closeOnOutside: true,
-                                size: "lg",
-                                body: {
-                                    type: "form",
-                                    initApi: api_barcode_parse_rule_get,
-                                    api: api_barcode_parse_rule_update,
-                                    controls: form
-                                }
-                            }
-                        }
-                    ],
-                    toggled: true
-                }
-            ]
-        }
-    ]
-}
+    name: "barcodeParseRule",
+    searchIdentity: "MBarcodeParseRule",
+    api: api_crud_search,
+    columns,
+    orderBy: "update_time desc",
+    pageActions: [addButton({ target: "barcodeParseRule", drawer: addDrawer })],
+    rowActions: [editButton(editDrawer)],
+    empty: "emptyState.barcodeParsingManagement"
+})
 
 export default schema2component(schema)

@@ -3,101 +3,99 @@ import {
     warehouse_area_id,
     warehouse_logic_id
 } from "@/pages/wms/constants/select_search_api_contant"
-import {
-    create_update_columns,
-    enable_options,
-    true_false_options
-} from "@/utils/commonContants"
+import { true_false_options } from "@/utils/commonContants"
 import { api_crud_search_by_warehouseCode } from "@/pages/constantApi"
+import {
+    addButton,
+    auditColumns,
+    codeColumn,
+    crudPage,
+    editButton,
+    formDrawer,
+    statusColumn
+} from "@/utils/amis/presets"
+import { locationStatus } from "@/utils/amis/statusMaps"
 
-let warehouseCode = localStorage.getItem("warehouseCode")
+const warehouseCode = localStorage.getItem("warehouseCode")
 
-const form = {
-    type: "form",
-    api: {
-        url: "/wms/warehouseLogic/create"
+const form = [
+    {
+        type: "hidden",
+        name: "id"
     },
-    body: [
-        {
-            type: "hidden",
-            name: "id"
-        },
-        {
-            type: "hidden",
-            name: "version"
-        },
-        {
-            label: "table.reservoirAreaCode",
-            name: "warehouseAreaCode",
-            type: "select",
-            source: warehouse_area_id
-        },
-        {
-            label: "table.warehouseLogicName",
-            name: "warehouseLogicId",
-            type: "select",
-            source: warehouse_logic_id
-        },
-        {
-            label: "table.roadwayCoding",
-            name: "aisleCode",
-            type: "input-text"
-        },
-        {
-            label: "table.locationType",
-            name: "locationType",
-            type: "select",
-            source: "${dictionary.LocationType}"
-        },
-        {
-            label: "table.locationCode",
-            name: "locationCode",
-            type: "input-text"
-        },
-        {
-            label: "table.locationHeat",
-            name: "heat",
-            type: "input-text"
-        },
-        {
-            label: "table.occupation",
-            name: "occupied",
-            type: "switch",
-            options: true_false_options
-        },
-        {
-            label: "table.remark",
-            name: "remark",
-            type: "input-text"
-        },
-        {
-            label: "table.locationStatus",
-            name: "locationStatus",
-            type: "switch",
-            options: enable_options
-        },
-        {
-            label: "table.warehouseCode",
-            name: "warehouseCode",
-            type: "hidden",
-            value: warehouseCode
-        }
-    ]
-}
-const add = {
-    type: "button",
-    actionType: "drawer",
-    level: "primary",
-    icon: "fa fa-plus",
-    label: "button.add",
-    target: "role",
-    drawer: {
-        size: "lg",
-        title: "locationManagement.addTitle",
-        closeOnEsc: true,
-        body: form
+    {
+        type: "hidden",
+        name: "version"
+    },
+    {
+        label: "table.reservoirAreaName",
+        name: "warehouseAreaCode",
+        type: "select",
+        source: warehouse_area_id
+    },
+    {
+        label: "table.warehouseLogicName",
+        name: "warehouseLogicId",
+        type: "select",
+        source: warehouse_logic_id
+    },
+    {
+        label: "table.roadwayCoding",
+        name: "aisleCode",
+        type: "input-text"
+    },
+    {
+        label: "table.locationType",
+        name: "locationType",
+        type: "select",
+        source: "${dictionary.LocationType}"
+    },
+    {
+        label: "table.locationCode",
+        name: "locationCode",
+        type: "input-text"
+    },
+    {
+        label: "table.locationHeat",
+        name: "heat",
+        type: "input-text"
+    },
+    {
+        label: "table.occupation",
+        name: "occupied",
+        type: "switch",
+        options: true_false_options
+    },
+    {
+        label: "table.locationStatus",
+        name: "locationStatus",
+        type: "select",
+        source: "${dictionary.LocationStatus}"
+    },
+    {
+        label: "table.warehouseCode",
+        name: "warehouseCode",
+        type: "hidden",
+        value: warehouseCode
     }
-}
+]
+
+const addDrawer = formDrawer({
+    title: "locationManagement.addTitle",
+    size: "lg",
+    body: form,
+    api: { url: "/wms/warehouseLogic/create" },
+    reload: "role"
+})
+
+const editDrawer = formDrawer({
+    title: "locationManagement.editTitle",
+    size: "lg",
+    context: "${locationCode}",
+    body: form,
+    api: { url: "/wms/warehouseLogic/create" },
+    reload: "role"
+})
 
 const columns = [
     {
@@ -117,31 +115,23 @@ const columns = [
     },
     {
         name: "warehouseAreaId",
-        label: "table.warehouseLogicName",
+        label: "table.reservoirAreaName",
         type: "mapping",
         source: warehouse_area_id
     },
     {
         name: "warehouseLogicId",
-        label: "table.logicalAreaEncoding",
+        label: "table.logicalAreaName",
         type: "mapping",
         source: warehouse_logic_id
     },
-    {
-        name: "aisleCode",
-        label: "table.roadwayCoding"
-    },
-    {
-        name: "shelfCode",
-        label: "table.shelfCoding"
-    },
-    {
-        name: "locationCode",
-        label: "table.locationCode"
-    },
+    codeColumn("aisleCode", "table.roadwayCoding"),
+    codeColumn("shelfCode", "table.shelfCoding"),
+    codeColumn("locationCode", "table.locationCode"),
     {
         name: "locationType",
         label: "table.locationType",
+        type: "mapping",
         source: "${dictionary.LocationType}"
     },
     {
@@ -150,125 +140,58 @@ const columns = [
     },
     {
         name: "occupied",
-        label: "table.occupation"
+        label: "table.occupation",
+        type: "mapping",
+        map: true_false_options
     },
     {
         name: "position",
         hidden: true
     },
-    {
-        name: "locationStatus",
-        label: "table.locationStatus",
-        type: "mapping",
-        map: enable_options
-    },
-    ...create_update_columns
+    statusColumn("locationStatus", "table.locationStatus", locationStatus),
+    ...auditColumns()
 ]
 
-const searchIdentity = "WLocation"
-const showColumns = columns
-
-const schema = {
-    type: "page",
-    title: "locationManagement.title",
-    toolbar: [add],
-    data: {
-        dictionary: "${ls:dictionary}"
+const filters = [
+    {
+        label: "table.locationCode",
+        name: "locationCode",
+        type: "input-text"
     },
-    body: [
-        {
-            type: "crud",
-            syncLocation: false,
-            name: "role",
-            api: api_crud_search_by_warehouseCode,
-            defaultParams: {
-                searchIdentity: searchIdentity,
-                showColumns: showColumns
-            },
-            autoFillHeight: true,
-            filterTogglable: true,
-            filterDefaultVisible: true,
-            filter: {
-                title: "common.filter",
-                mode: "inline",
-                body: [
-                    {
-                        label: "table.locationCode",
-                        name: "locationCode",
-                        type: "input-text"
-                    },
-                    {
-                        label: "table.reservoirAreaCode",
-                        name: "warehouseAreaId",
-                        type: "select",
-                        source: warehouse_area_id
-                    },
-                    {
-                        label: "table.warehouseLogicName",
-                        name: "warehouseLogicId",
-                        type: "select",
-                        source: warehouse_logic_id
-                    },
-                    {
-                        label: "table.roadwayCoding",
-                        name: "aisleCode",
-                        type: "input-text"
-                    },
-                    {
-                        label: "table.shelfCoding",
-                        name: "shelfCode",
-                        type: "input-text"
-                    }
-                ],
-                actions: [
-                    { type: "reset", label: "button.reset" },
-                    {
-                        type: "submit",
-                        level: "primary",
-                        label: "common.search"
-                    }
-                ]
-            },
-            headerToolbar: ["reload"],
-            footerToolbar: ["switch-per-page", "statistics", "pagination"],
-            placeholder: "emptyState.locationManagement",
-            columns: [
-                ...columns,
-                {
-                    label: "x",
-                    tpl: "<%=JSON.parse(data.position)?.x || '-'%>"
-                },
-                {
-                    label: "y",
-                    tpl: "<%=JSON.parse(data.position)?.y || '-'%>"
-                },
-                {
-                    label: "z",
-                    tpl: "<%=JSON.parse(data.position)?.z || '-'%>"
-                },
-                {
-                    type: "operation",
-                    label: "table.operation",
-                    width: 100,
-                    buttons: [
-                        {
-                            label: "button.modify",
-                            type: "button",
-                            actionType: "drawer",
-                            drawer: {
-                                size: "lg",
-                                title: "locationManagement.editTitle",
-                                closeOnEsc: true,
-                                closeOnOutside: true,
-                                body: form
-                            }
-                        }
-                    ],
-                    toggled: true
-                }
-            ]
-        }
-    ]
-}
+    {
+        label: "table.reservoirAreaName",
+        name: "warehouseAreaId",
+        type: "select",
+        source: warehouse_area_id
+    },
+    {
+        label: "table.warehouseLogicName",
+        name: "warehouseLogicId",
+        type: "select",
+        source: warehouse_logic_id
+    },
+    {
+        label: "table.roadwayCoding",
+        name: "aisleCode",
+        type: "input-text"
+    },
+    {
+        label: "table.shelfCoding",
+        name: "shelfCode",
+        type: "input-text"
+    }
+]
+
+const schema = crudPage({
+    title: "locationManagement.title",
+    name: "role",
+    searchIdentity: "WLocation",
+    api: api_crud_search_by_warehouseCode,
+    columns,
+    filters,
+    pageActions: [addButton({ target: "role", drawer: addDrawer })],
+    rowActions: [editButton(editDrawer)],
+    empty: "emptyState.locationManagement"
+})
 
 export default schema2component(schema)

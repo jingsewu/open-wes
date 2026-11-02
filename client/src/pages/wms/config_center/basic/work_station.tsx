@@ -2,8 +2,12 @@ import schema2component from "@/utils/schema2component"
 import { warehouse_area_id } from "@/pages/wms/constants/select_search_api_contant"
 import { true_false_options } from "@/utils/commonContants"
 import {
+    addButton,
     auditColumns,
     codeColumn,
+    crudPage,
+    editButton,
+    formDrawer,
     requiredField,
     statusColumn
 } from "@/utils/amis/presets"
@@ -15,7 +19,7 @@ import {
 } from "@/pages/wms/config_center/constants/api_constant"
 import { api_crud_search_by_warehouseCode } from "@/pages/constantApi"
 
-let warehouseCode = localStorage.getItem("warehouseCode")
+const warehouseCode = localStorage.getItem("warehouseCode")
 
 const baseInfoForm = [
     {
@@ -448,41 +452,49 @@ const configInfoForm = [
     }
 ]
 
-const drawerActions = [
-    {
-        type: "button",
-        actionType: "cancel",
-        label: "common.cancel"
-    },
-    {
-        type: "button",
-        actionType: "confirm",
-        level: "primary",
-        label: "common.save",
-        reload: "WorkStationTable"
-    }
-]
+const addDrawer = formDrawer({
+    title: "workstationManagement.addTitle",
+    size: "xl",
+    columnCount: 1,
+    closeOnOutside: false,
+    body: baseInfoForm,
+    api: api_work_station_add,
+    reload: "WorkStationTable"
+})
 
-const add = {
-    type: "button",
-    actionType: "drawer",
-    level: "primary",
-    icon: "fa fa-plus",
-    label: "button.add",
-    target: "WorkStationTable",
-    drawer: {
-        title: "workstationManagement.addTitle",
-        size: "xl",
-        closeOnEsc: true,
-        closeOnOutside: false,
-        actions: drawerActions,
-        body: {
-            type: "form",
-            api: api_work_station_add,
-            body: baseInfoForm
+const editDrawer = formDrawer({
+    title: "workstationManagement.editTitle",
+    size: "xl",
+    columnCount: 1,
+    closeOnOutside: false,
+    context: "${stationCode} · ${stationName}",
+    body: baseInfoForm,
+    initApi: api_work_station_get,
+    api: api_work_station_add,
+    reload: "WorkStationTable"
+})
+
+const configDrawer = formDrawer({
+    title: "table.workstationConfiguration",
+    size: "xl",
+    columnCount: 1,
+    closeOnOutside: false,
+    context: "${stationCode} · ${stationName}",
+    body: configInfoForm,
+    api: api_work_station_config_add,
+    initApi: {
+        method: "post",
+        url: api_work_station_config_get,
+        adaptor: function (payload: any) {
+            // 新增配置时，删除后端返回的空 workStationId，避免将上下文中获取的 workStationId 覆盖掉
+            if (payload["workStationId"] == null) {
+                delete payload["workStationId"]
+            }
+            return payload
         }
-    }
-}
+    },
+    reload: "WorkStationTable"
+})
 
 const columns = [
     {
@@ -546,116 +558,20 @@ const columns = [
     ...auditColumns()
 ]
 
-const searchIdentity = "WWorkStation"
-const showColumns = columns
-
-const schema = {
-    type: "page",
+const schema = crudPage({
     title: "workstationManagement.title",
-    toolbar: [add],
-    data: {
-        dictionary: "${ls:dictionary}"
-    },
-    body: [
-        {
-            type: "crud",
-            syncLocation: false,
-            name: "WorkStationTable",
-            api: api_crud_search_by_warehouseCode,
-            defaultParams: {
-                searchIdentity: searchIdentity,
-                showColumns: showColumns,
-                searchObject: {
-                    orderBy: "update_time desc"
-                }
-            },
-            autoFillHeight: true,
-            autoGenerateFilter: {
-                columnsNum: 3,
-                showBtnToolbar: true
-            },
-            headerToolbar: ["reload"],
-            footerToolbar: ["switch-per-page", "statistics", "pagination"],
-            placeholder: "emptyState.workstation",
-            columns: [
-                ...columns,
-                {
-                    type: "operation",
-                    label: "table.operation",
-                    width: 180,
-                    buttons: [
-                        {
-                            label: "button.modify",
-                            type: "button",
-                            actionType: "drawer",
-                            level: "link",
-                            className: "owes-action",
-                            drawer: {
-                                title: "workstationManagement.editTitle",
-                                size: "xl",
-                                closeOnEsc: true,
-                                closeOnOutside: false,
-                                actions: drawerActions,
-                                body: {
-                                    type: "form",
-                                    api: api_work_station_add,
-                                    initApi: api_work_station_get,
-                                    body: [
-                                        {
-                                            type: "tpl",
-                                            tpl: "${stationCode} · ${stationName}",
-                                            className: "owes-drawer-context"
-                                        },
-                                        ...baseInfoForm
-                                    ]
-                                }
-                            }
-                        },
-                        {
-                            label: "table.workstationConfiguration",
-                            type: "button",
-                            actionType: "drawer",
-                            level: "link",
-                            className: "owes-action",
-                            drawer: {
-                                title: "table.workstationConfiguration",
-                                size: "xl",
-                                closeOnEsc: true,
-                                closeOnOutside: false,
-                                actions: drawerActions,
-                                body: {
-                                    type: "form",
-                                    api: api_work_station_config_add,
-                                    initApi: {
-                                        method: "post",
-                                        url: api_work_station_config_get,
-                                        adaptor: function (payload: any) {
-                                            // 新增配置时，删除后端返回的空 workStationId，避免将上下文中获取的 workStationId 覆盖掉
-                                            if (
-                                                payload["workStationId"] == null
-                                            ) {
-                                                delete payload["workStationId"]
-                                            }
-                                            return payload
-                                        }
-                                    },
-                                    body: [
-                                        {
-                                            type: "tpl",
-                                            tpl: "${stationCode} · ${stationName}",
-                                            className: "owes-drawer-context"
-                                        },
-                                        ...configInfoForm
-                                    ]
-                                }
-                            }
-                        }
-                    ],
-                    toggled: true
-                }
-            ]
-        }
-    ]
-}
+    name: "WorkStationTable",
+    searchIdentity: "WWorkStation",
+    api: api_crud_search_by_warehouseCode,
+    columns,
+    orderBy: "update_time desc",
+    pageActions: [addButton({ target: "WorkStationTable", drawer: addDrawer })],
+    rowActions: [
+        editButton(editDrawer),
+        editButton(configDrawer, "table.workstationConfiguration")
+    ],
+    operationWidth: 180,
+    empty: "emptyState.workstation"
+})
 
 export default schema2component(schema)

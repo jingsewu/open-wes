@@ -1,67 +1,77 @@
 import schema2component from "@/utils/schema2component"
-import { create_update_columns, enable_options } from "@/utils/commonContants"
+import { enable_options } from "@/utils/commonContants"
 import { api_warehouse_area_group_add } from "@/pages/wms/config_center/constants/api_constant"
 import { api_crud_search_by_warehouseCode } from "@/pages/constantApi"
+import {
+    addButton,
+    auditColumns,
+    codeColumn,
+    crudPage,
+    editButton,
+    formDrawer,
+    remarkColumn
+} from "@/utils/amis/presets"
 
-let warehouseCode = localStorage.getItem("warehouseCode")
+const warehouseCode = localStorage.getItem("warehouseCode")
 
-const form = {
-    type: "form",
-    api: api_warehouse_area_group_add,
-    body: [
-        {
-            type: "hidden",
-            name: "id"
-        },
-        {
-            type: "hidden",
-            name: "version"
-        },
-        {
-            label: "table.warehouseAreaEncoding",
-            name: "warehouseAreaGroupCode",
-            type: "input-text",
-            required: true
-        },
-        {
-            label: "table.warehouseAreaName",
-            name: "warehouseAreaGroupName",
-            type: "input-text",
-            required: true
-        },
-        {
-            label: "table.remark",
-            name: "remark",
-            type: "input-text"
-        },
-        {
-            label: "table.status",
-            name: "enable",
-            type: "switch",
-            options: enable_options
-        },
-        {
-            label: "table.warehouseCode",
-            name: "warehouseCode",
-            type: "hidden",
-            value: warehouseCode
-        }
-    ]
-}
-const add = {
-    type: "button",
-    actionType: "drawer",
-    level: "primary",
-    icon: "fa fa-plus",
-    label: "button.add",
-    target: "role",
-    drawer: {
-        size: "md",
-        title: "warehouseAreaManagement.addTitle",
-        closeOnEsc: true,
-        body: form
+const form = [
+    {
+        type: "hidden",
+        name: "id"
+    },
+    {
+        type: "hidden",
+        name: "version"
+    },
+    {
+        label: "table.warehouseAreaEncoding",
+        name: "warehouseAreaGroupCode",
+        type: "input-text",
+        required: true
+    },
+    {
+        label: "table.warehouseAreaName",
+        name: "warehouseAreaGroupName",
+        type: "input-text",
+        required: true
+    },
+    {
+        label: "table.remark",
+        name: "remark",
+        type: "input-text"
+    },
+    {
+        label: "table.status",
+        name: "enable",
+        type: "switch",
+        options: enable_options
+    },
+    {
+        label: "table.warehouseCode",
+        name: "warehouseCode",
+        type: "hidden",
+        value: warehouseCode
     }
-}
+]
+
+const addDrawer = formDrawer({
+    title: "warehouseAreaManagement.addTitle",
+    size: "md",
+    columnCount: 1,
+    body: form,
+    api: api_warehouse_area_group_add,
+    reload: "role"
+})
+
+const editDrawer = formDrawer({
+    title: "warehouseAreaManagement.editTitle",
+    size: "md",
+    columnCount: 1,
+    context: "${warehouseAreaGroupCode} · ${warehouseAreaGroupName}",
+    body: form,
+    api: api_warehouse_area_group_add,
+    reload: "role"
+})
 
 const columns = [
     {
@@ -79,81 +89,33 @@ const columns = [
         label: "table.warehouseCode",
         hidden: true
     },
-    {
-        name: "warehouseAreaGroupCode",
-        label: "table.warehouseAreaEncoding",
+    codeColumn("warehouseAreaGroupCode", "table.warehouseAreaEncoding", {
         searchable: true
-    },
+    }),
     {
         name: "warehouseAreaGroupName",
         label: "table.warehouseAreaName"
     },
-    {
-        name: "remark",
-        label: "table.remark"
-    },
+    remarkColumn(),
     {
         name: "enable",
         label: "table.status",
         type: "mapping",
         map: enable_options
     },
-    ...create_update_columns
+    ...auditColumns()
 ]
 
-const searchIdentity = "WWarehouseAreaGroup"
-const showColumns = columns
-
-const schema = {
-    type: "page",
+const schema = crudPage({
     title: "warehouseAreaManagement.title",
-    toolbar: [add],
-    body: [
-        {
-            type: "crud",
-            syncLocation: false,
-            name: "role",
-            api: api_crud_search_by_warehouseCode,
-            defaultParams: {
-                searchIdentity: searchIdentity,
-                showColumns: showColumns,
-                searchObject: {
-                    orderBy: "update_time desc"
-                }
-            },
-            autoFillHeight: true,
-            autoGenerateFilter: {
-                columnsNum: 3,
-                showBtnToolbar: true
-            },
-            headerToolbar: ["reload"],
-            footerToolbar: ["switch-per-page", "statistics", "pagination"],
-            placeholder: "emptyState.warehouseAreaManagement",
-            columns: [
-                ...columns,
-                {
-                    type: "operation",
-                    label: "table.operation",
-                    width: 100,
-                    buttons: [
-                        {
-                            label: "button.modify",
-                            type: "button",
-                            actionType: "drawer",
-                            drawer: {
-                                size: "md",
-                                closeOnEsc: true,
-                                closeOnOutside: true,
-                                title: "warehouseAreaManagement.editTitle",
-                                body: form
-                            }
-                        }
-                    ],
-                    toggled: true
-                }
-            ]
-        }
-    ]
-}
+    name: "role",
+    searchIdentity: "WWarehouseAreaGroup",
+    api: api_crud_search_by_warehouseCode,
+    columns,
+    orderBy: "update_time desc",
+    pageActions: [addButton({ target: "role", drawer: addDrawer })],
+    rowActions: [editButton(editDrawer)],
+    empty: "emptyState.warehouseAreaManagement"
+})
 
 export default schema2component(schema)
