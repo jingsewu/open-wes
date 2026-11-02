@@ -3,31 +3,6 @@
     "updated": "2026-11-02",
     "entries": [
         {
-            "file": "src/pages/wms/data_center/stock/stocktake/index.tsx",
-            "reason": "Pending Wave 5B migration.",
-            "wave": "5B"
-        },
-        {
-            "file": "src/pages/wms/data_center/stock/stock_adjust.tsx",
-            "reason": "Pending Wave 5B migration.",
-            "wave": "5B"
-        },
-        {
-            "file": "src/pages/wms/data_center/stock/stock_records.tsx",
-            "reason": "Pending Wave 5B migration.",
-            "wave": "5B"
-        },
-        {
-            "file": "src/pages/wms/data_center/stock/container_stock.tsx",
-            "reason": "Pending Wave 5B migration.",
-            "wave": "5B"
-        },
-        {
-            "file": "src/pages/wms/data_center/stock/stock_abnormal.tsx",
-            "reason": "Pending Wave 5B migration.",
-            "wave": "5B"
-        },
-        {
             "file": "src/pages/wms/config_center/basic/batch_attribute_management.tsx",
             "reason": "Pending Wave 5C migration.",
             "wave": "5C"

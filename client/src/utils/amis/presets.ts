@@ -261,6 +261,8 @@ export interface CrudPageOptions {
     showColumns?: SchemaLike[]
     api: ApiLike
     orderBy?: string
+    /** Extra search-object fields; joins and fixed `where` clauses live here. */
+    searchObject?: Record<string, unknown>
     /** Page-level actions, rendered right-aligned in the page header. */
     pageActions?: SchemaLike[]
     /** Table utilities, rendered in the CRUD toolbar after "reload". */
@@ -301,8 +303,15 @@ export function crudPage(options: CrudPageOptions): Schema {
         defaultParams: {
             searchIdentity: options.searchIdentity,
             showColumns,
-            ...(options.orderBy
-                ? { searchObject: { orderBy: options.orderBy } }
+            ...(options.orderBy || options.searchObject
+                ? {
+                      searchObject: {
+                          ...options.searchObject,
+                          ...(options.orderBy
+                              ? { orderBy: options.orderBy }
+                              : {})
+                      }
+                  }
                 : {})
         },
         autoFillHeight: true,
@@ -542,6 +551,7 @@ export function linkAction(options: {
     confirmText?: string
     confirmTitle?: string
     danger?: boolean
+    disabledOn?: string
     reload?: string
 }): Schema {
     return {
@@ -553,6 +563,9 @@ export function linkAction(options: {
             : "owes-action",
         label: options.label,
         api: options.api,
+        ...(options.disabledOn
+            ? { disabledOn: options.disabledOn }
+            : {}),
         ...(options.confirmText ? { confirmText: options.confirmText } : {}),
         ...(options.confirmTitle
             ? { confirmTitle: options.confirmTitle }

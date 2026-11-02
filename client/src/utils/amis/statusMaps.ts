@@ -139,3 +139,65 @@ export const emptyContainerOutboundDetailStatus: StatusMap = {
         CANCELED: "muted"
     }
 }
+
+export const stocktakeOrderStatus: StatusMap = {
+    labels: {
+        NEW: "status.stocktakeNew",
+        STARTED: "status.stocktakeStarted",
+        PARTIAL_DONE: "status.stocktakePartialDone",
+        DONE: "status.stocktakeDone",
+        CANCELED: "status.stocktakeCanceled"
+    },
+    tones: {
+        NEW: "info",
+        STARTED: "warning",
+        PARTIAL_DONE: "warning",
+        DONE: "success",
+        CANCELED: "muted"
+    }
+}
+
+export const stocktakeRecordStatus: StatusMap = {
+    labels: {
+        NEW: "status.stocktakeRecordNew",
+        DONE: "status.stocktakeRecordDone",
+        CLOSE: "status.stocktakeRecordClosed"
+    },
+    tones: {
+        NEW: "info",
+        DONE: "success",
+        CLOSE: "muted"
+    }
+}
+
+export const stockAdjustmentOrderStatus: StatusMap = {
+    labels: {
+        NEW: "status.stockAdjustNew",
+        COMPLETE: "status.stockAdjustComplete",
+        CLOSED: "status.stockAdjustClosed"
+    },
+    tones: {
+        NEW: "info",
+        COMPLETE: "success",
+        CLOSED: "muted"
+    }
+}
+
+export const stockAbnormalStatus: StatusMap = {
+    labels: {
+        NEW: "status.stockAbnormalNew",
+        CREATE_RE_CHECK_ORDER: "status.stockAbnormalRecheckCreated",
+        CREATE_ADJUSTMENT_ORDER: "status.stockAbnormalAdjustmentCreated",
+        FINISH_RE_CHECK_ORDER: "status.stockAbnormalRecheckFinished",
+        FINISH_ADJUSTMENT_ORDER: "status.stockAbnormalAdjustmentFinished",
+        CLOSED: "status.stockAbnormalClosed"
+    },
+    tones: {
+        NEW: "info",
+        CREATE_RE_CHECK_ORDER: "warning",
+        CREATE_ADJUSTMENT_ORDER: "warning",
+        FINISH_RE_CHECK_ORDER: "success",
+        FINISH_ADJUSTMENT_ORDER: "success",
+        CLOSED: "muted"
+    }
+}

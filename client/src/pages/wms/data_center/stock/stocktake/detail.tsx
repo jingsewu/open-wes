@@ -1,4 +1,4 @@
-import { codeColumn } from "@/utils/amis/presets"
+import { codeColumn, nestedTable } from "@/utils/amis/presets"
 
 const detailColumns = [
     {
@@ -18,32 +18,33 @@ const detailColumns = [
 ]
 
 export const detailDrawer = {
+    size: "xl",
     title: "inventoryCounting.detail.modal.title",
-    actions: [],
     closeOnEsc: true,
     closeOnOutside: true,
-    size: "xl",
+    actions: [
+        {
+            type: "button",
+            actionType: "close",
+            label: "button.close"
+        }
+    ],
     body: [
         {
             type: "tpl",
             tpl: "${orderNo}",
             className: "owes-drawer-context"
         },
-        {
-            type: "crud",
-            syncLocation: false,
+        nestedTable({
             name: "stocktakeOrderDetailTable",
             api: {
                 method: "POST",
                 url: "/search/search?page=${page}&perPage=${perPage}&stocktakeOrderId=${id}&stocktakeOrderId-op=eq",
                 dataType: "application/json"
             },
-            defaultParams: {
-                searchIdentity: "WStocktakeOrderDetail",
-                showColumns: detailColumns
-            },
-            footerToolbar: ["switch-per-page", "statistics", "pagination"],
-            columns: detailColumns
-        }
+            searchIdentity: "WStocktakeOrderDetail",
+            columns: detailColumns,
+            empty: "emptyState.stocktakeDetail"
+        })
     ]
 }
