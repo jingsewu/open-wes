@@ -29,95 +29,66 @@ const columns = [
         label: "table.warehouse",
         hidden: true
     },
-    codeColumn("orderNo", "table.countOrderNumber"),
+    codeColumn("orderNo", "table.countOrderNumber", { searchable: true }),
     {
         name: "stocktakeType",
         label: "table.orderType",
         type: "mapping",
-        source: "${dictionary.StocktakeType}"
+        source: "${dictionary.StocktakeType}",
+        searchable: {
+            type: "select",
+            source: "${dictionary.StocktakeType}"
+        }
     },
     {
         name: "stocktakeCreateMethod",
         label: "table.howItWasCreated",
         type: "mapping",
-        source: "${dictionary.StocktakeCreateMethod}"
+        source: "${dictionary.StocktakeCreateMethod}",
+        searchable: {
+            type: "select",
+            source: "${dictionary.StocktakeCreateMethod}"
+        }
     },
     {
         name: "stocktakeUnitType",
         label: "table.creationType",
         type: "mapping",
-        source: "${dictionary.StocktakeUnitType}"
+        source: "${dictionary.StocktakeUnitType}",
+        searchable: {
+            type: "select",
+            source: "${dictionary.StocktakeUnitType}"
+        }
     },
-    statusColumn("stocktakeOrderStatus", "table.status", stocktakeOrderStatus),
+    statusColumn("stocktakeOrderStatus", "table.status", {
+        ...stocktakeOrderStatus,
+        searchable: {
+            type: "select",
+            source: "${dictionary.StocktakeOrderStatus}"
+        }
+    }),
     {
         name: "warehouseAreaId",
         label: "table.warehouseAreaBelongs",
         type: "mapping",
-        source: warehouse_area_id
+        source: warehouse_area_id,
+        searchable: { type: "select", source: warehouse_area_id }
     },
     {
         name: "warehouseLogicId",
         label: "table.logicalAreaName",
         type: "mapping",
-        source: warehouse_logic_id
+        source: warehouse_logic_id,
+        searchable: { type: "select", source: warehouse_logic_id }
     },
     {
         name: "abnormal",
         label: "table.exceptionIdentification",
         type: "mapping",
-        map: yes_no_options
+        map: yes_no_options,
+        searchable: { type: "select", options: yes_no_options }
     },
     ...auditColumns()
-]
-
-const filters = [
-    {
-        label: "table.countOrderNumber",
-        name: "orderNo",
-        type: "input-text"
-    },
-    {
-        label: "table.status",
-        name: "stocktakeOrderStatus",
-        type: "select",
-        source: "${dictionary.StocktakeOrderStatus}"
-    },
-    {
-        label: "table.warehouseAreaBelongs",
-        name: "warehouseAreaId",
-        type: "select",
-        source: warehouse_area_id
-    },
-    {
-        label: "table.logicalAreaName",
-        name: "warehouseLogicId",
-        type: "select",
-        source: warehouse_logic_id
-    },
-    {
-        label: "table.orderType",
-        name: "stocktakeType",
-        type: "select",
-        source: "${dictionary.StocktakeType}"
-    },
-    {
-        label: "table.creationType",
-        name: "stocktakeUnitType",
-        type: "select",
-        source: "${dictionary.StocktakeUnitType}"
-    },
-    {
-        label: "table.howItWasCreated",
-        name: "stocktakeCreateMethod",
-        type: "select",
-        source: "${dictionary.StocktakeCreateMethod}"
-    },
-    {
-        label: "table.exceptionIdentification",
-        name: "abnormal",
-        type: "select",
-        options: yes_no_options
-    }
 ]
 
 const schema = crudPage({
@@ -127,7 +98,6 @@ const schema = crudPage({
     api: api_crud_search_by_warehouseCode,
     columns,
     orderBy: "id, stocktake_order_status desc",
-    filters,
     pageActions: [add],
     bulkActions: [
         linkAction({
