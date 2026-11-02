@@ -75,40 +75,6 @@ const detailDrawer = {
     ]
 }
 
-const filters = [
-    {
-        label: "table.containerCode",
-        name: "identifyNo",
-        type: "input-text"
-    },
-    {
-        label: "table.productOwner",
-        name: "ownerCode",
-        type: "input-text"
-    },
-    {
-        label: "skuArea.skuCode",
-        name: "skuCode",
-        type: "input-text"
-    },
-    {
-        label: "skuArea.productName",
-        name: "skuName",
-        type: "input-text"
-    },
-    {
-        label: "table.orderNo",
-        name: "orderNo",
-        type: "input-text"
-    },
-    {
-        label: "table.status",
-        name: "acceptOrderStatus",
-        type: "select",
-        source: "${dictionary.AcceptOrderStatus}"
-    }
-]
-
 const columns = [
     {
         name: "id",
@@ -120,9 +86,15 @@ const columns = [
         label: "table.warehouseCode",
         hidden: true
     },
-    codeColumn("identifyNo", "table.containerCode"),
-    statusColumn("acceptOrderStatus", "table.status", acceptOrderStatus),
-    codeColumn("orderNo", "table.orderNo"),
+    codeColumn("identifyNo", "table.containerCode", { searchable: true }),
+    statusColumn("acceptOrderStatus", "table.status", {
+        ...acceptOrderStatus,
+        searchable: {
+            type: "select",
+            source: "${dictionary.AcceptOrderStatus}"
+        }
+    }),
+    codeColumn("orderNo", "table.orderNo", { searchable: true }),
     numberColumn("totalBox", "table.boxesNumber"),
     numberColumn("totalQty", "table.totalQuantity"),
     ...auditColumns(),
@@ -136,7 +108,6 @@ const schema = crudPage({
     api: api_crud_search_by_warehouseCode,
     columns,
     orderBy: "accept_order_status, update_time desc",
-    filters,
     pageActions: [],
     tableActions: [
         exportButton({
