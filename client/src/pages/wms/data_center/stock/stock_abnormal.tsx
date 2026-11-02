@@ -14,7 +14,12 @@ import {
 } from "@/utils/amis/presets"
 import { stockAbnormalStatus } from "@/utils/amis/statusMaps"
 
-const audit = auditColumns().map((column) => ({
+const audit = auditColumns({
+    createdSearchable: {
+        type: "input-date-range",
+        valueFormat: "x"
+    }
+}).map((column) => ({
     ...column,
     dbField: `r.${String(column.name).replace(
         /[A-Z]/g,
@@ -30,7 +35,9 @@ const columns = [
         hidden: true
     },
     {
-        ...codeColumn("abnormalOrderNo", "table.exceptionTrackingNumber"),
+        ...codeColumn("abnormalOrderNo", "table.exceptionTrackingNumber", {
+            searchable: true
+        }),
         dbField: "r.order_no"
     },
     {
@@ -38,7 +45,11 @@ const columns = [
         name: "stockAbnormalType",
         label: "table.exceptionType",
         type: "mapping",
-        source: "${dictionary.StockAbnormalType}"
+        source: "${dictionary.StockAbnormalType}",
+        searchable: {
+            type: "select",
+            source: "${dictionary.StockAbnormalType}"
+        }
     },
     {
         dbField: "r.abnormal_order_no",
@@ -56,14 +67,20 @@ const columns = [
             "table.status",
             stockAbnormalStatus
         ),
-        dbField: "r.stock_abnormal_status"
+        dbField: "r.stock_abnormal_status",
+        searchable: {
+            type: "select",
+            source: "${dictionary.StockAbnormalStatus}"
+        }
     },
     {
         ...codeColumn("warehouseCode", "table.warehouse"),
         dbField: "r.warehouse_code"
     },
     {
-        ...codeColumn("containerCode", "table.containerCode"),
+        ...codeColumn("containerCode", "table.containerCode", {
+            searchable: true
+        }),
         dbField: "r.container_code"
     },
     {
@@ -73,7 +90,8 @@ const columns = [
     {
         dbField: "g.bar_code_list",
         name: "barCodeList",
-        label: "skuArea.barcode"
+        label: "skuArea.barcode",
+        searchable: true
     },
     {
         ...codeColumn("skuCode", "skuArea.skuCode"),
@@ -121,42 +139,6 @@ const columns = [
     ...audit
 ]
 
-const filters = [
-    {
-        label: "table.exceptionTrackingNumber",
-        name: "abnormalOrderNo",
-        type: "input-text"
-    },
-    {
-        label: "table.containerCode",
-        name: "containerCode",
-        type: "input-text"
-    },
-    {
-        label: "skuArea.barcode",
-        name: "barCodeList",
-        type: "input-text"
-    },
-    {
-        label: "table.exceptionType",
-        name: "stockAbnormalType",
-        type: "select",
-        source: "${dictionary.StockAbnormalType}"
-    },
-    {
-        label: "table.status",
-        name: "stockAbnormalStatus",
-        type: "select",
-        source: "${dictionary.StockAbnormalStatus}"
-    },
-    {
-        label: "table.creationTime",
-        name: "createTime",
-        type: "input-date-range",
-        valueFormat: "x"
-    }
-]
-
 const schema = crudPage({
     title: "inventorAnomalies.title",
     name: "stockAbnormalTable",
@@ -168,7 +150,6 @@ const schema = crudPage({
             "w_stock_abnormal_record r left join (select sku_id, group_concat(distinct bar_code separator ' ') bar_code_list from m_sku_barcode_data group by sku_id) g on r.sku_id = g.sku_id",
         orderBy: "r.create_time desc"
     },
-    filters,
     tableActions: [
         exportButton({
             api: api_crud_search_by_warehouseCode_total,
