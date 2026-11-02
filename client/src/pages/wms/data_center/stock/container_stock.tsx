@@ -28,7 +28,13 @@ const form = [
     }
 ]
 
-const audit = auditColumns({ seconds: true }).map((column) => ({
+const audit = auditColumns({
+    seconds: true,
+    createdSearchable: {
+        type: "input-date-range",
+        valueFormat: "x"
+    }
+}).map((column) => ({
     ...column,
     dbField: `k.${String(column.name).replace(
         /[A-Z]/g,
@@ -50,18 +56,19 @@ const columns = [
         dbField: "k.version"
     },
     {
-        ...codeColumn("skuCode", "skuArea.skuCode"),
+        ...codeColumn("skuCode", "skuArea.skuCode", { searchable: true }),
         dbField: "a.sku_code"
     },
     {
-        ...codeColumn("barcode", "skuArea.barcode"),
+        ...codeColumn("barcode", "skuArea.barcode", { searchable: true }),
         dbField: "f.bar_code"
     },
     {
         name: "ownerCode",
         label: "skuArea.ownerCode",
         dbField: "a.owner_code",
-        source: owner_code
+        source: owner_code,
+        searchable: { type: "select", source: owner_code }
     },
     {
         name: "brand",
@@ -102,10 +109,13 @@ const columns = [
         name: "warehouseAreaCode",
         label: "workLocationArea.warehouseArea",
         dbField: "wa.warehouse_area_code",
-        source: warehouse_area_code
+        source: warehouse_area_code,
+        searchable: { type: "select", source: warehouse_area_code }
     },
     {
-        ...codeColumn("containerCode", "table.containerCode"),
+        ...codeColumn("containerCode", "table.containerCode", {
+            searchable: true
+        }),
         dbField: "k.container_code"
     },
     {
@@ -138,42 +148,6 @@ const columns = [
         label: "table.warehouseCode",
         dbField: "k.warehouse_code",
         hidden: true
-    }
-]
-
-const filters = [
-    {
-        label: "table.containerCode",
-        name: "containerCode",
-        type: "input-text"
-    },
-    {
-        label: "skuArea.skuCode",
-        name: "skuCode",
-        type: "input-text"
-    },
-    {
-        label: "skuArea.barcode",
-        name: "barcode",
-        type: "input-text"
-    },
-    {
-        label: "skuArea.ownerCode",
-        name: "ownerCode",
-        type: "select",
-        source: owner_code
-    },
-    {
-        label: "workLocationArea.warehouseArea",
-        name: "warehouseAreaCode",
-        type: "select",
-        source: warehouse_area_code
-    },
-    {
-        label: "table.creationTime",
-        name: "createTime",
-        type: "input-date-range",
-        valueFormat: "x"
     }
 ]
 
@@ -252,7 +226,6 @@ const schema = crudPage({
             "w_container_stock k left join w_sku_batch_stock b on k.sku_batch_stock_id = b.id  left join w_sku_batch_attribute e on k.sku_batch_attribute_id = e.id  left join w_warehouse_area wa on b.warehouse_area_id = wa.id  left join m_sku_main_data a on e.sku_id = a.id left join m_sku_barcode_data f  on a.id = f.sku_id",
         where: "k.total_qty > 0 and k.container_id is not null"
     },
-    filters,
     tableActions: [
         exportButton({
             api: api_crud_search_by_warehouseCode_total,
