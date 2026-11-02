@@ -30,31 +30,47 @@ const columns = [
         label: "table.warehouseCode",
         hidden: true
     },
-    codeColumn("lpnCode", "table.LPNNo"),
-    codeColumn("customerOrderNo", "table.customerOrderNo"),
+    codeColumn("lpnCode", "table.LPNNo", { searchable: true }),
+    codeColumn("customerOrderNo", "table.customerOrderNo", {
+        searchable: true
+    }),
     statusColumn(
         "inboundPlanOrderStatus",
         "table.status",
-        inboundPlanOrderStatus
+        {
+            ...inboundPlanOrderStatus,
+            searchable: {
+                type: "select",
+                source: "${dictionary.InboundPlanOrderStatus}"
+            }
+        }
     ),
-    codeColumn("orderNo", "table.orderNo"),
+    codeColumn("orderNo", "table.orderNo", { searchable: true }),
     {
         name: "sender",
-        label: "table.shipper"
+        label: "table.shipper",
+        searchable: true
     },
-    numberColumn("skuKindNum", "table.skuTypes"),
+    numberColumn("skuKindNum", "table.skuTypes", { searchable: true }),
     {
         name: "storageType",
         label: "table.storageType",
         type: "mapping",
-        source: "${dictionary.StorageType}"
+        source: "${dictionary.StorageType}",
+        searchable: {
+            type: "select",
+            source: "${dictionary.StorageType}"
+        }
     },
     numberColumn("totalBox", "table.boxesNumber"),
     numberColumn("totalQty", "table.totalQuantity"),
-    codeColumn("trackingNumber", "table.theTrackingNumber"),
+    codeColumn("trackingNumber", "table.theTrackingNumber", {
+        searchable: true
+    }),
     {
         name: "shippingMethod",
-        label: "table.modeOfCarriage"
+        label: "table.modeOfCarriage",
+        searchable: true
     },
     ...auditColumns(),
     remarkColumn()
@@ -265,63 +281,12 @@ const importDialog = {
     ]
 }
 
-const filters = [
-    {
-        label: "table.orderNo",
-        name: "orderNo",
-        type: "input-text"
-    },
-    {
-        label: "table.customerOrderNo",
-        name: "customerOrderNo",
-        type: "input-text"
-    },
-    {
-        label: "table.LPNNo",
-        name: "lpnCode",
-        type: "input-text"
-    },
-    {
-        label: "table.theTrackingNumber",
-        name: "trackingNumber",
-        type: "input-text"
-    },
-    {
-        label: "table.status",
-        name: "inboundPlanOrderStatus",
-        type: "select",
-        source: "${dictionary.InboundPlanOrderStatus}"
-    },
-    {
-        label: "table.storageType",
-        name: "storageType",
-        type: "select",
-        source: "${dictionary.StorageType}"
-    },
-    {
-        label: "table.shipper",
-        name: "sender",
-        type: "input-text"
-    },
-    {
-        label: "table.modeOfCarriage",
-        name: "shippingMethod",
-        type: "input-text"
-    },
-    {
-        label: "table.skuTypes",
-        name: "skuKindNum",
-        type: "input-text"
-    }
-]
-
 const schema = crudPage({
     title: "menu.inboundOrder",
     name: "InboundPlanOrderTable",
     searchIdentity: "WInboundPlanOrder",
     api: api_crud_search_by_warehouseCode,
     columns,
-    filters,
     orderBy: "id ,inbound_plan_order_status desc",
     pageActions: [],
     tableActions: [
