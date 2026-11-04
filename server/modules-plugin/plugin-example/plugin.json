@@ -1,0 +1,30 @@
+{
+  "pluginKey": "lazy-waving",
+  "name": "Lazy Waving",
+  "description": "Groups outbound plan orders into waves, waiting for completed parent orders and the packing station.",
+  "applySystem": "wes",
+  "applyModule": "outbound",
+  "sdkVersion": "1.0",
+  "declarations": [
+    {
+      "type": "OUTBOUND_WAVE_WAVE_ACTION",
+      "priority": 100,
+      "script": "lazy-waving.groovy",
+      "method": "wave"
+    }
+  ],
+  "configSchema": [
+    {
+      "field": "packingStatusApiCode",
+      "type": "STRING",
+      "required": true,
+      "defaultValue": "GET_PACKING_STATUS"
+    },
+    {
+      "field": "packingStatusOnlineValue",
+      "type": "STRING",
+      "required": true,
+      "defaultValue": "1"
+    }
+  ]
+}

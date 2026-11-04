@@ -2,11 +2,14 @@ package org.openwes.wes.outbound.domain.service.impl;
 
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.openwes.plugin.extension.IPlugin;
 import org.openwes.plugin.extension.business.wes.outbound.action.IOutboundWaveSplitAction;
 import org.openwes.plugin.extension.business.wes.outbound.action.IOutboundWaveWaveAction;
 import org.openwes.plugin.sdk.utils.PluginSdkUtils;
+import org.openwes.wes.api.outbound.dto.OutboundPlanOrderDTO;
 import org.openwes.wes.api.outbound.dto.PickingOrderDTO;
 import org.openwes.wes.outbound.domain.entity.*;
 import org.openwes.wes.outbound.domain.repository.OutboundPlanOrderRepository;
@@ -18,12 +21,14 @@ import org.openwes.wes.outbound.domain.transfer.PickingOrderTransfer;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class OutboundWaveServiceImpl implements OutboundWaveService {
 
     private final PluginSdkUtils pluginUtils;
@@ -37,9 +42,18 @@ public class OutboundWaveServiceImpl implements OutboundWaveService {
     public Collection<List<OutboundPlanOrder>> wavePickings(List<OutboundPlanOrder> outboundPlanOrders) {
 
         List<IOutboundWaveWaveAction> outboundWaveActions = pluginUtils.getExtractObject(IOutboundWaveWaveAction.class);
-        if (CollectionUtils.isNotEmpty(outboundWaveActions)) {
-            return outboundWaveActions.iterator().next().wave(outboundPlanOrderTransfer.toDTOs(outboundPlanOrders))
-                    .stream().map(outboundPlanOrderTransfer::toDOs).toList();
+        IOutboundWaveWaveAction waveAction = outboundWaveActions.stream()
+                .max(Comparator.comparingInt(IPlugin::priority)).orElse(null);
+        if (waveAction != null) {
+            try {
+                List<List<OutboundPlanOrderDTO>> waves = waveAction.wave(outboundPlanOrderTransfer.toDTOs(outboundPlanOrders));
+                if (waves != null) {
+                    return waves.stream().map(outboundPlanOrderTransfer::toDOs).toList();
+                }
+                log.warn("outbound wave plugin returned null, falling back to built-in grouping");
+            } catch (Exception e) {
+                log.error("outbound wave plugin failed, falling back to built-in grouping", e);
+            }
         }
 
         // 外部波次号为空的订单单组独成为一个波次
@@ -59,10 +73,19 @@ public class OutboundWaveServiceImpl implements OutboundWaveService {
     public List<PickingOrder> spiltWave(OutboundWave outboundWave) {
 
         List<IOutboundWaveSplitAction> outboundWaveSplitActions = pluginUtils.getExtractObject(IOutboundWaveSplitAction.class);
-        if (CollectionUtils.isNotEmpty(outboundWaveSplitActions)) {
-            List<OutboundPlanOrder> outboundPlanOrders = outboundPlanOrderRepository.findAllByIds(outboundWave.getOutboundPlanOrderIds());
-            List<PickingOrderDTO> pickingOrderDTOS = outboundWaveSplitActions.iterator().next().split(outboundWaveTransfer.toDTO(outboundWave, outboundPlanOrders));
-            return pickingOrderTransfer.toDOs(pickingOrderDTOS);
+        IOutboundWaveSplitAction splitAction = outboundWaveSplitActions.stream()
+                .max(Comparator.comparingInt(IPlugin::priority)).orElse(null);
+        if (splitAction != null) {
+            try {
+                List<OutboundPlanOrder> outboundPlanOrders = outboundPlanOrderRepository.findAllByIds(outboundWave.getOutboundPlanOrderIds());
+                List<PickingOrderDTO> pickingOrderDTOS = splitAction.split(outboundWaveTransfer.toDTO(outboundWave, outboundPlanOrders));
+                if (pickingOrderDTOS != null) {
+                    return pickingOrderTransfer.toDOs(pickingOrderDTOS);
+                }
+                log.warn("outbound wave split plugin returned null, falling back to built-in split");
+            } catch (Exception e) {
+                log.error("outbound wave split plugin failed, falling back to built-in split", e);
+            }
         }
 
         Map<Long, List<OutboundPreAllocatedRecord>> warehouseAreaRecordMap = outboundPreAllocatedRecordRepository

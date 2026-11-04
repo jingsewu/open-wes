@@ -1,29 +1,22 @@
+import { codeColumn, nestedTable, numberColumn } from "@/utils/amis/presets"
+
 const detailColumns = [
     {
         name: "inboundPlanOrderId",
-        label: "入库通知单ID",
+        label: "ID",
         hidden: true
     },
-    {
-        name: "skuCode",
-        label: "table.skuCode"
-    },
+    codeColumn("skuCode", "table.skuCode"),
     {
         name: "skuName",
         label: "table.skuName"
     },
-    {
-        name: "ownerCode",
-        label: "table.productOwner"
-    },
+    codeColumn("ownerCode", "table.productOwner"),
     {
         name: "batchAttributes",
         label: "table.batchAttributes"
     },
-    {
-        name: "boxNo",
-        label: "table.lpnNumber"
-    },
+    codeColumn("boxNo", "table.lpnNumber"),
     {
         name: "brand",
         label: "table.brand"
@@ -40,46 +33,43 @@ const detailColumns = [
         name: "style",
         label: "table.style"
     },
-    {
-        name: "qtyAbnormal",
-        label: "skuArea.qtyAbnormal"
-    },
-    {
-        name: "qtyAccepted",
-        label: "table.acceptanceQuantity"
-    },
-    {
-        name: "qtyRestocked",
-        label: "table.plannedQuantity"
-    },
+    numberColumn("qtyAbnormal", "skuArea.qtyAbnormal"),
+    numberColumn("qtyAccepted", "table.acceptanceQuantity"),
+    numberColumn("qtyRestocked", "table.plannedQuantity"),
     {
         name: "responsibleParty",
         label: "table.responsibleParty"
     }
 ]
 
-export const detailDialog = {
+export const detailDrawer = {
+    size: "xl",
     title: "table.inboundPlanDetails",
-    actions: [],
     closeOnEsc: true,
     closeOnOutside: true,
-    size: "xl",
+    actions: [
+        {
+            type: "button",
+            actionType: "close",
+            label: "button.close"
+        }
+    ],
     body: [
         {
-            type: "crud",
-            syncLocation: false,
-            name: "inboundPlanOrderDetailTable",
+            type: "tpl",
+            tpl: "${orderNo}",
+            className: "owes-drawer-context"
+        },
+        nestedTable({
+            name: "InboundPlanOrderDetailTable",
             api: {
                 method: "POST",
                 url: "/search/search?page=${page}&perPage=${perPage}&inboundPlanOrderId=${id}&inboundPlanOrderId-op=eq",
                 dataType: "application/json"
             },
-            defaultParams: {
-                searchIdentity: "WInboundPlanOrderDetail",
-                showColumns: detailColumns
-            },
-            footerToolbar: ["switch-per-page", "statistics", "pagination"],
-            columns: detailColumns
-        }
+            searchIdentity: "WInboundPlanOrderDetail",
+            columns: detailColumns,
+            empty: "emptyState.inboundPlanDetail"
+        })
     ]
 }

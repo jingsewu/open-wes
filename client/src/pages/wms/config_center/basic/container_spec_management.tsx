@@ -1,17 +1,30 @@
 import schema2component from "@/utils/schema2component"
-import {volume} from "@/pages/wms/config_center/constants/form_constants"
-import {create_update_columns} from "@/utils/commonContants"
+import { volume } from "@/pages/wms/config_center/constants/form_constants"
 import {
     api_container_spec_add,
     api_container_spec_delete,
     api_container_spec_get,
     api_container_spec_update
 } from "@/pages/wms/config_center/constants/api_constant"
-import {api_crud_search_by_warehouseCode, api_crud_search_by_warehouseCode_total} from "@/pages/constantApi"
+import {
+    api_crud_search_by_warehouseCode,
+    api_crud_search_by_warehouseCode_total
+} from "@/pages/constantApi"
+import {
+    addButton,
+    auditColumns,
+    codeColumn,
+    crudPage,
+    deleteButton,
+    editButton,
+    exportButton,
+    formDrawer,
+    numberColumn
+} from "@/utils/amis/presets"
 
-let warehouseCode = localStorage.getItem("warehouseCode")
+const warehouseCode = localStorage.getItem("warehouseCode")
 
-const fromBody = [
+const formBody = [
     {
         type: "hidden",
         name: "id"
@@ -63,7 +76,7 @@ const fromBody = [
             },
             {
                 name: "face",
-                label: "table.face/wall_coding",
+                label: "table.faceWallCoding",
                 type: "input-text",
                 value: "",
                 hiddenOn:
@@ -98,25 +111,25 @@ const fromBody = [
     }
 ]
 
-const form = {
-    type: "form",
+const addDrawer = formDrawer({
+    title: "containerSpec.addTitle",
+    size: "xl",
+    columnCount: 1,
+    body: formBody,
     api: api_container_spec_add,
-    body: fromBody
-}
+    reload: "ContainerSpecTable"
+})
 
-const add = {
-    type: "button",
-    actionType: "dialog",
-    icon: "fa fa-plus",
-    label: "button.add",
-    target: "role",
-    dialog: {
-        size: "full",
-        title: "button.add",
-        closeOnEsc: true,
-        body: form
-    }
-}
+const editDrawer = formDrawer({
+    title: "containerSpec.editTitle",
+    size: "xl",
+    columnCount: 1,
+    context: "${containerSpecCode} · ${containerSpecName}",
+    body: formBody,
+    initApi: api_container_spec_get,
+    api: api_container_spec_update,
+    reload: "ContainerSpecTable"
+})
 
 const columns = [
     {
@@ -134,11 +147,9 @@ const columns = [
         label: "Version",
         hidden: true
     },
-    {
-        name: "containerSpecCode",
-        label: "table.specificationCode",
+    codeColumn("containerSpecCode", "table.specificationCode", {
         searchable: true
-    },
+    }),
     {
         name: "containerSpecName",
         label: "table.specificationName",
@@ -154,106 +165,38 @@ const columns = [
             source: "${dictionary.ContainerType}"
         }
     },
-    {
-        label: "table.volume(mm³)",
-        name: "volume",
-        tpl: "${volume} mm³"
-    },
-    {
-        label: "table.length(mm)",
-        name: "length",
-        tpl: "${length} mm"
-    },
-    {
-        label: "table.width(mm)",
-        name: "width",
-        tpl: "${width} mm"
-    },
-    {
-        label: "table.height(mm)",
-        name: "height",
-        tpl: "${height} mm"
-    },
-    ...create_update_columns
+    numberColumn("volume", "table.volumeMm3"),
+    numberColumn("length", "table.lengthMm"),
+    numberColumn("width", "table.widthMm"),
+    numberColumn("height", "table.heightMm"),
+    ...auditColumns()
 ]
 
-const searchIdentity = "WContainerSpec"
-const schema = {
-    type: "page",
+const schema = crudPage({
     title: "containerSpec.title",
-    toolbar: [],
-    data: {
-        dictionary: "${ls:dictionary}"
-    },
-    body: [
-        {
-            type: "crud",
-            syncLocation: false,
-            name: "ContainerSpecTable",
-            api: api_crud_search_by_warehouseCode,
-            defaultParams: {
-                searchIdentity: searchIdentity,
-                showColumns: columns,
-                searchObject: {
-                    orderBy: "update_time desc"
-                }
-            },
-            autoFillHeight: true,
-            autoGenerateFilter: {
-                columnsNum: 3,
-                showBtnToolbar: true
-            },
-            headerToolbar: [
-                "reload",
-                add,
-                {
-                    type: "export-excel",
-                    label: "button.export",
-                    api: api_crud_search_by_warehouseCode_total,
-                    fileName: "container_spec"
-                }
-            ],
-            footerToolbar: ["switch-per-page", "statistics", "pagination"],
-            columns: [
-                ...columns,
-                {
-                    type: "operation",
-                    label: "table.operation",
-                    width: 100,
-                    buttons: [
-                        {
-                            label: "button.modify",
-                            type: "button",
-                            actionType: "dialog",
-                            dialog: {
-                                title: "button.modify",
-                                closeOnEsc: true,
-                                closeOnOutside: true,
-                                size: "xl",
-                                body: {
-                                    type: "form",
-                                    initApi: api_container_spec_get,
-                                    api: api_container_spec_update,
-                                    controls: fromBody
-                                }
-                            }
-                        },
-                        {
-                            label: "button.delete",
-                            type: "button",
-                            actionType: "ajax",
-                            level: "danger",
-                            confirmText: "toast.sureDelete",
-                            confirmTitle: "button.delete",
-                            api: api_container_spec_delete,
-                            reload: "ContainerSpecTable"
-                        }
-                    ],
-                    toggled: true
-                }
-            ]
-        }
-    ]
-}
+    name: "ContainerSpecTable",
+    searchIdentity: "WContainerSpec",
+    api: api_crud_search_by_warehouseCode,
+    columns,
+    orderBy: "update_time desc",
+    pageActions: [
+        addButton({ target: "ContainerSpecTable", drawer: addDrawer })
+    ],
+    tableActions: [
+        exportButton({
+            api: api_crud_search_by_warehouseCode_total,
+            filename: "container_spec"
+        })
+    ],
+    rowActions: [
+        editButton(editDrawer),
+        deleteButton({
+            api: api_container_spec_delete,
+            confirmText: "confirm.deleteContainerSpec",
+            reload: "ContainerSpecTable"
+        })
+    ],
+    empty: "emptyState.containerSpec"
+})
 
 export default schema2component(schema)

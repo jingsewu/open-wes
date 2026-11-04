@@ -7,6 +7,7 @@ import org.pf4j.Plugin;
 import org.pf4j.PluginState;
 import org.pf4j.PluginStateEvent;
 import org.pf4j.PluginStateListener;
+import org.pf4j.spring.SpringPluginManager;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -15,25 +16,25 @@ import org.springframework.stereotype.Component;
 public class CustomPluginStateListener implements PluginStateListener {
 
     private final PluginRegister pluginRegister;
+    private final SpringPluginManager springPluginManager;
 
     @Override
     public void pluginStateChanged(PluginStateEvent event) {
-        if (event.getPluginState() == PluginState.STARTED) {
-            log.debug("Plugin {} started", event.getPlugin().getPluginId());
+        log.debug("Plugin {} state changed to {}", event.getPlugin().getPluginId(), event.getPluginState());
+        // Extension instances cached by SpringExtensionFactory may belong to the changed plugin;
+        // drop them so the next lookup rebuilds against the current plugin set.
+        if (springPluginManager.getSpringExtensionFactory() != null) {
+            springPluginManager.getSpringExtensionFactory().evictAll();
+        }
 
+        if (event.getPluginState() == PluginState.STARTED) {
             Plugin plugin = event.getPlugin().getPlugin();
             pluginRegister.applyRegister(plugin);
         } else if (event.getPluginState() == PluginState.STOPPED) {
-            log.debug("Plugin {} stopped", event.getPlugin().getPluginId());
-
             pluginRegister.applyUnRegister(event.getPlugin().getPlugin());
         } else if (event.getPluginState() == PluginState.UNLOADED) {
-            log.debug("Plugin {} unloaded", event.getPlugin().getPluginId());
-
             pluginRegister.applyUnRegister(event.getPlugin().getPlugin());
         } else if (event.getPluginState() == PluginState.DISABLED) {
-            log.debug("Plugin {} disabled", event.getPlugin().getPluginId());
-
             pluginRegister.applyUnRegister(event.getPlugin().getPlugin());
         }
     }

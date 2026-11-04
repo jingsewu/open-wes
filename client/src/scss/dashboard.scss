@@ -1,0 +1,889 @@
+/* ─── Dashboard: the shift board under the hall lights ──────────────
+   Continues the sign-in machine hall: one anthracite band carrying the
+   execution rail and its four stations, then quiet white instrument
+   panels. Flat selectors, tokens as custom properties, every rule scoped
+   under .dashboard-page. */
+
+.dashboard-page {
+    --dash-floor: #0b1119;
+    --dash-hall: #16202e;
+    --dash-hall-top: #24354b;
+    --dash-structure: #334155;
+    --dash-structure-2: #475569;
+    --dash-signal: #22d3ee;
+    --dash-brand: #2563eb;
+    --dash-brand-light: #60a5fa;
+    --dash-amber: #d97706;
+    --dash-critical: #dc2626;
+    --dash-ink: #0f172a;
+    --dash-ink-2: #475569;
+    --dash-muted: #64748b;
+    --dash-rule: #e2e8f0;
+    --dash-rule-soft: #f1f5f9;
+    --dash-panel: #fff;
+    --dash-plane: #f1f5f9;
+    --dash-hall-ink: #e2e8f0;
+    --dash-hall-ink-2: #94a3b8;
+    --dash-hall-ink-3: #7b8ca1;
+    --dash-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    --dash-radius: 12px;
+
+    min-height: 100%;
+    padding: 24px;
+    background: var(--dash-plane);
+    color: var(--dash-ink);
+}
+
+.dashboard-page,
+.dashboard-page *,
+.dashboard-page *::before,
+.dashboard-page *::after {
+    box-sizing: border-box;
+}
+
+.dashboard-page__inner {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* ─── Shift band ─────────────────────────────────── */
+
+.dash-band {
+    position: relative;
+    overflow: hidden;
+    padding: 22px 26px 18px;
+    border-radius: 16px;
+    background: radial-gradient(130% 170% at 8% -20%, var(--dash-hall-top) 0%, var(--dash-hall) 50%, var(--dash-floor) 100%);
+    box-shadow:
+        inset 0 1px 0 rgb(255 255 255 / 6%),
+        0 20px 44px -32px rgb(15 23 42 / 55%);
+    color: var(--dash-hall-ink);
+}
+
+.dash-band__top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.dash-band__title {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: #f1f5f9;
+}
+
+.dash-band__date {
+    margin: 6px 0 0;
+    font-size: 13px;
+    color: var(--dash-hall-ink-3);
+}
+
+.dash-band__tools {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex: none;
+}
+
+.dash-live {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #cbd5e1;
+    white-space: nowrap;
+}
+
+.dash-live__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--dash-signal);
+    box-shadow: 0 0 8px rgb(34 211 238 / 60%);
+}
+
+.dash-live--error .dash-live__dot {
+    background: #fbbf24;
+    box-shadow: none;
+}
+
+.dash-band__updated {
+    font-size: 11px;
+    color: var(--dash-hall-ink-3);
+    white-space: nowrap;
+}
+
+.dash-band__time {
+    font-family: var(--dash-mono);
+    font-variant-numeric: tabular-nums;
+}
+
+.dash-refresh {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: 1px solid #2e4055;
+    border-radius: 8px;
+    background: transparent;
+    color: #cbd5e1;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.dash-refresh:hover {
+    background: #1d2a3a;
+    border-color: #3d5168;
+    color: #f1f5f9;
+}
+
+.dash-refresh:focus-visible {
+    outline: 2px solid var(--dash-signal);
+    outline-offset: 2px;
+}
+
+.dash-refresh:disabled {
+    cursor: default;
+    opacity: 0.65;
+}
+
+.dash-refresh svg {
+    width: 15px;
+    height: 15px;
+}
+
+.dash-refresh--busy svg {
+    animation: dash-spin 0.9s linear infinite;
+}
+
+.dash-band__alert {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 14px;
+    padding: 8px 12px;
+    border: 1px solid rgb(251 191 36 / 30%);
+    border-radius: 8px;
+    background: rgb(251 191 36 / 8%);
+    font-size: 12px;
+    color: #fbbf24;
+}
+
+.dash-band__alert svg {
+    flex: none;
+}
+
+.dash-band__alert button {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    font: inherit;
+    font-weight: 600;
+    color: #fbbf24;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    cursor: pointer;
+}
+
+.dash-band__alert button:focus-visible {
+    outline: 2px solid #fbbf24;
+    outline-offset: 2px;
+}
+
+/* ─── KPI stations ───────────────────────────────── */
+
+.dash-kpis {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin-top: 24px;
+}
+
+.dash-kpi {
+    min-width: 0;
+    padding: 0 20px;
+}
+
+.dash-kpi:first-child {
+    padding-left: 0;
+}
+
+.dash-kpi:last-child {
+    padding-right: 0;
+}
+
+.dash-kpi + .dash-kpi {
+    border-left: 1px solid #26374a;
+}
+
+.dash-kpi__label {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--dash-hall-ink-2);
+}
+
+.dash-kpi__value {
+    margin: 9px 0 0;
+    font-size: 38px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: #f1f5f9;
+}
+
+.dash-kpi__sub {
+    margin: 8px 0 0;
+    font-size: 12px;
+    color: var(--dash-hall-ink-3);
+}
+
+/* ─── Execution rail ─────────────────────────────── */
+
+.dash-rail {
+    position: relative;
+    height: 18px;
+    margin-top: 14px;
+}
+
+.dash-rail__line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 8px;
+    height: 1px;
+    background: #33475d;
+    transform-origin: left center;
+    animation: dash-draw 0.65s cubic-bezier(0.22, 0.7, 0.24, 1) 0.12s both;
+}
+
+.dash-rail__port {
+    position: absolute;
+    top: 4px;
+    width: 9px;
+    height: 9px;
+    margin-left: -4.5px;
+    border: 1px solid var(--dash-structure);
+    border-radius: 50%;
+    background: var(--dash-hall);
+}
+
+.dash-rail__port::after {
+    content: "";
+    position: absolute;
+    inset: 2px;
+    border-radius: 50%;
+    background: var(--dash-signal);
+    opacity: 0;
+    transform: scale(0.3);
+    animation: dash-light 0.28s ease-out both;
+}
+
+.dash-rail__port:nth-child(2)::after {
+    animation-delay: 0.42s;
+}
+
+.dash-rail__port:nth-child(3)::after {
+    animation-delay: 0.5s;
+}
+
+.dash-rail__port:nth-child(4)::after {
+    animation-delay: 0.58s;
+}
+
+.dash-rail__port:nth-child(5)::after {
+    animation-delay: 0.66s;
+}
+
+/* ─── Instrument panels ──────────────────────────── */
+
+.dash-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(320px, 1fr);
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.dash-grid--tables {
+    /* Five ledger columns need more room than the four in the operator table. */
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+}
+
+.dash-panel {
+    background: var(--dash-panel);
+    border: 1px solid var(--dash-rule);
+    border-radius: var(--dash-radius);
+    box-shadow: 0 1px 2px rgb(15 23 42 / 4%);
+}
+
+.dash-panel__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px 20px 0;
+}
+
+.dash-panel__title {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--dash-ink);
+}
+
+.dash-panel__sub {
+    margin: 4px 0 0;
+    font-size: 12px;
+    color: var(--dash-muted);
+}
+
+/* Chart / table switch */
+
+.dash-seg {
+    display: inline-flex;
+    flex: none;
+    padding: 2px;
+    border-radius: 7px;
+    background: var(--dash-plane);
+}
+
+.dash-seg button {
+    padding: 4px 10px;
+    border: 0;
+    border-radius: 5px;
+    background: transparent;
+    font: inherit;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--dash-muted);
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.dash-seg button:hover {
+    color: var(--dash-ink);
+}
+
+.dash-seg button[aria-pressed="true"] {
+    background: #fff;
+    color: var(--dash-ink);
+    box-shadow: 0 1px 2px rgb(15 23 42 / 8%);
+}
+
+.dash-seg button:focus-visible {
+    outline: 2px solid var(--dash-brand);
+    outline-offset: 1px;
+}
+
+/* ─── Flow panel ─────────────────────────────────── */
+
+.dash-flow {
+    display: flex;
+    flex-direction: column;
+}
+
+.dash-series {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 18px;
+    padding: 12px 20px 0;
+}
+
+.dash-series__item {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+    color: var(--dash-ink-2);
+}
+
+.dash-series__key {
+    width: 14px;
+    height: 2px;
+    border-radius: 1px;
+}
+
+.dash-series__value {
+    font-weight: 600;
+    color: var(--dash-ink);
+    font-variant-numeric: tabular-nums;
+}
+
+.dash-flow__plot {
+    position: relative;
+    flex: 1 1 auto;
+    min-height: 280px;
+    padding: 10px 14px 14px;
+}
+
+.dash-flow__table {
+    flex: 1 1 auto;
+    max-height: 340px;
+    padding: 6px 20px 12px;
+    overflow: auto;
+}
+
+/* ─── Progress rails ─────────────────────────────── */
+
+.dash-progress {
+    padding: 18px 20px 20px;
+}
+
+.dash-progress + .dash-progress {
+    border-top: 1px solid var(--dash-rule-soft);
+}
+
+.dash-progress__top {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.dash-progress__name {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--dash-ink);
+}
+
+.dash-progress__count {
+    margin: 3px 0 0;
+    font-size: 12px;
+    color: var(--dash-muted);
+}
+
+.dash-progress__rate {
+    flex: none;
+    text-align: right;
+}
+
+.dash-progress__rate b {
+    display: block;
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--dash-ink);
+}
+
+.dash-progress__rate span {
+    display: block;
+    margin-top: 4px;
+    font-size: 11px;
+    color: var(--dash-muted);
+}
+
+.dash-track {
+    display: flex;
+    gap: 2px;
+    height: 12px;
+    margin-top: 14px;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.dash-track__seg {
+    display: block;
+    flex-basis: 0;
+    height: 100%;
+    min-width: 3px;
+}
+
+.dash-status {
+    display: grid;
+    gap: 7px;
+    margin: 14px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.dash-status li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    line-height: 1.2;
+}
+
+.dash-status__key {
+    flex: none;
+    width: 10px;
+    height: 2px;
+    border-radius: 1px;
+}
+
+.dash-status__label {
+    color: var(--dash-ink-2);
+}
+
+.dash-status__value {
+    margin-left: auto;
+    font-weight: 600;
+    color: var(--dash-ink);
+    font-variant-numeric: tabular-nums;
+}
+
+/* ─── Ledger tables ──────────────────────────────── */
+
+.dash-table-wrap {
+    padding: 6px 20px 8px;
+    overflow-x: auto;
+}
+
+.dash-table-wrap--scroll {
+    max-height: 340px;
+    overflow-y: auto;
+}
+
+.dash-table-wrap--scroll thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: var(--dash-panel);
+}
+
+.dash-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.dash-table--operators {
+    min-width: 350px;
+}
+
+.dash-table--stations {
+    min-width: 430px;
+}
+
+.dash-table th {
+    padding: 9px 10px;
+    border-bottom: 1px solid var(--dash-rule);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    text-align: left;
+    white-space: nowrap;
+    color: var(--dash-muted);
+}
+
+.dash-table td {
+    padding: 11px 10px;
+    border-bottom: 1px solid var(--dash-rule-soft);
+    color: var(--dash-ink-2);
+    vertical-align: middle;
+}
+
+.dash-table th:first-child,
+.dash-table td:first-child {
+    padding-left: 0;
+}
+
+.dash-table th:last-child,
+.dash-table td:last-child {
+    padding-right: 0;
+}
+
+.dash-table th.is-num,
+.dash-table td.is-num {
+    text-align: right;
+}
+
+.dash-table td.is-num {
+    font-weight: 500;
+    color: var(--dash-ink);
+    font-variant-numeric: tabular-nums;
+}
+
+.dash-table tbody tr:hover td {
+    background: #f8fafc;
+}
+
+.dash-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.dash-rank {
+    display: inline-block;
+    width: 22px;
+    font-size: 11px;
+    font-weight: 500;
+    color: #94a3b8;
+    font-variant-numeric: tabular-nums;
+}
+
+.dash-operator {
+    font-weight: 600;
+    color: var(--dash-ink);
+}
+
+.dash-station {
+    font-family: var(--dash-mono);
+    font-size: 12px;
+    color: var(--dash-ink);
+}
+
+.dash-task {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 4px;
+    background: var(--dash-plane);
+    font-size: 11px;
+    color: var(--dash-ink-2);
+    white-space: nowrap;
+}
+
+/* ─── Empty & loading states ─────────────────────── */
+
+.dash-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 220px;
+    padding: 24px;
+    font-size: 13px;
+    text-align: center;
+    color: var(--dash-muted);
+}
+
+.dash-empty--table {
+    min-height: 0;
+    justify-content: flex-start;
+    padding: 22px 0;
+}
+
+.dash-empty--rail {
+    min-height: 0;
+    justify-content: flex-start;
+    padding: 10px 0 0;
+}
+
+/* ─── Chart tooltip ──────────────────────────────── */
+
+.dash-tip {
+    position: absolute;
+    z-index: 5;
+    min-width: 140px;
+    padding: 9px 11px;
+    border-radius: 8px;
+    background: #0f172a;
+    box-shadow: 0 10px 24px -12px rgb(0 0 0 / 55%);
+    color: #e2e8f0;
+    pointer-events: none;
+    opacity: 0;
+    transform: translate(-50%, -100%);
+    transition: opacity 0.12s ease;
+}
+
+.dash-tip__hour {
+    margin-bottom: 6px;
+    font-family: var(--dash-mono);
+    font-size: 10.5px;
+    color: #94a3b8;
+}
+
+.dash-tip__row {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.dash-tip__key {
+    flex: none;
+    width: 10px;
+    height: 2px;
+    border-radius: 1px;
+}
+
+.dash-tip__label {
+    color: #94a3b8;
+}
+
+.dash-tip__row b {
+    margin-left: auto;
+    padding-left: 12px;
+    font-weight: 600;
+    color: #f8fafc;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ─── Motion ─────────────────────────────────────── */
+
+@keyframes dash-draw {
+    from {
+        transform: scaleX(0);
+    }
+
+    to {
+        transform: scaleX(1);
+    }
+}
+
+@keyframes dash-light {
+    from {
+        opacity: 0;
+        transform: scale(0.3);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes dash-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .dash-rail__line,
+    .dash-rail__port::after,
+    .dash-refresh--busy svg {
+        animation: none;
+    }
+
+    .dash-rail__port::after {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* ─── Responsive ─────────────────────────────────── */
+
+@media (max-width: 1180px) {
+    .dash-kpis {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        row-gap: 22px;
+    }
+
+    .dash-kpis .dash-kpi {
+        padding: 0 20px 0 0;
+        border-left: 0;
+    }
+
+    .dash-kpis .dash-kpi:nth-child(even) {
+        padding: 0 0 0 20px;
+        border-left: 1px solid #26374a;
+    }
+
+    .dash-kpis .dash-kpi:nth-child(n+3) {
+        padding-top: 22px;
+    }
+
+    .dash-rail {
+        display: none;
+    }
+
+    .dash-grid,
+    .dash-grid--tables {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .dash-progress-panel {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .dash-progress + .dash-progress {
+        border-top: 0;
+        border-left: 1px solid var(--dash-rule-soft);
+    }
+}
+
+@media (max-width: 700px) {
+    .dashboard-page {
+        padding: 14px;
+    }
+
+    .dash-band {
+        padding: 18px 18px 14px;
+        border-radius: 14px;
+    }
+
+    .dash-band__top {
+        flex-direction: column;
+        gap: 14px;
+    }
+
+    .dash-band__tools {
+        width: 100%;
+    }
+
+    .dash-band__updated {
+        margin-left: auto;
+    }
+
+    .dash-kpis {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        row-gap: 0;
+    }
+
+    .dash-kpis .dash-kpi {
+        padding: 0 12px 0 0;
+        border-left: 0;
+        border-top: 0;
+    }
+
+    .dash-kpis .dash-kpi:nth-child(even) {
+        padding: 0 0 0 12px;
+        border-left: 1px solid #26374a;
+    }
+
+    .dash-kpis .dash-kpi:nth-child(n+3) {
+        padding-top: 16px;
+        border-top: 1px solid #26374a;
+    }
+
+    .dash-kpi__value {
+        font-size: 32px;
+    }
+
+    .dash-progress-panel {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .dash-progress + .dash-progress {
+        border-top: 1px solid var(--dash-rule-soft);
+        border-left: 0;
+    }
+
+    .dash-panel__head {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .dash-panel__head .dash-seg {
+        align-self: flex-start;
+    }
+
+    .dash-flow__plot {
+        min-height: 230px;
+    }
+
+    .dash-table--operators,
+    .dash-table--stations {
+        min-width: 0;
+    }
+
+    .dash-table th {
+        padding-right: 8px;
+        padding-left: 8px;
+        white-space: normal;
+    }
+
+    .dash-table td {
+        padding-right: 8px;
+        padding-left: 8px;
+    }
+}

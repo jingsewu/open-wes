@@ -26,7 +26,9 @@ import org.springframework.context.ApplicationContext;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Comparator;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
 import static java.util.Objects.nonNull;
@@ -39,7 +41,9 @@ import static java.util.Objects.nonNull;
  * if either the related plugin is not a {@link SpringPlugin} or the given plugin manager is not a
  * {@link org.pf4j.spring.SpringPluginManager}), standard Java reflection will be used to instantiate an extension.
  * <p><p>
- * Creates a new extension instance every time a request is done.
+ * Creates a new extension instance per extension class and caches it, so extensions keep singleton semantics
+ * (autowired state survives between calls). Use {@link #evict(Class)} / {@link #evictAll()} when a plugin
+ * is reloaded or unloaded.
  * <p><p>
  * Example of supported autowire modes:
  * <pre>{@code
@@ -83,6 +87,11 @@ public class SpringExtensionFactory implements ExtensionFactory {
      */
     protected final boolean autowire;
 
+    /**
+     * Cache of extension instances keyed by extension class, so a class is instantiated once.
+     */
+    private final Map<Class<?>, Object> instanceCache = new ConcurrentHashMap<>();
+
     public SpringExtensionFactory(final PluginManager pluginManager) {
         this(pluginManager, AUTOWIRE_BY_DEFAULT);
     }
@@ -106,16 +115,37 @@ public class SpringExtensionFactory implements ExtensionFactory {
      * @see #getApplicationContextBy(Class)
      */
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T create(final Class<T> extensionClass) {
+        return (T) instanceCache.computeIfAbsent(extensionClass, this::doCreate);
+    }
+
+    private Object doCreate(final Class<?> extensionClass) {
         if (!this.autowire) {
-            log.warn("Create instance of '" + nameOf(extensionClass) + "' without using springs possibilities as" +
+            log.warn("Create instance of '" + extensionClass.getName() + "' without using springs possibilities as" +
                     " autowiring is disabled.");
             return createWithoutSpring(extensionClass);
         }
 
         return getApplicationContextBy(extensionClass)
-                .map(applicationContext -> createWithSpring(extensionClass, applicationContext))
+                .map(applicationContext -> (Object) createWithSpring(extensionClass, applicationContext))
                 .orElseGet(() -> createWithoutSpring(extensionClass));
+    }
+
+    /**
+     * Removes the cached instance of the given extension class; the next {@link #create(Class)} call
+     * instantiates a fresh instance.
+     */
+    public void evict(final Class<?> extensionClass) {
+        instanceCache.remove(extensionClass);
+    }
+
+    /**
+     * Removes all cached extension instances. Call when plugins are loaded/unloaded so stale
+     * instances (and their classloaders) are not retained.
+     */
+    public void evictAll() {
+        instanceCache.clear();
     }
 
     /**
@@ -128,12 +158,10 @@ public class SpringExtensionFactory implements ExtensionFactory {
      * </ol>
      *
      * @param extensionClass     The class annotated with {@code @}{@link Extension}.
-     * @param <T>                The type for that an instance should be created.
      * @param applicationContext The context to use for autowiring.
      * @return an autowired extension instance.
      */
-    @SuppressWarnings("unchecked")
-    protected <T> T createWithSpring(final Class<T> extensionClass, final ApplicationContext applicationContext) {
+    protected Object createWithSpring(final Class<?> extensionClass, final ApplicationContext applicationContext) {
         final AutowireCapableBeanFactory beanFactory = applicationContext.getAutowireCapableBeanFactory();
 
         log.debug("Instantiate extension class '" + nameOf(extensionClass) + "' by using constructor autowiring.");
@@ -150,7 +178,7 @@ public class SpringExtensionFactory implements ExtensionFactory {
         beanFactory.autowireBean(autowiredExtension);
         log.trace("Autowiring has been completed for extension: " + autowiredExtension);
 
-        return (T) autowiredExtension;
+        return autowiredExtension;
     }
 
     /**
@@ -168,11 +196,12 @@ public class SpringExtensionFactory implements ExtensionFactory {
      * @return the best fitting context, or {@code null}.
      */
     protected <T> Optional<ApplicationContext> getApplicationContextBy(final Class<T> extensionClass) {
-        final Plugin plugin = Optional.ofNullable(this.pluginManager.whichPlugin(extensionClass))
-                .map(PluginWrapper::getPlugin)
-                .orElse(null);
+        final PluginWrapper pluginWrapper = this.pluginManager.whichPlugin(extensionClass);
+        final Plugin plugin = pluginWrapper != null ? pluginWrapper.getPlugin() : null;
 
-        final ApplicationContext applicationContext = PluginRegister.getApplicationContext(plugin.getWrapper().getPluginId());
+        final ApplicationContext applicationContext = plugin != null
+                ? PluginRegister.getApplicationContext(pluginWrapper.getPluginId())
+                : null;
 
         if (applicationContext != null) {
             log.debug("  Extension class ' " + nameOf(extensionClass) + "' belongs to spring-plugin '" + nameOf(plugin)

@@ -3,15 +3,22 @@ import {
     container_spec,
     warehouse_area_id
 } from "@/pages/wms/constants/select_search_api_contant"
-import {
-    create_update_columns,
-    true_false_options
-} from "@/utils/commonContants"
+import { true_false_options } from "@/utils/commonContants"
 import { api_transfer_container_release } from "@/pages/wms/config_center/constants/api_constant"
 import {
     api_crud_search_by_warehouseCode,
     api_crud_search_by_warehouseCode_total
 } from "@/pages/constantApi"
+import {
+    codeColumn,
+    crudPage,
+    dateTimeColumn,
+    exportButton,
+    linkAction,
+    statusColumn,
+    auditColumns
+} from "@/utils/amis/presets"
+import { transferContainerStatus } from "@/utils/amis/statusMaps"
 
 const columns = [
     {
@@ -29,14 +36,11 @@ const columns = [
         label: "Version",
         hidden: true
     },
-    {
-        name: "transferContainerCode",
-        label: "table.containerCode",
+    codeColumn("transferContainerCode", "table.containerCode", {
         searchable: true
-    },
+    }),
     {
-        name: "containerSpecCode",
-        label: "workLocationArea.containerSpecification",
+        ...codeColumn("containerSpecCode", "workLocationArea.containerSpecification"),
         type: "mapping",
         source: container_spec,
         searchable: {
@@ -49,17 +53,12 @@ const columns = [
             }
         }
     },
-    {
-        name: "transferContainerStatus",
-        label: "table.containerStatus",
-        type: "mapping",
-        source: "${dictionary.TransferContainerStatus}"
-    },
-    {
-        name: "lockedTime",
-        label: "table.lockedTime",
-        tpl: "${lockedTime/1000|date:YYYY-MM-DD HH\\:mm\\:ss}"
-    },
+    statusColumn(
+        "transferContainerStatus",
+        "table.containerStatus",
+        transferContainerStatus
+    ),
+    dateTimeColumn("lockedTime", "table.lockedTime"),
     {
         name: "warehouseAreaId",
         label: "table.warehouseAreaName",
@@ -76,60 +75,32 @@ const columns = [
             options: true_false_options
         }
     },
-    {
-        name: "locationCode",
-        label: "table.locationCode",
-        searchable: true
-    },
-    ...create_update_columns
+    codeColumn("locationCode", "table.locationCode", { searchable: true }),
+    ...auditColumns()
 ]
 
-const searchIdentity = "WTransferContainer"
-const schema = {
-    type: "page",
+const schema = crudPage({
     title: "transferContainerManagement.title",
-    toolbar: [],
-    data: {
-        dictionary: "${ls:dictionary}"
-    },
-    body: [
-        {
-            type: "crud",
-            name: "TransferContainerTable",
-            api: api_crud_search_by_warehouseCode,
-            defaultParams: {
-                searchIdentity: searchIdentity,
-                showColumns: columns,
-                searchObject: {
-                    orderBy: "update_time desc"
-                }
-            },
-            autoGenerateFilter: {
-                columnsNum: 3,
-                showBtnToolbar: true
-            },
-            bulkActions: [
-                {
-                    label: "button.release",
-                    actionType: "ajax",
-                    api: api_transfer_container_release,
-                    confirmText: "modal.release"
-                }
-            ],
-            headerToolbar: [
-                "reload",
-                "bulkActions",
-                {
-                    type: "export-excel",
-                    label: "button.export",
-                    api: api_crud_search_by_warehouseCode_total,
-                    filename: "transferContainer"
-                }
-            ],
-            footerToolbar: ["switch-per-page", "statistics", "pagination"],
-            columns: [...columns]
-        }
-    ]
-}
+    name: "TransferContainerTable",
+    searchIdentity: "WTransferContainer",
+    api: api_crud_search_by_warehouseCode,
+    columns,
+    orderBy: "update_time desc",
+    tableActions: [
+        exportButton({
+            api: api_crud_search_by_warehouseCode_total,
+            filename: "transferContainer"
+        })
+    ],
+    bulkActions: [
+        linkAction({
+            label: "button.release",
+            api: api_transfer_container_release,
+            confirmText: "modal.release",
+            reload: "TransferContainerTable"
+        })
+    ],
+    empty: "emptyState.transferContainer"
+})
 
 export default schema2component(schema)

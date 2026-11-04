@@ -1,6 +1,8 @@
 // useBarcodeScanner.ts
 import { useEffect, useRef } from "react";
 
+const SCAN_KEY_GAP_MS = 50
+
 const useBarcodeScanner = (onScanComplete: (value: string) => void) => {
     const inputBuffer = useRef("");
     const lastKeyPressTime = useRef(Date.now());
@@ -17,8 +19,7 @@ const useBarcodeScanner = (onScanComplete: (value: string) => void) => {
             if (!isListening.current) return;
             const currentTime = Date.now();
             const timeSinceLastKeyPress = currentTime - lastKeyPressTime.current;
-            const isScanPress = timeSinceLastKeyPress < 50;
-            console.log("isScanPress",isScanPress,event.key,inputBuffer.current)
+            const isScanPress = timeSinceLastKeyPress < SCAN_KEY_GAP_MS;
             if (isScanPress) {
                 const isLetterOrDigit = Reg.test(event.key);
                 if (document.activeElement) {

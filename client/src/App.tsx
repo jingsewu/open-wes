@@ -13,6 +13,7 @@ import "amis/lib/themes/cxd.css"
 import "amis/lib/helper.css"
 import "amis/sdk/iconfont.css"
 import "antd/dist/antd.css"
+import "./scss/amis-console.scss"
 
 export default function (): JSX.Element {
     return (

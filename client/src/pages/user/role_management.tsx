@@ -1,5 +1,15 @@
 import schema2component from "@/utils/schema2component"
-import { create_update_columns, yes_no_options } from "@/utils/commonContants"
+import {
+    addButton,
+    auditColumns,
+    codeColumn,
+    crudPage,
+    deleteButton,
+    editButton,
+    exportButton,
+    formDrawer,
+    statusColumn
+} from "@/utils/amis/presets"
 import {
     api_role_add,
     api_role_delete,
@@ -18,12 +28,14 @@ const form = [
     {
         label: "userCenter.roleManagement.table.roleCoding",
         type: "input-text",
-        name: "code"
+        name: "code",
+        required: true
     },
     {
         label: "userCenter.roleManagement.table.roleName",
         type: "input-text",
-        name: "name"
+        name: "name",
+        required: true
     },
     {
         label: "userCenter.roleManagement.form.repositoryPermissions",
@@ -48,152 +60,111 @@ const form = [
     }
 ]
 
-const add = {
-    type: "button",
-    actionType: "drawer",
-    icon: "fa fa-plus",
-    label: "button.add",
-    target: "RoleTable",
-    drawer: {
-        size: "lg",
-        title: "button.add",
-        closeOnEsc: true,
-        body: {
-            type: "form",
-            api: api_role_add,
-            body: form,
-            reload: "RoleTable"
+const addDrawer = formDrawer({
+    title: "userCenter.roleManagement.addTitle",
+    body: form,
+    api: api_role_add,
+    reload: "RoleTable"
+})
+
+const editDrawer = formDrawer({
+    title: "userCenter.roleManagement.editTitle",
+    body: form,
+    initApi: "get:/user/api/role/${id}",
+    api: api_role_update,
+    reload: "RoleTable"
+})
+
+const permissionsDrawer = formDrawer({
+    title: "userCenter.roleManagement.assignPermissionsTitle",
+    size: "lg",
+    body: [
+        {
+            type: "tpl",
+            tpl: "${name}",
+            className: "owes-drawer-context"
+        },
+        {
+            type: "input-tree",
+            name: "menus",
+            label: "userCenter.roleManagement.form.menuPermissions",
+            labelField: "title",
+            valueField: "id",
+            multiple: true,
+            cascade: true,
+            initiallyOpen: false,
+            autoCheckChildren: false,
+            searchable: true,
+            height: 480,
+            source: api_role_get_role_menu
         }
-    }
-}
+    ],
+    api: api_role_update_role_menu
+})
 
 const columns = [
     {
         name: "id",
         label: "ID",
-        hidden: "true"
+        hidden: true
     },
     {
         name: "name",
         label: "userCenter.roleManagement.table.roleName",
         searchable: true
     },
-    {
-        name: "code",
-        label: "userCenter.roleManagement.table.roleCoding",
+    codeColumn("code", "userCenter.roleManagement.table.roleCoding", {
         searchable: true
-    },
-    {
-        name: "status",
-        label: "table.status",
-        type: "mapping",
-        map: yes_no_options
-    },
-    ...create_update_columns
+    }),
+    statusColumn("status", "table.status", {
+        labels: {
+            "1": "common.enabled",
+            "0": "common.disabled"
+        },
+        tones: {
+            "1": "success",
+            "0": "muted"
+        },
+        searchable: true
+    }),
+    ...auditColumns()
 ]
 
-const menuTree = [
-    {
-        type: "input-tree",
-        name: "menus",
-        label: "userCenter.roleManagement.form.menuPermissions",
-        labelField: "title",
-        valueField: "id",
-        multiple: true,
-        cascade: true,
-        initiallyOpen: false,
-        autoCheckChildren: false,
-        source: api_role_get_role_menu
-    }
-]
-
-const searchIdentity = "URole"
-const showColumns = columns
-
-const schema = {
-    type: "page",
+const schema = crudPage({
     title: "userCenter.roleManagement.title",
-    toolbar: [],
-    body: [
+    name: "RoleTable",
+    searchIdentity: "URole",
+    api: api_crud_search,
+    columns,
+    empty: "emptyState.roleManagement",
+    pageActions: [
+        addButton({
+            target: "RoleTable",
+            drawer: addDrawer
+        })
+    ],
+    tableActions: [
+        exportButton({
+            api: api_crud_search_total,
+            filename: "roles"
+        })
+    ],
+    rowActions: [
+        editButton(editDrawer),
+        deleteButton({
+            api: api_role_delete,
+            reload: "RoleTable",
+            confirmText: "confirm.deleteRole"
+        }),
         {
-            type: "crud",
-            syncLocation: false,
-            name: "RoleTable",
-            api: api_crud_search,
-            defaultParams: {
-                searchIdentity: searchIdentity,
-                showColumns: showColumns
-            },
-            autoFillHeight: true,
-            autoGenerateFilter: {
-                columnsNum: 3,
-                showBtnToolbar: true
-            },
-            headerToolbar: [
-                "reload",
-                add,
-                {
-                    type: "export-excel",
-                    label: "button.export",
-                    api: api_crud_search_total,
-                    fileName: "container"
-                }
-            ],
-            footerToolbar: ["switch-per-page", "statistics", "pagination"],
-            columns: [
-                ...columns,
-                {
-                    type: "operation",
-                    label: "table.operation",
-                    width: 200,
-                    buttons: [
-                        {
-                            label: "button.modify",
-                            type: "button",
-                            actionType: "drawer",
-                            drawer: {
-                                title: "button.modify",
-                                closeOnEsc: true,
-                                closeOnOutside: true,
-                                body: {
-                                    type: "form",
-                                    initApi: "get:/user/api/role/${id}",
-                                    api: api_role_update,
-                                    body: form,
-                                    reload: "RoleTable"
-                                }
-                            }
-                        },
-                        {
-                            label: "button.delete",
-                            type: "button",
-                            actionType: "ajax",
-                            level: "danger",
-                            confirmText: "toast.sureDelete",
-                            confirmTitle: "button.delete",
-                            api: api_role_delete
-                        },
-                        {
-                            label: "button.assignPermissions",
-                            type: "button",
-                            actionType: "drawer",
-                            drawer: {
-                                title: "button.assignPermissions",
-                                closeOnEsc: true,
-                                closeOnOutside: true,
-                                body: {
-                                    type: "form",
-                                    api: api_role_update_role_menu,
-                                    body: menuTree
-                                }
-                            }
-                        }
-                    ],
-                    toggled: true
-                }
-            ]
+            type: "button",
+            actionType: "drawer",
+            level: "link",
+            className: "owes-action",
+            label: "button.assignPermissions",
+            drawer: permissionsDrawer
         }
     ]
-}
+})
 
 export default schema2component(schema)

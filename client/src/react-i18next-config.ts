@@ -1,4 +1,5 @@
 import { registerFilter } from "amis"
+import dayjs from "dayjs"
 import * as i18n from "i18next"
 import { initReactI18next } from "react-i18next"
 //i18next-browser-languagedetector插件 这是一个 i18next 语言检测插件，用于检测浏览器中的用户语言，
@@ -29,4 +30,12 @@ i18n.use(LanguageDetector) //嗅探当前浏览器语言 zh-CN
 registerFilter("t", (input: string) =>
     i18n.t(input)
 )
+
+registerFilter("millis", (input: string) => {
+    if (input === null || input === undefined || input === "") {
+        return "-"
+    }
+    const millis = Number(input)
+    return isFinite(millis) ? dayjs(millis).format("YYYY-MM-DD HH:mm:ss") : "-"
+})
 export default i18n

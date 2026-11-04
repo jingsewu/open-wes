@@ -4,9 +4,19 @@ import {
     api_menu_delete,
     api_menu_update
 } from "@/pages/user/constants/api_constant"
-import { create_update_columns, yes_no_options } from "@/utils/commonContants"
+import { yes_no_options } from "@/utils/commonContants"
 import { menu_search_api } from "@/pages/user/constants/select_search_api_constant"
 import { api_crud_search, api_crud_search_total } from "@/pages/constantApi"
+import {
+    addButton,
+    auditColumns,
+    crudPage,
+    deleteButton,
+    editButton,
+    exportButton,
+    formDrawer,
+    statusColumn
+} from "@/utils/amis/presets"
 
 const form = [
     {
@@ -85,24 +95,22 @@ const form = [
     }
 ]
 
-const add = {
-    type: "button",
-    actionType: "drawer",
-    icon: "fa fa-plus",
-    label: "button.add",
-    target: "MenuTable",
-    drawer: {
-        size: "lg",
-        title: "button.add",
-        closeOnEsc: true,
-        body: {
-            type: "form",
-            api: api_menu_add,
-            body: form,
-            reload: "MenuTable"
-        }
-    }
-}
+const addDrawer = formDrawer({
+    title: "userCenter.menuManagement.addTitle",
+    size: "lg",
+    body: form,
+    api: api_menu_add,
+    reload: "MenuTable"
+})
+
+const editDrawer = formDrawer({
+    title: "userCenter.menuManagement.editTitle",
+    size: "lg",
+    context: "${title}",
+    body: form,
+    api: api_menu_update,
+    reload: "MenuTable"
+})
 
 const columns = [
     {
@@ -167,89 +175,46 @@ const columns = [
         type: "mapping",
         map: yes_no_options
     },
-    {
-        name: "enable",
-        label: "table.status",
-        type: "mapping",
-        map: yes_no_options
-    },
-    ...create_update_columns
+    statusColumn("enable", "table.status", {
+        labels: {
+            "1": "common.enabled",
+            "0": "common.disabled"
+        },
+        tones: {
+            "1": "success",
+            "0": "muted"
+        }
+    }),
+    ...auditColumns()
 ]
 
-const searchIdentity = "UMenu"
-const showColumns = columns
-
-const schema = {
-    type: "page",
+const schema = crudPage({
     title: "userCenter.menuManagement.title",
-    toolbar: [],
-    data: {
-        dictionary: "${ls:dictionary}"
-    },
-    body: [
-        {
-            type: "crud",
-            syncLocation: false,
-            name: "MenuTable",
-            api: api_crud_search,
-            defaultParams: {
-                searchIdentity: searchIdentity,
-                showColumns: showColumns
-            },
-            autoFillHeight: true,
-            autoGenerateFilter: {
-                columnsNum: 3,
-                showBtnToolbar: true
-            },
-            headerToolbar: [
-                "reload",
-                add,
-                {
-                    type: "export-excel",
-                    label: "button.export",
-                    api: api_crud_search_total,
-                    fileName: "container"
-                }
-            ],
-            footerToolbar: ["switch-per-page", "statistics", "pagination"],
-            columns: [
-                ...columns,
-                {
-                    type: "operation",
-                    label: "table.operation",
-                    width: 130,
-                    buttons: [
-                        {
-                            label: "button.modify",
-                            type: "button",
-                            actionType: "drawer",
-                            drawer: {
-                                title: "button.modify",
-                                closeOnEsc: true,
-                                closeOnOutside: true,
-                                body: {
-                                    type: "form",
-                                    api: api_menu_update,
-                                    body: form,
-                                    reload: "MenuTable"
-                                }
-                            }
-                        },
-                        {
-                            label: "button.delete",
-                            type: "button",
-                            actionType: "ajax",
-                            level: "danger",
-                            confirmText: "toast.sureDelete",
-                            confirmTitle: "button.delete",
-                            api: api_menu_delete
-                        }
-                    ],
-                    toggled: true
-                }
-            ]
-        }
-    ]
-}
+    name: "MenuTable",
+    searchIdentity: "UMenu",
+    api: api_crud_search,
+    columns,
+    pageActions: [
+        addButton({
+            target: "MenuTable",
+            drawer: addDrawer
+        })
+    ],
+    tableActions: [
+        exportButton({
+            api: api_crud_search_total,
+            filename: "menu"
+        })
+    ],
+    rowActions: [
+        editButton(editDrawer),
+        deleteButton({
+            api: api_menu_delete,
+            confirmText: "confirm.deleteMenu",
+            reload: "MenuTable"
+        })
+    ],
+    empty: "emptyState.menuManagement"
+})
 
 export default schema2component(schema)

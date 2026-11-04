@@ -5,7 +5,6 @@ import org.openwes.api.platform.api.dto.request.RequestHandleContext;
 import org.openwes.api.platform.application.service.handler.AbstractRequestHandler;
 import org.openwes.api.platform.utils.ConverterHelper;
 import org.openwes.common.utils.http.Response;
-import org.openwes.plugin.extension.business.api.platform.request.IInboundPlanOrderCreatePlugin;
 import org.openwes.wes.api.outbound.dto.OutboundPlanOrderDTO;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
@@ -22,6 +21,9 @@ public class CreateOutboundRequestHandler extends AbstractRequestHandler {
 
     @Override
     public void invoke(RequestHandleContext context) {
+
+        // custom request plugins of this api type run first and may reject the request by throwing
+        super.invoke(context);
 
         List<OutboundPlanOrderDTO> list = getTargetList(context, OutboundPlanOrderDTO.class);
         if (CollectionUtils.isEmpty(list)) {

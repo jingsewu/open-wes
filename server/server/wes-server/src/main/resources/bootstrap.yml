@@ -3,6 +3,11 @@ spring:
     name: wes
   profiles:
     active: test
+  # The AI draft stream budgets its model calls below this value so a clean SSE error
+  # event can still reach the client; keep it above ai-plugin.stream-budget-ms.
+  mvc:
+    async:
+      request-timeout: 180000
   cloud:
     nacos:
       config:
@@ -19,14 +24,15 @@ spring:
     database-change-log-table: l_change_log
     database-change-log-lock-table: l_change_log_lock
   ai:
-    zhipuai:
-      api-key: xxx
-      chat.options.model: GLM-4-air
+    openai:
+      api-key: ${DEEPSEEK_API_KEY:}
+      base-url: https://api.deepseek.com
+      chat.options.model: deepseek-chat
       chat.options.temperature: 0
 
     vectorstore:
       pinecone:
-        apiKey: pcsk_4fXqXq_2Letb8YmcVtevz8NQcBaWhSv3jQmvzXufPzLkgJKQ7xWRaT2V27LZqjoyWxLxrZ
+        apiKey: ${PINECONE_API_KEY:}
         environment: aped-4627-b74a
         index-name: chatbot
         project-id: 5k87fkv
@@ -46,6 +52,10 @@ spring:
         order_inserts: true
         order_updates: true
         batch_versioned_data: true
+
+script-plugin:
+  registry:
+    mode: local
 
 server:
   port: 9010

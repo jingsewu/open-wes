@@ -7,9 +7,15 @@ import {
     api_crud_search_by_warehouseCode,
     api_crud_search_by_warehouseCode_total
 } from "@/pages/constantApi"
+import {
+    auditColumns,
+    codeColumn,
+    crudPage,
+    exportButton,
+    numberColumn
+} from "@/utils/amis/presets"
 
 const permissions = localStorage.getItem("permissions")?.split(",")
-console.log("permissions", permissions?.includes("15230"))
 
 const form = [
     {
@@ -21,6 +27,20 @@ const form = [
         name: "version"
     }
 ]
+
+const audit = auditColumns({
+    seconds: true,
+    createdSearchable: {
+        type: "input-date-range",
+        valueFormat: "x"
+    }
+}).map((column) => ({
+    ...column,
+    dbField: `k.${String(column.name).replace(
+        /[A-Z]/g,
+        (letter) => `_${letter.toLowerCase()}`
+    )}`
+}))
 
 const columns = [
     {
@@ -36,50 +56,39 @@ const columns = [
         dbField: "k.version"
     },
     {
-        name: "skuCode",
-        label: "skuArea.skuCode",
-        dbField: "a.sku_code",
-        searchable: true
+        ...codeColumn("skuCode", "skuArea.skuCode", { searchable: true }),
+        dbField: "a.sku_code"
     },
     {
-        name: "barcode",
-        label: "skuArea.barcode",
-        dbField: "f.bar_code",
-        searchable: true
+        ...codeColumn("barcode", "skuArea.barcode", { searchable: true }),
+        dbField: "f.bar_code"
     },
     {
         name: "ownerCode",
         label: "skuArea.ownerCode",
         dbField: "a.owner_code",
         source: owner_code,
-        searchable: {
-            type: "select",
-            source: owner_code
-        }
+        searchable: { type: "select", source: owner_code }
     },
     {
         name: "brand",
         label: "table.brand",
         dbField: "a.brand"
-        // searchable: true
     },
     {
         name: "style",
         label: "table.style",
         dbField: "a.style"
-        // searchable: true
     },
     {
         name: "color",
         label: "table.color",
         dbField: "a.color"
-        // searchable: true
     },
     {
         name: "size",
         label: "table.size",
         dbField: "a.size"
-        // searchable: true
     },
     {
         name: "skuFirstCategory",
@@ -101,63 +110,39 @@ const columns = [
         label: "workLocationArea.warehouseArea",
         dbField: "wa.warehouse_area_code",
         source: warehouse_area_code,
-        searchable: {
-            type: "select",
-            source: warehouse_area_code
-        }
+        searchable: { type: "select", source: warehouse_area_code }
     },
     {
-        name: "containerCode",
-        label: "table.containerCode",
-        dbField: "k.container_code",
-        searchable: true
+        ...codeColumn("containerCode", "table.containerCode", {
+            searchable: true
+        }),
+        dbField: "k.container_code"
     },
     {
-        name: "containerSlotCode",
-        label: "table.containerSlotCode",
+        ...codeColumn("containerSlotCode", "table.containerSlotCode"),
         dbField: "k.container_slot_code"
     },
     {
-        name: "totalQty",
-        label: "table.inventoryQuantity",
+        ...numberColumn("totalQty", "table.inventoryQuantity"),
         dbField: "k.total_qty"
     },
     {
-        name: "availableQty",
-        label: "table.availableQuantity",
+        ...numberColumn("availableQty", "table.availableQuantity"),
         dbField: "k.available_qty"
     },
     {
-        name: "noOutboundLockedQty",
-        label: "table.libraryOccupancy",
+        ...numberColumn("noOutboundLockedQty", "table.libraryOccupancy"),
         dbField: "k.no_outbound_locked_qty"
     },
     {
-        name: "outboundLockedQty",
-        label: "table.pickingOccupancy",
+        ...numberColumn("outboundLockedQty", "table.pickingOccupancy"),
         dbField: "k.outbound_locked_qty"
     },
     {
-        name: "frozenQty",
-        label: "table.frozenQuantity",
+        ...numberColumn("frozenQty", "table.frozenQuantity"),
         dbField: "k.frozen_qty"
     },
-    {
-        name: "createTime",
-        label: "table.creationTime",
-        dbField: "k.create_time",
-        tpl: "${createTime/1000|date:YYYY-MM-DD HH\\:mm\\:ss}",
-        searchable: {
-            type: "input-date-range",
-            valueFormat: "x"
-        }
-    },
-    {
-        name: "updateTime",
-        label: "table.updated",
-        dbField: "k.update_time",
-        tpl: "${updateTime/1000|date:YYYY-MM-DD HH\\:mm\\:ss}"
-    },
+    ...audit,
     {
         name: "warehouseCode",
         label: "table.warehouseCode",
@@ -166,116 +151,89 @@ const columns = [
     }
 ]
 
-const searchIdentity = "WContainerStock"
-const showColumns = columns
-
-const schema = {
-    type: "page",
-    title: "inventoryDetails.title",
-    toolbar: [],
-    body: [
-        {
-            type: "crud",
-            syncLocation: false,
-            name: "paramConfigTable",
-            api: api_crud_search_by_warehouseCode,
-            defaultParams: {
-                searchIdentity: searchIdentity,
-                showColumns: showColumns,
-                searchObject: {
-                    tables: "w_container_stock k left join w_sku_batch_stock b on k.sku_batch_stock_id = b.id  left join w_sku_batch_attribute e on k.sku_batch_attribute_id = e.id  left join w_warehouse_area wa on b.warehouse_area_id = wa.id  left join m_sku_main_data a on e.sku_id = a.id left join m_sku_barcode_data f  on a.id = f.sku_id",
-                    where: "k.total_qty > 0 and k.container_id is not null",
-                    orderBy: "k.update_time desc"
-                }
-            },
-            autoFillHeight: true,
-            autoGenerateFilter: {
-                columnsNum: 3,
-                showBtnToolbar: true
-            },
-            headerToolbar: [
-                "reload",
+const freezeButton = {
+    label: "button.freeze",
+    type: "button",
+    level: "link",
+    className: "owes-action",
+    actionType: "dialog",
+    dialog: {
+        title: "button.freeze",
+        size: "sm",
+        closeOnEsc: true,
+        closeOnOutside: true,
+        body: {
+            type: "form",
+            api: "post:/wms/containerStock/freezeContainerStock",
+            controls: [
+                ...form,
                 {
-                    type: "export-excel",
-                    label: "button.export",
-                    api: api_crud_search_by_warehouseCode_total,
-                    fileName: "container_stock"
-                }
-            ],
-            footerToolbar: ["switch-per-page", "statistics", "pagination"],
-            columns: [
-                ...columns,
-                {
-                    type: "operation",
-                    label: "table.operation",
-                    width: 130,
-                    hidden:
-                        !permissions?.includes("freeze") &&
-                        !permissions?.includes("thaw"),
-                    buttons: [
-                        {
-                            label: "button.freeze",
-                            type: "button",
-                            level: "link",
-                            actionType: "dialog",
-                            hidden: !permissions?.includes("freeze"),
-                            dialog: {
-                                title: "button.freeze",
-                                size: "sm",
-                                closeOnEsc: true,
-                                closeOnOutside: true,
-                                body: {
-                                    type: "form",
-                                    api: "post:/wms/containerStock/freezeContainerStock",
-                                    controls: [
-                                        ...form,
-                                        {
-                                            label: "table.quantity",
-                                            type: "input-number",
-                                            name: "qty",
-                                            min: 1,
-                                            max: "${availableQty}",
-                                            required: true
-                                        }
-                                    ]
-                                }
-                            }
-                        },
-                        {
-                            label: "button.thaw",
-                            type: "button",
-                            level: "link",
-                            actionType: "dialog",
-                            disabledOn: "${frozenQty === 0}",
-                            hidden: !permissions?.includes("thaw"),
-                            dialog: {
-                                title: "button.thaw",
-                                size: "sm",
-                                closeOnEsc: true,
-                                closeOnOutside: true,
-                                body: {
-                                    type: "form",
-                                    api: "post:/wms/containerStock/unfreezeContainerStock",
-                                    controls: [
-                                        ...form,
-                                        {
-                                            label: "table.quantity",
-                                            type: "input-number",
-                                            name: "qty",
-                                            min: 1,
-                                            max: "${frozenQty}",
-                                            required: true
-                                        }
-                                    ]
-                                }
-                            }
-                        }
-                    ],
-                    toggled: true
+                    label: "table.quantity",
+                    type: "input-number",
+                    name: "qty",
+                    min: 1,
+                    max: "${availableQty}",
+                    required: true
                 }
             ]
         }
-    ]
+    }
 }
+
+const thawButton = {
+    label: "button.thaw",
+    type: "button",
+    level: "link",
+    className: "owes-action",
+    actionType: "dialog",
+    disabledOn: "${frozenQty === 0}",
+    dialog: {
+        title: "button.thaw",
+        size: "sm",
+        closeOnEsc: true,
+        closeOnOutside: true,
+        body: {
+            type: "form",
+            api: "post:/wms/containerStock/unfreezeContainerStock",
+            controls: [
+                ...form,
+                {
+                    label: "table.quantity",
+                    type: "input-number",
+                    name: "qty",
+                    min: 1,
+                    max: "${frozenQty}",
+                    required: true
+                }
+            ]
+        }
+    }
+}
+
+const rowActions = [
+    ...(permissions?.includes("freeze") ? [freezeButton] : []),
+    ...(permissions?.includes("thaw") ? [thawButton] : [])
+]
+
+const schema = crudPage({
+    title: "inventoryDetails.title",
+    name: "containerStockTable",
+    searchIdentity: "WContainerStock",
+    api: api_crud_search_by_warehouseCode,
+    columns,
+    searchObject: {
+        tables:
+            "w_container_stock k left join w_sku_batch_stock b on k.sku_batch_stock_id = b.id  left join w_sku_batch_attribute e on k.sku_batch_attribute_id = e.id  left join w_warehouse_area wa on b.warehouse_area_id = wa.id  left join m_sku_main_data a on e.sku_id = a.id left join m_sku_barcode_data f  on a.id = f.sku_id",
+        where: "k.total_qty > 0 and k.container_id is not null"
+    },
+    tableActions: [
+        exportButton({
+            api: api_crud_search_by_warehouseCode_total,
+            filename: "container_stock"
+        })
+    ],
+    ...(rowActions.length ? { rowActions } : {}),
+    empty: "emptyState.containerStock"
+})
 
 export default schema2component(schema)

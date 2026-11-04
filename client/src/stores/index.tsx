@@ -8,6 +8,20 @@ import axios from "axios"
 import React from "react"
 import { Translation } from "react-i18next"
 
+export type TableDensity = "standard" | "compact"
+
+const TABLE_DENSITY_KEY = "owesTableDensity"
+
+function readTableDensity(): TableDensity {
+    return localStorage.getItem(TABLE_DENSITY_KEY) === "compact"
+        ? "compact"
+        : "standard"
+}
+
+function applyTableDensity(density: TableDensity) {
+    document.documentElement.setAttribute("data-owes-density", density)
+}
+
 const MainStore = types
     .model("MainStore", {
         theme: "cxd",
@@ -16,6 +30,13 @@ const MainStore = types
         asideFixed: true,
         asideFolded: false,
         offScreen: false,
+        tableDensity: types.optional(
+            types.enumeration<TableDensity>("TableDensity", [
+                "standard",
+                "compact"
+            ]),
+            readTableDensity()
+        ),
         locale: localStorage.getItem("i18nextLng") || "zh-CN"
     })
     .views((self) => ({
@@ -50,13 +71,21 @@ const MainStore = types
             self.locale = e.value
         }
 
+        function setTableDensity(density: TableDensity) {
+            self.tableDensity = density
+            localStorage.setItem(TABLE_DENSITY_KEY, density)
+            applyTableDensity(density)
+        }
+
         return {
             toggleAsideFolded,
             toggleAsideFixed,
             toggleOffScreen,
             toggleLanguage,
+            setTableDensity,
             afterCreate: function () {
                 self.asideFolded = !!localStorage.getItem("asideFolded")
+                applyTableDensity(self.tableDensity)
             }
         }
     })

@@ -7,6 +7,8 @@ import {
     warehouse_logic_id
 } from "@/pages/wms/constants/select_search_api_contant"
 import {api_stocktake_order_add} from "@/pages/wms/data_center/constants/api_constant"
+import { requiredField } from "@/utils/amis/presets"
+import i18n from "@/react-i18next-config"
 import {toast} from "amis"
 
 let warehouseCode = localStorage.getItem("warehouseCode")
@@ -47,7 +49,7 @@ const dialog = {
                             warehouse_area_id.url +
                             "&warehouseAreaWorkType=ROBOT"
                     },
-                    required: true,
+                    ...requiredField("validation.stocktake.areaRequired"),
                     className: "warehouseArea"
                 },
                 {
@@ -69,7 +71,7 @@ const dialog = {
             ],
             actions: [
                 {
-                    label: "Next",
+                    label: "button.next",
                     type: "button",
                     actionType: "next",
                     level: "primary",
@@ -86,7 +88,7 @@ const dialog = {
                     label: "table.countType",
                     selectFirst: true,
                     source: "${dictionary.StocktakeType}",
-                    required: true,
+                    ...requiredField("validation.stocktake.typeRequired"),
                     className: "stocktakeType"
                 },
                 {
@@ -95,18 +97,18 @@ const dialog = {
                     selectFirst: true,
                     label: "table.countMethod",
                     source: "${dictionary.StocktakeMethod}",
-                    required: true,
+                    ...requiredField("validation.stocktake.methodRequired"),
                     className: "stocktakeMethod"
                 }
             ],
             actions: [
                 {
-                    label: "Previous",
+                    label: "button.previous",
                     type: "button",
                     actionType: "prev"
                 },
                 {
-                    label: "Next",
+                    label: "button.next",
                     type: "button",
                     actionType: "next",
                     level: "primary",
@@ -129,7 +131,6 @@ const dialog = {
                         body: {
                             type: "form",
                             wrapWithPanel: false,
-                            id: "step2Form",
                             body: [
                                 {
                                     name: "barCode",
@@ -224,10 +225,8 @@ const dialog = {
                                         resultListModeFollowSelect: true,
                                         id: "transferTable",
                                         virtualThreshold: 10,
-                                        "en-US": {
-                                            searchPlaceholder:
-                                                "Please scan the product bar code"
-                                        },
+                                        searchPlaceholder:
+                                            "skuArea.scanBarcode",
                                         source: "${options}",
                                         footerToolbar: [
                                             "switch-per-page",
@@ -263,7 +262,6 @@ const dialog = {
                         body: {
                             type: "form",
                             wrapWithPanel: false,
-                            id: "step2Form",
                             body: [
                                 {
                                     name: "containerCode",
@@ -320,10 +318,8 @@ const dialog = {
                                         resultListModeFollowSelect: true,
                                         id: "containerTransferTable",
                                         virtualThreshold: 10,
-                                        "en-US": {
-                                            searchPlaceholder:
-                                                "Please input the container code"
-                                        },
+                                        searchPlaceholder:
+                                            "receive.station.containerArea.scan",
                                         source: "${options}",
                                         footerToolbar: [
                                             "switch-per-page",
@@ -358,7 +354,7 @@ const dialog = {
             },
             actions: [
                 {
-                    label: "Prev",
+                    label: "button.previous",
                     type: "button",
                     onEvent: {
                         click: {
@@ -388,14 +384,14 @@ const dialog = {
 
                         if (isSkuBased && !hasSkuIds) {
                             toast["error"](
-                                "Please select the products you want to count",
-                                "Message"
+                                i18n.t("toast.stocktake.selectSku"),
+                                i18n.t("toast.prompt")
                             );
                             return false;
                         } else if (!isSkuBased && !hasContainerCodes) {
                             toast["error"](
-                                "Please select the containers you want to count",
-                                "Message"
+                                i18n.t("toast.stocktake.selectContainer"),
+                                i18n.t("toast.prompt")
                             );
                             return false;
                         }
@@ -410,10 +406,11 @@ const dialog = {
 export const add = {
     type: "button",
     actionType: "dialog",
+    level: "primary",
     icon: "fa fa-plus",
     label: "button.add",
     dialog: {
-        title: "button.add",
+        title: "stocktake.addTitle",
         actions: [],
         closeOnEsc: true,
         size: "xl",

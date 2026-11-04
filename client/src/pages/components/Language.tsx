@@ -6,11 +6,14 @@ import type { MenuProps } from "antd"
 import store from "@/stores"
 
 export const languageList = [
+    // Language names stay in their own language on purpose.
+    // amis-lint-disable
     {
         label: "中文",
         value: "zh-CN",
         locale: "cn"
     },
+    // amis-lint-disable
     {
         label: "English",
         value: "en-US",

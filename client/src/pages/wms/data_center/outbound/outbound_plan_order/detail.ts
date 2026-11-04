@@ -1,16 +1,18 @@
+import { codeColumn, nestedTable, numberColumn } from "@/utils/amis/presets"
+
 export const searchDetailIdentity = "WOutboundPlanOrderDetail"
 
 export const detailColumns = [
     {
         name: "outboundPlanOrderId",
         dbField: "a.outbound_plan_order_id",
-        label: "出库通知单ID",
+        label: "ID",
         hidden: true
     },
     {
         name: "id",
         dbField: "a.id",
-        label: "出库计划单明细ID",
+        label: "ID",
         hidden: true
     },
     {
@@ -26,10 +28,8 @@ export const detailColumns = [
         hidden: true
     },
     {
-        name: "ownerCode",
-        dbField: "a.owner_code",
-        label: "table.productOwner",
-        searchable: true
+        ...codeColumn("ownerCode", "table.productOwner"),
+        dbField: "a.owner_code"
     },
     {
         name: "batchAttributes",
@@ -37,19 +37,16 @@ export const detailColumns = [
         label: "table.batchAttributes"
     },
     {
-        name: "qtyActual",
-        dbField: "a.qty_actual",
-        label: "table.actualOutboundQuantity"
+        ...numberColumn("qtyActual", "table.actualOutboundQuantity"),
+        dbField: "a.qty_actual"
     },
     {
-        name: "qtyRequired",
-        dbField: "a.qty_required",
-        label: "table.plannedOutboundQuantity"
+        ...numberColumn("qtyRequired", "table.plannedOutboundQuantity"),
+        dbField: "a.qty_required"
     },
     {
-        name: "skuCode",
-        dbField: "a.sku_code",
-        label: "table.skuCode"
+        ...codeColumn("skuCode", "table.skuCode"),
+        dbField: "a.sku_code"
     },
     {
         name: "skuName",
@@ -58,31 +55,37 @@ export const detailColumns = [
     }
 ]
 
-export const detailDialog = {
+export const detailDrawer = {
+    size: "xl",
     title: "outboundOrder.detail.modal.title",
-    actions: [],
     closeOnEsc: true,
     closeOnOutside: true,
-    size: "xl",
+    actions: [
+        {
+            type: "button",
+            actionType: "close",
+            label: "button.close"
+        }
+    ],
     body: [
         {
-            type: "crud",
-            syncLocation: false,
+            type: "tpl",
+            tpl: "${orderNo}",
+            className: "owes-drawer-context"
+        },
+        nestedTable({
             name: "OutboundPlanOrderDetailTable",
             api: {
                 method: "POST",
                 url: "/search/search?page=${page}&perPage=${perPage}&outboundPlanOrderId=${id}&outboundPlanOrderId-op=eq",
                 dataType: "application/json"
             },
-            defaultParams: {
-                searchIdentity: searchDetailIdentity,
-                showColumns: detailColumns,
-                searchObject: {
-                    tables: "w_outbound_plan_order_detail a left join w_outbound_plan_order b on a.outbound_plan_order_id = b.id"
-                }
+            searchIdentity: searchDetailIdentity,
+            columns: detailColumns,
+            searchObject: {
+                tables: "w_outbound_plan_order_detail a left join w_outbound_plan_order b on a.outbound_plan_order_id = b.id"
             },
-            footerToolbar: ["switch-per-page", "statistics", "pagination"],
-            columns: detailColumns
-        }
+            empty: "emptyState.outboundPlanDetail"
+        })
     ]
 }

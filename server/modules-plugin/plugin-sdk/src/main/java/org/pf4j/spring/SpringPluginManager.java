@@ -47,9 +47,16 @@ public class SpringPluginManager extends DefaultPluginManager implements Applica
         super(pluginsRoots);
     }
 
+    private SpringExtensionFactory springExtensionFactory;
+
     @Override
     protected ExtensionFactory createExtensionFactory() {
-        return new SpringExtensionFactory(this);
+        this.springExtensionFactory = new SpringExtensionFactory(this);
+        return this.springExtensionFactory;
+    }
+
+    public SpringExtensionFactory getSpringExtensionFactory() {
+        return springExtensionFactory;
     }
 
     @Override

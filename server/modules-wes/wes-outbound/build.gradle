@@ -22,3 +22,7 @@ dependencies {
 
     implementation 'com.alibaba:transmittable-thread-local'
 }
+
+test {
+    ignoreFailures = false
+}

@@ -3,15 +3,24 @@ import {
     put_wall_spec,
     work_station
 } from "@/pages/wms/constants/select_search_api_contant"
-import {create_update_columns, enable_options} from "@/utils/commonContants"
+import { enable_options } from "@/utils/commonContants"
 import {
     api_put_wall_add,
     api_put_wall_delete,
     api_put_wall_get
 } from "@/pages/wms/config_center/constants/api_constant"
 import { api_crud_search_by_warehouseCode } from "@/pages/constantApi"
+import {
+    addButton,
+    auditColumns,
+    codeColumn,
+    crudPage,
+    deleteButton,
+    editButton,
+    formDrawer
+} from "@/utils/amis/presets"
 
-let warehouseCode = localStorage.getItem("warehouseCode")
+const warehouseCode = localStorage.getItem("warehouseCode")
 
 const putWallSlotColumns = [
     {
@@ -81,7 +90,8 @@ const formApi = {
                         ...slot,
                         workStationId: api.data.workStationId,
                         putWallCode: api.data.putWallCode,
-                        putWallSlotCode: slot.putWallSlotCode ?? slot.containerSlotSpecCode,
+                        putWallSlotCode:
+                            slot.putWallSlotCode ?? slot.containerSlotSpecCode,
                         putWallSlotStatus: "IDLE"
                     }
                 })
@@ -171,22 +181,25 @@ const formBody = [
     }
 ]
 
-const add = {
-    type: "button",
-    actionType: "dialog",
-    icon: "fa fa-plus",
-    label: "button.add",
-    target: "PutWallTable",
-    dialog: {
-        title: "button.add",
-        size: "lg",
-        body: {
-            type: "form",
-            api: formApi,
-            body: formBody
-        }
-    }
-}
+const addDrawer = formDrawer({
+    title: "seedingWallManagement.addTitle",
+    size: "lg",
+    columnCount: 1,
+    body: formBody,
+    api: formApi,
+    reload: "PutWallTable"
+})
+
+const editDrawer = formDrawer({
+    title: "seedingWallManagement.editTitle",
+    size: "lg",
+    columnCount: 1,
+    context: "${putWallCode} · ${putWallName}",
+    body: formBody,
+    initApi: api_put_wall_get,
+    api: api_put_wall_add,
+    reload: "PutWallTable"
+})
 
 const columns = [
     {
@@ -210,98 +223,44 @@ const columns = [
         type: "mapping",
         source: work_station
     },
-    {
-        name: "putWallCode",
-        label: "table.seedingWallCoding",
+    codeColumn("putWallCode", "table.seedingWallCoding", {
         searchable: true
-    },
+    }),
     {
         name: "putWallName",
         label: "table.seedingWallName",
         searchable: true
     },
-    {
-        name: "containerSpecCode",
-        label: "table.seedingWallSpecifications"
-    },
+    codeColumn("containerSpecCode", "table.seedingWallSpecifications"),
     {
         name: "enable",
         label: "table.enable",
         type: "mapping",
         map: enable_options
     },
-    ...create_update_columns
+    ...auditColumns()
 ]
 
-const searchIdentity = "WPutWall"
-const showColumns = columns
-
-const schema = {
-    type: "page",
+const schema = crudPage({
     title: "seedingWallManagement.title",
-    toolbar: [],
-    data: {
-        dictionary: "${ls:dictionary}"
+    name: "PutWallTable",
+    searchIdentity: "WPutWall",
+    api: api_crud_search_by_warehouseCode,
+    columns,
+    searchObject: {
+        where: "deleted = false"
     },
-    body: [
-        {
-            type: "crud",
-            syncLocation: false,
-            name: "PutWallTable",
-            api: api_crud_search_by_warehouseCode,
-            defaultParams: {
-                searchIdentity: searchIdentity,
-                showColumns: showColumns,
-                searchObject: {
-                    where: "deleted = false",
-                    orderBy: "update_time desc"
-                }
-            },
-            autoFillHeight: true,
-            autoGenerateFilter: {
-                columnsNum: 3,
-                showBtnToolbar: true
-            },
-            headerToolbar: [add],
-            footerToolbar: ["switch-per-page", "statistics", "pagination"],
-            columns: [
-                ...columns,
-                {
-                    type: "operation",
-                    label: "table.operation",
-                    width: 100,
-                    buttons: [
-                        {
-                            label: "button.modify",
-                            type: "button",
-                            actionType: "dialog",
-                            dialog: {
-                                title: "button.modify",
-                                size: "lg",
-                                body: {
-                                    type: "form",
-                                    api: api_put_wall_add,
-                                    initApi: api_put_wall_get,
-                                    body: formBody
-                                }
-                            }
-                        },
-                        {
-                            label: "button.delete",
-                            type: "button",
-                            actionType: "ajax",
-                            level: "danger",
-                            confirmText: "toast.sureDelete",
-                            confirmTitle: "button.delete",
-                            api: api_put_wall_delete,
-                            reload: "PutWallTable"
-                        }
-                    ],
-                    toggled: true
-                }
-            ]
-        }
-    ]
-}
+    orderBy: "update_time desc",
+    pageActions: [addButton({ target: "PutWallTable", drawer: addDrawer })],
+    rowActions: [
+        editButton(editDrawer),
+        deleteButton({
+            api: api_put_wall_delete,
+            confirmText: "confirm.deletePutWall",
+            reload: "PutWallTable"
+        })
+    ],
+    empty: "emptyState.seedingWall"
+})
 
 export default schema2component(schema)

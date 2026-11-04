@@ -1,6 +1,14 @@
 import schema2component from "@/utils/schema2component"
-import {create_update_columns} from "@/utils/commonContants"
-import {api_crud_search} from "@/pages/constantApi"
+import { api_crud_search } from "@/pages/constantApi"
+import { work_station } from "@/pages/wms/constants/select_search_api_contant"
+import {
+    auditColumns,
+    codeColumn,
+    crudPage,
+    dateTimeColumn,
+    statusColumn
+} from "@/utils/amis/presets"
+import { printStatus } from "@/utils/amis/statusMaps"
 
 const columns = [
     {
@@ -13,20 +21,18 @@ const columns = [
         label: "printRecord.module",
         type: "mapping",
         source: "${dictionary.ModuleEnum}",
-        searchable: true
+        searchable: { type: "select", source: "${dictionary.ModuleEnum}" }
     },
     {
         name: "printNode",
         label: "printRecord.printNode",
         type: "mapping",
         source: "${dictionary.PrintNodeEnum}",
-        searchable: true
+        searchable: { type: "select", source: "${dictionary.PrintNodeEnum}" }
     },
-    {
-        name: "templateCode",
-        label: "printRecord.templateCode",
+    codeColumn("templateCode", "printRecord.templateCode", {
         searchable: true
-    },
+    }),
     {
         name: "templateName",
         label: "printRecord.templateName"
@@ -34,73 +40,44 @@ const columns = [
     {
         name: "workStationId",
         label: "printRecord.workStationId",
-        searchable: true
+        type: "mapping",
+        source: work_station,
+        searchable: { type: "select", source: work_station }
     },
-    {
-        name: "printTime",
-        label: "printRecord.printTime",
-        type: "datetime",
-        tpl: "${createTime/1000|date:YYYY-MM-DD HH\\:mm\\:ss}",
-        searchable: {
-            type: "input-date-range",
-            valueFormat: "x"
-        }
-    },
+    dateTimeColumn("printTime", "printRecord.printTime", {
+        seconds: true,
+        searchable: { type: "input-date-range", valueFormat: "x" }
+    }),
     {
         name: "printer",
         label: "printRecord.printer",
         searchable: true
     },
-    {
-        name: "printStatus",
-        label: "printRecord.printStatus",
-        type: "mapping",
-        source: "${dictionary.PrintStatusEnum}",
-        searchable: true
-    },
+    statusColumn("printStatus", "printRecord.printStatus", {
+        ...printStatus,
+        searchable: {
+            type: "select",
+            source: "${dictionary.PrintStatusEnum}"
+        }
+    }),
     {
         name: "errorMessage",
         label: "printRecord.errorMessage",
-        type: "html",
-        html: "<span class='text-danger'>${errorMessage}</span>"
+        type: "tpl",
+        tpl: "${errorMessage}",
+        className: "owes-text-danger"
     },
-    ...create_update_columns
+    ...auditColumns({ visible: true, createdOnly: true })
 ]
 
-const searchIdentity = "PPrintRecord"
-const showColumns = columns
-
-const schema = {
-    type: "page",
+const schema = crudPage({
     title: "printRecord.title",
-    toolbar: [],
-    data: {
-        dictionary: "${ls:dictionary}"
-    },
-    body: [
-        {
-            type: "crud",
-            syncLocation: false,
-            name: "PPrintRecord",
-            api: api_crud_search,
-            defaultParams: {
-                searchIdentity: searchIdentity,
-                showColumns: showColumns,
-                searchObject: {
-                    orderBy: "create_time desc"
-                }
-            },
-            autoFillHeight: true,
-            autoGenerateFilter: {
-                columnsNum: 3,
-                showBtnToolbar: true
-            },
-            footerToolbar: ["switch-per-page", "statistics", "pagination"],
-            columns: [
-                ...columns
-            ]
-        }
-    ]
-}
+    name: "PPrintRecord",
+    searchIdentity: "PPrintRecord",
+    api: api_crud_search,
+    columns,
+    orderBy: "create_time desc",
+    empty: "emptyState.printRecord"
+})
 
 export default schema2component(schema)

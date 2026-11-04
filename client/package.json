@@ -15,7 +15,8 @@
         "dev:fast": "webpack serve -c ./build/webpack.config.fast.js",
         "build": "webpack -c ./build/webpack.config.prod.js",
         "build:analyze": "webpack -c ./build/webpack.config.analyze.js",
-        "build:fast": "webpack -c ./build/webpack.config.prod.js --mode=production --progress"
+        "build:fast": "webpack -c ./build/webpack.config.prod.js --mode=production --progress",
+        "lint:amis": "node scripts/check-amis-schema.mjs"
     },
     "keywords": [
         "amis",

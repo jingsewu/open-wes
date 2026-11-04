@@ -1,6 +1,16 @@
 import schema2component from "@/utils/schema2component"
-import { create_update_columns } from "@/utils/commonContants"
 import { api_crud_search_by_warehouseCode } from "@/pages/constantApi"
+import {
+    auditColumns,
+    codeColumn,
+    crudPage,
+    detailButton,
+    linkAction,
+    nestedTable,
+    numberColumn,
+    statusColumn
+} from "@/utils/amis/presets"
+import { stockAdjustmentOrderStatus } from "@/utils/amis/statusMaps"
 
 const columns = [
     {
@@ -8,23 +18,15 @@ const columns = [
         label: "ID",
         hidden: true
     },
-
-    {
-        name: "orderNo",
-        label: "table.adjustmentOrderNo",
-        searchable: true
-    },
-    {
-        name: "status",
-        label: "table.status",
-        type: "mapping",
-        source: "${dictionary.StockAdjustmentOrderStatus}",
+    codeColumn("orderNo", "table.adjustmentOrderNo", { searchable: true }),
+    statusColumn("status", "table.status", {
+        ...stockAdjustmentOrderStatus,
         searchable: {
             type: "select",
             source: "${dictionary.StockAdjustmentOrderStatus}"
         }
-    },
-    ...create_update_columns
+    }),
+    ...auditColumns()
 ]
 
 const detailColumns = [
@@ -35,19 +37,16 @@ const detailColumns = [
         hidden: true
     },
     {
-        dbField: "d.container_code",
-        name: "containerCode",
-        label: "table.containerNumber"
+        ...codeColumn("containerCode", "table.containerNumber"),
+        dbField: "d.container_code"
     },
     {
-        dbField: "d.container_slot_code",
-        name: "containerSlotCode",
-        label: "table.containerLatticeSlogan"
+        ...codeColumn("containerSlotCode", "table.containerLatticeSlogan"),
+        dbField: "d.container_slot_code"
     },
     {
-        dbField: "d.sku_code",
-        name: "skuCode",
-        label: "skuArea.skuCode"
+        ...codeColumn("skuCode", "skuArea.skuCode"),
+        dbField: "d.sku_code"
     },
     {
         dbField: "g.bar_code_list",
@@ -55,9 +54,8 @@ const detailColumns = [
         label: "skuArea.barcode"
     },
     {
-        dbField: "d.qty_adjustment",
-        name: "qtyAdjustment",
-        label: "table.adjustQuantity"
+        ...numberColumn("qtyAdjustment", "table.adjustQuantity"),
+        dbField: "d.qty_adjustment"
     },
     {
         dbField: "d.sku_id",
@@ -85,152 +83,79 @@ const detailColumns = [
     }
 ]
 
-const searchIdentity = "WStockAdjustmentOrder"
-const searchDetailIdentity = "WStockAdjustmentDetail"
-const showColumns = columns
-const showDetailColumns = detailColumns
-
-const detailDialog = {
+const detailDrawer = {
+    size: "xl",
     title: "modal.stockAdjustmentOrderDetails",
-    actions: [],
     closeOnEsc: true,
     closeOnOutside: true,
-    size: "xl",
-    data: {
-        dictionary: "${ls:dictionary}"
-    },
+    actions: [
+        {
+            type: "button",
+            actionType: "close",
+            label: "button.close"
+        }
+    ],
     body: [
         {
-            type: "crud",
+            type: "tpl",
+            tpl: "${orderNo}",
+            className: "owes-drawer-context"
+        },
+        nestedTable({
             name: "stockAdjustmentDetailTable",
             api: {
                 method: "POST",
                 url: "/search/search?page=${page}&perPage=${perPage}&createTime-op=bt&stockAdjustmentOrderId=${id}&stockAdjustmentOrderId-op=eq",
                 dataType: "application/json"
             },
-            defaultParams: {
-                searchIdentity: searchDetailIdentity,
-                showColumns: showDetailColumns,
-                searchObject: {
-                    tables: "w_stock_adjustment_detail d left join (select sku_id, group_concat(distinct bar_code separator ' ') bar_code_list from m_sku_barcode_data group by sku_id) g on d.sku_id = g.sku_id"
-                }
+            searchIdentity: "WStockAdjustmentDetail",
+            columns: detailColumns,
+            searchObject: {
+                tables:
+                    "w_stock_adjustment_detail d left join (select sku_id, group_concat(distinct bar_code separator ' ') bar_code_list from m_sku_barcode_data group by sku_id) g on d.sku_id = g.sku_id"
             },
-            footerToolbar: ["switch-per-page", "statistics", "pagination"],
-            columns: detailColumns
-        }
+            empty: "emptyState.stockAdjustDetail"
+        })
     ]
 }
 
-const schema = {
-    type: "page",
+const schema = crudPage({
     title: "wms.menu.inventoryAdjustment",
-    toolbar: [],
-    data: {
-        dictionary: "${ls:dictionary}"
-    },
-    body: [
-        {
-            type: "crud",
-            syncLocation: false,
-            name: "stockAdjustmentTable",
-            api: api_crud_search_by_warehouseCode,
-            defaultParams: {
-                searchIdentity: searchIdentity,
-                showColumns: showColumns,
-                searchObject: {
-                    tables: "w_stock_adjustment_order",
-                    orderBy: "update_time desc"
-                }
+    name: "stockAdjustmentTable",
+    searchIdentity: "WStockAdjustmentOrder",
+    api: api_crud_search_by_warehouseCode,
+    columns,
+    orderBy: "update_time desc",
+    pageActions: [],
+    rowActions: [
+        detailButton(detailDrawer),
+        linkAction({
+            label: "button.adjustInventory",
+            confirmTitle: "toast.prompt",
+            confirmText: "toast.confirmAjust",
+            disabledOn: "${status !== 'NEW'}",
+            api: {
+                method: "post",
+                url: "/wms/stock/adjustment/adjust",
+                data: ["${id}"]
             },
-            autoFillHeight: true,
-            autoGenerateFilter: {
-                columnsNum: 3,
-                showBtnToolbar: true
+            reload: "stockAdjustmentTable"
+        }),
+        linkAction({
+            label: "button.close",
+            confirmTitle: "toast.prompt",
+            confirmText: "toast.confirmToClose",
+            disabledOn: "${status !== 'NEW'}",
+            danger: true,
+            api: {
+                method: "post",
+                url: "/wms/stock/adjustment/close",
+                data: ["${id}"]
             },
-            headerToolbar: ["reload"],
-            footerToolbar: ["switch-per-page", "statistics", "pagination"],
-            columns: [
-                ...columns,
-                {
-                    type: "operation",
-                    label: "table.operation",
-                    // width: 130,
-                    buttons: [
-                        {
-                            label: "button.detail",
-                            type: "button",
-                            level: "link",
-                            actionType: "dialog",
-                            dialog: detailDialog
-                        },
-                        {
-                            label: "button.adjustInventory",
-                            type: "button",
-                            level: "link",
-                            disabledOn: "${status !== 'NEW'}",
-                            actionType: "dialog",
-                            dialog: {
-                                title: "toast.prompt",
-                                body: "toast.confirmAjust",
-                                actions: [
-                                    {
-                                        label: "button.cancel",
-                                        actionType: "cancel",
-                                        type: "button"
-                                    },
-                                    {
-                                        label: "button.confirm",
-                                        actionType: "ajax",
-                                        primary: true,
-                                        type: "button",
-                                        api: {
-                                            method: "post",
-                                            url: "/wms/stock/adjustment/adjust",
-                                            data: ["${id}"]
-                                        },
-                                        close: true,
-                                        reload: "stockAdjustmentTable"
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            label: "button.close",
-                            type: "button",
-                            level: "link",
-                            disabledOn: "${status !== 'NEW'}",
-                            actionType: "dialog",
-                            dialog: {
-                                title: "toast.prompt",
-                                body: "toast.confirmToClose",
-                                actions: [
-                                    {
-                                        label: "button.cancel",
-                                        actionType: "cancel",
-                                        type: "button"
-                                    },
-                                    {
-                                        label: "button.confirm",
-                                        actionType: "ajax",
-                                        primary: true,
-                                        type: "button",
-                                        api: {
-                                            method: "post",
-                                            url: "/wms/stock/adjustment/close",
-                                            data: ["${id}"]
-                                        },
-                                        close: true,
-                                        reload: "stockAdjustmentTable"
-                                    }
-                                ]
-                            }
-                        }
-                    ],
-                    toggled: true
-                }
-            ]
-        }
-    ]
-}
+            reload: "stockAdjustmentTable"
+        })
+    ],
+    empty: "emptyState.stockAdjust"
+})
 
 export default schema2component(schema)

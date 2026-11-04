@@ -1,0 +1,353 @@
+/**
+ * Open WES — AMIS console theme bridge.
+ *
+ * Loaded after amis cxd.css and antd.css. It turns the stock cxd look into a
+ * dense operations console: one blue, slate neutrals, 13px tabular data,
+ * quiet row actions and a single clear primary action per page.
+ *
+ * Only tokens and layout rhythm live here. Page-specific styling belongs in
+ * the page schema (see client/src/utils/amis/presets.ts).
+ */
+
+:root,
+.AMISCSSWrapper {
+    /* ── Brand: one blue ─────────────────────────────────────────────── */
+    --colors-brand-4: #1d4ed8;
+    --colors-brand-5: #2563eb;
+    --colors-brand-6: #3b82f6;
+    --colors-brand-9: #dbeafe;
+    --colors-brand-10: #eff6ff;
+
+    /* ── Neutrals: slate ─────────────────────────────────────────────── */
+    --colors-neutral-text-1: #0f172a;
+    --colors-neutral-text-2: #1e293b;
+    --colors-neutral-text-3: #334155;
+    --colors-neutral-text-4: #475569;
+    --colors-neutral-text-5: #64748b;
+    --colors-neutral-text-6: #94a3b8;
+    --colors-neutral-text-7: #cbd5e1;
+    --colors-neutral-text-8: #e2e8f0;
+    --colors-neutral-text-9: #f1f5f9;
+    --colors-neutral-text-10: #f8fafc;
+    --colors-neutral-text-11: #ffffff;
+
+    --colors-neutral-line-6: #cbd5e1;
+    --colors-neutral-line-7: #e2e8f0;
+    --colors-neutral-line-8: #e2e8f0;
+    --colors-neutral-line-9: #f1f5f9;
+    --colors-neutral-line-10: #f8fafc;
+    --colors-neutral-line-11: #ffffff;
+
+    --colors-neutral-fill-8: #e2e8f0;
+    --colors-neutral-fill-9: #f1f5f9;
+    --colors-neutral-fill-10: #f8fafc;
+    --colors-neutral-fill-11: #ffffff;
+    --colors-neutral-fill-12: #eff6ff;
+
+    /* ── Semantic ────────────────────────────────────────────────────── */
+    --colors-success-4: #065f46;
+    --colors-success-5: #047857;
+    --colors-success-6: #10b981;
+    --colors-warning-4: #92400e;
+    --colors-warning-5: #b45309;
+    --colors-warning-6: #d97706;
+    --colors-error-4: #991b1b;
+    --colors-error-5: #dc2626;
+    --colors-error-6: #ef4444;
+    --colors-info-5: #2563eb;
+
+    /* ── Type ────────────────────────────────────────────────────────── */
+    --fonts-base-family: "Plus Jakarta Sans", -apple-system,
+        BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC",
+        "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+
+    /* ── Page rhythm ─────────────────────────────────────────────────── */
+    --Page-header-paddingX: 20px;
+    --Page-header-paddingY: 14px;
+    --Page-body-padding: 16px 20px 20px;
+    --Page-title-fontSize: 16px;
+    --Page-title-fontWeight: 600;
+    --Page-title-lineHeight: 1.4;
+
+    /* ── Table density ───────────────────────────────────────────────── */
+    --table-header-bg-color: #f8fafc;
+    --table-header-color: #475569;
+    --table-header-fontSize: 12px;
+    --table-header-fontWeight: 600;
+    --table-body-color: #1e293b;
+    --table-body-fontSize: 13px;
+    --table-body-hover-bg-color: #f8fafc;
+    --table-border-color: #e2e8f0;
+    --Table-placeholder-height: 15rem;
+    --Table-empty-icon-size: 3rem;
+
+    /* ── Drawer / dialog ─────────────────────────────────────────────── */
+    --Drawer-header-padding: 14px 20px;
+    --Drawer-footer-padding: 12px 20px;
+    --Drawer-footer-borderColor: #e2e8f0;
+    --drawer-header-fontSize: 15px;
+    --drawer-header-fontWeight: 600;
+    --drawer-content-paddingTop: 20px;
+    --drawer-content-paddingRight: 20px;
+    --drawer-content-paddingBottom: 20px;
+    --drawer-content-paddingLeft: 20px;
+    --dialog-header-fontSize: 15px;
+    --dialog-header-fontWeight: 600;
+}
+
+/* ── Dark tokens (dormant) ───────────────────────────────────────────── */
+
+/* Wave 4 only prepares the token layer. Nothing sets data-owes-theme yet;
+   activating it later flips AMIS pages without touching any page schema.
+   The numeric neutral scale is inverted so text-1 stays "strongest" and
+   fill-11 stays "surface" in both themes. */
+:root[data-owes-theme="dark"],
+.AMISCSSWrapper[data-owes-theme="dark"],
+:root[data-owes-theme="dark"] .AMISCSSWrapper {
+    color-scheme: dark;
+
+    --colors-brand-4: #93c5fd;
+    --colors-brand-5: #60a5fa;
+    --colors-brand-6: #3b82f6;
+    --colors-brand-9: #1e3a8a;
+    --colors-brand-10: #172554;
+
+    --colors-neutral-text-1: #f8fafc;
+    --colors-neutral-text-2: #f1f5f9;
+    --colors-neutral-text-3: #e2e8f0;
+    --colors-neutral-text-4: #cbd5e1;
+    --colors-neutral-text-5: #94a3b8;
+    --colors-neutral-text-6: #64748b;
+    --colors-neutral-text-7: #475569;
+    --colors-neutral-text-8: #334155;
+    --colors-neutral-text-9: #1e293b;
+    --colors-neutral-text-10: #0f172a;
+    --colors-neutral-text-11: #020617;
+
+    --colors-neutral-line-6: #475569;
+    --colors-neutral-line-7: #334155;
+    --colors-neutral-line-8: #1e293b;
+    --colors-neutral-line-9: #1e293b;
+    --colors-neutral-line-10: #0f172a;
+    --colors-neutral-line-11: #020617;
+
+    --colors-neutral-fill-8: #334155;
+    --colors-neutral-fill-9: #1e293b;
+    --colors-neutral-fill-10: #1e293b;
+    --colors-neutral-fill-11: #0f172a;
+    --colors-neutral-fill-12: #172554;
+
+    --colors-success-4: #6ee7b7;
+    --colors-success-5: #34d399;
+    --colors-success-6: #10b981;
+    --colors-warning-4: #fcd34d;
+    --colors-warning-5: #fbbf24;
+    --colors-warning-6: #f59e0b;
+    --colors-error-4: #fca5a5;
+    --colors-error-5: #f87171;
+    --colors-error-6: #ef4444;
+    --colors-info-5: #60a5fa;
+
+    --table-header-bg-color: #1e293b;
+    --table-header-color: #cbd5e1;
+    --table-body-color: #e2e8f0;
+    --table-body-hover-bg-color: #1e293b;
+    --table-border-color: #334155;
+    --Drawer-footer-borderColor: #334155;
+}
+
+/* The shell already paints the content background; keep the page surface
+   quiet so the table, not the chrome, carries the hierarchy. */
+.cxd-Page {
+    background: transparent;
+}
+
+.cxd-Page-main > .cxd-Page-header {
+    border-bottom-color: var(--colors-neutral-line-8);
+}
+
+.cxd-Page-title {
+    letter-spacing: -0.01em;
+}
+
+.cxd-Page-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* ── Table density preference ───────────────────────────────────────── */
+
+/* The app shell sets data-owes-density on <html> and persists it per
+   browser. cxd redeclares its table tokens on .AMISCSSWrapper, so the
+   override has to match both the root and the wrapper element. */
+:root[data-owes-density="compact"],
+:root[data-owes-density="compact"] .AMISCSSWrapper {
+    --TableCell-height: 2.0625rem;
+    --TableCell-height-default: 2.0625rem;
+}
+
+:root[data-owes-density="standard"],
+:root[data-owes-density="standard"] .AMISCSSWrapper {
+    --TableCell-height: 2.5rem;
+    --TableCell-height-default: 2.5625rem;
+}
+
+/* ── Table ───────────────────────────────────────────────────────────── */
+
+.cxd-Table-table {
+    border-top: 1px solid var(--colors-neutral-line-8);
+}
+
+.cxd-Table-table > thead > tr > th {
+    border-bottom: 1px solid var(--colors-neutral-line-8);
+    white-space: nowrap;
+}
+
+.cxd-Table-table > tbody > tr > td {
+    border-bottom: 1px solid var(--colors-neutral-line-9);
+}
+
+/* Machine identifiers: LPN, SKU, container, order number. */
+.owes-code {
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo,
+        monospace;
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.01em;
+    color: var(--colors-neutral-text-3);
+}
+
+/* Measures: right-aligned and aligned across rows. */
+.owes-number {
+    font-variant-numeric: tabular-nums;
+}
+
+/* ── Status ──────────────────────────────────────────────────────────── */
+
+.owes-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.owes-status::before {
+    content: "";
+    flex: none;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.owes-status--success {
+    color: var(--colors-success-5);
+}
+
+.owes-status--warning {
+    color: var(--colors-warning-5);
+}
+
+.owes-status--danger {
+    color: var(--colors-error-5);
+}
+
+.owes-status--info {
+    color: var(--colors-brand-5);
+}
+
+.owes-status--muted {
+    color: var(--colors-neutral-text-5);
+}
+
+/* ── Actions ─────────────────────────────────────────────────────────── */
+
+/* Row actions are quiet by default; only the destructive one turns red on
+   hover. Filled danger buttons in a table read as alarms on every row. */
+.cxd-Table .cxd-Button--link {
+    color: var(--colors-neutral-text-4);
+    font-weight: 500;
+}
+
+.cxd-Table .cxd-Button--link:hover {
+    color: var(--colors-brand-5);
+}
+
+.cxd-Table .cxd-Button--link.owes-action--danger:hover {
+    color: var(--colors-error-5);
+}
+
+.cxd-Button:focus-visible,
+.cxd-Button--link:focus-visible,
+.cxd-Form-control:focus-visible {
+    outline: 2px solid var(--colors-brand-5);
+    outline-offset: 2px;
+}
+
+/* ── Forms ───────────────────────────────────────────────────────────── */
+
+.cxd-Form--horizontal .cxd-Form-label {
+    color: var(--colors-neutral-text-4);
+    font-weight: 500;
+}
+
+.cxd-Form--horizontal .cxd-Form-item {
+    margin-bottom: 16px;
+}
+
+/*
+ * Auto-filter toolbar: below 1200px the 查询/重置/展开 controls no longer fit
+ * beside two fields, and AMIS squeezes the first input to ~25px. Give the
+ * toolbar its own row; the fields keep the full width. Re-check after an AMIS
+ * upgrade (the class names are AMIS-owned).
+ */
+@media (max-width: 1199.98px) {
+    .cxd-Table-searchableForm
+        .cxd-Form-groupColumn:has(> .cxd-AutoFilterToolbar) {
+        flex-basis: 100% !important;
+    }
+}
+
+/* Multi-line guidance: import rules, empty-state instructions. */
+.owes-note-list {
+    white-space: pre-line;
+    line-height: 1.7;
+    font-size: 13px;
+    color: var(--colors-neutral-text-3);
+}
+
+.owes-text-danger {
+    color: var(--colors-error-5);
+}
+
+/* Drawer context line: identifies the row being edited. */
+.owes-drawer-context {
+    display: block;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--colors-neutral-line-9);
+    color: var(--colors-neutral-text-3);
+    font-size: 13px;
+}
+
+/* ── Empty state ─────────────────────────────────────────────────────── */
+
+.cxd-Table-placeholder {
+    color: var(--colors-neutral-text-5);
+    font-size: 13px;
+}
+
+/* ── Motion ──────────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+    .cxd-Button,
+    .cxd-Table-table,
+    .cxd-Drawer,
+    .cxd-Modal {
+        transition: none !important;
+        animation: none !important;
+    }
+}

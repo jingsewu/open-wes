@@ -1,9 +1,16 @@
 import schema2component from "@/utils/schema2component"
 import { warehouse_area_id } from "@/pages/wms/constants/select_search_api_contant"
+import { true_false_options } from "@/utils/commonContants"
 import {
-    create_update_columns,
-    true_false_options
-} from "@/utils/commonContants"
+    addButton,
+    auditColumns,
+    codeColumn,
+    crudPage,
+    editButton,
+    formDrawer,
+    requiredField,
+    statusColumn
+} from "@/utils/amis/presets"
 import {
     api_work_station_add,
     api_work_station_config_add,
@@ -12,7 +19,7 @@ import {
 } from "@/pages/wms/config_center/constants/api_constant"
 import { api_crud_search_by_warehouseCode } from "@/pages/constantApi"
 
-let warehouseCode = localStorage.getItem("warehouseCode")
+const warehouseCode = localStorage.getItem("warehouseCode")
 
 const baseInfoForm = [
     {
@@ -27,20 +34,20 @@ const baseInfoForm = [
         label: "table.workstationCoding",
         name: "stationCode",
         type: "input-text",
-        required: true
+        ...requiredField("validation.workstation.codeRequired")
     },
     {
         label: "table.workstationName",
         name: "stationName",
         type: "input-text",
-        required: true
+        ...requiredField("validation.workstation.nameRequired")
     },
     {
         label: "table.warehouseAreaBelongs",
         name: "warehouseAreaId",
         type: "select",
         source: warehouse_area_id,
-        required: true
+        ...requiredField("validation.workstation.areaRequired")
     },
     {
         label: "table.taskRules",
@@ -83,11 +90,9 @@ const baseInfoForm = [
                 title: "table.robotWorkstations",
                 body: [
                     {
-                        label: "工作位类型",
+                        type: "hidden",
                         name: "workLocations[0].workLocationType",
-                        type: "input-text",
-                        value: "ROBOT",
-                        hidden: true
+                        value: "ROBOT"
                     },
                     {
                         label: "table.workBitEncoding",
@@ -106,11 +111,9 @@ const baseInfoForm = [
                 title: "table.conveyorLines",
                 body: [
                     {
-                        label: "工作位类型",
+                        type: "hidden",
                         name: "workLocations[1].workLocationType",
-                        type: "input-text",
-                        value: "CONVEYOR",
-                        hidden: true
+                        value: "CONVEYOR"
                     },
                     {
                         label: "table.workBitEncoding",
@@ -129,15 +132,13 @@ const baseInfoForm = [
                 title: "table.cacheShelves",
                 body: [
                     {
-                        label: "工作位类型",
+                        type: "hidden",
                         name: "workLocations[2].workLocationType",
-                        type: "input-text",
-                        value: "BUFFER_SHELVING",
-                        hidden: true
+                        value: "BUFFER_SHELVING"
                     },
                     {
                         label: "table.workBitEncoding",
-                        name: "workLocations[2].workLocationCode}",
+                        name: "workLocations[2].workLocationCode",
                         type: "input-text",
                         requiredOn: "${workLocations[2].enable}"
                     },
@@ -175,7 +176,7 @@ const baseInfoForm = [
                             },
                             {
                                 name: "bay",
-                                label: "table.colum"
+                                label: "table.column"
                             },
                             {
                                 name: "enable",
@@ -191,7 +192,6 @@ const baseInfoForm = [
     {
         type: "hidden",
         name: "warehouseCode",
-        label: "仓库编码",
         value: warehouseCode
     }
 ]
@@ -295,7 +295,7 @@ const configInfoForm = [
                                         type: "input-text",
                                         name: "fieldName",
                                         label: "table.fieldName",
-                                        hidden: "true"
+                                        hidden: true
                                     },
                                     {
                                         type: "input-text",
@@ -452,23 +452,49 @@ const configInfoForm = [
     }
 ]
 
-const add = {
-    type: "button",
-    actionType: "dialog",
-    icon: "fa fa-plus",
-    label: "button.add",
-    target: "role",
-    dialog: {
-        title: "button.add",
-        size: "lg",
-        closeOnEsc: true,
-        body: {
-            type: "form",
-            api: api_work_station_add,
-            body: baseInfoForm
+const addDrawer = formDrawer({
+    title: "workstationManagement.addTitle",
+    size: "xl",
+    columnCount: 1,
+    closeOnOutside: false,
+    body: baseInfoForm,
+    api: api_work_station_add,
+    reload: "WorkStationTable"
+})
+
+const editDrawer = formDrawer({
+    title: "workstationManagement.editTitle",
+    size: "xl",
+    columnCount: 1,
+    closeOnOutside: false,
+    context: "${stationCode} · ${stationName}",
+    body: baseInfoForm,
+    initApi: api_work_station_get,
+    api: api_work_station_add,
+    reload: "WorkStationTable"
+})
+
+const configDrawer = formDrawer({
+    title: "table.workstationConfiguration",
+    size: "xl",
+    columnCount: 1,
+    closeOnOutside: false,
+    context: "${stationCode} · ${stationName}",
+    body: configInfoForm,
+    api: api_work_station_config_add,
+    initApi: {
+        method: "post",
+        url: api_work_station_config_get,
+        adaptor: function (payload: any) {
+            // 新增配置时，删除后端返回的空 workStationId，避免将上下文中获取的 workStationId 覆盖掉
+            if (payload["workStationId"] == null) {
+                delete payload["workStationId"]
+            }
+            return payload
         }
-    }
-}
+    },
+    reload: "WorkStationTable"
+})
 
 const columns = [
     {
@@ -496,11 +522,9 @@ const columns = [
             source: warehouse_area_id
         }
     },
-    {
-        name: "stationCode",
-        label: "table.workstationCoding",
+    codeColumn("stationCode", "table.workstationCoding", {
         searchable: true
-    },
+    }),
     {
         name: "stationName",
         label: "table.workstationName"
@@ -511,112 +535,43 @@ const columns = [
         type: "mapping",
         source: "${dictionary.WorkStationMode}"
     },
-    {
-        name: "workStationStatus",
-        label: "table.status",
-        type: "mapping",
-        source: "${dictionary.WorkStationStatus}",
+    statusColumn("workStationStatus", "table.status", {
+        labels: {
+            ONLINE: "status.workstationOnline",
+            PAUSED: "status.workstationPaused",
+            OFFLINE: "status.workstationOffline"
+        },
+        tones: {
+            ONLINE: "success",
+            PAUSED: "warning",
+            OFFLINE: "muted"
+        },
         searchable: {
             type: "select",
             source: "${dictionary.WorkStationStatus}"
         }
-    },
+    }),
     {
         name: "workLocations",
         hidden: true
     },
-    ...create_update_columns
+    ...auditColumns()
 ]
 
-const searchIdentity = "WWorkStation"
-const showColumns = columns
-
-const schema = {
-    type: "page",
+const schema = crudPage({
     title: "workstationManagement.title",
-    toolbar: [],
-    data: {
-        dictionary: "${ls:dictionary}"
-    },
-    body: [
-        {
-            type: "crud",
-            syncLocation: false,
-            name: "role",
-            api: api_crud_search_by_warehouseCode,
-            defaultParams: {
-                searchIdentity: searchIdentity,
-                showColumns: showColumns,
-                searchObject: {
-                    orderBy: "update_time desc"
-                }
-            },
-            autoFillHeight: true,
-            autoGenerateFilter: {
-                columnsNum: 3,
-                showBtnToolbar: true
-            },
-            headerToolbar: [add],
-            footerToolbar: ["switch-per-page", "statistics", "pagination"],
-            columns: [
-                ...columns,
-                {
-                    type: "operation",
-                    label: "table.operation",
-                    width: 180,
-                    buttons: [
-                        {
-                            label: "button.modify",
-                            type: "button",
-                            actionType: "dialog",
-                            dialog: {
-                                title: "button.modify",
-                                size: "lg",
-                                closeOnEsc: true,
-                                closeOnOutside: true,
-                                body: {
-                                    type: "form",
-                                    api: api_work_station_add,
-                                    initApi: api_work_station_get,
-                                    body: baseInfoForm
-                                }
-                            }
-                        },
-                        {
-                            label: "table.workstationConfiguration",
-                            type: "button",
-                            actionType: "dialog",
-                            dialog: {
-                                title: "table.workstationConfiguration",
-                                size: "lg",
-                                closeOnEsc: true,
-                                closeOnOutside: true,
-                                body: {
-                                    type: "form",
-                                    api: api_work_station_config_add,
-                                    initApi: {
-                                        method: "post",
-                                        url: api_work_station_config_get,
-                                        adaptor: function (payload: any) {
-                                            // 新增配置时，删除后端返回的空 workStationId，避免将上下文中获取的 workStationId 覆盖掉
-                                            if (
-                                                payload["workStationId"] == null
-                                            ) {
-                                                delete payload["workStationId"]
-                                            }
-                                            return payload
-                                        }
-                                    },
-                                    body: configInfoForm
-                                }
-                            }
-                        }
-                    ],
-                    toggled: true
-                }
-            ]
-        }
-    ]
-}
+    name: "WorkStationTable",
+    searchIdentity: "WWorkStation",
+    api: api_crud_search_by_warehouseCode,
+    columns,
+    orderBy: "update_time desc",
+    pageActions: [addButton({ target: "WorkStationTable", drawer: addDrawer })],
+    rowActions: [
+        editButton(editDrawer),
+        editButton(configDrawer, "table.workstationConfiguration")
+    ],
+    operationWidth: 180,
+    empty: "emptyState.workstation"
+})
 
 export default schema2component(schema)

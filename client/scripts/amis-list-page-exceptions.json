@@ -1,0 +1,31 @@
+{
+    "version": 1,
+    "updated": "2026-11-02",
+    "entries": [
+        {
+            "file": "src/pages/wms/station/instances/outbound/custom-actions/TaskDetail/OutboundTaskDetail.tsx",
+            "reason": "Embedded workstation table; not a top-level list page.",
+            "permanent": true
+        },
+        {
+            "file": "src/pages/wms/station/instances/receive/custom-actions/CallContainer/Content.tsx",
+            "reason": "Embedded workstation table; not a top-level list page.",
+            "permanent": true
+        },
+        {
+            "file": "src/pages/wms/station/instances/receive/custom-actions/TaskDetail/Content.tsx",
+            "reason": "Embedded workstation table; not a top-level list page.",
+            "permanent": true
+        },
+        {
+            "file": "src/pages/wms/station/instances/stocktake/custom-actions/RecieveTask/Content.tsx",
+            "reason": "Embedded workstation table; not a top-level list page.",
+            "permanent": true
+        },
+        {
+            "file": "src/pages/wms/station/instances/stocktake/operations/components/Process.tsx",
+            "reason": "Embedded workstation table; not a top-level list page.",
+            "permanent": true
+        }
+    ]
+}

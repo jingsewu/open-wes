@@ -67,7 +67,7 @@ export const address = [
         }
     },
     {
-        label: "table.district/county",
+        label: "table.districtCounty",
         type: "select",
         name: "district",
         initFetchOn: "data.city",
@@ -87,25 +87,25 @@ export const address = [
 
 export const volume = [
     {
-        label: "table.volume(mm³)",
+        label: "table.volumeMm3",
         type: "input-number",
         name: "volume"
         // description: "mm³"
     },
     {
-        label: "table.length(mm)",
+        label: "table.lengthMm",
         type: "input-number",
         name: "length"
         // description: "mm"
     },
     {
-        label: "table.width(mm)",
+        label: "table.widthMm",
         type: "input-number",
         name: "width"
         // description: "mm"
     },
     {
-        label: "table.height(mm)",
+        label: "table.heightMm",
         type: "input-number",
         name: "height"
         // description: "mm"

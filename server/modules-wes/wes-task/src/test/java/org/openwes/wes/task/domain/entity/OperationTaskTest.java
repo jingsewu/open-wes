@@ -97,14 +97,13 @@ class OperationTaskTest {
     }
 
     @Test
-    void testSetActualWorkStation_ShouldUpdateWorkStationId() throws Exception {
-        Field field = OperationTask.class.getDeclaredField("assignedStationSlot");
-        field.setAccessible(true);
-        Map<Long, String> mockSlot = new HashMap<>();
-        mockSlot.put(2L, "SLOT-002");
-        field.set(operationTask, mockSlot);
+    void testSetActualWorkStation_ShouldUpdateWorkStationId() {
+        // setActualWorkStation also resolves the target location from the assigned slot map,
+        // so the task must carry the station-to-slot assignment before the call.
+        operationTask.setAssignedStationSlot(java.util.Map.of(2L, "SLOT-1"));
 
         operationTask.setActualWorkStation(2L);
+
         assertEquals(2L, operationTask.getWorkStationId());
     }
 }

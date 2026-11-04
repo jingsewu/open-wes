@@ -1,4 +1,0 @@
-dependencies {
-    implementation project(path: ":modules-plugin:plugin-extension", configuration: 'default')
-    annotationProcessor 'org.pf4j:pf4j'
-}

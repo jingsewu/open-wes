@@ -4,15 +4,30 @@ import {
     warehouse_area_id,
     work_station
 } from "@/pages/wms/constants/select_search_api_contant"
-import { create_update_columns } from "@/utils/commonContants"
 import {
     api_empty_container_outbound_add,
     api_empty_container_outbound_cancel,
     api_empty_container_outbound_execute
 } from "@/pages/wms/data_center/constants/api_constant"
 import { api_crud_search_by_warehouseCode } from "@/pages/constantApi"
+import {
+    addButton,
+    auditColumns,
+    codeColumn,
+    crudPage,
+    detailButton,
+    formDrawer,
+    linkAction,
+    nestedTable,
+    numberColumn,
+    statusColumn
+} from "@/utils/amis/presets"
+import {
+    emptyContainerOutboundDetailStatus,
+    emptyContainerOutboundStatus
+} from "@/utils/amis/statusMaps"
 
-let warehouseCode = localStorage.getItem("warehouseCode")
+const warehouseCode = localStorage.getItem("warehouseCode")
 
 const form = [
     {
@@ -69,24 +84,13 @@ const form = [
     }
 ]
 
-const add = {
-    type: "button",
-    actionType: "dialog",
-    icon: "fa fa-plus",
-    label: "button.add",
-    target: "emptyContainerOutboundOrderTable",
-    dialog: {
-        title: "menu.emptyContainerOutboundOrder",
-        closeOnEsc: true,
-        body: {
-            id: "inputForm",
-            type: "form",
-            api: api_empty_container_outbound_add,
-            preventEnterSubmit: true,
-            body: form
-        }
-    }
-}
+const addDrawer = formDrawer({
+    title: "menu.emptyContainerOutboundOrder",
+    body: form,
+    api: api_empty_container_outbound_add,
+    reload: "EmptyContainerOutboundOrderTable",
+    preventEnterSubmit: true
+})
 
 const columns = [
     {
@@ -94,40 +98,25 @@ const columns = [
         label: "ID",
         hidden: true
     },
-    {
-        name: "orderNo",
-        label: "table.orderNo",
+    codeColumn("orderNo", "table.orderNo", { searchable: true }),
+    codeColumn("containerSpecCode", "table.containerSpecificationNumber", {
         searchable: true
-    },
-    {
-        name: "containerSpecCode",
-        label: "table.containerSpecificationNumber",
-        searchable: true
-    },
-    {
-        name: "planCount",
-        label: "table.plannedQuantity"
-    },
-    {
-        name: "actualCount",
-        label: "table.actualCountQuantity"
-    },
+    }),
+    numberColumn("planCount", "table.plannedQuantity"),
+    numberColumn("actualCount", "table.actualCountQuantity"),
     {
         name: "workStationId",
         label: "table.workstationName",
         source: work_station
     },
-    {
-        name: "emptyContainerOutboundStatus",
-        label: "table.status",
-        type: "mapping",
-        source: "${dictionary.EmptyContainerOutboundOrderStatus}",
+    statusColumn("emptyContainerOutboundStatus", "table.status", {
+        ...emptyContainerOutboundStatus,
         searchable: {
             type: "select",
             source: "${dictionary.EmptyContainerOutboundOrderStatus}"
         }
-    },
-    ...create_update_columns,
+    }),
+    ...auditColumns(),
     {
         name: "warehouseCode",
         label: "table.warehouseCode",
@@ -138,119 +127,92 @@ const columns = [
 const detailColumns = [
     {
         name: "emptyContainerOutboundOrderId",
-        label: "空箱出库单id",
         hidden: true
     },
-    {
-        name: "containerCode",
-        label: "table.containerCode"
-    },
-    {
-        name: "detailStatus",
-        label: "table.status",
-        type: "mapping",
-        source: "${dictionary.EmptyContainerOutboundDetailStatus}"
-    }
+    codeColumn("containerCode", "table.containerCode"),
+    statusColumn(
+        "detailStatus",
+        "table.status",
+        emptyContainerOutboundDetailStatus
+    )
 ]
 
-const searchIdentity = "WEmptyContainerOutboundOrder"
-const searchDetailIdentity = "WEmptyContainerOutboundOrderDetail"
-const showColumns = columns
-const showDetailColumns = detailColumns
-
-const detailDialog = {
+const detailDrawer = {
+    size: "xl",
     title: "emptyContainerOutboundOrder.detail.modal.title",
-    actions: [],
     closeOnEsc: true,
     closeOnOutside: true,
-    size: "xl",
+    actions: [
+        {
+            type: "button",
+            actionType: "close",
+            label: "button.close"
+        }
+    ],
     body: [
         {
-            type: "crud",
-            syncLocation: false,
-            name: "emptyContainerOutboundOrderDetailTable",
+            type: "tpl",
+            tpl: "${orderNo}",
+            className: "owes-drawer-context"
+        },
+        nestedTable({
+            name: "EmptyContainerOutboundOrderDetailTable",
             api: {
                 method: "POST",
                 url: "/search/search?page=${page}&perPage=${perPage}&emptyContainerOutboundOrderId=${id}&emptyContainerOutboundOrderId-op=eq",
                 dataType: "application/json"
             },
-            defaultParams: {
-                searchIdentity: searchDetailIdentity,
-                showColumns: showDetailColumns
-            },
-            footerToolbar: ["switch-per-page", "statistics", "pagination"],
-            columns: detailColumns
-        }
+            searchIdentity: "WEmptyContainerOutboundOrderDetail",
+            columns: detailColumns,
+            empty: "emptyState.emptyContainerOutboundDetail"
+        })
     ]
 }
 
-const schema = {
-    type: "page",
+const bulkActions = [
+    linkAction({
+        label: "button.emptyContainerOutbound.execute",
+        confirmText: "confirm.title.emptyContainerOutbound.execute",
+        api: {
+            method: "post",
+            url: api_empty_container_outbound_execute,
+            data: {
+                orderIds: "${ARRAYMAP(selectedItems, item => item.id)}"
+            }
+        },
+        reload: "EmptyContainerOutboundOrderTable"
+    }),
+    linkAction({
+        label: "button.emptyContainerOutbound.cancel",
+        confirmText: "confirm.title.emptyContainerOutbound.cancel",
+        danger: true,
+        api: {
+            method: "post",
+            url: api_empty_container_outbound_cancel,
+            data: {
+                orderIds: "${ARRAYMAP(selectedItems, item => item.id)}"
+            }
+        },
+        reload: "EmptyContainerOutboundOrderTable"
+    })
+]
+
+const schema = crudPage({
     title: "menu.emptyContainerOutboundOrder",
-    toolbar: [],
-    data: {
-        dictionary: "${ls:dictionary}"
-    },
-    body: [
-        {
-            type: "crud",
-            syncLocation: false,
-            name: "emptyContainerOutboundOrderTable",
-            api: api_crud_search_by_warehouseCode,
-            defaultParams: {
-                searchIdentity: searchIdentity,
-                showColumns: showColumns,
-                searchObject: {
-                    orderBy: "empty_container_outbound_status, update_time desc"
-                }
-            },
-            autoFillHeight: true,
-            autoGenerateFilter: {
-                columnsNum: 3,
-                showBtnToolbar: true
-            },
-            headerToolbar: ["reload", add, "bulkActions"],
-            footerToolbar: ["switch-per-page", "statistics", "pagination"],
-            bulkActions: [
-                {
-                    label: "button.emptyContainerOutbound.execute",
-                    actionType: "ajax",
-                    api: {
-                        method: "post",
-                        url: api_empty_container_outbound_execute,
-                        data: {
-                            orderIds:
-                                "${ARRAYMAP(selectedItems, item => item.id)}"
-                        }
-                    },
-                    confirmText: "confirm.title.emptyContainerOutbound.execute"
-                },
-                {
-                    label: "button.emptyContainerOutbound.cancel",
-                    actionType: "ajax",
-                    api: {
-                        method: "post",
-                        url: api_empty_container_outbound_cancel,
-                        data: {
-                            orderIds:
-                                "${ARRAYMAP(selectedItems, item => item.id)}"
-                        }
-                    },
-                    confirmText: "confirm.title.emptyContainerOutbound.cancel"
-                }
-            ],
-            columns: [
-                ...columns,
-                {
-                    label: "button.detail",
-                    type: "button",
-                    level: "link",
-                    actionType: "dialog",
-                    dialog: detailDialog
-                }
-            ]
-        }
-    ]
-}
+    name: "EmptyContainerOutboundOrderTable",
+    searchIdentity: "WEmptyContainerOutboundOrder",
+    api: api_crud_search_by_warehouseCode,
+    columns,
+    orderBy: "empty_container_outbound_status, update_time desc",
+    pageActions: [
+        addButton({
+            target: "EmptyContainerOutboundOrderTable",
+            drawer: addDrawer
+        })
+    ],
+    bulkActions,
+    rowActions: [detailButton(detailDrawer)],
+    empty: "emptyState.emptyContainerOutbound"
+})
 
 export default schema2component(schema)

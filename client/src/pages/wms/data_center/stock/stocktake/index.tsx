@@ -4,10 +4,19 @@ import {
     warehouse_logic_id
 } from "@/pages/wms/constants/select_search_api_contant"
 import { api_crud_search_by_warehouseCode } from "@/pages/constantApi"
-import { create_update_columns, yes_no_options } from "@/utils/commonContants"
+import { yes_no_options } from "@/utils/commonContants"
+import {
+    auditColumns,
+    codeColumn,
+    crudPage,
+    detailButton,
+    linkAction,
+    statusColumn
+} from "@/utils/amis/presets"
+import { stocktakeOrderStatus } from "@/utils/amis/statusMaps"
 import { add } from "./add"
-import { detailDialog } from "./detail"
-import { recordDialog } from "./record"
+import { detailDrawer } from "./detail"
+import { recordDrawer } from "./record"
 
 const columns = [
     {
@@ -20,11 +29,7 @@ const columns = [
         label: "table.warehouse",
         hidden: true
     },
-    {
-        name: "orderNo",
-        label: "table.countOrderNumber",
-        searchable: true
-    },
+    codeColumn("orderNo", "table.countOrderNumber", { searchable: true }),
     {
         name: "stocktakeType",
         label: "table.orderType",
@@ -42,7 +47,7 @@ const columns = [
         source: "${dictionary.StocktakeCreateMethod}",
         searchable: {
             type: "select",
-            source: "dictionary.StocktakeCreateMethod}"
+            source: "${dictionary.StocktakeCreateMethod}"
         }
     },
     {
@@ -55,122 +60,67 @@ const columns = [
             source: "${dictionary.StocktakeUnitType}"
         }
     },
-    {
-        name: "stocktakeOrderStatus",
-        label: "table.status",
-        type: "mapping",
-        source: "${dictionary.StocktakeOrderStatus}",
+    statusColumn("stocktakeOrderStatus", "table.status", {
+        ...stocktakeOrderStatus,
         searchable: {
             type: "select",
             source: "${dictionary.StocktakeOrderStatus}"
-        },
-        classNameExpr:
-            "${ stocktakeOrderStatus === 'STARTED' ? 'startStatus' : '' }"
-    },
+        }
+    }),
     {
         name: "warehouseAreaId",
         label: "table.warehouseAreaBelongs",
         type: "mapping",
         source: warehouse_area_id,
-        searchable: {
-            type: "select",
-            source: warehouse_area_id
-        }
+        searchable: { type: "select", source: warehouse_area_id }
     },
     {
         name: "warehouseLogicId",
         label: "table.logicalAreaName",
         type: "mapping",
         source: warehouse_logic_id,
-        searchable: {
-            type: "select",
-            source: warehouse_logic_id
-        }
+        searchable: { type: "select", source: warehouse_logic_id }
     },
     {
         name: "abnormal",
         label: "table.exceptionIdentification",
         type: "mapping",
         map: yes_no_options,
-        searchable: {
-            type: "select",
-            options: yes_no_options
-        }
+        searchable: { type: "select", options: yes_no_options }
     },
-    ...create_update_columns
+    ...auditColumns()
 ]
 
-const searchIdentity = "WStocktakeOrder"
-
-const schema = {
-    type: "page",
+const schema = crudPage({
     title: "wms.menu.inventoryCheck",
-    toolbar: [],
-    data: {
-        dictionary: "${ls:dictionary}"
-    },
-    body: [
-        {
-            type: "crud",
-            syncLocation: false,
-            name: "stocktakeOrderTable",
-            api: api_crud_search_by_warehouseCode,
-            defaultParams: {
-                searchIdentity: searchIdentity,
-                showColumns: columns,
-                searchObject: {
-                    orderBy: "update_time desc"
+    name: "stocktakeOrderTable",
+    searchIdentity: "WStocktakeOrder",
+    api: api_crud_search_by_warehouseCode,
+    columns,
+    orderBy: "update_time desc",
+    pageActions: [add],
+    bulkActions: [
+        linkAction({
+            label: "button.stocktake.order.execute",
+            confirmText: "confirm.stocktake.order.execute",
+            api: {
+                method: "post",
+                url: "/wms/stocktake/order/execute",
+                data: {
+                    warehouseCode: localStorage.getItem("warehouseCode"),
+                    orderNos: "${ARRAYMAP(selectedItems, item => item.orderNo)}",
+                    taskCount: "${COUNT(selectedItems)}"
                 }
             },
-            autoFillHeight: true,
-            autoGenerateFilter: {
-                columnsNum: 3,
-                showBtnToolbar: true
-            },
-            headerToolbar: ["reload", add, "bulkActions"],
-            footerToolbar: ["switch-per-page", "statistics", "pagination"],
-            bulkActions: [
-                {
-                    label: "button.stocktake.order.execute",
-                    actionType: "ajax",
-                    api: {
-                        method: "post",
-                        url: "/wms/stocktake/order/execute",
-                        data: {
-                            warehouseCode:
-                                localStorage.getItem("warehouseCode"),
-                            orderNos:
-                                "${ARRAYMAP(selectedItems, item => item.orderNo)}",
-                            taskCount: "${COUNT(selectedItems)}"
-                        }
-                    },
-                    confirmText: "confirm.stocktake.order.execute"
-                }
-            ],
-            columns: [
-                ...columns,
-                {
-                    type: "operation",
-                    label: "table.operation",
-                    // width: 130,
-                    buttons: [
-                        {
-                            label: "button.detail",
-                            type: "button",
-                            actionType: "dialog",
-                            dialog: detailDialog
-                        },
-                        {
-                            label: "button.inventoryRecord",
-                            type: "button",
-                            actionType: "dialog",
-                            dialog: recordDialog
-                        }
-                    ]
-                }
-            ]
-        }
-    ]
-}
+            reload: "stocktakeOrderTable"
+        })
+    ],
+    rowActions: [
+        detailButton(detailDrawer),
+        detailButton(recordDrawer, "button.inventoryRecord")
+    ],
+    operationWidth: 130,
+    empty: "emptyState.stocktake"
+})
 
 export default schema2component(schema)

@@ -5,10 +5,19 @@ import {
     api_sku_get,
     api_sku_update
 } from "@/pages/wms/config_center/constants/api_constant"
-import { create_update_columns, enable_options } from "@/utils/commonContants"
+import { enable_options } from "@/utils/commonContants"
+import {
+    addButton,
+    auditColumns,
+    codeColumn,
+    crudPage,
+    editButton,
+    formDrawer,
+    requiredField
+} from "@/utils/amis/presets"
 import { api_crud_search_by_warehouseCode } from "@/pages/constantApi"
 
-let warehouseCode = localStorage.getItem("warehouseCode")
+const warehouseCode = localStorage.getItem("warehouseCode")
 
 const form = [
     {
@@ -27,14 +36,14 @@ const form = [
                         type: "input-text",
                         name: "skuCode",
                         label: "skuArea.skuCode",
-                        required: true,
+                        ...requiredField("validation.sku.codeRequired"),
                         disabledOn: "this.id != null"
                     },
                     {
                         type: "input-text",
                         name: "skuName",
                         label: "skuArea.productName",
-                        required: true
+                        ...requiredField("validation.sku.nameRequired")
                     },
                     {
                         type: "input-text",
@@ -61,7 +70,7 @@ const form = [
                         name: "ownerCode",
                         label: "table.productOwner",
                         source: owner_code,
-                        required: true,
+                        ...requiredField("validation.sku.ownerRequired"),
                         disabledOn: "this.id != null"
                     },
                     {
@@ -73,42 +82,36 @@ const form = [
 
                     // 体积信息
                     {
-                        label: "table.volume",
+                        label: "table.volumeMm3",
                         type: "input-number",
-                        name: "volumeDTO.volume",
-                        description: "mm³"
+                        name: "volumeDTO.volume"
                     },
                     {
-                        label: "table.length",
+                        label: "table.lengthMm",
                         type: "input-number",
-                        name: "volumeDTO.length",
-                        description: "mm"
+                        name: "volumeDTO.length"
                     },
                     {
-                        label: "table.width",
+                        label: "table.widthMm",
                         type: "input-number",
-                        name: "volumeDTO.width",
-                        description: "mm"
+                        name: "volumeDTO.width"
                     },
                     {
-                        label: "table.height",
+                        label: "table.heightMm",
                         type: "input-number",
-                        name: "volumeDTO.height",
-                        description: "mm"
+                        name: "volumeDTO.height"
                     },
 
                     // 重量信息
                     {
-                        label: "table.grossWeight",
+                        label: "table.grossWeightMg",
                         type: "input-number",
-                        name: "weight.grossWeight",
-                        description: "table.milligram(mg)"
+                        name: "weight.grossWeight"
                     },
                     {
-                        label: "table.netWeight",
+                        label: "table.netWeightMg",
                         type: "input-number",
-                        name: "weight.netWeight",
-                        description: "table.milligram(mg)"
+                        name: "weight.netWeight"
                     },
 
                     // 图片属性
@@ -173,14 +176,12 @@ const form = [
                     {
                         type: "input-text",
                         name: "skuConfig.shelfLife",
-                        label: "table.shelfLife",
-                        description: "table.days"
+                        label: "table.shelfLifeDays"
                     },
                     {
                         type: "input-text",
                         name: "skuConfig.effectiveDays",
-                        label: "table.expirationDate",
-                        description: "table.days"
+                        label: "table.effectiveDaysWithUnit"
                     },
                     {
                         type: "select",
@@ -234,22 +235,25 @@ const form = [
     }
 ]
 
-const add = {
-    type: "button",
-    actionType: "drawer",
-    icon: "fa fa-plus",
-    label: "button.add",
-    target: "role",
-    drawer: {
-        title: "button.add",
-        closeOnEsc: true,
-        body: {
-            type: "form",
-            api: api_sku_add,
-            body: form
-        }
-    }
-}
+const addDrawer = formDrawer({
+    title: "SKUManagement.addTitle",
+    size: "lg",
+    columnCount: 1,
+    body: form,
+    api: api_sku_add,
+    reload: "SkuTable"
+})
+
+const editDrawer = formDrawer({
+    title: "SKUManagement.editTitle",
+    size: "lg",
+    columnCount: 1,
+    context: "${skuCode} · ${skuName}",
+    body: form,
+    initApi: api_sku_get,
+    api: api_sku_update,
+    reload: "SkuTable"
+})
 
 const columns = [
     {
@@ -268,20 +272,16 @@ const columns = [
         hidden: true
     },
     {
-        name: "ownerCode",
-        label: "table.productOwner",
+        ...codeColumn("ownerCode", "table.productOwner", {
+            searchable: {
+                type: "select",
+                source: owner_code
+            }
+        }),
         type: "mapping",
-        source: owner_code,
-        searchable: {
-            type: "select",
-            source: owner_code
-        }
+        source: owner_code
     },
-    {
-        name: "skuCode",
-        label: "skuArea.skuCode",
-        searchable: true
-    },
+    codeColumn("skuCode", "skuArea.skuCode", { searchable: true }),
     {
         name: "skuName",
         label: "skuArea.productName",
@@ -333,68 +333,19 @@ const columns = [
         type: "mapping",
         source: "${dictionary.SkuAttributeSubCategory}"
     },
-    ...create_update_columns
+    ...auditColumns()
 ]
 
-const searchIdentity = "MSkuMainData"
-const showColumns = columns
-
-const schema = {
-    type: "page",
+const schema = crudPage({
     title: "SKUManagement.title",
-    toolbar: [],
-    data: {
-        dictionary: "${ls:dictionary}"
-    },
-    body: [
-        {
-            type: "crud",
-            syncLocation: false,
-            name: "role",
-            api: api_crud_search_by_warehouseCode,
-            defaultParams: {
-                searchIdentity: searchIdentity,
-                showColumns: showColumns,
-                searchObject: {
-                    orderBy: "update_time desc"
-                }
-            },
-            autoFillHeight: true,
-            autoGenerateFilter: {
-                columnsNum: 3,
-                showBtnToolbar: true
-            },
-            headerToolbar: [add],
-            footerToolbar: ["switch-per-page", "statistics", "pagination"],
-            columns: [
-                ...columns,
-                {
-                    type: "operation",
-                    label: "table.operation",
-                    width: 100,
-                    buttons: [
-                        {
-                            label: "button.modify",
-                            type: "button",
-                            actionType: "drawer",
-                            drawer: {
-                                title: "button.modify",
-                                closeOnEsc: true,
-                                closeOnOutside: true,
-                                body: {
-                                    type: "form",
-                                    initApi: api_sku_get,
-                                    api: api_sku_update,
-                                    controls: form
-                                }
-                            }
-                        }
-                    ],
-                    toggled: true
-                }
-            ]
-        }
-    ]
-}
+    name: "SkuTable",
+    searchIdentity: "MSkuMainData",
+    api: api_crud_search_by_warehouseCode,
+    columns,
+    orderBy: "update_time desc",
+    pageActions: [addButton({ target: "SkuTable", drawer: addDrawer })],
+    rowActions: [editButton(editDrawer)],
+    empty: "emptyState.sku"
+})
 
 export default schema2component(schema)

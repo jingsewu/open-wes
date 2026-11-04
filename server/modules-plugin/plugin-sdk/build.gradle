@@ -16,3 +16,7 @@ dependencies {
     annotationProcessor 'org.mapstruct:mapstruct-processor'
     implementation 'org.projectlombok:lombok-mapstruct-binding'
 }
+
+test {
+    ignoreFailures = false
+}

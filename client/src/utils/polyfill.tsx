@@ -138,16 +138,49 @@ if (typeof ResizeObserver !== "undefined") {
     const OriginalResizeObserver = ResizeObserver
 
     ResizeObserver = function (callback: ResizeObserverCallback) {
+        // The rAF deferral must be cancellable. Without this, a callback queued
+        // before disconnect() still runs afterwards and can reschedule debounced
+        // work (e.g. AMIS table resize handlers) on an unmounted component.
+        let pendingFrame: number | null = null
+        let disconnected = false
+
         const observer = new OriginalResizeObserver((entries, observer) => {
+            if (disconnected) {
+                return
+            }
             // 使用 requestAnimationFrame 来延迟回调执行，避免多子节点警告
-            requestAnimationFrame(() => {
+            if (pendingFrame !== null) {
+                cancelAnimationFrame(pendingFrame)
+            }
+            pendingFrame = requestAnimationFrame(() => {
+                pendingFrame = null
+                if (disconnected) {
+                    return
+                }
                 try {
                     callback(entries, observer)
                 } catch (error) {
-                    console.warn("ResizeObserver 回调执行出错:", error)
+                    console.warn("ResizeObserver callback failed:", error)
                 }
             })
         })
+
+        const disconnect = observer.disconnect.bind(observer)
+        observer.disconnect = () => {
+            disconnected = true
+            if (pendingFrame !== null) {
+                cancelAnimationFrame(pendingFrame)
+                pendingFrame = null
+            }
+            disconnect()
+        }
+
+        // Native ResizeObserver can be reused after disconnect().
+        const observe = observer.observe.bind(observer)
+        observer.observe = (target: Element, options?: ResizeObserverOptions) => {
+            disconnected = false
+            observe(target, options)
+        }
 
         return observer
     } as any

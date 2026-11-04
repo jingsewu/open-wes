@@ -1,45 +1,50 @@
+import { codeColumn, nestedTable } from "@/utils/amis/presets"
+
 const detailColumns = [
     {
         name: "stocktakeOrderId",
-        label: "盘点单ID",
+        label: "ID",
         hidden: true
     },
     {
         name: "stocktakeUnitType",
         label: "table.stocktakeUnitType"
     },
-    {
-        name: "unitCode",
-        label: "table.unitCode"
-    },
+    codeColumn("unitCode", "table.unitCode"),
     {
         name: "unitId",
         label: "table.unitId"
     }
 ]
 
-export const detailDialog = {
+export const detailDrawer = {
+    size: "xl",
     title: "inventoryCounting.detail.modal.title",
-    actions: [],
     closeOnEsc: true,
     closeOnOutside: true,
-    size: "xl",
+    actions: [
+        {
+            type: "button",
+            actionType: "close",
+            label: "button.close"
+        }
+    ],
     body: [
         {
-            type: "crud",
-            syncLocation: false,
+            type: "tpl",
+            tpl: "${orderNo}",
+            className: "owes-drawer-context"
+        },
+        nestedTable({
             name: "stocktakeOrderDetailTable",
             api: {
                 method: "POST",
                 url: "/search/search?page=${page}&perPage=${perPage}&stocktakeOrderId=${id}&stocktakeOrderId-op=eq",
                 dataType: "application/json"
             },
-            defaultParams: {
-                searchIdentity: "WStocktakeOrderDetail",
-                showColumns: detailColumns
-            },
-            footerToolbar: ["switch-per-page", "statistics", "pagination"],
-            columns: detailColumns
-        }
+            searchIdentity: "WStocktakeOrderDetail",
+            columns: detailColumns,
+            empty: "emptyState.stocktakeDetail"
+        })
     ]
 }

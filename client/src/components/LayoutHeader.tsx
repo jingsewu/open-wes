@@ -1,12 +1,14 @@
 import React, { useState } from "react"
 import { useHistory } from "react-router"
 import { useTranslation } from "react-i18next"
+import { observer } from "mobx-react"
 import { Button, Dropdown, Menu, Select } from "antd"
 import { DownOutlined, KeyOutlined, LogoutOutlined } from "@ant-design/icons"
 import { PanelLeftClose, PanelLeftOpen } from "lucide-react"
 import type { MenuProps } from "antd"
 
 import store from "@/stores"
+import type { TableDensity } from "@/stores"
 
 // Module-scoped ID prevents duplicate gradient IDs when rendered in multiple contexts
 const LOGO_GRAD_ID = "openwes-logo-grad"
@@ -14,11 +16,14 @@ import { workStationEventLoop } from "@/pages/wms/station/event-loop/eventLoopIn
 
 import Language from "@/pages/components/Language"
 import ChangePasswordForm from "@/pages/components/ChangePassword"
+import { useConsoleShortcuts } from "@/utils/amis/useConsoleShortcuts"
 import { colors } from "@/theme"
 
 const Divider = () => (
     <div style={{ width: 1, height: 18, background: colors.border, margin: "0 4px", flexShrink: 0 }} />
 )
+
+const TABLE_DENSITIES: TableDensity[] = ["standard", "compact"]
 
 const WarehouseSelect = ({
     value,
@@ -134,6 +139,7 @@ const Header = ({
     onWarehouseChange,
     onLanguageChange
 }: HeaderProps) => {
+    useConsoleShortcuts()
     const history = useHistory()
     const { t } = useTranslation()
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
@@ -186,6 +192,45 @@ const Header = ({
                     {store.user.name?.[0]?.toUpperCase() ?? "U"}
                 </div>
                 <span style={{ fontSize: 13, fontWeight: 500, color: colors.text }}>{store.user.name}</span>
+            </div>
+            {/* Table density preference */}
+            <div style={{ padding: "10px 16px", borderBottom: "1px solid #f3f4f6" }}>
+                <div style={{ fontSize: 12, color: "var(--colors-neutral-text-5)", marginBottom: 6 }}>
+                    {t("common.tableDensity")}
+                </div>
+                <div style={{ display: "flex", gap: 6 }}>
+                    {TABLE_DENSITIES.map((density) => {
+                        const active = store.tableDensity === density
+                        return (
+                            <button
+                                key={density}
+                                type="button"
+                                onClick={() => store.setTableDensity(density)}
+                                style={{
+                                    flex: 1,
+                                    padding: "4px 0",
+                                    fontSize: 12,
+                                    borderRadius: 6,
+                                    cursor: "pointer",
+                                    border: `1px solid ${
+                                        active
+                                            ? "var(--colors-brand-5)"
+                                            : "var(--colors-neutral-line-7)"
+                                    }`,
+                                    background: active
+                                        ? "var(--colors-brand-10)"
+                                        : "transparent",
+                                    color: active
+                                        ? "var(--colors-brand-4)"
+                                        : "var(--colors-neutral-text-4)",
+                                    fontWeight: active ? 600 : 500
+                                }}
+                            >
+                                {t(`common.density.${density}`)}
+                            </button>
+                        )
+                    })}
+                </div>
             </div>
             {/* Actions */}
             <div style={{ padding: "4px 0" }}>
@@ -321,4 +366,4 @@ const DropdownItem = ({
     )
 }
 
-export default Header
+export default observer(Header)

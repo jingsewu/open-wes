@@ -4,7 +4,15 @@ import {
     api_owner_get,
     api_owner_update
 } from "@/pages/wms/config_center/constants/api_constant"
-import { create_update_columns } from "@/utils/commonContants"
+import {
+    addButton,
+    auditColumns,
+    codeColumn,
+    crudPage,
+    editButton,
+    formDrawer,
+    requiredField
+} from "@/utils/amis/presets"
 import {
     city,
     country,
@@ -13,7 +21,7 @@ import {
 } from "@/pages/wms/constants/select_search_api_contant"
 import { api_crud_search_by_warehouseCode } from "@/pages/constantApi"
 
-let warehouseCode = localStorage.getItem("warehouseCode")
+const warehouseCode = localStorage.getItem("warehouseCode")
 
 const form = [
     {
@@ -28,20 +36,20 @@ const form = [
         label: "skuArea.ownerCode",
         type: "input-text",
         name: "ownerCode",
-        required: true
+        ...requiredField("validation.owner.codeRequired")
     },
     {
         label: "table.ownerName",
         type: "input-text",
         name: "ownerName",
-        required: true
+        ...requiredField("validation.owner.nameRequired")
     },
     {
         label: "table.ownerType",
         type: "select",
         name: "ownerType",
         source: "${dictionary.OwnerType}",
-        required: true
+        ...requiredField("validation.owner.typeRequired")
     },
     {
         label: "table.warehouseCode",
@@ -78,7 +86,7 @@ const form = [
         }
     },
     {
-        label: "table.district/county",
+        label: "table.districtCounty",
         type: "select",
         name: "addressDTO.district",
         initFetchOn: "data.addressDTO.city",
@@ -125,22 +133,21 @@ const form = [
     }
 ]
 
-const add = {
-    type: "button",
-    actionType: "drawer",
-    icon: "fa fa-plus",
-    label: "button.add",
-    target: "role",
-    drawer: {
-        title: "button.add",
-        closeOnEsc: true,
-        body: {
-            type: "form",
-            api: api_owner_add,
-            body: form
-        }
-    }
-}
+const addDrawer = formDrawer({
+    title: "shipperManagement.addTitle",
+    body: form,
+    api: api_owner_add,
+    reload: "OwnerTable"
+})
+
+const editDrawer = formDrawer({
+    title: "shipperManagement.editTitle",
+    context: "${ownerCode} · ${ownerName}",
+    body: form,
+    initApi: api_owner_get,
+    api: api_owner_update,
+    reload: "OwnerTable"
+})
 
 const columns = [
     {
@@ -158,11 +165,9 @@ const columns = [
         label: "table.warehouseCode",
         hidden: true
     },
-    {
-        name: "ownerCode",
-        label: "skuArea.ownerCode",
+    codeColumn("ownerCode", "skuArea.ownerCode", {
         searchable: true
-    },
+    }),
     {
         name: "ownerName",
         label: "table.ownerName",
@@ -192,7 +197,7 @@ const columns = [
     },
     {
         name: "district",
-        label: "table.district/county"
+        label: "table.districtCounty"
     },
     {
         name: "name",
@@ -210,68 +215,24 @@ const columns = [
         name: "fax",
         label: "table.fax"
     },
-    ...create_update_columns
+    ...auditColumns()
 ]
 
-const searchIdentity = "MOwnerMainData"
-const showColumns = columns
-
-const schema = {
-    type: "page",
+const schema = crudPage({
     title: "shipperManagement.title",
-    toolbar: [],
-    data: {
-        dictionary: "${ls:dictionary}"
-    },
-    body: [
-        {
-            type: "crud",
-            syncLocation: false,
-            name: "role",
-            api: api_crud_search_by_warehouseCode,
-            defaultParams: {
-                searchIdentity: searchIdentity,
-                showColumns: showColumns,
-                searchObject: {
-                    orderBy: "update_time desc"
-                }
-            },
-            autoFillHeight: true,
-            autoGenerateFilter: {
-                columnsNum: 3,
-                showBtnToolbar: true
-            },
-            headerToolbar: [add],
-            footerToolbar: ["switch-per-page", "statistics", "pagination"],
-            columns: [
-                ...columns,
-                {
-                    type: "operation",
-                    label: "table.operation",
-                    width: 100,
-                    buttons: [
-                        {
-                            label: "button.modify",
-                            type: "button",
-                            actionType: "drawer",
-                            drawer: {
-                                title: "button.modify",
-                                closeOnEsc: true,
-                                closeOnOutside: true,
-                                body: {
-                                    type: "form",
-                                    initApi: api_owner_get,
-                                    api: api_owner_update,
-                                    body: form
-                                }
-                            }
-                        }
-                    ],
-                    toggled: true
-                }
-            ]
-        }
-    ]
-}
+    name: "OwnerTable",
+    searchIdentity: "MOwnerMainData",
+    api: api_crud_search_by_warehouseCode,
+    columns,
+    orderBy: "update_time desc",
+    pageActions: [
+        addButton({
+            target: "OwnerTable",
+            drawer: addDrawer
+        })
+    ],
+    rowActions: [editButton(editDrawer)],
+    empty: "emptyState.shipper"
+})
 
 export default schema2component(schema)

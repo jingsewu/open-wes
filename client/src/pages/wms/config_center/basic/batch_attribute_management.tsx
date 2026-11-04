@@ -1,6 +1,5 @@
 import schema2component from "@/utils/schema2component"
 import {
-    create_update_columns,
     enable_options,
     true_false_options
 } from "@/utils/commonContants"
@@ -11,6 +10,14 @@ import {
     api_batch_attribute_update
 } from "@/pages/wms/config_center/constants/api_constant"
 import { api_crud_search } from "@/pages/constantApi"
+import {
+    addButton,
+    auditColumns,
+    codeColumn,
+    crudPage,
+    editButton,
+    formDrawer
+} from "@/utils/amis/presets"
 
 const form = [
     {
@@ -111,22 +118,25 @@ const form = [
     }
 ]
 
-const add = {
-    type: "button",
-    actionType: "dialog",
-    icon: "fa fa-plus",
-    label: "button.add",
-    dialog: {
-        title: "button.add",
-        size: "lg",
-        closeOnEsc: true,
-        body: {
-            type: "form",
-            api: api_batch_attribute_add,
-            body: form
-        }
-    }
-}
+const addDrawer = formDrawer({
+    title: "batchManagement.addTitle",
+    size: "lg",
+    columnCount: 1,
+    body: form,
+    api: api_batch_attribute_add,
+    reload: "batchAttributeTable"
+})
+
+const editDrawer = formDrawer({
+    title: "batchManagement.editTitle",
+    size: "lg",
+    columnCount: 1,
+    context: "${code} · ${name}",
+    body: form,
+    initApi: api_batch_attribute_get,
+    api: api_batch_attribute_update,
+    reload: "batchAttributeTable"
+})
 
 const columns = [
     {
@@ -139,11 +149,7 @@ const columns = [
         label: "Version",
         hidden: true
     },
-    {
-        name: "code",
-        label: "table.ruleEncoding",
-        searchable: true
-    },
+    codeColumn("code", "table.ruleEncoding", { searchable: true }),
     {
         name: "name",
         label: "table.ruleName",
@@ -175,69 +181,19 @@ const columns = [
         type: "mapping",
         map: enable_options
     },
-    ...create_update_columns
+    ...auditColumns()
 ]
 
-const searchIdentity = "MBatchAttributeConfig"
-const showColumns = columns
-
-const schema = {
-    type: "page",
+const schema = crudPage({
     title: "batchManagement.title",
-    toolbar: [],
-    data: {
-        dictionary: "${ls:dictionary}"
-    },
-    body: [
-        {
-            type: "crud",
-            syncLocation: false,
-            name: "batchAttributeTable",
-            api: api_crud_search,
-            defaultParams: {
-                searchIdentity: searchIdentity,
-                showColumns: showColumns,
-                searchObject: {
-                    orderBy: "update_time desc"
-                }
-            },
-            autoFillHeight: true,
-            autoGenerateFilter: {
-                columnsNum: 3,
-                showBtnToolbar: true
-            },
-            headerToolbar: [add],
-            footerToolbar: ["switch-per-page", "statistics", "pagination"],
-            columns: [
-                ...columns,
-                {
-                    type: "operation",
-                    label: "table.operation",
-                    width: 100,
-                    buttons: [
-                        {
-                            label: "button.modify",
-                            type: "button",
-                            actionType: "dialog",
-                            dialog: {
-                                title: "button.modify",
-                                size: "lg",
-                                closeOnEsc: true,
-                                closeOnOutside: true,
-                                body: {
-                                    type: "form",
-                                    initApi: api_batch_attribute_get,
-                                    api: api_batch_attribute_update,
-                                    controls: form
-                                }
-                            }
-                        }
-                    ],
-                    toggled: true
-                }
-            ]
-        }
-    ]
-}
+    name: "batchAttributeTable",
+    searchIdentity: "MBatchAttributeConfig",
+    api: api_crud_search,
+    columns,
+    orderBy: "update_time desc",
+    pageActions: [addButton({ target: "batchAttributeTable", drawer: addDrawer })],
+    rowActions: [editButton(editDrawer)],
+    empty: "emptyState.batchAttribute"
+})
 
 export default schema2component(schema)

@@ -98,6 +98,7 @@ const SelectStation = ({ onStationSelected }: SelectStationProps) => {
                     value={stationId}
                     onChange={handleChange}
                     options={options}
+                    // amis-lint-disable: AntD field mapping, not user-facing copy
                     fieldNames={{ label: "stationName", value: "id" }}
                     disabled={isDisabled}
                     placeholder="请选择工作站"

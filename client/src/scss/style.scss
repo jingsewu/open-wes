@@ -20,6 +20,21 @@
     font-family: var(--font-family);
 }
 
+/* Icon fonts must keep their own family: the universal rule above also
+   matches ::before, which would otherwise render Font Awesome glyphs with
+   Plus Jakarta Sans and show them as empty squares. The glyph font comes
+   from the FA class on the <i>, so let the pseudo-element inherit it. */
+.fa::before,
+.fas::before,
+.far::before,
+.fa-solid::before,
+.fa-regular::before,
+.fa-classic::before,
+.fab::before,
+.fa-brands::before {
+    font-family: inherit;
+}
+
 .routes-wrapper {
     position: absolute;
     width: 100%;
@@ -124,125 +139,61 @@
     color: #94a3b8 !important;
 }
 
-/* ─── Login Page ─────────────────────────────────── */
-.login-page-container {
+/* Login page styles live in scss/login.scss */
+
+/* ─── Legacy form styles ─────────────────────────── */
+.card {
+    height: 420px;
+    background-color: white;
+}
+
+.forms-inputs {
+    position: relative;
+}
+
+.forms-inputs span {
     position: absolute;
-    width: 100vw;
-    height: 100vh;
+    top: -18px;
+    left: 10px;
+    background-color: #fff;
+    padding: 5px 10px;
+    font-size: 15px;
 }
 
-.login-brand-panel {
-    flex: 1 1 0;
-    min-width: 0;
-    background: linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #1e3a5f 100%);
-    position: relative;
-    overflow: hidden;
+.forms-inputs input {
+    height: 50px;
+    border: 2px solid #eee;
+}
+
+.forms-inputs input:focus {
+    box-shadow: none;
+    outline: none;
+    border: 2px solid #000;
+}
+
+.btn {
+    height: 50px;
+    background-color: "#1d2642";
+}
+
+.success-data {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 48px;
-
-    &::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background-image:
-            linear-gradient(rgba(59, 130, 246, 0.06) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(59, 130, 246, 0.06) 1px, transparent 1px);
-        background-size: 40px 40px;
-        animation: gridPulse 8s ease-in-out infinite;
-    }
-
-    &::after {
-        content: "";
-        position: absolute;
-        width: 400px;
-        height: 400px;
-        border-radius: 50%;
-        background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
-        top: -100px;
-        right: -100px;
-        animation: floatOrb 12s ease-in-out infinite;
-    }
 }
-
-@keyframes gridPulse {
-    0%,
-    100% {
-        opacity: 0.4;
-    }
-
-    50% {
-        opacity: 0.8;
-    }
-}
-
-@keyframes floatOrb {
-    0%,
-    100% {
-        transform: translate(0, 0) scale(1);
-    }
-
-    33% {
-        transform: translate(-30px, 40px) scale(1.1);
-    }
-
-    66% {
-        transform: translate(20px, -20px) scale(0.95);
-    }
-}
-
-.login-form-panel {
-    flex: 1 1 0;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 48px;
-    background: #f8fafc;
-    position: relative;
-    animation: fadeSlideIn 0.6s ease-out;
-}
-
-.login-form-card {
-    width: 100%;
-    max-width: 420px;
-    background: #fff;
-    border-radius: 16px;
-    padding: 40px 36px;
-    box-shadow: 0 4px 24px rgb(0 0 0 / 6%);
-    animation: fadeSlideIn 0.6s ease-out 0.15s both;
-}
-
-@keyframes fadeSlideIn {
-    from {
-        opacity: 0;
-        transform: translateY(16px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* ─── Login responsive ───────────────────────────── */
-@media (max-width: 900px) {
-    .login-page-container {
-        flex-direction: column;
-        overflow-y: auto;
-    }
 
     .login-brand-panel {
         display: none;
     }
 
-    .login-form-panel {
-        width: 100%;
-        flex: none;
-    }
+.text-iwms {
+    font-size: 86px;
+    line-height: 96px;
+    padding-top: 4rem;
+    text-align: center;
+    white-space: nowrap;
+    background-image: -webkit-linear-gradient(left, #fcbe4c, #a750eb);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 /* ─── Slot text positions ────────────────────────── */

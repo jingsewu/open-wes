@@ -14,11 +14,11 @@ Open WES is a Warehouse Execution System. Monorepo structure:
 ### Server Modules (`server/`)
 ```
 modules-wes/          # Core domain (inbound, outbound, stock, basic, config, task, stocktake, algo, ems-proxy, printer)
-modules-ai/           # AI integration (ai-core, ai-api)
+modules-ai/           # AI integration (ai-core, ai-api, ai-plugin — script plugin drafts)
 modules-user/         # Auth, user management
 modules-station/      # Workstation operations
 modules-gateway/      # API gateway
-modules-plugin/       # Plugin implementations
+modules-plugin/       # Plugin platform: script-plugin-api/core/runtime, legacy PF4J jar modules, plugin-example sample
 modules-search/       # Search functionality
 modules-api-platform/ # External API platform
 modules-utils/        # Shared utilities (must NOT depend on other modules) — includes monitoring module
@@ -97,9 +97,21 @@ public class EntityApiImpl implements IEntityApi { }
 - **POJO**: Use `@Comment("...")` not `columnDefinition` for column comments
 - **Plugins**: One `IPlugin` interface per domain with before/after lifecycle hooks
 
+## Script Plugin Platform
+
+Script plugins are database-backed Groovy bundles — no jar packaging and no restart. The legacy PF4J jar-plugin path is frozen.
+
+- **Modules**: `script-plugin-api` — contract catalog, DTOs and static validation; `script-plugin-core` — persistence, management services and `/plugin-platform/**`; `script-plugin-runtime` — materialization, invocation, dispatchers and registry; `plugin-api`/`plugin-core`/`plugin-sdk`/`plugin-extension` — legacy jar path; `plugin-example` — non-built sample (not in `settings.gradle`).
+- **Hosts**: `wes-server` hosts management + runtime (`script-plugin.registry.mode: local`); `station-server` hosts runtime only (`mode: remote`).
+- **Lookup**: `PluginSdkUtils.getExtractObject(Class<T>)` merges jar extensions with materialized script proxies, sorts by priority descending; an empty list means "use the built-in behavior".
+- **Workbench**: `/plugin-platform/plugins`, `/plugin-platform/plugin-workbench?mode=new` (or `?pluginKey=<key>`), `/plugin-platform/audit`; client code lives in `client/src/pages/plugin_platform/`.
+- **Tests**: `cd server && ./gradlew :modules-plugin:script-plugin-api:test`
+- **Rules**: `docs/standards/backend.md` §Script Plugin Rules; the archetype table is generated from `PluginContractCatalog` and checked by `PluginDocumentationConsistencyTest`.
+
 ## Frontend Conventions
 
-- **AMIS pages**: Most CRUD/form pages are JSON schema definitions using `schema2component()`. Prefer this pattern for standard pages.
+- **AMIS pages**: Most CRUD/form pages are JSON schema definitions using `schema2component()`. Prefer this pattern for standard pages. Compose `@/utils/amis/presets` (`crudPage`, `formDrawer`, column helpers) instead of copying schema boilerplate.
+- **AMIS lint**: Run `npm run lint:amis` in `client/` after changing a schema; errors block a merge.
 - **State management**: MobX + mobx-state-tree (`src/stores/`). Use `@inject @observer` decorators.
 - **HTTP requests**: Always use `request` from `@/utils/requestInterceptor`. Never use raw `fetch` or `axios`.
 - **i18n**: Use `useTranslation()` hook or `t()` function. All user-facing strings must be translated.
@@ -111,6 +123,7 @@ public class EntityApiImpl implements IEntityApi { }
 - **SVG IDs**: Use namespaced module-scoped constants for gradient/clipPath IDs to prevent duplicates across renders.
 
 **Read `docs/standards/frontend.md`** for detailed rules, anti-patterns, and examples.
+**Read `docs/standards/amis.md`** before writing or migrating an AMIS schema.
 
 ## Security Guidelines
 
@@ -222,6 +235,7 @@ All schema and data changes **must** use Liquibase changelogs — never ad-hoc S
 |---------|------|
 | Backend coding standards | `docs/standards/backend.md` |
 | Frontend standards (detailed) | `docs/standards/frontend.md` |
+| AMIS schema standards | `docs/standards/amis.md` |
 | Repository hygiene standards | `docs/standards/repository.md` |
 | Database migration standards | `docs/standards/liquibase.md` |
 | Gradle build config | `server/build.gradle`, `server/settings.gradle` |
@@ -235,3 +249,10 @@ All schema and data changes **must** use Liquibase changelogs — never ad-hoc S
 | Monitoring infra config | `monitoring/` |
 | Monitoring design spec | `docs/superpowers/specs/2026-05-23-monitoring-alerting-framework-design.md` |
 | Domain event system | `server/modules-utils/domain-event/` |
+| Script plugin AI pipeline | `server/modules-ai/ai-plugin/` |
+| Script plugin contract catalog | `server/modules-plugin/script-plugin-api/src/main/java/org/openwes/script/plugin/api/contract/PluginContractCatalog.java` |
+| Script plugin management plane | `server/modules-plugin/script-plugin-core/` |
+| Script plugin runtime | `server/modules-plugin/script-plugin-runtime/` |
+| Script plugin sample | `server/modules-plugin/plugin-example/` |
+| Script plugin workbench (client) | `client/src/pages/plugin_platform/` |
+| Script plugin rules chapter | `docs/standards/backend.md` (§Script Plugin Rules) |

@@ -1,13 +1,19 @@
 import schema2component from "@/utils/schema2component"
-import {
-    create_update_columns,
-    true_false_options
-} from "@/utils/commonContants"
+import { true_false_options } from "@/utils/commonContants"
 import {
     api_dictionary_add,
     api_dictionary_get,
     api_dictionary_update
 } from "@/pages/wms/config_center/constants/api_constant"
+import {
+    addButton,
+    auditColumns,
+    codeColumn,
+    crudPage,
+    editButton,
+    formDrawer,
+    remarkColumn
+} from "@/utils/amis/presets"
 
 const form = [
     {
@@ -99,22 +105,25 @@ const form = [
     }
 ]
 
-const add = {
-    type: "button",
-    actionType: "dialog",
-    icon: "fa fa-plus",
-    label: "button.add",
-    dialog: {
-        title: "button.add",
-        size: "lg",
-        closeOnEsc: true,
-        body: {
-            type: "form",
-            api: api_dictionary_add,
-            body: form
-        }
-    }
-}
+const addDrawer = formDrawer({
+    title: "dictionaryManagement.addTitle",
+    size: "xl",
+    columnCount: 1,
+    body: form,
+    api: api_dictionary_add,
+    reload: "dictionaryTable"
+})
+
+const editDrawer = formDrawer({
+    title: "dictionaryManagement.editTitle",
+    size: "xl",
+    columnCount: 1,
+    context: "${code} · ${name}",
+    body: form,
+    initApi: api_dictionary_get,
+    api: api_dictionary_update,
+    reload: "dictionaryTable"
+})
 
 const columns = [
     {
@@ -127,11 +136,7 @@ const columns = [
         label: "Version",
         hidden: true
     },
-    {
-        name: "code",
-        label: "table.enumerationEncoding",
-        searchable: true
-    },
+    codeColumn("code", "table.enumerationEncoding", { searchable: true }),
     {
         name: "name",
         label: "table.enumerationName",
@@ -143,74 +148,24 @@ const columns = [
         type: "mapping",
         map: true_false_options
     },
-    {
-        name: "description",
-        label: "table.description"
-    },
-    ...create_update_columns
+    remarkColumn("description", "table.description"),
+    ...auditColumns()
 ]
 
-const searchIdentity = "MDictionary"
-const showColumns = columns
-
-const schema = {
-    type: "page",
+const schema = crudPage({
     title: "dictionaryManagement.title",
-    toolbar: [],
-    body: [
-        {
-            type: "crud",
-            syncLocation: false,
-            name: "dictionaryTable",
-            api: {
-                method: "POST",
-                url: "/search/search?page=${page}&perPage=${perPage}&createTime-op=bt&code-op=ct",
-                dataType: "application/json"
-            },
-            defaultParams: {
-                searchIdentity: searchIdentity,
-                showColumns: showColumns,
-                searchObject: {
-                    orderBy: "update_time desc"
-                }
-            },
-            autoFillHeight: true,
-            autoGenerateFilter: {
-                columnsNum: 3,
-                showBtnToolbar: true
-            },
-            headerToolbar: [add],
-            footerToolbar: ["switch-per-page", "statistics", "pagination"],
-            columns: [
-                ...columns,
-                {
-                    type: "operation",
-                    label: "table.operation",
-                    width: 100,
-                    buttons: [
-                        {
-                            label: "button.modify",
-                            type: "button",
-                            actionType: "dialog",
-                            dialog: {
-                                title: "button.modify",
-                                size: "lg",
-                                closeOnEsc: true,
-                                closeOnOutside: true,
-                                body: {
-                                    type: "form",
-                                    initApi: api_dictionary_get,
-                                    api: api_dictionary_update,
-                                    controls: form
-                                }
-                            }
-                        }
-                    ],
-                    toggled: true
-                }
-            ]
-        }
-    ]
-}
+    name: "dictionaryTable",
+    searchIdentity: "MDictionary",
+    api: {
+        method: "POST",
+        url: "/search/search?page=${page}&perPage=${perPage}&createTime-op=bt&code-op=ct",
+        dataType: "application/json"
+    },
+    columns,
+    orderBy: "update_time desc",
+    pageActions: [addButton({ target: "dictionaryTable", drawer: addDrawer })],
+    rowActions: [editButton(editDrawer)],
+    empty: "emptyState.dictionaryManagement"
+})
 
 export default schema2component(schema)

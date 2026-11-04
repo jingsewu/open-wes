@@ -3,6 +3,28 @@ import {
     api_crud_search_by_warehouseCode,
     api_crud_search_by_warehouseCode_total
 } from "@/pages/constantApi"
+import {
+    auditColumns,
+    codeColumn,
+    crudPage,
+    exportButton,
+    numberColumn
+} from "@/utils/amis/presets"
+
+const audit = auditColumns({
+    visible: true,
+    seconds: true,
+    createdSearchable: {
+        type: "input-date-range",
+        valueFormat: "x"
+    }
+}).map((column) => ({
+    ...column,
+    dbField: `wcst.${String(column.name).replace(
+        /[A-Z]/g,
+        (letter) => `_${letter.toLowerCase()}`
+    )}`
+}))
 
 const columns = [
     {
@@ -18,15 +40,12 @@ const columns = [
         hidden: true
     },
     {
-        dbField: "msbd.bar_code",
-        name: "barcode",
-        label: "skuArea.barcode",
-        searchable: true
+        ...codeColumn("barcode", "skuArea.barcode", { searchable: true }),
+        dbField: "msbd.bar_code"
     },
     {
-        dbField: "msmd.sku_code",
-        name: "skuCode",
-        label: "table.skuCode"
+        ...codeColumn("skuCode", "table.skuCode"),
+        dbField: "msmd.sku_code"
     },
     {
         dbField: "msmd.sku_name",
@@ -34,10 +53,8 @@ const columns = [
         label: "table.skuName"
     },
     {
-        dbField: "wcst.order_no",
-        name: "orderNo",
-        label: "table.orderNo",
-        searchable: true
+        ...codeColumn("orderNo", "table.orderNo", { searchable: true }),
+        dbField: "wcst.order_no"
     },
     {
         dbField: "wcst.sku_batch_stock_id",
@@ -46,31 +63,31 @@ const columns = [
         hidden: true
     },
     {
+        ...codeColumn("containerCode", "table.containerCode"),
         dbField: "wcst.container_code",
-        name: "containerCode",
-        label: "table.containerCode",
-        searchable: true,
         hidden: true
     },
     {
-        dbField: "wcst.source_container_code",
-        name: "sourceContainerCode",
-        label: "table.sourceContainerNumber"
+        ...codeColumn("sourceContainerCode", "table.sourceContainerNumber"),
+        dbField: "wcst.source_container_code"
     },
     {
-        dbField: "wcst.source_container_slot_code",
-        name: "sourceContainerSlotCode",
-        label: "table.sourceContainerLattice"
+        ...codeColumn(
+            "sourceContainerSlotCode",
+            "table.sourceContainerLattice"
+        ),
+        dbField: "wcst.source_container_slot_code"
     },
     {
-        dbField: "wcst.target_container_code",
-        name: "targetContainerCode",
-        label: "table.targetContainerNumber"
+        ...codeColumn("targetContainerCode", "table.targetContainerNumber"),
+        dbField: "wcst.target_container_code"
     },
     {
-        dbField: "wcst.target_container_slot_code",
-        name: "targetContainerSlotCode",
-        label: "table.targetContainerLattice"
+        ...codeColumn(
+            "targetContainerSlotCode",
+            "table.targetContainerLattice"
+        ),
+        dbField: "wcst.target_container_slot_code"
     },
     {
         dbField: "wcst.task_id",
@@ -79,9 +96,8 @@ const columns = [
         hidden: true
     },
     {
-        dbField: "wcst.transfer_qty",
-        name: "transferQty",
-        label: "table.quantity"
+        ...numberColumn("transferQty", "table.quantity"),
+        dbField: "wcst.transfer_qty"
     },
     {
         dbField: "wcst.operation_task_type",
@@ -102,81 +118,29 @@ const columns = [
         label: "table.warehouseCode",
         hidden: true
     },
-    {
-        dbField: "wcst.create_user",
-        label: "table.createdBy",
-        name: "createUser"
-    },
-    {
-        dbField: "wcst.create_time",
-        name: "createTime",
-        label: "table.creationTime",
-        tpl: "${createTime/1000|date:YYYY-MM-DD HH\\:mm\\:ss}",
-        searchable: {
-            type: "input-date-range",
-            valueFormat: "x"
-        }
-    },
-    {
-        dbField: "wcst.update_user",
-        label: "table.modifiedBy",
-        name: "updateUser"
-    },
-    {
-        dbField: "wcst.update_time",
-        label: "table.updated",
-        name: "updateTime",
-        tpl: "${updateTime/1000|date:YYYY-MM-DD HH\\:mm\\:ss}"
-    }
+    ...audit
 ]
 
-const searchIdentity = "WContainerStockTransaction"
-const showColumns = columns
-
-const searchObject = {
-    tables:
-        "w_container_stock_transaction wcst " +
-        "left join m_sku_barcode_data msbd on msbd.sku_id = wcst.sku_id " +
-        "left join m_sku_main_data msmd on msmd.id = wcst.sku_id",
-    orderBy: "wcst.update_time desc"
-}
-
-const schema = {
-    type: "page",
+const schema = crudPage({
     title: "wms.menu.inventoryRecords",
-    toolbar: [],
-    data: {
-        dictionary: "${ls:dictionary}"
+    name: "stockRecordsTable",
+    searchIdentity: "WContainerStockTransaction",
+    api: api_crud_search_by_warehouseCode,
+    columns,
+    searchObject: {
+        tables:
+            "w_container_stock_transaction wcst " +
+            "left join m_sku_barcode_data msbd on msbd.sku_id = wcst.sku_id " +
+            "left join m_sku_main_data msmd on msmd.id = wcst.sku_id",
+        orderBy: "wcst.update_time desc"
     },
-    body: [
-        {
-            type: "crud",
-            syncLocation: false,
-            name: "stockRecordsTable",
-            api: api_crud_search_by_warehouseCode,
-            defaultParams: {
-                searchIdentity: searchIdentity,
-                showColumns: showColumns,
-                searchObject: searchObject
-            },
-            autoFillHeight: true,
-            autoGenerateFilter: {
-                columnsNum: 3,
-                showBtnToolbar: true
-            },
-            headerToolbar: [
-                "reload",
-                {
-                    type: "export-excel",
-                    label: "button.export",
-                    api: api_crud_search_by_warehouseCode_total,
-                    fileName: "stock_records"
-                }
-            ],
-            footerToolbar: ["switch-per-page", "statistics", "pagination"],
-            columns: showColumns
-        }
-    ]
-}
+    tableActions: [
+        exportButton({
+            api: api_crud_search_by_warehouseCode_total,
+            filename: "stock_records"
+        })
+    ],
+    empty: "emptyState.stockRecords"
+})
 
 export default schema2component(schema)

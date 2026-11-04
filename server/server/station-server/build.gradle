@@ -2,6 +2,7 @@ dependencies {
 
     implementation project(path: ":modules-utils:exception-handler", configuration: 'default')
     implementation project(path: ":modules-station:station", configuration: 'default')
+    implementation project(path: ":modules-plugin:script-plugin-runtime", configuration: 'default')
 
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.cloud:spring-cloud-starter-bootstrap'
