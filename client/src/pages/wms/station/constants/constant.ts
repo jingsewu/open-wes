@@ -12,7 +12,7 @@ export const STATION_WEBSOCKET_URL = "/gw/station/websocket"
 export function request_work_station_view() {
     return request({
         method: "get",
-        url: "/station/api"
+        url: STATION_API_URL
     })
 }
 

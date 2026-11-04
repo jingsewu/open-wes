@@ -17,6 +17,11 @@
     "login.flowStorage": "Storage",
     "login.flowPicking": "Picking",
     "login.flowShipping": "Shipping",
+    "login.usernameRequired": "Please enter your username",
+    "login.passwordRequired": "Please enter your password",
+    "login.passwordMinLength": "Password must be at least 6 characters",
+    "login.submitting": "Signing in...",
+    "login.invalidCredentials": "Invalid username or password",
 
     "station.operatingStation": "Operating station",
     "categories.receiving": "receiving",
@@ -1421,10 +1426,13 @@
     "dashboard.taskStockTake": "Stocktake",
     "dashboard.taskRecheck": "Recheck",
     "dashboard.taskAdjust": "Adjustment",
+    "dashboard.loading": "Loading...",
+    "dashboard.noData": "No data",
 
     "confirm.callContainer": "Are you sure to call container?",
 
     "common.loading": "loading...",
+    "common.notLoggedIn": "Please sign in first",
 
     "monitoring.app.title": "Monitoring",
     "monitoring.overview.title": "Overview",

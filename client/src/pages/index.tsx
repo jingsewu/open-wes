@@ -13,9 +13,10 @@ import LayoutAside from "@/components/LayoutAside"
 import LayoutHeader from "@/components/LayoutHeader"
 import RobotSvg from "@/icon/fontIcons/robot.svg" // path to your '*.svg' file.
 import Chatbot from "@/components/Chatbot"
+import { workStationEventLoop } from "@/pages/wms/station/event-loop/eventLoopInstance"
 import style from "./index.module.scss"
 import classNames from "classnames/bind"
-import {Translation, useTranslation} from "react-i18next";
+import {Translation, withTranslation} from "react-i18next";
 
 const cx = classNames.bind(style)
 
@@ -48,11 +49,12 @@ export interface State {
 
 export interface AdminProps extends RouteComponentProps<any> {
     store: IMainStore
+    t: any
 }
 
 @inject("store")
 @observer
-export default class Admin extends React.Component<AdminProps, State> {
+class Admin extends React.Component<AdminProps, State> {
     private unlisten?: (() => void) | undefined
 
     state: State = {
@@ -94,6 +96,7 @@ export default class Admin extends React.Component<AdminProps, State> {
     }
 
     logout = () => {
+        workStationEventLoop.destroy()
         const store = this.props.store
         store.user.logout()
         const history = this.props.history
@@ -104,7 +107,7 @@ export default class Admin extends React.Component<AdminProps, State> {
         const store = this.props.store
         const history = this.props.history
         if (!store.user.isAuthenticated) {
-            toast["error"]("用户未登陆，请先登陆！", "消息")
+            toast.error(this.props.t("common.notLoggedIn"))
             history.replace(`/login`)
         }
         this.refreshMenu()
@@ -131,13 +134,9 @@ export default class Admin extends React.Component<AdminProps, State> {
             if (resizeObserverManager) {
                 resizeObserverManager.disconnectAll()
             }
-        } catch (error) {
-            console.warn('清理 ResizeObserver 时出错:', error)
+        } catch {
+            // Best-effort cleanup on route change — ignore failures
         }
-    }
-
-    componentDidUpdate() {
-        this.refreshMenu()
     }
 
     refreshMenu = () => {
@@ -362,3 +361,5 @@ export default class Admin extends React.Component<AdminProps, State> {
         }
     }
 }
+
+export default withTranslation()(Admin)

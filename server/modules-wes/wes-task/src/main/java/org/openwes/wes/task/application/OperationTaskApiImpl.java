@@ -6,6 +6,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.openwes.wes.api.basic.ITransferContainerApi;
 import org.openwes.wes.api.basic.ITransferContainerRecordApi;
+import org.openwes.wes.api.basic.dto.PutWallSlotDTO;
 import org.openwes.wes.api.basic.dto.TransferContainerRecordDTO;
 import org.openwes.wes.api.main.data.ISkuMainDataApi;
 import org.openwes.wes.api.main.data.dto.SkuMainDataDTO;
@@ -97,18 +98,18 @@ public class OperationTaskApiImpl implements ITaskApi {
      * @param bindContainerDTO
      */
     @Override
-    public void bindContainer(BindContainerDTO bindContainerDTO) {
-        transferContainerApi.bindContainer(bindContainerDTO);
+    public PutWallSlotDTO bindContainer(BindContainerDTO bindContainerDTO) {
+        return transferContainerApi.bindContainer(bindContainerDTO);
     }
 
     @Override
-    public void unbindContainer(UnBindContainerDTO unBindContainerDTO) {
+    public PutWallSlotDTO unbindContainer(UnBindContainerDTO unBindContainerDTO) {
 
         TransferContainerRecordDTO transferContainerRecord = transferContainerRecordApi
                 .findCurrentPickOrderTransferContainerRecord(unBindContainerDTO.getPickingOrderId(), unBindContainerDTO.getContainerCode());
         operationTaskService.checkUnbindable(transferContainerRecord.getId());
 
-        transferContainerApi.unBindContainer(unBindContainerDTO, transferContainerRecord.getId());
+        return transferContainerApi.unBindContainer(unBindContainerDTO, transferContainerRecord.getId());
     }
 
     @Override
@@ -153,8 +154,8 @@ public class OperationTaskApiImpl implements ITaskApi {
     }
 
     @Override
-    public void sealContainer(SealContainerDTO sealContainerDTO) {
-        transferContainerApi.sealContainer(sealContainerDTO);
+    public PutWallSlotDTO sealContainer(SealContainerDTO sealContainerDTO) {
+        return transferContainerApi.sealContainer(sealContainerDTO);
     }
 
     @Override

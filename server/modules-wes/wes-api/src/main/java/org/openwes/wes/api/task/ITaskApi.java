@@ -3,6 +3,7 @@ package org.openwes.wes.api.task;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import org.openwes.wes.api.basic.dto.PutWallSlotDTO;
 import org.openwes.wes.api.task.constants.OperationTaskTypeEnum;
 import org.openwes.wes.api.task.dto.*;
 
@@ -20,11 +21,11 @@ public interface ITaskApi {
 
     List<OperationTaskDTO> queryOrderTasks(@NotEmpty Collection<Long> pickingOrderIds, int limit);
 
-    void bindContainer(@Valid BindContainerDTO bindContainerDTO);
+    PutWallSlotDTO bindContainer(@Valid BindContainerDTO bindContainerDTO);
 
-    void unbindContainer(@Valid UnBindContainerDTO unBindContainerDTO);
+    PutWallSlotDTO unbindContainer(@Valid UnBindContainerDTO unBindContainerDTO);
 
-    void sealContainer(@Valid SealContainerDTO sealContainerDTO);
+    PutWallSlotDTO sealContainer(@Valid SealContainerDTO sealContainerDTO);
 
     void sealContainer(@NotNull Long pickingOrderId);
 

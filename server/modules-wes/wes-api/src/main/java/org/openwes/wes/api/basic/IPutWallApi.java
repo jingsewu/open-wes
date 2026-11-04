@@ -26,11 +26,11 @@ public interface IPutWallApi {
 
     void assignOrders(@Valid AssignOrdersDTO assignOrdersDTO);
 
-    void bindContainer(@Valid BindContainerDTO bindContainerDTO, Long id);
+    PutWallSlotDTO bindContainer(@Valid BindContainerDTO bindContainerDTO, Long id);
 
-    void unBindContainer(@Valid UnBindContainerDTO unBindContainerDTO);
+    PutWallSlotDTO unBindContainer(@Valid UnBindContainerDTO unBindContainerDTO);
 
-    void sealContainer(String putWallSlotCode, Long workStationId);
+    PutWallSlotDTO sealContainer(String putWallSlotCode, Long workStationId);
 
     void remindToSealContainer(Long pickingOrderId, Map<Long, String> assignWorkStation);
 

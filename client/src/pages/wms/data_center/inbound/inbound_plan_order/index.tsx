@@ -287,7 +287,7 @@ const schema = crudPage({
     searchIdentity: "WInboundPlanOrder",
     api: api_crud_search_by_warehouseCode,
     columns,
-    orderBy: "id ,inbound_plan_order_status desc",
+    orderBy: "update_time desc",
     pageActions: [],
     tableActions: [
         importButton({

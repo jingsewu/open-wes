@@ -74,8 +74,10 @@ export interface PickingViewItem {
 }
 
 export interface SkuArea {
-    pickingViews: PickingViewItem[]
+    operationViews: PickingViewItem[]
     withoutOrderSkuInfos?: any[]
+    /** 已扫描的barcode */
+    scanCode?: string
 }
 
 export enum PutWallSlotStatus {
@@ -195,7 +197,7 @@ export type StationProcessingStatus =
     | "WAIT_CALL_CONTAINER"
 
 export interface OrderArea {
-    currentStocktakeOrder: StocktakeOrder
+    currentOrder: StocktakeOrder
 }
 
 export interface StocktakeOrder {
@@ -205,7 +207,7 @@ export interface StocktakeOrder {
     stocktakeType: string
 }
 
-export interface WorkStationView<T> {
+export interface WorkStationView {
     /** 操作台类型 */
     workStationMode: WorkStationMode
     /** 工作站编码 */
@@ -226,8 +228,6 @@ export interface WorkStationView<T> {
     toolbar: ToolBar
     /** 选择容器上架，工作站任务状态 */
     stationProcessingStatus?: StationProcessingStatus
-    /** 已扫描的barcode */
-    scanCode?: string
     /** 仓库编码 */
     warehouseCode?: string
     /** 一品多批选中的明细id */
@@ -310,7 +310,7 @@ export interface WorkStationProviderProps {
 }
 
 export interface WorkStationContextProps {
-    workStationEvent: WorkStationView<any> | undefined
+    workStationEvent: WorkStationView | undefined
 }
 
 export type WorkStationAPIContextProps = {

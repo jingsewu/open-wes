@@ -7,7 +7,6 @@ const mockData = {
     workStationStatus: "ONLINE",
     workStationMode: "SELECT_CONTAINER_PUT_AWAY",
     chooseArea: null,
-    scanCode: "210589",
     processingType: null,
     processingInboundOrderDetailId: "579048709430579200",
     callContainerCount: 2,
@@ -411,7 +410,8 @@ const mockData = {
     },
     skuArea: {
         pickType: "CHOOSE_CONTAINER_SLOT_CODE",
-        pickingViews: [
+        scanCode: "210589",
+        operationViews: [
             {
                 skuMainDataDTO: {
                     id: 576909719575334900,

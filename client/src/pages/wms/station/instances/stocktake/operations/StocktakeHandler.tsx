@@ -16,11 +16,11 @@ type StocktakeAreaProps = {
  * @Description: 对event中的数据进行filter处理
  * @param data
  */
-export const valueFilter = (data?: WorkStationView<any>) => {
+export const valueFilter = (data?: WorkStationView) => {
     if (!data) return {}
     return {
-        activeTask: data.skuArea?.pickingViews?.[0],
-        scanCode: data.scanCode
+        activeTask: data.skuArea?.operationViews?.[0],
+        scanCode: data.skuArea?.scanCode
     }
 }
 

@@ -16,7 +16,7 @@ import OrderHandler from "./operations/orderHandler"
 import { useReceiveWorkflow } from "./hooks"
 
 interface ReplenishLayoutProps extends OperationProps<any, any> {
-    workStationEvent: WorkStationView<any>
+    workStationEvent: WorkStationView
 }
 
 const ReceiveLayout = observer((props: ReplenishLayoutProps) => {

@@ -15,7 +15,7 @@ import {useWorkStation} from "@/pages/wms/station/state"
  * @Description: 对event中的数据进行filter处理
  * @param data
  */
-export const valueFilter = (data: WorkStationView<any>) => {
+export const valueFilter = (data: WorkStationView) => {
     if (!data) return {}
     return {
         tips: data.tips,

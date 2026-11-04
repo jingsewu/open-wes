@@ -76,6 +76,10 @@ const WorkStation = (props: WorkStationProps) => {
         let isMounted = true
 
         const loadInitialStationData = async () => {
+            if (!localStorage.getItem("stationId")) {
+                if (isMounted) setIsLoadingStatus(false)
+                return
+            }
             let res: any
             try {
                 setIsLoadingStatus(true)

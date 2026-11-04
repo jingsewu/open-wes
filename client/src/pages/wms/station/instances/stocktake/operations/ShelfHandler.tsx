@@ -28,7 +28,7 @@ export interface RobotHandlerProps {
  * @param data
  */
 export const valueFilter = (
-    data: WorkStationView<ReplenishProps> | undefined
+    data: WorkStationView | undefined
 ):
     | OperationProps<RobotHandlerProps, ContainerHandlerConfirmProps>["value"]
     | Record<string, any> => {

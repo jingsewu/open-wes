@@ -12,7 +12,7 @@ import org.openwes.station.application.business.handler.IBusinessHandler;
 import org.openwes.station.application.business.handler.common.OperationTaskRefreshHandler;
 import org.openwes.station.application.business.handler.event.OperationTaskRefreshEvent;
 import org.openwes.station.application.business.handler.event.outbound.TapPutWallSlotEvent;
-import org.openwes.station.domain.entity.ArrivedContainerCache;
+import org.openwes.station.api.model.ArrivedContainerCache;
 import org.openwes.station.domain.entity.OutboundWorkStationCache;
 import org.openwes.station.domain.repository.WorkStationCacheRepository;
 import org.openwes.station.domain.service.WorkStationService;
@@ -23,7 +23,6 @@ import org.openwes.wes.api.basic.dto.PutWallSlotDTO;
 import org.openwes.wes.api.task.constants.OperationTaskTypeEnum;
 import org.openwes.wes.api.task.dto.HandleTaskDTO;
 import org.openwes.wes.api.task.dto.OperationTaskDTO;
-import org.openwes.wes.api.task.dto.OperationTaskVO;
 import org.openwes.wes.api.task.dto.SealContainerDTO;
 import org.springframework.stereotype.Service;
 
@@ -34,20 +33,19 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TapPutWallSlotHandler implements IBusinessHandler<TapPutWallSlotEvent> {
 
-    private final WorkStationService<OutboundWorkStationCache> workStationService;
-    private final WorkStationCacheRepository<OutboundWorkStationCache> workStationRepository;
+    private final WorkStationService workStationService;
+    private final WorkStationCacheRepository workStationRepository;
     private final TaskService taskService;
     private final PtlApiImpl ptlService;
     private final RemoteWorkStationService remoteWorkStationService;
-    private final OperationTaskRefreshHandler<OutboundWorkStationCache> containerTaskRefreshHandler;
+    private final OperationTaskRefreshHandler containerTaskRefreshHandler;
 
 
     @Override
     public void execute(TapPutWallSlotEvent tapPutWallSlotEvent, Long workStationId) {
-        OutboundWorkStationCache workStationCache = workStationService.getOrThrow(workStationId);
+        OutboundWorkStationCache workStationCache = (OutboundWorkStationCache) workStationService.getOrThrow(workStationId);
 
         List<OperationTaskDTO> operateTasks = workStationCache.getProcessingOperationTasks().stream()
-                .map(OperationTaskVO::getOperationTaskDTO)
                 .filter(operationTaskDTO ->
                         StringUtils.equals(tapPutWallSlotEvent.getPutWallSlotCode(), operationTaskDTO.getTargetLocationCode()))
                 .toList();
@@ -69,21 +67,25 @@ public class TapPutWallSlotHandler implements IBusinessHandler<TapPutWallSlotEve
 
 
     private void doSealContainer(OutboundWorkStationCache workStationCache, PutWallSlotDTO putWallSlot) {
-        taskService.sealContainer(new SealContainerDTO()
+        PutWallSlotDTO snapshot = taskService.sealContainer(new SealContainerDTO()
                 .setPutWallSlotCode(putWallSlot.getPutWallSlotCode())
                 .setTransferContainerCode(putWallSlot.getTransferContainerCode())
                 .setPickingOrderId(putWallSlot.getPickingOrderId())
                 .setWarehouseCode(workStationCache.getWarehouseCode())
                 .setWorkStationId(workStationCache.getId()));
 
-        ptlService.off(workStationCache.getId(), putWallSlot.getPtlTag());
+        if (snapshot != null) {
+            workStationCache.getPutWallArea().applySnapshot(snapshot);
+        }
 
+        workStationRepository.save(workStationCache);
+        ptlService.off(workStationCache.getId(), putWallSlot.getPtlTag());
     }
 
     private void doCompletePicking(Long workStationId, List<OperationTaskDTO> operateTasks,
                                    OutboundWorkStationCache workStationCache, PutWallSlotDTO putWallSlot) {
 
-        workStationService.validatePicking(putWallSlot);
+        workStationCache.getPutWallArea().validatePicking(putWallSlot);
 
         List<HandleTaskDTO.HandleTask> handleTasks = operateTasks.stream().map(operationTaskDTO -> {
             HandleTaskDTO.HandleTask handleTask = HandleTaskDTO.HandleTask.builder()
@@ -108,8 +110,8 @@ public class TapPutWallSlotHandler implements IBusinessHandler<TapPutWallSlotEve
             workStationCache.operate();
             workStationRepository.save(workStationCache);
 
-            if (CollectionUtils.isEmpty(workStationCache.getOperateTasks()) && CollectionUtils.isNotEmpty(workStationCache.getUndoContainers())) {
-                ArrivedContainerCache arrivedContainerCache = workStationCache.getUndoContainers().get(0);
+            if (!workStationCache.getSkuArea().hasTasks() && CollectionUtils.isNotEmpty(workStationCache.getWorkLocationArea().getUndoContainers())) {
+                ArrivedContainerCache arrivedContainerCache = workStationCache.getWorkLocationArea().getUndoContainers().get(0);
                 containerTaskRefreshHandler.execute(new OperationTaskRefreshEvent()
                         .setContainerCode(arrivedContainerCache.getContainerCode())
                         .setFace(arrivedContainerCache.getFace()), workStationCache.getId());
@@ -121,8 +123,8 @@ public class TapPutWallSlotHandler implements IBusinessHandler<TapPutWallSlotEve
             log.error("work station: {} code: {} complete task failed: {}.", workStationId, workStationCache.getStationCode(), e.getMessage());
 
             if (OperationTaskErrorDescEnum.OPERATION_TASK_IS_PROCESSED.getCode().equals(e.getCode())) {
-                workStationCache.clearOperateTasks();
-                ArrivedContainerCache arrivedContainerCache = workStationCache.getUndoContainers().get(0);
+                workStationCache.getSkuArea().clear();
+                ArrivedContainerCache arrivedContainerCache = workStationCache.getWorkLocationArea().getUndoContainers().get(0);
                 log.info("work station: {} code: {} task is processed, refresh task with container: {}", workStationId,
                         workStationCache.getStationCode(), arrivedContainerCache.getContainerCode());
                 containerTaskRefreshHandler.execute(new OperationTaskRefreshEvent()

@@ -1,5 +1,6 @@
 package org.openwes.station.infrastructure.remote;
 
+import org.openwes.wes.api.basic.dto.PutWallSlotDTO;
 import org.openwes.wes.api.outbound.IPickingOrderApi;
 import org.openwes.wes.api.outbound.constants.PickingOrderStatusEnum;
 import org.openwes.wes.api.outbound.dto.PickingOrderDTO;
@@ -25,18 +26,18 @@ public class TaskService {
         return taskApi.getAndUpdateTasksWorkStation(workStationId, containerCode, face, operationType);
     }
 
-    public void bindContainer(BindContainerDTO bindContainerDTO) {
-        taskApi.bindContainer(bindContainerDTO);
+    public PutWallSlotDTO bindContainer(BindContainerDTO bindContainerDTO) {
+        return taskApi.bindContainer(bindContainerDTO);
     }
 
-    public void unbindContainer(UnBindContainerDTO unBindContainerDTO) {
-        taskApi.unbindContainer(unBindContainerDTO);
+    public PutWallSlotDTO unbindContainer(UnBindContainerDTO unBindContainerDTO) {
+        return taskApi.unbindContainer(unBindContainerDTO);
     }
 
-    public void sealContainer(SealContainerDTO sealContainerDTO) {
+    public PutWallSlotDTO sealContainer(SealContainerDTO sealContainerDTO) {
         PickingOrderDTO pickingOrderDTO = pickingOrderApi.getById(sealContainerDTO.getPickingOrderId());
         sealContainerDTO.setPickingOrderCompleted(pickingOrderDTO.getPickingOrderStatus() == PickingOrderStatusEnum.PICKED);
-        taskApi.sealContainer(sealContainerDTO);
+        return taskApi.sealContainer(sealContainerDTO);
     }
 
     public void split(HandleTaskDTO handleTaskDTO) {

@@ -17,7 +17,6 @@ public enum StationErrorDescEnum implements IBaseError {
     STATION_IS_NOT_OFF_LINE_ERROR_4_DISABLE("SAT010006", "work station is not offline and can not disable.", AppCodeEnum.WMS.name()),
     STATION_NOT_EXISTS_OR_ALREADY_OFF_LINE("SAT010007", "station already offline or not exits", AppCodeEnum.WMS.name()),
     STATION_ONLINE_OPERATION_TYPE_CAN_NOT_BE_NULL("SAT010008", "station online operation type must not be null", AppCodeEnum.WMS.name()),
-    STATION_CACHE_IS_NULL("SAT010009", "stationCache {0} is null", AppCodeEnum.WMS.name()),
 
     //work station location error SAT02
     STATION_CONVEYOR_LOCATION_ERROR("SAT020001", "cannot find conveyor location code", AppCodeEnum.WMS.name()),

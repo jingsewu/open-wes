@@ -10,10 +10,10 @@ const { Title } = Typography
  * @Description: 对event中的数据进行filter处理
  * @param data
  */
-export const valueFilter = (data?: WorkStationView<any>) => {
+export const valueFilter = (data?: WorkStationView) => {
     if (!data) return {}
     return {
-        orderInfo: data.operationOrderArea?.currentStocktakeOrder
+        orderInfo: data.operationOrderArea?.currentOrder
     }
 }
 

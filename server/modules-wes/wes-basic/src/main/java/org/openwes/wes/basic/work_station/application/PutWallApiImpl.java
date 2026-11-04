@@ -111,26 +111,29 @@ public class PutWallApiImpl implements IPutWallApi {
     }
 
     @Override
-    public void bindContainer(BindContainerDTO bindContainerDTO, Long transferContainerRecordId) {
+    public PutWallSlotDTO bindContainer(BindContainerDTO bindContainerDTO, Long transferContainerRecordId) {
         PutWallSlot putWallSlot = putWallSlotRepository
                 .findBySlotCodeAndWorkStationId(bindContainerDTO.getPutWallSlotCode(), bindContainerDTO.getWorkStationId());
         putWallSlot.bindContainer(bindContainerDTO.getContainerCode(), transferContainerRecordId);
         putWallSlotRepository.save(putWallSlot);
+        return putWallSlotTransfer.toDTO(putWallSlot);
     }
 
     @Override
-    public void unBindContainer(UnBindContainerDTO unBindContainerDTO) {
+    public PutWallSlotDTO unBindContainer(UnBindContainerDTO unBindContainerDTO) {
         PutWallSlot putWallSlot = putWallSlotRepository
                 .findBySlotCodeAndWorkStationId(unBindContainerDTO.getPutWallSlotCode(), unBindContainerDTO.getWorkStationId());
         putWallSlot.unBindContainer();
         putWallSlotRepository.save(putWallSlot);
+        return putWallSlotTransfer.toDTO(putWallSlot);
     }
 
     @Override
-    public void sealContainer(String putWallSlotCode, Long workStationId) {
+    public PutWallSlotDTO sealContainer(String putWallSlotCode, Long workStationId) {
         PutWallSlot putWallSlot = putWallSlotRepository.findBySlotCodeAndWorkStationId(putWallSlotCode, workStationId);
         putWallSlot.sealContainer();
         putWallSlotRepository.save(putWallSlot);
+        return putWallSlotTransfer.toDTO(putWallSlot);
     }
 
     @Override

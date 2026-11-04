@@ -7,6 +7,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.openwes.wes.api.basic.ITransferContainerApi;
 import org.openwes.wes.api.basic.IWarehouseAreaApi;
+import org.openwes.wes.api.basic.dto.PutWallSlotDTO;
 import org.openwes.wes.api.basic.dto.WarehouseAreaDTO;
 import org.openwes.wes.api.ems.proxy.dto.ContainerArrivedEvent;
 import org.openwes.wes.api.task.constants.TransferContainerStatusEnum;
@@ -96,32 +97,32 @@ public class TransferContainerApiImpl implements ITransferContainerApi {
     }
 
     @Override
-    public void bindContainer(BindContainerDTO bindContainerDTO) {
+    public PutWallSlotDTO bindContainer(BindContainerDTO bindContainerDTO) {
         TransferContainer transferContainer = transferContainerRepository
                 .findByContainerCodeAndWarehouseCode(bindContainerDTO.getContainerCode(), bindContainerDTO.getWarehouseCode());
         transferContainerService.validateBindContainer(transferContainer);
 
-        transferContainerPutWallAggregate.bindContainer(bindContainerDTO, transferContainer, bindContainerDTO.getPickingOrderId());
+        return transferContainerPutWallAggregate.bindContainer(bindContainerDTO, transferContainer, bindContainerDTO.getPickingOrderId());
     }
 
     @Override
-    public void unBindContainer(UnBindContainerDTO unBindContainerDTO, Long transferContainerRecordId) {
+    public PutWallSlotDTO unBindContainer(UnBindContainerDTO unBindContainerDTO, Long transferContainerRecordId) {
 
         TransferContainer transferContainer = transferContainerRepository
                 .findByContainerCodeAndWarehouseCode(unBindContainerDTO.getContainerCode(), unBindContainerDTO.getWarehouseCode());
 
-        transferContainerPutWallAggregate.unBindContainer(unBindContainerDTO, transferContainer, transferContainerRecordId);
+        return transferContainerPutWallAggregate.unBindContainer(unBindContainerDTO, transferContainer, transferContainerRecordId);
     }
 
     @Override
-    public void sealContainer(SealContainerDTO sealContainerDTO) {
+    public PutWallSlotDTO sealContainer(SealContainerDTO sealContainerDTO) {
         TransferContainerRecord transferContainerRecord = transferContainerRecordRepository
                 .findCurrentPickOrderTransferContainerRecord(sealContainerDTO.getPickingOrderId(), sealContainerDTO.getTransferContainerCode());
 
         TransferContainer transferContainer = transferContainerRepository
                 .findByContainerCodeAndWarehouseCode(transferContainerRecord.getTransferContainerCode(), sealContainerDTO.getWarehouseCode());
 
-        transferContainerPutWallAggregate.sealContainer(sealContainerDTO, transferContainerRecord, transferContainer);
+        return transferContainerPutWallAggregate.sealContainer(sealContainerDTO, transferContainerRecord, transferContainer);
     }
 
     @Override

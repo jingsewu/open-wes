@@ -24,9 +24,9 @@ import static org.openwes.station.api.constants.ApiCodeEnum.SCAN_BARCODE;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ScanBarcodeHandler<T extends WorkStationCache> implements IBusinessHandler<String> {
+public class ScanBarcodeHandler implements IBusinessHandler<String> {
 
-    private final WorkStationService<T> workStationService;
+    private final WorkStationService workStationService;
     private final ExtensionFactory extensionFactory;
 
     @Override
@@ -37,12 +37,12 @@ public class ScanBarcodeHandler<T extends WorkStationCache> implements IBusiness
             return;
         }
 
-        T workStationCache = workStationService.getOrThrow(workStationId);
+        WorkStationCache workStationCache = workStationService.getOrThrow(workStationId);
         workStationCache.scanBarcode(barcode);
 
-        Extension<T> tExtension = extensionFactory.getExtension(workStationCache.getWorkStationMode(), getApiCode());
-        if (tExtension != null) {
-            tExtension.doScanBarcode(workStationCache);
+        Extension extension = extensionFactory.getExtension(workStationCache.getWorkStationMode(), getApiCode());
+        if (extension != null) {
+            extension.doScanBarcode(workStationCache);
         }
     }
 
@@ -56,9 +56,9 @@ public class ScanBarcodeHandler<T extends WorkStationCache> implements IBusiness
         return String.class;
     }
 
-    public interface Extension<T extends WorkStationCache> extends IExtension {
+    public interface Extension extends IExtension {
 
-        void doScanBarcode(T workStationCache);
+        void doScanBarcode(WorkStationCache workStationCache);
 
         default ApiCodeEnum getApiCode() {
             return ApiCodeEnum.SCAN_BARCODE;

@@ -5,7 +5,7 @@ import OutboundSkuInfo from "./components/OutboundSkuInfo"
 import { useWorkStation } from "../../../state"
 
 export interface PickerArea {
-    pickingViews: PickingViewItem[]
+    operationViews: PickingViewItem[]
 }
 
 export interface SKUHandlerConfirmProps {
