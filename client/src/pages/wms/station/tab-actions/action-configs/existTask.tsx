@@ -25,7 +25,7 @@ const taskConfig: TabAction = {
     disabled: (workStationEvent: any) => {
         return (
             disabledOperationType.includes(workStationEvent?.workStationMode) &&
-            !!workStationEvent?.scanCode
+            !!workStationEvent?.skuArea?.scanCode
         )
     },
     emitter: async (props) => {

@@ -17,6 +17,11 @@
     "login.flowStorage": "存储",
     "login.flowPicking": "拣选",
     "login.flowShipping": "发运",
+    "login.usernameRequired": "请输入用户名",
+    "login.passwordRequired": "请输入密码",
+    "login.passwordMinLength": "密码至少 6 个字符",
+    "login.submitting": "登录中...",
+    "login.invalidCredentials": "用户名或密码错误",
 
     "categories.receiving": "收货",
     "categories.put_away": "上架",
@@ -1422,9 +1427,12 @@
     "dashboard.taskStockTake": "盘点",
     "dashboard.taskRecheck": "复核",
     "dashboard.taskAdjust": "调整",
+    "dashboard.loading": "加载中...",
+    "dashboard.noData": "暂无数据",
 
     "confirm.callContainer": "确认呼叫容器？",
     "common.loading": "加载中...",
+    "common.notLoggedIn": "请先登录",
 
     "monitoring.app.title": "监控中心",
     "monitoring.overview.title": "总览",

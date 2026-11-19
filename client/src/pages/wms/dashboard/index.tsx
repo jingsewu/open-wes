@@ -12,6 +12,7 @@ import type {Chart, ChartData, ChartOptions, Plugin, ScriptableContext, TooltipM
 import {Line} from "react-chartjs-2"
 import {AlertTriangle, RefreshCw} from "lucide-react"
 import request from "@/utils/requestInterceptor"
+import {colors, radius, spacing, shadows, fontSizes} from "@/theme"
 import "@/scss/dashboard.scss"
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip)

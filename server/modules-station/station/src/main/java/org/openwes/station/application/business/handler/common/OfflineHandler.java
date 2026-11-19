@@ -8,31 +8,42 @@ import org.openwes.station.domain.entity.WorkStationCache;
 import org.openwes.station.domain.repository.WorkStationCacheRepository;
 import org.openwes.station.domain.service.WorkStationService;
 import org.openwes.station.infrastructure.remote.RemoteWorkStationService;
+import org.openwes.wes.api.basic.constants.WorkStationStatusEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class OfflineHandler<T extends WorkStationCache> implements IBusinessHandler<String> {
+public class OfflineHandler implements IBusinessHandler<String> {
 
     private final RemoteWorkStationService remoteWorkStationService;
-    private final WorkStationService<T> workStationService;
-    private final WorkStationCacheRepository<T> workStationRepository;
+    private final WorkStationService workStationService;
+    private final WorkStationCacheRepository workStationRepository;
     private final ExtensionFactory extensionFactory;
 
     @Override
     public void execute(String body, Long workStationId) {
 
-        T workStationCache = workStationService.getOrThrow(workStationId);
-        Extension<T> tExtension = extensionFactory.getExtension(workStationCache.getWorkStationMode(), getApiCode());
-        if (tExtension != null) {
-            tExtension.doBeforeOffline(workStationCache);
+        WorkStationCache workStationCache = workStationService.getOrThrow(workStationId);
+        Extension extension = extensionFactory.getExtension(workStationCache.getWorkStationMode(), getApiCode());
+        if (extension != null) {
+            extension.doBeforeOffline(workStationCache);
         }
 
         remoteWorkStationService.offline(workStationId);
 
         workStationCache.setEventCode(getApiCode());
-        workStationRepository.delete(workStationCache);
+        workStationCache.setWorkStationStatus(WorkStationStatusEnum.OFFLINE);
+        workStationCache.setSkuArea(null);
+        workStationCache.setPutWallArea(null);
+        workStationCache.setWorkLocationArea(null);
+        workStationCache.setOrderArea(null);
+        workStationCache.setTips(null);
+        workStationCache.setChooseArea(null);
+        workStationCache.setCallContainers(null);
+        workStationCache.setContainerTasks(null);
+        workStationCache.setToolbar(null);
+        workStationRepository.save(workStationCache);
     }
 
     @Override
@@ -45,9 +56,9 @@ public class OfflineHandler<T extends WorkStationCache> implements IBusinessHand
         return String.class;
     }
 
-    public interface Extension<T extends WorkStationCache> extends IExtension {
+    public interface Extension extends IExtension {
 
-        void doBeforeOffline(T workStationCache);
+        void doBeforeOffline(WorkStationCache workStationCache);
 
         default ApiCodeEnum getApiCode() {
             return ApiCodeEnum.OFFLINE;

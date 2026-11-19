@@ -24,7 +24,7 @@ export interface SKUHandlerConfirmProps {
 }
 
 export const valueFilter = (
-    data: WorkStationView<any> | undefined
+    data: WorkStationView | undefined
 ):
     | OperationProps<StationProcessingStatus, SKUHandlerConfirmProps>["value"]
     | Record<string, any> => {

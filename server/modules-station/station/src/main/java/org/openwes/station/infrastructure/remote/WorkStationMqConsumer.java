@@ -14,6 +14,7 @@ import org.openwes.station.controller.websocket.controller.StationWebSocketContr
 import org.openwes.station.domain.entity.WorkStationCache;
 import org.openwes.station.domain.repository.WorkStationCacheRepository;
 import org.openwes.station.domain.service.WorkStationService;
+import org.openwes.wes.api.basic.dto.PutWallSlotDTO;
 import org.openwes.wes.api.basic.dto.WorkStationConfigDTO;
 import org.openwes.wes.api.basic.event.PutWallAssignOrderEvent;
 import org.openwes.wes.api.basic.event.PutWallRemindSealContainerEvent;
@@ -21,15 +22,13 @@ import org.openwes.wes.api.ems.proxy.dto.ContainerArrivedEvent;
 import org.openwes.wes.api.print.dto.PrintContentDTO;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class WorkStationMqConsumer<T extends WorkStationCache> {
+public class WorkStationMqConsumer {
 
-    private final WorkStationService<T> workStationService;
-    private final WorkStationCacheRepository<T> workStationCacheRepository;
+    private final WorkStationService workStationService;
+    private final WorkStationCacheRepository workStationCacheRepository;
     private final PtlApiImpl ptlService;
     private final WebsocketMessageListenerUtils sseMessageListenerUtils;
     private final HandlerExecutor handlerExecutor;
@@ -40,7 +39,7 @@ public class WorkStationMqConsumer<T extends WorkStationCache> {
             return;
         }
 
-        T workStation = workStationService.getWorkStation(containerArrivedEvent.getWorkStationId());
+        WorkStationCache workStation = workStationService.getWorkStation(containerArrivedEvent.getWorkStationId());
         if (workStation == null) {
             return;
         }
@@ -55,7 +54,7 @@ public class WorkStationMqConsumer<T extends WorkStationCache> {
             return;
         }
 
-        T workStation = workStationService.getWorkStation(workStationConfigDTO.getWorkStationId());
+        WorkStationCache workStation = workStationService.getWorkStation(workStationConfigDTO.getWorkStationId());
         if (workStation == null) {
             return;
         }
@@ -64,7 +63,7 @@ public class WorkStationMqConsumer<T extends WorkStationCache> {
         workStationCacheRepository.save(workStation);
     }
 
-    @RedisListener(topic = RedisConstants.STATION_LISTEN_ORDER_ASSIGNED, type = List.class)
+    @RedisListener(topic = RedisConstants.STATION_LISTEN_ORDER_ASSIGNED, type = PutWallAssignOrderEvent.class)
     public void listenOrderAssigned(String topic, PutWallAssignOrderEvent event) {
 
         if (event == null) {
@@ -75,6 +74,15 @@ public class WorkStationMqConsumer<T extends WorkStationCache> {
         if (workStation == null) {
             return;
         }
+
+        PutWallSlotDTO slotSnapshot = PutWallSlotDTO.builder()
+                .putWallSlotCode(event.getPutWallSlotCode())
+                .putWallSlotStatus(event.getPutWallSlotStatus())
+                .pickingOrderId(event.getPickingOrderId())
+                .build();
+
+        workStation.getPutWallArea().applySnapshot(slotSnapshot);
+        workStationCacheRepository.save(workStation);
 
         ptlService.reminderBind(event.getWorkStationId(), event.getPtlTag());
 
@@ -92,6 +100,14 @@ public class WorkStationMqConsumer<T extends WorkStationCache> {
         if (workStation == null) {
             return;
         }
+
+        PutWallSlotDTO slotSnapshot = PutWallSlotDTO.builder()
+                .putWallSlotCode(event.getPutWallSlotCode())
+                .putWallSlotStatus(event.getPutWallSlotStatus())
+                .build();
+
+        workStation.getPutWallArea().applySnapshot(slotSnapshot);
+        workStationCacheRepository.save(workStation);
 
         ptlService.reminderSeal(workStation.getId(), event.getPtlTag());
 

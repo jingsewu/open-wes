@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 public class PtlApiImpl implements IPtlApi {
 
     private final PtlService ptlService;
-    private final WorkStationService<OutboundWorkStationCache> workStationService;
+    private final WorkStationService workStationService;
 
     @Override
     public void reminderBind(Long workStationId, String ptlTag) {
@@ -59,7 +59,7 @@ public class PtlApiImpl implements IPtlApi {
     }
 
     private PutWallTagConfigDTO getPutWallConfig(Long workStationId) {
-        OutboundWorkStationCache workStationCache = workStationService.getOrThrow(workStationId);
+        OutboundWorkStationCache workStationCache = (OutboundWorkStationCache) workStationService.getOrThrow(workStationId);
         WorkStationConfigDTO workStationConfig = workStationCache.getWorkStationConfig();
         WorkStationConfigDTO.PickingStationConfigDTO pickingStationConfig = workStationConfig.getPickingStationConfig();
         PutWallTagConfigDTO putWallTagConfig = pickingStationConfig.getPutWallTagConfig();

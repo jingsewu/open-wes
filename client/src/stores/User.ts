@@ -20,7 +20,6 @@ const User = types
                 localStorage.setItem('Authorization', '');
                 localStorage.removeItem('ws_token');
                 self.name = '';
-                console.log("logout finished!")
             },
             afterCreate() {
                 self.name = localStorage.getItem('Authorization') || '';

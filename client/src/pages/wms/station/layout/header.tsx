@@ -24,7 +24,6 @@ const WorkStationLayoutHeader = (props: HeaderProps) => {
     const {title, extraTitleInfo} = props
     const {store, onActionDispatch} = useWorkStation()
     const {workStationEvent} = store
-    const workStationStatus = workStationEvent?.workStationStatus
 
     const handleExit = () => {
         Modal.confirm({
@@ -34,21 +33,25 @@ const WorkStationLayoutHeader = (props: HeaderProps) => {
             okButtonProps: {danger: true},
             onOk: async () => {
                 await onActionDispatch({eventCode: CustomActionType.OFFLINE})
+                // 后端已处理下线（HTTP 200），直接重置前端状态并导航回卡片页。
+                // 不依赖 MobX 观察者 + useEffect 的异步链来触发跳转。
+                store.reset()
+                history.push(STATION_MENU_PATH)
             }
         })
     }
 
     useEffect(() => {
-        if (workStationStatus === WorkStationStatus.OFFLINE) {
+        if (store.workStationStatus === WorkStationStatus.OFFLINE) {
             console.log(
                 "%c =====> 当前工作站已下线,重定向回卡片页",
                 "color:red;font-size:20px;"
             )
             history.push(STATION_MENU_PATH)
         }
-    }, [workStationStatus, history])
+    }, [store.workStationStatus, history])
 
-    if (workStationStatus === WorkStationStatus.OFFLINE) {
+    if (store.workStationStatus === WorkStationStatus.OFFLINE) {
         return null
     }
 

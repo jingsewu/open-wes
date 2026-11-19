@@ -24,7 +24,7 @@ export interface DebuggerConfig {
 }
 
 type TitleInfo = (
-    workStationEvent: WorkStationView<any> | undefined
+    workStationEvent: WorkStationView | undefined
 ) => string | number | ReactNode
 
 export interface WorkStationConfig<
@@ -42,7 +42,7 @@ export interface WorkStationConfig<
     actions:
         | (TabActionType | Partial<TabAction>)[]
         | ((
-              workStationEvent: WorkStationView<any> | undefined
+              workStationEvent: WorkStationView | undefined
           ) => (TabActionType | Partial<TabAction>)[])
     /** 工作站操作配置 */
     operationMap?: Record<OperationEnum, FunctionComponent<any>>

@@ -97,7 +97,7 @@ const schema = crudPage({
     searchIdentity: "WStocktakeOrder",
     api: api_crud_search_by_warehouseCode,
     columns,
-    orderBy: "id, stocktake_order_status desc",
+    orderBy: "update_time desc",
     pageActions: [add],
     bulkActions: [
         linkAction({

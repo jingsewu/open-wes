@@ -3,11 +3,13 @@ package org.openwes.monitoring.metrics;
 import com.google.common.eventbus.Subscribe;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
+import org.openwes.domain.event.api.DomainEventObserver;
 import org.openwes.wes.api.inbound.event.AcceptOrderCompletionEvent;
 import org.openwes.wes.api.inbound.event.InboundOrderCompletionEvent;
 import org.openwes.wes.api.inbound.event.InboundPlanOrderAcceptedEvent;
 import org.springframework.stereotype.Component;
 
+@DomainEventObserver
 @Component
 @RequiredArgsConstructor
 public class InboundMetricsSubscriber {

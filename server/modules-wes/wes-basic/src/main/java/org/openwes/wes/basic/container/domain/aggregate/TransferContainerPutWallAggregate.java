@@ -2,6 +2,7 @@ package org.openwes.wes.basic.container.domain.aggregate;
 
 import lombok.RequiredArgsConstructor;
 import org.openwes.wes.api.basic.IPutWallApi;
+import org.openwes.wes.api.basic.dto.PutWallSlotDTO;
 import org.openwes.wes.api.task.constants.TransferContainerStatusEnum;
 import org.openwes.wes.api.task.dto.BindContainerDTO;
 import org.openwes.wes.api.task.dto.SealContainerDTO;
@@ -24,7 +25,7 @@ public class TransferContainerPutWallAggregate {
     private final TransferContainerRepository transferContainerRepository;
 
     @Transactional(rollbackFor = Exception.class)
-    public void bindContainer(BindContainerDTO bindContainerDTO, TransferContainer transferContainer, Long pickingOrderId) {
+    public PutWallSlotDTO bindContainer(BindContainerDTO bindContainerDTO, TransferContainer transferContainer, Long pickingOrderId) {
 
         TransferContainerRecord transferContainerRecord = new TransferContainerRecord(bindContainerDTO, pickingOrderId);
         TransferContainerRecord saved = transferContainerRecordRepository.save(transferContainerRecord);
@@ -39,33 +40,38 @@ public class TransferContainerPutWallAggregate {
         transferContainer.occupy(saved.getId());
         transferContainerRepository.save(transferContainer);
 
+        PutWallSlotDTO snapshot = null;
         if (bindContainerDTO.isNeedHandlePutWallSlot()) {
-            putWallApi.bindContainer(bindContainerDTO, saved.getId());
+            snapshot = putWallApi.bindContainer(bindContainerDTO, saved.getId());
         }
+        return snapshot;
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void unBindContainer(UnBindContainerDTO unBindContainerDTO, TransferContainer transferContainer,
-                                Long transferContainerRecord) {
+    public PutWallSlotDTO unBindContainer(UnBindContainerDTO unBindContainerDTO, TransferContainer transferContainer,
+                                          Long transferContainerRecord) {
 
         transferContainer.unOccupy();
         transferContainerRepository.save(transferContainer);
 
         transferContainerRecordRepository.delete(transferContainerRecord);
 
+        PutWallSlotDTO snapshot = null;
         if (unBindContainerDTO.isNeedHandlePutWallSlot()) {
-            putWallApi.unBindContainer(unBindContainerDTO);
+            snapshot = putWallApi.unBindContainer(unBindContainerDTO);
         }
+        return snapshot;
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void sealContainer(SealContainerDTO sealContainerDTO, TransferContainerRecord transferContainerRecord,
-                              TransferContainer transferContainer) {
+    public PutWallSlotDTO sealContainer(SealContainerDTO sealContainerDTO, TransferContainerRecord transferContainerRecord,
+                                        TransferContainer transferContainer) {
 
         //1. put wall slot seal container
+        PutWallSlotDTO snapshot = null;
         if (sealContainerDTO.isNeedHandlePutWallSlot()) {
             if (sealContainerDTO.isPickingOrderCompleted()) {
-                putWallApi.sealContainer(transferContainerRecord.getPutWallSlotCode(), transferContainerRecord.getWorkStationId());
+                snapshot = putWallApi.sealContainer(transferContainerRecord.getPutWallSlotCode(), transferContainerRecord.getWorkStationId());
             } else {
                 putWallApi.splitContainer(transferContainerRecord.getPutWallSlotCode(), transferContainerRecord.getWorkStationId());
             }
@@ -78,6 +84,8 @@ public class TransferContainerPutWallAggregate {
         //3. save transfer container
         transferContainer.lock();
         transferContainerRepository.save(transferContainer);
+
+        return snapshot;
     }
 
     @Transactional(rollbackFor = Exception.class)

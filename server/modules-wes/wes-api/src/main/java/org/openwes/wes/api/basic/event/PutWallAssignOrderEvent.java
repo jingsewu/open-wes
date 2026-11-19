@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import org.openwes.domain.event.api.DomainEvent;
+import org.openwes.wes.api.basic.constants.PutWallSlotStatusEnum;
 
 @Data
 @Accessors(chain = true)
@@ -29,5 +30,6 @@ public class PutWallAssignOrderEvent extends DomainEvent {
     private Long workStationId;
     private String putWallSlotCode;
     private String ptlTag;
+    private PutWallSlotStatusEnum putWallSlotStatus;
 
 }

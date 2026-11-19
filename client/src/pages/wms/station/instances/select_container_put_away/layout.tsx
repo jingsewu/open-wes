@@ -20,10 +20,10 @@ import {MessageType} from "@/pages/wms/station/widgets/message";
 let warehouseCode = localStorage.getItem("warehouseCode")
 
 interface ReplenishLayoutProps extends OperationProps<any, any> {
-    workStationEvent: WorkStationView<any>
+    workStationEvent: WorkStationView
 }
 
-const useContainerCode = (workStationEvent: WorkStationView<any> | null | undefined): string => {
+const useContainerCode = (workStationEvent: WorkStationView | null | undefined): string => {
     const [containerCode, setContainerCode] = useState<string>("")
 
     useEffect(() => {

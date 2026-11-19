@@ -2,12 +2,10 @@ package org.openwes.wes.api.basic.event;
 
 import lombok.NoArgsConstructor;
 import org.openwes.domain.event.api.DomainEvent;
-import org.openwes.wes.api.basic.dto.PutWallSlotRemindSealedDTO;
+import org.openwes.wes.api.basic.constants.PutWallSlotStatusEnum;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
-
-import java.util.List;
 
 @Data
 @Accessors(chain = true)
@@ -20,9 +18,10 @@ public class PutWallRemindSealContainerEvent extends DomainEvent {
     private String putWallSlotCode;
     private Long pickingOrderId;
     private String ptlTag;
+    private PutWallSlotStatusEnum putWallSlotStatus;
 
-    public PutWallRemindSealContainerEvent(Long putWallSlotId,Long workStationId,
-                                           String putWallSlotCode,Long pickingOrderId,String ptlTag) {
+    public PutWallRemindSealContainerEvent(Long putWallSlotId, Long workStationId,
+                                           String putWallSlotCode, Long pickingOrderId, String ptlTag) {
         super(putWallSlotId);
         this.pickingOrderId = pickingOrderId;
         this.putWallSlotId = putWallSlotId;

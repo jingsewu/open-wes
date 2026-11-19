@@ -2,44 +2,44 @@ package org.openwes.station.application.business.handler.common.extension.stockt
 
 import org.openwes.common.utils.exception.WmsException;
 import org.openwes.common.utils.exception.code_enum.StocktakeErrorDescEnum;
+import org.openwes.station.api.model.ArrivedContainerCache;
 import org.openwes.station.application.business.handler.common.ScanBarcodeHandler;
-import org.openwes.station.domain.entity.StocktakeWorkStationCache;
+import org.openwes.station.domain.entity.WorkStationCache;
 import org.openwes.station.domain.repository.WorkStationCacheRepository;
 import org.openwes.station.infrastructure.remote.BarcodeService;
 import org.openwes.wes.api.basic.constants.WorkStationModeEnum;
 import org.openwes.wes.api.config.constants.BusinessFlowEnum;
-import org.openwes.wes.api.task.dto.OperationTaskVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class StocktakeScanBarcodeHandlerExtension implements ScanBarcodeHandler.Extension<StocktakeWorkStationCache> {
+public class StocktakeScanBarcodeHandlerExtension implements ScanBarcodeHandler.Extension {
 
     private final BarcodeService barcodeService;
-    private final WorkStationCacheRepository<StocktakeWorkStationCache> workStationRepository;
+    private final WorkStationCacheRepository workStationRepository;
 
     @Override
-    public void doScanBarcode(StocktakeWorkStationCache workStationCache) {
+    public void doScanBarcode(WorkStationCache workStationCache) {
 
-        List<OperationTaskVO> operateTasks = workStationCache.getOperateTasks();
-        if (CollectionUtils.isEmpty(operateTasks)) {
+        if (workStationCache.getSkuArea() == null || !workStationCache.getSkuArea().hasTasks()) {
             log.info("work station: {} operationTasks is empty", workStationCache.getId());
             throw WmsException.throwWmsException(StocktakeErrorDescEnum.STOCKTAKE_NO_OPERATION_TASK);
         }
 
-        String skuCode = parseSkuCode(workStationCache.getScannedBarcode(), BusinessFlowEnum.STOCK_TAKE, barcodeService);
+        String skuCode = parseSkuCode(workStationCache.getSkuArea().getScanCode(), BusinessFlowEnum.STOCK_TAKE, barcodeService);
         if (StringUtils.isEmpty(skuCode)) {
             throw WmsException.throwWmsException(StocktakeErrorDescEnum.STOCKTAKE_BAR_CODE_PARSING_ERROR);
         }
 
-        workStationCache.processTasks(skuCode);
+        ArrivedContainerCache processingContainer = workStationCache.getWorkLocationArea().getProcessingContainers().stream()
+                .findFirst().orElse(null);
+        if (processingContainer != null) {
+            workStationCache.getSkuArea().markTasksProcessing(skuCode, processingContainer.getContainerCode(), processingContainer.getFace());
+        }
         workStationRepository.save(workStationCache);
     }
 

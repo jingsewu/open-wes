@@ -7,7 +7,6 @@ const mockData = {
     workStationStatus: "ONLINE",
     workStationMode: "STOCKTAKE",
     chooseArea: "SKU_AREA",
-    scanCode: null,
     processingType: null,
     processingInboundOrderDetailId: null,
     callContainerCount: null,
@@ -9007,7 +9006,8 @@ const mockData = {
     },
     skuArea: {
         pickType: null,
-        pickingViews: [
+        scanCode: null,
+        operationViews: [
             {
                 skuMainDataDTO: {
                     id: 571798421208454660,

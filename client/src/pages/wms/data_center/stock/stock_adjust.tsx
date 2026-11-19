@@ -125,7 +125,7 @@ const schema = crudPage({
     searchIdentity: "WStockAdjustmentOrder",
     api: api_crud_search_by_warehouseCode,
     columns,
-    orderBy: "create_time desc",
+    orderBy: "update_time desc",
     pageActions: [],
     rowActions: [
         detailButton(detailDrawer),
