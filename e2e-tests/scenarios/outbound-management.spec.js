@@ -23,6 +23,10 @@ test.describe('Outbound — Management Flow', () => {
 
     // ----- Step 1: Open the outbound plan order page and start creating -----
     await navigateTo(page, '/wms/data-center/outbound/outbound-plan-order');
+    // Pin the seeded warehouse explicitly — the header selector defaults to the
+    // first warehouse returned by the search API, which is not necessarily WH001
+    // on a multi-warehouse dev database.
+    await page.evaluate(() => localStorage.setItem('warehouseCode', 'WH001'));
     await page.click('button:has-text("新增")');
     await page.waitForSelector('.cxd-Modal', { timeout: 15_000 });
 

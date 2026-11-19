@@ -10,8 +10,14 @@ import java.sql.*;
 public class SqlRunner {
     public static void main(String[] args) throws Exception {
         String sql = args[0];
-        String url = "jdbc:mysql://192.168.127.129:3306/openwes?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai";
-        try (Connection conn = DriverManager.getConnection(url, "root", "root")) {
+        String host = System.getenv().getOrDefault("DB_HOST", "192.168.127.129");
+        String port = System.getenv().getOrDefault("DB_PORT", "3306");
+        String database = System.getenv().getOrDefault("DB_NAME", "openwes");
+        String user = System.getenv().getOrDefault("DB_USER", "root");
+        String password = System.getenv().getOrDefault("DB_PASSWORD", "root");
+        String url = "jdbc:mysql://" + host + ":" + port + "/" + database
+                + "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai";
+        try (Connection conn = DriverManager.getConnection(url, user, password)) {
             if (sql.startsWith(";")) {
                 // multi-statement run
                 try (Statement st = conn.createStatement()) {
