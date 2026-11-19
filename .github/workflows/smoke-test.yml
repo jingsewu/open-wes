@@ -52,7 +52,10 @@ jobs:
       - name: Build backend JARs
         run: |
           cd server
-          ./gradlew build -x test
+          # Every subproject applies the Spring Boot plugin, so plain `build`
+          # runs bootJar in aggregator projects that have no main class.
+          # Build only the runner jars that server/Dockerfile copies.
+          ./gradlew :server:gateway-server:bootJar :server:wes-server:bootJar :server:station-server:bootJar
 
       - name: Start services (core only, no monitoring)
         run: |
