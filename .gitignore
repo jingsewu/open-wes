@@ -32,6 +32,8 @@ Thumbs.db
 
 # Logs
 *.log
+*.log.gz
+logs/
 
 # Misc
 client/build/README.md
