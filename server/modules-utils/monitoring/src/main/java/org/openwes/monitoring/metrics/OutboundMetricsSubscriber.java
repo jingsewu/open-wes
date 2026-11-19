@@ -3,6 +3,7 @@ package org.openwes.monitoring.metrics;
 import com.google.common.eventbus.Subscribe;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
+import org.openwes.domain.event.api.DomainEventObserver;
 import org.openwes.wes.api.outbound.event.OutboundPlanOrderCompletionEvent;
 import org.openwes.wes.api.outbound.event.OutboundPlanOrderCreatedEvent;
 import org.openwes.wes.api.outbound.event.OutboundWaveCompletionEvent;
@@ -11,6 +12,7 @@ import org.openwes.wes.api.outbound.event.PickingOrderCompletionEvent;
 import org.openwes.wes.api.outbound.event.PickingOrderDispatchedEvent;
 import org.springframework.stereotype.Component;
 
+@DomainEventObserver
 @Component
 @RequiredArgsConstructor
 public class OutboundMetricsSubscriber {

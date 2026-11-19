@@ -3,11 +3,13 @@ package org.openwes.monitoring.metrics;
 import com.google.common.eventbus.Subscribe;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
+import org.openwes.domain.event.api.DomainEventObserver;
 import org.openwes.wes.api.task.event.OperationTaskAbnormalEvent;
 import org.openwes.wes.api.task.event.OperationTaskPickedEvent;
 import org.openwes.wes.api.task.event.TransferContainerSealedEvent;
 import org.springframework.stereotype.Component;
 
+@DomainEventObserver
 @Component
 @RequiredArgsConstructor
 public class TaskMetricsSubscriber {
