@@ -75,17 +75,28 @@ function seedBatchAttribute() {
 
 function seedContainerStock(containerCode, qty) {
   const now = Date.now();
+  // Container's constructor dereferences containerSlots (Container.java), so the
+  // JSON column must never be NULL for containers used by the picking flow.
+  const slotsJson =
+    `[{"face": "FACE1", "children": [], "emptySlot": false, ` +
+    `"locationCode": "LOC-${containerCode}-SLOT1", "occupationRatio": 1, ` +
+    `"containerSlotCode": "SLOT1", "containerSlotSpecCode": "SLOT1"}]`;
   if (rowCount(`SELECT COUNT(*) FROM w_container WHERE container_code='${containerCode}'`) === 0) {
     const cid = nextId();
     sql(
       `INSERT INTO w_container (id, create_time, create_user, update_time, update_user, ` +
         `container_code, container_slot_num, container_spec_code, container_status, empty_container, ` +
         `empty_slot_num, location_code, location_type, locked, opened, warehouse_area_id, ` +
-        `warehouse_code, warehouse_logic_id, version) VALUES ` +
+        `warehouse_code, warehouse_logic_id, version, container_slots) VALUES ` +
         `(${cid}, ${now}, 'admin', ${now}, 'admin', '${containerCode}', 1, 'TOTE_SPEC', 'IN_SIDE', 0, ` +
-        `1, 'LOC-${containerCode}', 'RACK', 0, 0, 1, 'WH001', 0, 0)`
+        `1, 'LOC-${containerCode}', 'RACK', 0, 0, 1, 'WH001', 0, 0, '${slotsJson}')`
     );
     console.log(`[container] created ${containerCode}`);
+  } else {
+    sql(
+      `UPDATE w_container SET container_slots='${slotsJson}' ` +
+        `WHERE container_code='${containerCode}' AND container_slots IS NULL`
+    );
   }
   if (rowCount(`SELECT COUNT(*) FROM w_container_stock WHERE container_code='${containerCode}'`) === 0) {
     const csid = nextId();
@@ -124,15 +135,26 @@ async function seedPutWall(token, slotCount, putWallCode) {
     { code: 'TOTE_SPEC', type: 'TRANSFER_CONTAINER' },
   ];
   const now = Date.now();
+  // ContainerSpec.getContainerSlotSpecsByFace streams over this list, so the
+  // JSON column must not be NULL (see queryContainerLayout / CONTAINER_ARRIVED).
+  const slotSpecsJson =
+    `[{"bay": 1, "face": "FACE1", "level": 1, "width": 300, "height": 400, ` +
+    `"length": 300, "locBay": 1, "volume": 5000, "children": [], "locLevel": 1, ` +
+    `"containerSlotSpecCode": "SLOT1"}]`;
   for (const s of specs) {
     if (rowCount(`SELECT COUNT(*) FROM w_container_spec WHERE container_spec_code='${s.code}'`) === 0) {
       const id = nextId();
       sql(
         `INSERT INTO w_container_spec (id, create_time, create_user, update_time, update_user, ` +
           `container_slot_num, container_spec_code, container_spec_name, container_type, ` +
-          `height, length, volume, width, warehouse_code) VALUES ` +
+          `height, length, volume, width, warehouse_code, container_slot_specs) VALUES ` +
           `(${id}, ${now}, 'admin', ${now}, 'admin', 1, '${s.code}', '${s.name}', '${s.type}', ` +
-          `400, 300, 5000, 300, 'WH001')`
+          `400, 300, 5000, 300, 'WH001', '${slotSpecsJson}')`
+      );
+    } else {
+      sql(
+        `UPDATE w_container_spec SET container_slot_specs='${slotSpecsJson}' ` +
+          `WHERE container_spec_code='${s.code}' AND container_slot_specs IS NULL`
       );
     }
   }
