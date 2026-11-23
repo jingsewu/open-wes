@@ -155,23 +155,24 @@ interface Segment {
     value: number
 }
 
-// One-hue ordinal ramp (validated against white): later stages sit darker.
-// Canceled orders are an off-ramp and take a neutral gray.
+// Two one-hue ordinal ramps: inbound is blue, outbound is amber, so the
+// direction of a number is readable before the label is. Later stages sit
+// darker. Canceled orders are an off-ramp and take a neutral gray.
 const INBOUND_GROUPS: StatusGroup[] = [
-    {key: "new", labelKey: "dashboard.statusNew", color: "#86b6ef", statuses: ["NEW"]},
-    {key: "receiving", labelKey: "dashboard.statusReceiving", color: "#5598e7", statuses: ["ACCEPTING"]},
-    {key: "received", labelKey: "dashboard.statusReceived", color: "#2a78d6", statuses: ["ACCEPTED"]},
-    {key: "closed", labelKey: "dashboard.statusClosed", color: "#1c5cab", statuses: ["CLOSED"]},
-    {key: "canceled", labelKey: "dashboard.statusCanceled", color: "#94a3b8", statuses: ["CANCEL"]},
+    {key: "new", labelKey: "dashboard.statusNew", color: "#a9c4f2", statuses: ["NEW"]},
+    {key: "receiving", labelKey: "dashboard.statusReceiving", color: "#6f9de8", statuses: ["ACCEPTING"]},
+    {key: "received", labelKey: "dashboard.statusReceived", color: "#3e74d6", statuses: ["ACCEPTED"]},
+    {key: "closed", labelKey: "dashboard.statusClosed", color: "#1e4fa0", statuses: ["CLOSED"]},
+    {key: "canceled", labelKey: "dashboard.statusCanceled", color: "#b6bfcc", statuses: ["CANCEL"]},
 ]
 
 const OUTBOUND_GROUPS: StatusGroup[] = [
-    {key: "new", labelKey: "dashboard.statusNew", color: "#86b6ef", statuses: ["NEW"]},
-    {key: "short-waiting", labelKey: "dashboard.statusShortWaiting", color: "#5598e7", statuses: ["SHORT_WAITING"]},
-    {key: "allocated", labelKey: "dashboard.statusAllocated", color: "#2a78d6", statuses: ["ASSIGNED", "DISPATCHED"]},
-    {key: "picking", labelKey: "dashboard.statusPicking", color: "#1c5cab", statuses: ["PICKING"]},
-    {key: "picked", labelKey: "dashboard.statusPicked", color: "#104281", statuses: ["PICKED"]},
-    {key: "canceled", labelKey: "dashboard.statusCanceled", color: "#94a3b8", statuses: ["CANCELED"]},
+    {key: "new", labelKey: "dashboard.statusNew", color: "#f1c98f", statuses: ["NEW"]},
+    {key: "short-waiting", labelKey: "dashboard.statusShortWaiting", color: "#e6a94f", statuses: ["SHORT_WAITING"]},
+    {key: "allocated", labelKey: "dashboard.statusAllocated", color: "#d18a2c", statuses: ["ASSIGNED", "DISPATCHED"]},
+    {key: "picking", labelKey: "dashboard.statusPicking", color: "#b06a12", statuses: ["PICKING"]},
+    {key: "picked", labelKey: "dashboard.statusPicked", color: "#8a4a05", statuses: ["PICKED"]},
+    {key: "canceled", labelKey: "dashboard.statusCanceled", color: "#b6bfcc", statuses: ["CANCELED"]},
 ]
 
 const INBOUND_DONE = ["ACCEPTED", "CLOSED"]
@@ -236,7 +237,7 @@ function buildSegments(
 // ─── Chart setup ──────────────────────────────────────
 
 const SERIES_INBOUND = "#2563eb"
-const SERIES_OUTBOUND = "#d97706"
+const SERIES_OUTBOUND = "#b45309"
 const FONT = "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
 const PREFERS_REDUCED_MOTION =
     typeof window !== "undefined" &&
@@ -298,8 +299,21 @@ function useNumberFormat(): (value: number) => string {
 
 // ─── Pieces ───────────────────────────────────────────
 
+function KpiValue({loading, children}: {loading: boolean; children: React.ReactNode}) {
+    return (
+        <p className="dash-kpi__value">
+            {loading ? (
+                <span className="dash-skeleton dash-skeleton--value" aria-hidden="true" />
+            ) : (
+                children
+            )}
+        </p>
+    )
+}
+
 function ProgressBlock({
     title,
+    tone,
     totalCount,
     rate,
     segments,
@@ -307,6 +321,7 @@ function ProgressBlock({
     loading,
 }: {
     title: string
+    tone: "inbound" | "outbound"
     totalCount: number
     rate: number | null
     segments: Segment[]
@@ -317,16 +332,21 @@ function ProgressBlock({
     const formatNumber = useNumberFormat()
 
     return (
-        <div className="dash-progress">
+        <div className={`dash-progress dash-progress--${tone}`}>
             <div className="dash-progress__top">
-                <div>
+                <div className="dash-progress__id">
+                    <span className="dash-progress__lamp" aria-hidden="true" />
                     <h3 className="dash-progress__name">{title}</h3>
                     <p className="dash-progress__count">
                         {loading ? "—" : t("dashboard.orderCount", {value: formatNumber(totalCount)})}
                     </p>
                 </div>
                 <div className="dash-progress__rate">
-                    <b>{rate === null ? "—" : `${rate}%`}</b>
+                    {loading ? (
+                        <span className="dash-skeleton dash-skeleton--rate" aria-hidden="true" />
+                    ) : (
+                        <b>{rate === null ? "—" : `${rate}%`}</b>
+                    )}
                     <span>{t("dashboard.complete")}</span>
                 </div>
             </div>
@@ -500,8 +520,6 @@ function WorkstationTable({rows, loading}: {rows: WorkstationRow[]; loading: boo
 }
 
 // ─── Page ─────────────────────────────────────────────
-
-const RAIL_PORTS = [12.5, 37.5, 62.5, 87.5]
 
 export default function WmsDashboard() {
     const {t, i18n} = useTranslation()
@@ -825,121 +843,121 @@ export default function WmsDashboard() {
 
     return (
         <div className="dashboard-page">
-            <div className="dashboard-page__inner">
-                <section className="dash-band" aria-labelledby="dash-page-title">
-                    <div className="dash-band__top">
-                        <div>
-                            <h1 id="dash-page-title" className="dash-band__title">
-                                {t("dashboard.floorTitle")}
-                            </h1>
-                            <p className="dash-band__date">{dateLabel}</p>
-                        </div>
-                        <div className="dash-band__tools">
-                            <span className={hasError ? "dash-live dash-live--error" : "dash-live"}>
-                                <span className="dash-live__dot" aria-hidden="true" />
-                                {t("dashboard.live")}
+            <div className="dashboard-sheet">
+                <header className="dash-head">
+                    <div className="dash-head__id">
+                        <h1 id="dash-page-title" className="dash-head__title">
+                            {t("dashboard.floorTitle")}
+                        </h1>
+                        <p className="dash-head__date">{dateLabel}</p>
+                    </div>
+                    <div className="dash-head__tools">
+                        <span className={hasError ? "dash-live dash-live--error" : "dash-live"}>
+                            <span className="dash-live__dot" aria-hidden="true" />
+                            {t("dashboard.live")}
+                        </span>
+                        {updatedLabel ? (
+                            <span className="dash-head__updated">
+                                {t("dashboard.updated")}{" "}
+                                <span className="dash-head__time">{updatedLabel}</span>
                             </span>
-                            {updatedLabel ? (
-                                <span className="dash-band__updated">
-                                    {t("dashboard.updated")}{" "}
-                                    <span className="dash-band__time">{updatedLabel}</span>
-                                </span>
-                            ) : null}
-                            <button
-                                type="button"
-                                className={
-                                    refreshing ? "dash-refresh dash-refresh--busy" : "dash-refresh"
-                                }
-                                onClick={() => {
-                                    void loadAll(true)
-                                }}
-                                disabled={refreshing}
-                                aria-label={t("dashboard.refresh")}
-                                title={t("dashboard.refresh")}
-                            >
-                                <RefreshCw aria-hidden="true" />
-                            </button>
-                        </div>
+                        ) : null}
+                        <button
+                            type="button"
+                            className={
+                                refreshing ? "dash-refresh dash-refresh--busy" : "dash-refresh"
+                            }
+                            onClick={() => {
+                                void loadAll(true)
+                            }}
+                            disabled={refreshing}
+                            aria-label={t("dashboard.refresh")}
+                            title={t("dashboard.refresh")}
+                        >
+                            <RefreshCw aria-hidden="true" />
+                        </button>
                     </div>
+                </header>
 
-                    {hasError ? (
-                        <div className="dash-band__alert" role="status">
-                            <AlertTriangle size={14} aria-hidden="true" />
-                            <span>{t("dashboard.loadError")}</span>
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    void loadAll(true)
-                                }}
-                            >
-                                {t("dashboard.retry")}
-                            </button>
-                        </div>
-                    ) : null}
-
-                    <div className="dash-kpis">
-                        <div className="dash-kpi">
-                            <p className="dash-kpi__label">{t("dashboard.ordersToday")}</p>
-                            <p className="dash-kpi__value">
-                                {loading ? "—" : formatNumber(inboundTotal + outboundTotal)}
-                            </p>
-                            <p className="dash-kpi__sub">{t("dashboard.sinceMidnight")}</p>
-                        </div>
-                        <div className="dash-kpi">
-                            <p className="dash-kpi__label">{t("dashboard.receivingNow")}</p>
-                            <p className="dash-kpi__value">
-                                {loading ? "—" : formatNumber(receivingNow)}
-                            </p>
-                            <p className="dash-kpi__sub">
-                                {loading
-                                    ? "—"
-                                    : t("dashboard.receivingNowSub", {
-                                          value: formatNumber(inboundTotal),
-                                      })}
-                            </p>
-                        </div>
-                        <div className="dash-kpi">
-                            <p className="dash-kpi__label">{t("dashboard.pickingNow")}</p>
-                            <p className="dash-kpi__value">
-                                {loading ? "—" : formatNumber(pickingNow)}
-                            </p>
-                            <p className="dash-kpi__sub">
-                                {loading
-                                    ? "—"
-                                    : t("dashboard.pickingNowSub", {
-                                          value: formatNumber(outboundTotal),
-                                      })}
-                            </p>
-                        </div>
-                        <div className="dash-kpi">
-                            <p className="dash-kpi__label">{t("dashboard.activeStations")}</p>
-                            <p className="dash-kpi__value">
-                                {loading ? "—" : formatNumber(activeStations)}
-                            </p>
-                            <p className="dash-kpi__sub">{t("dashboard.activeStationsSub")}</p>
-                        </div>
+                {hasError ? (
+                    <div className="dash-alert" role="status">
+                        <AlertTriangle size={14} aria-hidden="true" />
+                        <span>{t("dashboard.loadError")}</span>
+                        <button
+                            type="button"
+                            onClick={() => {
+                                void loadAll(true)
+                            }}
+                        >
+                            {t("dashboard.retry")}
+                        </button>
                     </div>
+                ) : null}
 
-                    <div className="dash-rail" aria-hidden="true">
-                        <div className="dash-rail__line" />
-                        {RAIL_PORTS.map((position) => (
-                            <span
-                                key={position}
-                                className="dash-rail__port"
-                                style={{left: `${position}%`}}
-                            />
-                        ))}
+                <section className="dash-kpis" aria-label={t("dashboard.floorTitle")}>
+                    <div className="dash-kpi">
+                        <p className="dash-kpi__label">
+                            <span className="dash-kpi__lamp dash-kpi__lamp--order" aria-hidden="true" />
+                            {t("dashboard.ordersToday")}
+                        </p>
+                        <KpiValue loading={loading}>
+                            {formatNumber(inboundTotal + outboundTotal)}
+                        </KpiValue>
+                        <p className="dash-kpi__sub">
+                            {loading
+                                ? "—"
+                                : t("dashboard.inOutSplit", {
+                                      inbound: formatNumber(inboundTotal),
+                                      outbound: formatNumber(outboundTotal),
+                                  })}
+                        </p>
+                    </div>
+                    <div className="dash-kpi">
+                        <p className="dash-kpi__label">
+                            <span className="dash-kpi__lamp dash-kpi__lamp--in" aria-hidden="true" />
+                            {t("dashboard.receivingNow")}
+                        </p>
+                        <KpiValue loading={loading}>{formatNumber(receivingNow)}</KpiValue>
+                        <p className="dash-kpi__sub">
+                            {loading
+                                ? "—"
+                                : t("dashboard.receivingNowSub", {
+                                      value: formatNumber(inboundTotal),
+                                  })}
+                        </p>
+                    </div>
+                    <div className="dash-kpi">
+                        <p className="dash-kpi__label">
+                            <span className="dash-kpi__lamp dash-kpi__lamp--out" aria-hidden="true" />
+                            {t("dashboard.pickingNow")}
+                        </p>
+                        <KpiValue loading={loading}>{formatNumber(pickingNow)}</KpiValue>
+                        <p className="dash-kpi__sub">
+                            {loading
+                                ? "—"
+                                : t("dashboard.pickingNowSub", {
+                                      value: formatNumber(outboundTotal),
+                                  })}
+                        </p>
+                    </div>
+                    <div className="dash-kpi">
+                        <p className="dash-kpi__label">
+                            <span className="dash-kpi__lamp dash-kpi__lamp--station" aria-hidden="true" />
+                            {t("dashboard.activeStations")}
+                        </p>
+                        <KpiValue loading={loading}>{formatNumber(activeStations)}</KpiValue>
+                        <p className="dash-kpi__sub">{t("dashboard.activeStationsSub")}</p>
                     </div>
                 </section>
 
-                <div className="dash-grid">
-                    <section className="dash-panel dash-flow" aria-labelledby="dash-flow-title">
-                        <div className="dash-panel__head">
+                <div className="dash-row dash-row--primary">
+                    <section className="dash-cell dash-flow" aria-labelledby="dash-flow-title">
+                        <div className="dash-cell__head">
                             <div>
-                                <h2 id="dash-flow-title" className="dash-panel__title">
+                                <h2 id="dash-flow-title" className="dash-cell__title">
                                     {t("dashboard.flowTitle")}
                                 </h2>
-                                <p className="dash-panel__sub">{t("dashboard.flowSub")}</p>
+                                <p className="dash-cell__sub">{t("dashboard.flowSub")}</p>
                             </div>
                             <div className="dash-seg" role="group" aria-label={t("dashboard.view")}>
                                 <button
@@ -1015,9 +1033,20 @@ export default function WmsDashboard() {
                         )}
                     </section>
 
-                    <section className="dash-panel dash-progress-panel" aria-label={t("dashboard.progressTitle")}>
+                    <section
+                        className="dash-cell dash-progress-panel"
+                        aria-labelledby="dash-progress-title"
+                    >
+                        <div className="dash-cell__head">
+                            <div>
+                                <h2 id="dash-progress-title" className="dash-cell__title">
+                                    {t("dashboard.progressTitle")}
+                                </h2>
+                            </div>
+                        </div>
                         <ProgressBlock
                             title={t("dashboard.inboundOrders")}
+                            tone="inbound"
                             totalCount={inboundTotal}
                             rate={inboundRate}
                             segments={inboundSegments}
@@ -1026,6 +1055,7 @@ export default function WmsDashboard() {
                         />
                         <ProgressBlock
                             title={t("dashboard.outboundOrders")}
+                            tone="outbound"
                             totalCount={outboundTotal}
                             rate={outboundRate}
                             segments={outboundSegments}
@@ -1035,14 +1065,14 @@ export default function WmsDashboard() {
                     </section>
                 </div>
 
-                <div className="dash-grid dash-grid--tables">
-                    <section className="dash-panel" aria-labelledby="dash-operators-title">
-                        <div className="dash-panel__head">
+                <div className="dash-row dash-row--tables">
+                    <section className="dash-cell" aria-labelledby="dash-operators-title">
+                        <div className="dash-cell__head">
                             <div>
-                                <h2 id="dash-operators-title" className="dash-panel__title">
+                                <h2 id="dash-operators-title" className="dash-cell__title">
                                     {t("dashboard.operatorRanking")}
                                 </h2>
-                                <p className="dash-panel__sub">
+                                <p className="dash-cell__sub">
                                     {t("dashboard.operatorSub", {
                                         value: formatNumber(operators.length),
                                     })}
@@ -1052,13 +1082,13 @@ export default function WmsDashboard() {
                         <OperatorTable rows={operators} loading={loading} />
                     </section>
 
-                    <section className="dash-panel" aria-labelledby="dash-stations-title">
-                        <div className="dash-panel__head">
+                    <section className="dash-cell" aria-labelledby="dash-stations-title">
+                        <div className="dash-cell__head">
                             <div>
-                                <h2 id="dash-stations-title" className="dash-panel__title">
+                                <h2 id="dash-stations-title" className="dash-cell__title">
                                     {t("dashboard.workstationDetails")}
                                 </h2>
-                                <p className="dash-panel__sub">{t("dashboard.workstationSub")}</p>
+                                <p className="dash-cell__sub">{t("dashboard.workstationSub")}</p>
                             </div>
                         </div>
                         <WorkstationTable rows={workstations} loading={loading} />

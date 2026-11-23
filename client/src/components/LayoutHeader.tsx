@@ -20,7 +20,7 @@ import { useConsoleShortcuts } from "@/utils/amis/useConsoleShortcuts"
 import { colors } from "@/theme"
 
 const Divider = () => (
-    <div style={{ width: 1, height: 18, background: colors.border, margin: "0 4px", flexShrink: 0 }} />
+    <div style={{ width: 1, height: 18, background: "var(--chrome-border)", margin: "0 4px", flexShrink: 0 }} />
 )
 
 const TABLE_DENSITIES: TableDensity[] = ["standard", "compact"]
@@ -50,7 +50,7 @@ const WarehouseSelect = ({
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
         >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={colors.primary} strokeWidth="2">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={colors.textSecondary} strokeWidth="2">
                 <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
                 <polyline points="9 22 9 12 15 12 15 22" />
             </svg>
@@ -252,6 +252,7 @@ const Header = ({
             <div className="cxd-Layout-headerBar">
                 {/* ── Logo zone — visually aligns with sidebar width ── */}
                 <div
+                    className="brand-zone"
                     style={{
                         width: "var(--layout-aside-width)",
                         height: "100%",
@@ -260,7 +261,7 @@ const Header = ({
                         padding: "0 16px",
                         gap: 8,
                         flexShrink: 0,
-                        borderRight: `1px solid ${colors.border}`
+                        borderRight: "1px solid var(--chrome-border)"
                     }}
                 >
                     <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -274,8 +275,8 @@ const Header = ({
                         <text x="17" y="23.5" textAnchor="middle" fill="white" fontSize="17" fontWeight="900" fontFamily="Arial,sans-serif">W</text>
                     </svg>
                     <span style={{ fontSize: 15, whiteSpace: "nowrap" }}>
-                        <span style={{ fontWeight: 500, color: colors.text }}>Open</span>
-                        <span style={{ fontWeight: 800, color: colors.primary }}>WES</span>
+                        <span style={{ fontWeight: 500, color: "#5b6675" }}>Open</span>
+                        <span style={{ fontWeight: 800, color: "#2563eb" }}>WES</span>
                     </span>
                 </div>
 
@@ -295,6 +296,7 @@ const Header = ({
 
                 {/* ── App navigation ── */}
                 <Menu
+                    className="app-nav"
                     onClick={onApplicationChange}
                     selectedKeys={[selectedApp]}
                     mode="horizontal"

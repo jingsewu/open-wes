@@ -65,7 +65,7 @@ const RenderAside = ({ navigations, iframeShow, iframeMenuClick }: any) => {
                         </b>
                     )
 
-                if (store.asideFolded && link.icon) {
+                if (link.icon) {
                     children.push(
                         <i
                             key="icon"

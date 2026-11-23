@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <!-- Regroup the WMS sidebar: flatten the two wrapper directories
+         (数据中心 / 配置中心) and surface eight top-level entries. -->
+
+    <changeSet id="wms_menu_regroup_top_level" author="Kinser">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="u_menu"/>
+        </preConditions>
+        <comment>Promote inbound/outbound/stock and config groups to top level; set icons and order</comment>
+        <sql>
+            UPDATE u_menu SET parent_id = 1000000000, order_num = 3, icon = 'fa fa-arrow-right-to-bracket'
+            WHERE id = 1002010000;
+            UPDATE u_menu SET parent_id = 1000000000, order_num = 4, icon = 'fa fa-arrow-right-from-bracket'
+            WHERE id = 1002020000;
+            UPDATE u_menu SET parent_id = 1000000000, order_num = 5, icon = 'fa fa-boxes-stacked'
+            WHERE id = 1002030000;
+
+            UPDATE u_menu SET parent_id = 1000000000, order_num = 6, title = '基础资料', icon = 'fa fa-database'
+            WHERE id = 1005010000;
+            UPDATE u_menu SET parent_id = 1000000000, order_num = 7, title = '仓库设置', icon = 'fa fa-warehouse'
+            WHERE id = 527119778880557056;
+
+            UPDATE u_menu SET title = '仪表盘', order_num = 1, icon = 'fa fa-gauge-high'
+            WHERE id = 661142408637059072;
+            UPDATE u_menu SET order_num = 2, icon = 'fa fa-desktop'
+            WHERE id = 1001000000;
+        </sql>
+    </changeSet>
+
+    <changeSet id="wms_menu_add_system_settings" author="Kinser">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="u_menu"/>
+                <sqlCheck expectedResult="0">
+                    SELECT COUNT(*) FROM u_menu WHERE id = 202611230000000001
+                </sqlCheck>
+            </and>
+        </preConditions>
+        <comment>Add the 系统设置 top-level menu for rules and print configuration</comment>
+        <sql>
+            INSERT INTO u_menu (id, create_user, system_code, parent_id, type, title, description,
+                                permissions, order_num, icon, path, enable, create_time, update_time,
+                                update_user, iframe_show)
+            VALUES (202611230000000001, 'admin', 'wms', 1000000000, 2, '系统设置', NULL,
+                    '/wms/config-center/system', 8, 'fa fa-gear', NULL, 1,
+                    UNIX_TIMESTAMP() * 1000, UNIX_TIMESTAMP() * 1000, 'admin', 0);
+        </sql>
+    </changeSet>
+
+    <changeSet id="wms_menu_move_settings_children" author="Kinser">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="u_menu"/>
+                <sqlCheck expectedResult="1">
+                    SELECT COUNT(*) FROM u_menu WHERE id = 202611230000000001
+                </sqlCheck>
+            </and>
+        </preConditions>
+        <comment>Move rule and print pages directly under 系统设置</comment>
+        <sql>
+            UPDATE u_menu SET parent_id = 202611230000000001, order_num = 1 WHERE id = 2002010002;
+            UPDATE u_menu SET parent_id = 202611230000000001, order_num = 2 WHERE id = 2002010003;
+            UPDATE u_menu SET parent_id = 202611230000000001, order_num = 3 WHERE id = 2002010001;
+
+            UPDATE u_menu SET parent_id = 202611230000000001, order_num = 4 WHERE id = 1005030100;
+            UPDATE u_menu SET parent_id = 202611230000000001, order_num = 5 WHERE id = 1005030200;
+            UPDATE u_menu SET parent_id = 202611230000000001, order_num = 6 WHERE id = 1005030300;
+            UPDATE u_menu SET parent_id = 202611230000000001, order_num = 7 WHERE id = 1005030400;
+        </sql>
+    </changeSet>
+
+    <changeSet id="wms_menu_remove_empty_wrappers" author="Kinser">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="u_menu"/>
+                <tableExists tableName="u_role_menu"/>
+                <sqlCheck expectedResult="0">
+                    SELECT COUNT(*) FROM u_menu
+                    WHERE parent_id IN (1002000000, 1005000000, 527117843301535744, 1005030000)
+                </sqlCheck>
+            </and>
+        </preConditions>
+        <comment>Delete the now-empty 数据中心 / 配置中心 / 规则管理 / 打印配置 shells and the test menu ABC</comment>
+        <sql>
+            DELETE FROM u_role_menu
+            WHERE menu_id IN (1002000000, 1005000000, 527117843301535744, 1005030000, 806319051310764032);
+
+            DELETE FROM u_menu
+            WHERE id IN (1002000000, 1005000000, 527117843301535744, 1005030000, 806319051310764032);
+        </sql>
+    </changeSet>
+
+    <changeSet id="wms_menu_fix_workstation_paths" author="Kinser">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="u_menu"/>
+        </preConditions>
+        <comment>Align workstation menu paths with the routes defined in path2Compoment.tsx</comment>
+        <sql>
+            UPDATE u_menu SET permissions = '/wms/workStation/receive', path = '/wms/workStation/receive'
+            WHERE id = 1001010000;
+            UPDATE u_menu SET permissions = '/wms/workStation/stocktake', path = '/wms/workStation/stocktake'
+            WHERE id = 1001070000;
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>
