@@ -1372,6 +1372,7 @@
     "dashboard.retry": "Retry",
     "dashboard.ordersToday": "Orders today",
     "dashboard.sinceMidnight": "since midnight",
+    "dashboard.inOutSplit": "Inbound {{inbound}} / Outbound {{outbound}}",
     "dashboard.receivingNow": "Receiving now",
     "dashboard.receivingNowSub": "of {{value}} inbound orders today",
     "dashboard.pickingNow": "Picking now",

@@ -2,8 +2,13 @@
 
 :root {
     --layout-aside-width: 200px;
+    /* AMIS keys its own layout off these two names; without them the aside
+       stays 180px wide and the content starts 6px under the 56px header. */
+    --Layout-aside-width: var(--layout-aside-width);
+    --Layout-header-height: #{$header-height};
     --sidebar-bg: #{$sidebar-bg};
     --sidebar-text: #{$sidebar-text};
+    --chrome-border: #{$chrome-border};
     --header-height: #{$header-height};
     --font-family: #{$font-family-base};
 
@@ -14,9 +19,27 @@
     --colors-brand-6: #{$color-primary-light} !important; /* hover — lighter */
 }
 
+.AMISCSSWrapper {
+    --Layout-aside-width: var(--layout-aside-width);
+    --Layout-header-height: #{$header-height};
+}
+
+/* AMIS's theme is injected after this file, so its :root declarations win
+   over ours. Set the two layout variables on the layout element itself —
+   every consumer is a descendant and resolves them from here. */
+.cxd-Layout {
+    --Layout-aside-width: var(--layout-aside-width);
+    --Layout-header-height: #{$header-height};
+}
+
 *,
 *::before,
 *::after {
+    font-family: var(--font-family);
+}
+
+/* Ant Design sets its own font on <body>, which beats the universal rule. */
+body {
     font-family: var(--font-family);
 }
 
@@ -52,9 +75,8 @@
     height: var(--header-height) !important;
     padding: 0 !important;
     background-color: #fff !important;
-    border-bottom: 1px solid #e2e8f0 !important;
-    box-shadow: #{$header-shadow} !important;
-    transition: box-shadow 0.2s ease;
+    border-bottom: 1px solid var(--chrome-border) !important;
+    box-shadow: none !important;
 }
 
 /* AMIS pushes headerBar right by sidebar width when brandBar is shown — reset since we hide brandBar */
@@ -66,14 +88,18 @@
     margin-left: 0 !important;
 }
 
-/* ─── Dark Sidebar ───────────────────────────────── */
+/* ─── Steel Sidebar ──────────────────────────────── */
 .cxd-Layout-aside {
     background: var(--sidebar-bg) !important;
-    border-right: none !important;
+    border-right: 1px solid var(--chrome-border) !important;
 }
 
 .cxd-Layout-body {
     border-left: none !important;
+}
+
+.cxd-Layout-aside .cxd-AsideNav {
+    padding-top: 8px;
 }
 
 .cxd-AsideNav-itemLabel {
@@ -84,23 +110,23 @@
 }
 
 .cxd-AsideNav-item > a {
-    transition: background 0.15s ease;
+    transition: background 0.15s ease, color 0.15s ease;
 }
 
 .cxd-AsideNav-item a:hover {
     background: #{$sidebar-bg-hover} !important;
 
     .cxd-AsideNav-itemLabel {
-        color: #f1f5f9 !important;
+        color: #{$sidebar-text-active} !important;
     }
 
     i {
-        color: #f1f5f9 !important;
+        color: #{$sidebar-text-active} !important;
     }
 }
 
 .cxd-AsideNav-item.is-active > a {
-    background: rgba(59, 130, 246, 0.12) !important;
+    background: #e9edf3 !important;
     color: #{$sidebar-text-active} !important;
     position: relative;
 
@@ -110,10 +136,10 @@
         left: 0;
         top: 50%;
         transform: translateY(-50%);
-        width: 3px;
-        height: 20px;
+        width: 2px;
+        height: 18px;
         background: #{$sidebar-accent};
-        border-radius: 0 2px 2px 0;
+        border-radius: 0 1px 1px 0;
     }
 
     .cxd-AsideNav-itemLabel {
@@ -132,11 +158,89 @@
 }
 
 .cxd-AsideNav-itemArrow {
-    color: #{$sidebar-text} !important;
+    color: #64748b !important;
 }
 
 .cxd-AsideNav-itemIcon {
-    color: #94a3b8 !important;
+    color: #64748b !important;
+}
+
+/* Top-level domain accents: inbound blue, outbound amber, stock teal-green.
+   The active-item rule below is more specific and still wins. */
+.cxd-AsideNav-itemIcon.fa-desktop {
+    color: #0d9488 !important;
+}
+
+.cxd-AsideNav-itemIcon.fa-arrow-right-to-bracket {
+    color: #2563eb !important;
+}
+
+.cxd-AsideNav-itemIcon.fa-arrow-right-from-bracket {
+    color: #b45309 !important;
+}
+
+.cxd-AsideNav-itemIcon.fa-boxes-stacked {
+    color: #0f766e !important;
+}
+
+/* Folded rail: the brand zone shrinks with the aside so the app tabs and
+   content keep one left edge. */
+.cxd-Layout--folded .brand-zone {
+    width: var(--Layout-aside-width-collapsed, 60px) !important;
+    padding: 0 13px !important;
+}
+
+.cxd-Layout--folded .brand-zone > span {
+    display: none;
+}
+
+/* ─── Header app tabs ────────────────────────────── */
+.app-nav.ant-menu-horizontal {
+    border-bottom: none !important;
+    background: transparent !important;
+    line-height: var(--header-height) !important;
+}
+
+.app-nav.ant-menu-horizontal > .ant-menu-item {
+    height: var(--header-height) !important;
+    padding: 0 16px !important;
+    color: #5b6675 !important;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.app-nav.ant-menu-horizontal > .ant-menu-item::after {
+    right: 16px;
+    left: 16px;
+}
+
+.app-nav.ant-menu-horizontal > .ant-menu-item:hover,
+.app-nav.ant-menu-horizontal > .ant-menu-item-active {
+    color: #0f172a !important;
+}
+
+.app-nav.ant-menu-horizontal > .ant-menu-item:hover::after,
+.app-nav.ant-menu-horizontal > .ant-menu-item-active::after {
+    border-bottom-color: transparent !important;
+}
+
+.app-nav.ant-menu-horizontal > .ant-menu-item-selected {
+    color: #0f172a !important;
+    font-weight: 600;
+}
+
+.app-nav.ant-menu-horizontal > .ant-menu-item-selected::after {
+    border-bottom: 2px solid #0f172a !important;
+}
+
+.navbar-btn {
+    color: #5b6675 !important;
+    border-radius: 6px;
+}
+
+.navbar-btn:hover {
+    background: #f1f5f9 !important;
+    color: #0f172a !important;
 }
 
 /* Login page styles live in scss/login.scss */
@@ -437,34 +541,41 @@
     }
 }
 
-/* ─── Tab bar (Ant Design v4 editable-card) ─────── */
-.ant-tabs-card > .ant-tabs-nav .ant-tabs-tab {
-    background: #f8fafc !important;
-    border: 1px solid #e2e8f0 !important;
+/* ─── Tab bar (quiet strip under the header) ─────── */
+.ant-tabs-card > .ant-tabs-nav {
+    background: #fff !important;
+    padding: 0 20px !important;
+    border-bottom: 1px solid var(--chrome-border) !important;
+}
+
+.ant-tabs-card > .ant-tabs-nav::before {
     border-bottom: none !important;
-    border-radius: 8px 8px 0 0 !important;
+}
+
+.ant-tabs-card > .ant-tabs-nav .ant-tabs-tab {
+    position: relative;
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    margin: 0 22px 0 0 !important;
+    padding: 10px 0 !important;
     color: #64748b;
-    margin: 0 3px 0 0 !important;
-    padding: 8px 16px !important;
-    transition: all 0.15s ease;
+    transition: color 0.15s ease;
     font-weight: 500;
     font-size: 13px;
 
     &:hover {
-        color: #{$sidebar-accent} !important;
-        background: #f0f9ff !important;
+        color: #0f172a !important;
     }
 }
 
 .ant-tabs-card > .ant-tabs-nav .ant-tabs-tab-active {
-    background: #fff !important;
-    border: 1px solid #e2e8f0 !important;
-    border-bottom: 2px solid #{$sidebar-accent} !important;
-    margin-bottom: -1px !important;
-    border-radius: 8px 8px 0 0 !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: inset 0 -2px 0 #{$sidebar-accent};
 
     .ant-tabs-tab-btn {
-        color: #{$sidebar-accent} !important;
+        color: #0f172a !important;
         font-weight: 600;
     }
 }
@@ -564,4 +675,13 @@
 
 .ant-tabs-tab-active .ant-tabs-tab-btn {
     color: #{$color-primary} !important;
+}
+
+.ant-tabs-card > .ant-tabs-nav .ant-tabs-tab .ant-tabs-tab-remove {
+    margin-left: 8px;
+    color: #64748b;
+}
+
+.ant-tabs-card > .ant-tabs-nav .ant-tabs-tab .ant-tabs-tab-remove:hover {
+    color: #475569;
 }

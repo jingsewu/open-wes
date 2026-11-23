@@ -1373,6 +1373,7 @@
     "dashboard.retry": "重试",
     "dashboard.ordersToday": "今日单据",
     "dashboard.sinceMidnight": "自今日零点起",
+    "dashboard.inOutSplit": "入库 {{inbound}} / 出库 {{outbound}}",
     "dashboard.receivingNow": "收货中",
     "dashboard.receivingNowSub": "占今日 {{value}} 张入库单",
     "dashboard.pickingNow": "拣货中",

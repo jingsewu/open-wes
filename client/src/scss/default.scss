@@ -76,13 +76,14 @@ $timing-func: cubic-bezier(0.36, 0.66, 0.04, 1);
 /* z-index */
 $zindex-modal: 999;
 
-/* Sidebar (dark command-center) */
-$sidebar-bg: #1e293b;
-$sidebar-bg-hover: #334155;
-$sidebar-bg-active: #0f172a;
-$sidebar-text: #cbd5e1;
-$sidebar-text-active: #ffffff;
-$sidebar-accent: #3b82f6;
+/* Sidebar (light steel frame) */
+$sidebar-bg: #f7f8fa;
+$sidebar-bg-hover: #eef1f5;
+$sidebar-bg-active: #f2f4f7;
+$sidebar-text: #475569;
+$sidebar-text-active: #0f172a;
+$sidebar-accent: #2563eb;
+$chrome-border: #e4e8ee;
 
 /* Typography */
 $font-family-base: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;

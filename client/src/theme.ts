@@ -27,13 +27,13 @@ export const colors = {
     bgHover: "#f3f4f6",
     bgPage: "#f1f5f9",
 
-    /* Sidebar (dark command-center) */
-    sidebarBg: "#1e293b",
-    sidebarBgHover: "#334155",
-    sidebarBgActive: "#0f172a",
-    sidebarText: "#cbd5e1",
-    sidebarTextActive: "#ffffff",
-    sidebarAccent: "#3b82f6",
+    /* Sidebar (light steel frame) */
+    sidebarBg: "#f7f8fa",
+    sidebarBgHover: "#eef1f5",
+    sidebarBgActive: "#f2f4f7",
+    sidebarText: "#475569",
+    sidebarTextActive: "#0f172a",
+    sidebarAccent: "#2563eb",
 }
 
 export const radius = {
