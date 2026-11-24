@@ -7,6 +7,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openwes.common.utils.exception.WmsException;
+import org.openwes.wes.api.basic.IContainerApi;
+import org.openwes.wes.api.basic.dto.ContainerDTO;
 import org.openwes.wes.api.config.IBatchAttributeConfigApi;
 import org.openwes.wes.api.config.ISystemConfigApi;
 import org.openwes.wes.api.config.dto.BatchAttributeConfigDTO;
@@ -51,6 +53,7 @@ public class InboundPlanOrderServiceImpl implements InboundPlanOrderService {
     private final ContainerValidator containerValidator;
     private final AcceptOrderRepository acceptOrderRepository;
     private final ISystemConfigApi systemConfigApi;
+    private final IContainerApi containerApi;
 
     @Override
     @Transactional(readOnly = true)
@@ -122,6 +125,22 @@ public class InboundPlanOrderServiceImpl implements InboundPlanOrderService {
                 .setContainerCode(acceptRecord.getTargetContainerCode())
                 .setContainerSlotCode(acceptRecord.getTargetContainerSlotCode())
                 .setWarehouseCode(acceptRecord.getWarehouseCode()));
+
+        // targetContainerFace is optional on the API. When the caller omits it
+        // (e.g. the receive station UI only knows the slot code), derive it from
+        // the target container slot — downstream stock and picking tasks carry
+        // this face and the station can only claim tasks whose face matches the
+        // arrived container face.
+        if (StringUtils.isBlank(acceptRecord.getTargetContainerFace())) {
+            ContainerDTO containerDTO = containerApi.queryContainer(acceptRecord.getTargetContainerCode(),
+                    acceptRecord.getWarehouseCode());
+            if (containerDTO != null && CollectionUtils.isNotEmpty(containerDTO.getContainerSlots())) {
+                containerDTO.getContainerSlots().stream()
+                        .filter(slot -> StringUtils.equals(slot.getContainerSlotCode(), acceptRecord.getTargetContainerSlotCode()))
+                        .findFirst()
+                        .ifPresent(slot -> acceptRecord.setTargetContainerFace(slot.getFace()));
+            }
+        }
 
         SkuMainDataDTO skuMainDataDTO = skyMainDataApi.getById(skuId);
         BatchAttributeConfigDTO batchAttributeConfigDTO = batchAttributeConfigApi.getByOwnerAndSkuFirstCategory(skuMainDataDTO.getOwnerCode(),
