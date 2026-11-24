@@ -568,12 +568,16 @@ export const container_code_columns = [
 
 export const api_container_code_table_query = {
     method: "post",
-    url: "/search/search?page=${page}&perPage=10&warehouseCode-op=eq&warehouseCode=${ls:warehouseCode}",
+    // Used by the stocktake wizard's service, not a CRUD — ${page} resolves to
+    // "" there and bean-searcher rejects the empty page with a
+    // NumberFormatException. Load one page of newest containers instead.
+    url: "/search/search?page=1&perPage=1000&warehouseCode-op=eq&warehouseCode=${ls:warehouseCode}",
     data: {
         searchIdentity: "SearchContainerCodeTable",
         searchObject: {
             tables: "w_container c, w_container_spec cs",
-            where: "c.container_spec_code = cs.container_spec_code and cs.container_type = 'CONTAINER'"
+            where: "c.container_spec_code = cs.container_spec_code and cs.container_type = 'CONTAINER'",
+            orderBy: "c.id desc"
         },
         showColumns: container_code_columns
     },
@@ -647,7 +651,8 @@ export const stock_sku_id_table_columns = [
 
 export const stock_sku_id_table = {
     method: "post",
-    url: "/search/search?page=${page}&perPage=10&warehouseCode-op=eq&warehouseCode=${ls:warehouseCode}",
+    // See api_container_code_table_query — same service/CRUD scoping issue.
+    url: "/search/search?page=1&perPage=1000&warehouseCode-op=eq&warehouseCode=${ls:warehouseCode}",
     data: {
         searchIdentity: "SearchSkuIdTable",
         searchObject: {

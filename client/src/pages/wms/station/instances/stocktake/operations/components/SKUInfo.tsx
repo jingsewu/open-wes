@@ -27,7 +27,7 @@ const SKUInfo = (props: any) => {
             />
             <div className="d-flex justify-center items-center">
                 <Title level={3} className="pt-2">
-                    {activeTask?.operationTaskDTOS[0]?.requiredQty}
+                    {activeTask?.operationTaskDTOs?.[0]?.requiredQty}
                 </Title>
             </div>
         </div>
