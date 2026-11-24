@@ -243,7 +243,8 @@ const dialog = {
                                                         actionType: "setValue",
                                                         args: {
                                                             value: {
-                                                                skuIds: "${event.data.value}"
+                                                                skuIds: "${event.data.value}",
+                                                                stocktakeUnitType: "SKU"
                                                             }
                                                         }
                                                     }
@@ -336,7 +337,8 @@ const dialog = {
                                                         actionType: "setValue",
                                                         args: {
                                                             value: {
-                                                                containerCodes: "${event.data.value}"
+                                                                containerCode: "${event.data.value}",
+                                                                stocktakeUnitType: "CONTAINER"
                                                             }
                                                         }
                                                     }
@@ -378,24 +380,25 @@ const dialog = {
                     actionType: "submit",
                     className: "generateInventoryOrder",
                     onClick: (_e: any, props: any) => {
-                        const isSkuBased = props.scope.stocktakeUnitType === "SKU";
+                        // The tab value can lag behind the active tab, so trust
+                        // the actual selection: the transfers write both the
+                        // selected ids and stocktakeUnitType into the wizard.
                         const hasSkuIds = props.scope.skuIds && props.scope.skuIds.length > 0;
-                        const hasContainerCodes = props.scope.containerCodes && props.scope.containerCodes.length > 0;
+                        const hasContainerCodes = props.scope.containerCode && props.scope.containerCode.length > 0;
 
-                        if (isSkuBased && !hasSkuIds) {
-                            toast["error"](
-                                i18n.t("toast.stocktake.selectSku"),
-                                i18n.t("toast.prompt")
-                            );
-                            return false;
-                        } else if (!isSkuBased && !hasContainerCodes) {
-                            toast["error"](
-                                i18n.t("toast.stocktake.selectContainer"),
-                                i18n.t("toast.prompt")
-                            );
-                            return false;
+                        if (hasContainerCodes || hasSkuIds) {
+                            return true;
                         }
-                        return true;
+
+                        toast["error"](
+                            i18n.t(
+                                props.scope.stocktakeUnitType === "SKU"
+                                    ? "toast.stocktake.selectSku"
+                                    : "toast.stocktake.selectContainer"
+                            ),
+                            i18n.t("toast.prompt")
+                        );
+                        return false;
                     }
                 }
             ]

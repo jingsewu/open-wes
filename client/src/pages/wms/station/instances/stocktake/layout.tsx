@@ -5,6 +5,7 @@ import type {WorkStationView} from "@/pages/wms/station/event-loop/types"
 import type {OperationProps} from "@/pages/wms/station/instances/types"
 
 import ComponentWrapper from "../../component-wrapper"
+import {observer, useWorkStation} from "@/pages/wms/station/state"
 import {OPERATION_MAP} from "./config"
 import {valueFilter as orderFilter} from "./operations/OrderHandler"
 import {valueFilter as shelfFilter} from "./operations/ShelfHandler"
@@ -16,11 +17,15 @@ import {
 } from "@/pages/wms/station/instances/receive/operations/defaultPage"
 
 interface StocktakeLayoutProps extends OperationProps<any, any> {
-    workStationEvent: WorkStationView
+    workStationEvent?: WorkStationView
 }
 
-const Layout = (props: StocktakeLayoutProps) => {
-    const { workStationEvent } = props
+const Layout = observer((props: StocktakeLayoutProps) => {
+    // The station page renders <InstanceLayout /> without props, so read the
+    // live view from the store; without the observer wrapper the SKU/container
+    // panes never re-render after SCAN_BARCODE / CONTAINER_ARRIVED.
+    const {workStationEvent: storeEvent} = useWorkStation()
+    const workStationEvent = props.workStationEvent ?? storeEvent
     const stationStatus = workStationEvent?.stationProcessingStatus
 
     useEffect(() => {
@@ -81,6 +86,6 @@ const Layout = (props: StocktakeLayoutProps) => {
             )}
         </Row>
     )
-}
+})
 
 export default Layout

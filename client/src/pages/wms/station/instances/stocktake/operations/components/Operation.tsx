@@ -13,8 +13,8 @@ const Operation = (props: any) => {
                 <ScanBarcode />
             ) : (
                 <QTYFILL
-                    requiredQty={activeTask?.operationTaskDTOS[0]?.requiredQty}
-                    detailId={activeTask?.operationTaskDTOS[0]?.id}
+                    requiredQty={activeTask?.operationTaskDTOs?.[0]?.requiredQty}
+                    detailId={activeTask?.operationTaskDTOs?.[0]?.id}
                 />
             )}
         </>
