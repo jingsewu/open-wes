@@ -1,4 +1,6 @@
 const { test, expect } = require('@playwright/test');
+const { execFileSync } = require('child_process');
+const path = require('path');
 const { StationApiClient } = require('../utils/station-api');
 const { uiLogin } = require('../utils/ui-login');
 
@@ -40,7 +42,6 @@ test.describe('Station — Outbound Picking Flow', () => {
     console.log(`[setup] picking slot: ${slotCode}`);
     const transferContainer = `TOTE_${Date.now()}`;
     const skuCode = 'SKU001';
-    const sourceContainer = 'CTN001';
 
     // ----- Step 2: Navigate to the station outbound page -----
     // page.goto deep links get redirected to /wms/dashboard by TabsLayout, so we
@@ -70,6 +71,15 @@ test.describe('Station — Outbound Picking Flow', () => {
     expect(boundSlot.putWallSlotStatus).toBe('BOUND');
 
     // ----- Step 4: Robot delivers the source container (simulated) -----
+    // The allocator may pick any container holding the SKU (another scenario,
+    // e.g. inbound receiving, can add stock), so resolve the container from the
+    // picking task instead of assuming CTN001.
+    const sourceContainer = execFileSync(
+      'node',
+      [path.join(__dirname, '..', 'scripts', 'get-pick-source.js'), slotCode],
+      { encoding: 'utf-8', stdio: ['ignore', 'pipe', 'pipe'] }
+    ).trim();
+    console.log(`[setup] source container: ${sourceContainer}`);
     await station.containerArrived(sourceContainer);
     await page.waitForTimeout(2000);
 
