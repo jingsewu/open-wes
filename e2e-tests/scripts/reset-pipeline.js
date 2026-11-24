@@ -64,6 +64,12 @@ function clearRedis(keys) {
   // Remove TOTE/transfer-container stock rows, reset the physical CTN001 stock.
   try { run(`DELETE FROM w_container_stock WHERE container_code <> 'CTN001'`); } catch (e) {}
   try { run(`UPDATE w_container_stock SET available_qty=100, total_qty=100, outbound_locked_qty=0, no_outbound_locked_qty=0, frozen_qty=0 WHERE container_code='CTN001'`); } catch (e) {}
+  // Drop batch stocks no longer backed by container stock (e.g. the batch the
+  // inbound scenario created for its receive container) and the same for their
+  // batch attributes. Otherwise pre-allocation can lock a batch that has no
+  // containers and produce a picking order with no operation tasks.
+  try { run(`DELETE FROM w_sku_batch_stock WHERE sku_id=1 AND id NOT IN (SELECT sku_batch_stock_id FROM w_container_stock WHERE sku_id=1)`); } catch (e) {}
+  try { run(`DELETE FROM w_sku_batch_attribute WHERE sku_id=1 AND id NOT IN (SELECT sku_batch_attribute_id FROM w_sku_batch_stock WHERE sku_id=1)`); } catch (e) {}
   try { run(`UPDATE w_sku_batch_stock SET available_qty=100, total_qty=100, outbound_locked_qty=0, no_outbound_locked_qty=0, frozen_qty=0 WHERE sku_id=1`); } catch (e) {}
 
   // Put-wall slots back to IDLE.
