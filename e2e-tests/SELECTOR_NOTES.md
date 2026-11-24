@@ -34,3 +34,58 @@ ONLINE(RECEIVE), then restore to PICKING after (`scripts/restore-station-mode.js
 - i18n: receive keys are flat (`receive.station.*`); match both zh (`确定`/`满箱`) and en (`Confirm`/`Container Full`) with regex `:has-text(/确定|Confirm/)`.
 - AntD `type="primary"` is a style class, NOT the HTML `type` attribute — target `.ant-btn-primary`, not `button[type="primary"]`.
 - After scanning the container code, wait for the shelf to render (`[data-testid=...]`) before clicking a slot; the qty must be filled before 确定 (qtyAccepted is `@NotNull @Min(1)`).
+
+## Stocktake management page (`/wms/data-center/stock/stocktake`)
+
+- Add button: `.inventoryCountAddButton` (button.add → AMIS modal `.cxd-Modal`)
+- Wizard next: `.cxd-Modal .nextButton`; step 2 type/method selectFirst renders `.stocktakeType`
+- Target tab: text 按容器盘点 / Count by container (AMIS tabs)
+- Container transfer: `.cxd-Transfer` rows; select the seeded container by
+  clicking its row (writes `containerCode` + `stocktakeUnitType` into the wizard).
+  The service is ordered newest-first, so the just-seeded container is on page 1.
+  The standalone input's tag is not part of the wizard scope, so selecting the
+  transfer row is required.
+- Submit: `.generateInventoryOrder` (生成盘点单)
+- Order rows: `.cxd-Table-content tr`; selection checkbox `.cxd-Checkbox`
+- Execute bulk action: button text 执行盘点单 / Execute inventory order; confirm
+  dialog `.cxd-Modal` → 确认/确定/Confirm
+- App-side fixes this scenario depends on (all in `client/src`):
+  - `stocktake/add.tsx`: the container tab wrote `containerCodes` while the DTO
+    field is `containerCode` (NPE on create). Both transfers now also write
+    `stocktakeUnitType`, and the submit validation trusts the selected data
+    instead of the (lagging) tabs value.
+  - `select_search_api_contant.tsx`: the two target-list services used
+    `page=${page}`, which resolves to "" inside a service and makes bean-searcher
+    throw `NumberFormatException`. They now use `page=1&perPage=1000`, and the
+    container query is ordered `c.id desc`.
+  - A container is only listable when its spec type is `CONTAINER` (STK_SPEC in
+    `seed-stocktake.js`, not TOTE_SPEC).
+
+## Stocktake station page (`/wms/workStation/stocktake`)
+
+The page mounts only when the station cache mode is STOCKTAKE (flip
+`w_work_station.work_station_mode` + clear `_wms:basic:work:station:cache::1` and
+`WorkStation:1`, same as the receive page).
+
+- Tab action "领用单据": `[data-testid="inventoryCountTakeOrder"]`
+- Receive modal: AntD `.ant-modal`; task rows `tr.takeOrderTableRow`; row
+  checkbox `.cxd-Checkbox`; filter input `input[name="taskNo"]` (press Enter to
+  submit — do NOT click a "查询"-matching button; "设置查询字段" also matches and
+  opens a popover over the checkbox); receive button `.batchTakeOrders`
+- After `CONTAINER_ARRIVED` the server generates the stocktake records and the
+  SKU area fills; poll `GET /station/api?stationCode=1` until
+  `skuArea.operationViews[].operationTaskDTOs` is non-empty before scanning.
+- Scan input: `input[placeholder="Scan Barcode"]`; qty confirmation:
+  `input.ant-input-number-input` (defaults to the original qty) + button text
+  `SUBMIT`; a mismatch triggers an AntD confirm modal before submitting.
+- App-side fixes this scenario depends on (all in `client/src`):
+  - `stocktake/layout.tsx` was not an `observer` and read `workStationEvent`
+    from props (never passed) — the SKU/container panes never re-rendered after
+    SCAN_BARCODE / CONTAINER_ARRIVED. It now reads the MobX store via
+    `useWorkStation()` and is wrapped in `observer`.
+  - `Operation.tsx` / `SKUInfo.tsx` had `operationTaskDTOS` (wrong case) and an
+    unsafe `[0]` access; both now use `operationTaskDTOs?.[0]`.
+  - `mobxConfig.ts` enabled `disableErrorBoundaries: true`. In MobX 4 a throwing
+    computed skips its `computationDepth--`, so one render error poisons the
+    global depth and every later observable write throws an obfuscated
+    invariant. Keep it disabled (MobX default).

@@ -24,7 +24,7 @@ Validate that the Open WES system's core business flows work end-to-end. Backed 
 Execute smoke tests.
 
 - `--ci`: Run in headless mode with JUnit reporter (for CI)
-- `--scenario <name>`: Run only a specific scenario (inbound-receiving, outbound-management, station-picking)
+- `--scenario <name>`: Run only a specific scenario (inbound-receiving, outbound-management, station-picking, stocktake-counting)
 
 **Steps:**
 1. Check if Docker services are running: `docker compose ps`
@@ -49,7 +49,8 @@ Generate or update Playwright test scripts for given scenarios.
 - `inbound-receiving` — Station receive flow: seed order → scan LPN → SKU → container → accept → "满箱" complete
 - `outbound-management` — Management outbound order lifecycle
 - `station-picking` — Station outbound picking flow
-- `all` — All three (default)
+- `stocktake-counting` — Stocktake: management UI create + execute → station receive → scan SKU → submit qty → order DONE
+- `all` — All four (default)
 
 ### `/smoke-test diagnose`
 
@@ -83,11 +84,13 @@ e2e-tests/
 ├── scenarios/
 │   ├── inbound-receiving.spec.js
 │   ├── outbound-management.spec.js
-│   └── station-outbound-picking.spec.js
+│   ├── station-outbound-picking.spec.js
+│   └── stocktake-counting.spec.js
 └── scripts/
     ├── seed-inbound.js        # Inbound order + target container + RECEIVE mode
-    ├── restore-station-mode.js# Revert workstation 1 to PICKING after inbound test
-    └── wait-for-services.sh  # Health check script for CI
+    ├── seed-stocktake.js      # Stock container + CONTAINER spec + STOCKTAKE mode
+    ├── restore-station-mode.js# Revert workstation 1 to PICKING after inbound/stocktake
+    └── wait-for-services.sh   # Health check script for CI
 ```
 
 ## Key Architecture Facts
@@ -101,7 +104,21 @@ e2e-tests/
   - `POST /wms/inbound/plan/accept` — accept a line (`AcceptRecordDTO`)
   - `POST /wms/inbound/accept/completeByContainer?containerCode=` — "满箱完成收货"
   - `POST /wms/basic/container/get` — target container lookup (spec + slot)
-- **AMIS page selectors:** `.cxd-Dialog`, `.cxd-Form`, `.cxd-Button`, `.cxd-TextControl-input`
+- **Stocktake:**
+  - Management wizard: `POST /wms/stocktake/order/create` — container tab sends
+    `containerCode` (array); the backend DTO field is `containerCode`, **not**
+    `containerCodes`. A container is only listable in the wizard when its spec
+    type is `CONTAINER`.
+  - `POST /wms/stocktake/order/execute` — `{warehouseCode, orderNos, taskCount}` splits the order into tasks
+  - `POST /wms/stocktake/order/receive` — `{stocktakeTaskIds, workStationId}` (station "领用单据")
+  - Station apiCodes: `SCAN_BARCODE` (SKU), `STOCKTAKE_SUBMIT` (`{detailId, stocktakeQty}` where `detailId` is the stocktake **record** id)
+  - Search identities: `WStocktakeOrder`, `WStocktakeOrderDetail`, `WStocktakeTask`, `WStocktakeRecord`
+  - Station mode: the stocktake page only mounts when the station cache mode is
+    `STOCKTAKE`; flip `w_work_station.work_station_mode` and clear both station
+    caches before `ONLINE(STOCKTAKE)`, then restore `PICKING` afterwards
+  - Container arrival is simulated with the station API (`CONTAINER_ARRIVED`);
+    records are generated per container face by the station cache refresh
+- **AMIS page selectors:** `.cxd-Modal` (dialogs; `.cxd-Dialog` is not emitted by AMIS 6), `.cxd-Form`, `.cxd-Button`, `.cxd-TextControl-input`
 - **Test data:** All test-created data uses `TEST_` prefix, safe for cleanup
 
 ## Constraints
