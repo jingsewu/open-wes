@@ -5,7 +5,11 @@ import { Translation } from "react-i18next"
 import Content from "./Content"
 
 const taskConfig: TabAction = {
-    name: <Translation>{(t) => t("button.takeOrder")}</Translation>,
+    name: (
+        <Translation>
+            {(t) => t("stocktake.station.takeOrder")}
+        </Translation>
+    ),
     key: "recieveTask",
     modalType: TabActionModalType.FULL_SCREEN,
     icon: "",

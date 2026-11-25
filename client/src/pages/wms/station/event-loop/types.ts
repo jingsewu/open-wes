@@ -13,7 +13,8 @@ export enum ChooseArea {
 export enum WorkStationMode {
     RECEIVE = "RECEIVE" /** 收货 */,
     PICKING = "PICKING" /** 拣货 */,
-    SELECT_CONTAINER_PUT_AWAY = "SELECT_CONTAINER_PUT_AWAY" /** 选择容器上架 */
+    SELECT_CONTAINER_PUT_AWAY = "SELECT_CONTAINER_PUT_AWAY" /** 选择容器上架 */,
+    STOCKTAKE = "STOCKTAKE" /** 盘点 */
 }
 
 export interface ToolBar {
@@ -32,14 +33,19 @@ export enum ProcessStatusEnum {
 export interface OperationTaskDTOS {
     sourceContainerId: any
     processStatus: ProcessStatusEnum
-    taskStatus: ProcessStatusEnum
+    /** Backend OperationTaskStatusEnum, serialized as a string. */
+    taskStatus?: ProcessStatusEnum | string
     receivedQty: number
     detailId: string
     toBeOperatedQty: number
     requiredQty: number
+    operatedQty?: number
     skuBatchStockId: number
     extendInfo: ExtendInfo
     id?: string
+    sourceContainerCode?: string
+    sourceContainerFace?: string
+    sourceContainerSlot?: string
     targetContainerCode?: string
     targetContainerFace?: string
     targetContainerSlotCode?: string
@@ -68,7 +74,7 @@ export interface SkuMainDataDTO {
 }
 
 export interface PickingViewItem {
-    operationTaskDTOS: OperationTaskDTOS[]
+    operationTaskDTOs: OperationTaskDTOS[]
     skuBatchAttributeDTO: SkuBatchAttributeDTO
     skuMainDataDTO: SkuMainDataDTO
 }
@@ -197,14 +203,15 @@ export type StationProcessingStatus =
     | "WAIT_CALL_CONTAINER"
 
 export interface OrderArea {
-    currentOrder: StocktakeOrder
+    currentOrder?: StocktakeOrder
 }
 
 export interface StocktakeOrder {
-    taskNo: string
-    stocktakeCreateMethod: string
-    stocktakeMethod: string
-    stocktakeType: string
+    orderNo?: string
+    orderType?: string
+    stocktakeCreateMethod?: string
+    stocktakeMethod?: string
+    stocktakeType?: string
 }
 
 export interface WorkStationView {
@@ -220,7 +227,8 @@ export interface WorkStationView {
     skuArea: SkuArea
     /** 播种墙区域信息 */
     putWallArea: PutWallArea
-    operationOrderArea: OrderArea
+    /** 当前作业单据（盘点工作站） */
+    orderArea?: OrderArea
     /** 工作位容器信息 */
     workLocationArea: WorkLocationArea
     tips: any

@@ -18,7 +18,7 @@ interface AbnormalInfo {
     value: {
         /** sku信息 */
         arrivedContainer: ArrivedContainer
-        operationTaskDTOS: OperationTaskDTOS[]
+        operationTaskDTOs: OperationTaskDTOS[]
         skuMainDataDTOS: SkuMainDataDTO[]
         shortPickingViews: any[]
         totalToBeRequiredQty: number
@@ -58,7 +58,7 @@ const Abnormal = (props: AbnormalInfo) => {
     const {value, refs} = props
     const {t} = useTranslation()
     const {
-        operationTaskDTOS,
+        operationTaskDTOs,
         skuMainDataDTOS,
         totalToBeRequiredQty,
         onActionDispatch
@@ -70,11 +70,11 @@ const Abnormal = (props: AbnormalInfo) => {
 
     const [pickNum, setPickNum] = useState<number>(0)
     const [isError, setIsError] = useState<boolean>(false) // count组件输入是否存在错误
-    const [dataSource, setDataSource] = useState(operationTaskDTOS || [])
+    const [dataSource, setDataSource] = useState(operationTaskDTOs || [])
 
     useMemo(() => {
-        setDataSource(operationTaskDTOS ? [...operationTaskDTOS] : [])
-    }, [operationTaskDTOS])
+        setDataSource(operationTaskDTOs ? [...operationTaskDTOs] : [])
+    }, [operationTaskDTOs])
 
     const handleAbnormalReportReason = (value: string) => {
         setAbnormalReportReason(value)

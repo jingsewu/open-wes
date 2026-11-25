@@ -143,7 +143,7 @@ test.describe('Stocktake — Management + Station Counting', () => {
     await waitForSkuTasks(station);
 
     // ----- Step 8: Scan the SKU, confirm the qty, submit -----
-    const scanInput = page.locator('input[placeholder="Scan Barcode"]');
+    const scanInput = page.locator('[data-testid="stocktake-scan-input"]');
     await expect(scanInput).toBeVisible({ timeout: 20_000 });
     await scanInput.fill(fixture.skuCode);
     await scanInput.press('Enter');
@@ -152,7 +152,7 @@ test.describe('Stocktake — Management + Station Counting', () => {
     await expect(qtyInput).toBeVisible({ timeout: 20_000 });
     await expect(qtyInput).toHaveValue(String(fixture.qty));
 
-    await page.locator('button', { hasText: 'SUBMIT' }).first().click();
+    await page.locator('[data-testid="stocktake-submit"]').click();
     console.log('[station] qty submitted');
 
     // ----- Step 9: Verify record -> task -> order all become DONE -----

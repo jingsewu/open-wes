@@ -108,6 +108,17 @@ export enum PickTypeEnum {
 export enum StocktakeMethodEnum {
     /** 明盘 */
     INFORMED = "INFORMED",
-    /** 盲盘(数量) */
-    BLIND_QTY = "BLIND_QTY"
+    /** 盲盘 */
+    BLIND = "BLIND"
+}
+
+export enum StocktakeTypeEnum {
+    /** 普通盘点 */
+    ORDINARY = "ORDINARY",
+    /** 随机盘点 */
+    RANDOM = "RANDOM",
+    /** 动碰盘点 */
+    ACTIVE = "ACTIVE",
+    /** 差异复盘 */
+    DISCREPANCY_REVIEW = "DISCREPANCY_REVIEW"
 }

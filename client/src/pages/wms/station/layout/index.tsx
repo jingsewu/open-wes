@@ -15,9 +15,7 @@ type WorkStationLayoutProps = Omit<
 const WorkStationLayout = (props: WorkStationLayoutProps) => {
     const {title, actions, stepsDescribe, children, extraTitleInfo} = props
     return (
-        <div
-            className="d-flex flex-col w-full h-full overflow-x-hidden overflow-y-auto px-4 pt-3"
-        >
+        <div className="workstation-shell">
             <Header
                 extraTitleInfo={extraTitleInfo}
                 title={title}

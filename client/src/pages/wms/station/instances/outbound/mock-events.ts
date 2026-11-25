@@ -2631,7 +2631,7 @@ const mockData = {
                     batchNo: "37db7b330ab8800a0a7d3993ef082b97",
                     skuBatchStockIds: null
                 },
-                operationTaskDTOS: [
+                operationTaskDTOs: [
                     {
                         id: "581128599730524165",
                         warehouseCode: "MOBILESENTRIX",

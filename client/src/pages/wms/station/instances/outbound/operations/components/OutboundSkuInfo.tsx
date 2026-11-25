@@ -25,13 +25,13 @@ const OutboundSkuInfo = (props: OutboundSkuInfoProps) => {
     const scannedSkuInfo =
         operationViews?.find(
             (item) =>
-                item.operationTaskDTOS?.[0]?.taskStatus ===
+                item.operationTaskDTOs?.[0]?.taskStatus ===
                 ProcessStatusEnum.PROCESSING
         ) || operationViews?.[0]
 
     // 计算待操作数量
     const toBeOperatedQty =
-        scannedSkuInfo?.operationTaskDTOS?.reduce(
+        scannedSkuInfo?.operationTaskDTOs?.reduce(
             (pre, cur) => pre + cur.toBeOperatedQty,
             0
         ) || 0
