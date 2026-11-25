@@ -83,9 +83,7 @@ const WorkStationLayoutToolbar = (props: FooterProps) => {
                         workStationEvent
                     })}
             </Modal>
-            <div
-                className="w-full h-16  pt-2.5 gap-x-2"
-            >
+            <div className="workstation-toolbar">
                 {currentActions?.map((action) => {
                     let tabConfig
 
@@ -238,7 +236,8 @@ const WorkStationLayoutToolbar = (props: FooterProps) => {
                     )
 
                     return !isHide() ? (
-                        <div
+                        <button
+                            type="button"
                             className={cx(
                                 `toolbarBtn pull-${position} ${
                                     isDisabled() ? "disabled" : ""
@@ -247,12 +246,15 @@ const WorkStationLayoutToolbar = (props: FooterProps) => {
                             onClick={handleClick}
                             key={key}
                             data-testid={testid}
+                            disabled={isDisabled()}
                         >
-                            <span style={{marginRight: 4}}>
-                                <Icon component={() => icon}/>
-                            </span>
+                            {icon && (
+                                <span className="workstation-toolbar__icon">
+                                    <Icon component={() => icon}/>
+                                </span>
+                            )}
                             {name}
-                        </div>
+                        </button>
                     ) : null
                 })}
             </div>

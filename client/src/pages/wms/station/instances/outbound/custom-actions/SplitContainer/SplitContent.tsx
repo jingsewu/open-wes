@@ -23,7 +23,7 @@ interface SplitContentProps {
 }
 
 interface SkuInfo {
-    operationTaskDTOS: Array<{
+    operationTaskDTOs: Array<{
         toBeOperatedQty: number
     }>
     skuMainDataDTO?: {
@@ -78,8 +78,8 @@ export const putWallStatusTextMap = {
 }
 
 const calculateToBePickedQty = (skuInfo: SkuInfo | undefined): number => {
-    if (!skuInfo?.operationTaskDTOS) return 0
-    return skuInfo.operationTaskDTOS.reduce(
+    if (!skuInfo?.operationTaskDTOs) return 0
+    return skuInfo.operationTaskDTOs.reduce(
         (acc, cur) => acc + cur.toBeOperatedQty,
         0
     )

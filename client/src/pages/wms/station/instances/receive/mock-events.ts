@@ -449,7 +449,7 @@ const mockData = {
                     batchNo: null,
                     skuBatchStockIds: null
                 },
-                operationTaskDTOS: [
+                operationTaskDTOs: [
                     {
                         id: null,
                         warehouseCode: "MOBILESENTRIX",

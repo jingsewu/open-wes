@@ -43,10 +43,6 @@ const WorkStationLayoutHeader = (props: HeaderProps) => {
 
     useEffect(() => {
         if (store.workStationStatus === WorkStationStatus.OFFLINE) {
-            console.log(
-                "%c =====> 当前工作站已下线,重定向回卡片页",
-                "color:red;font-size:20px;"
-            )
             history.push(STATION_MENU_PATH)
         }
     }, [store.workStationStatus, history])
@@ -65,36 +61,31 @@ const WorkStationLayoutHeader = (props: HeaderProps) => {
             : extraTitleInfo
 
     return (
-        <div
-            className="d-flex content-center justify-between pb-3"
-            style={{borderBottom: "1px solid #E4E4E4"}}
-        >
-            <span
-                className="font-bold text-xl"
-            >
-                <span className="mr-5">
-                    {t("station.operatingStation")}&nbsp;
-                    {workStationEvent?.stationCode}
+        <div className="workstation-header">
+            <div className="workstation-header__identity">
+                <span className="workstation-header__station">
+                    {t("station.operatingStation")}
+                    {workStationEvent?.stationCode && (
+                        <b>{workStationEvent.stationCode}</b>
+                    )}
                 </span>
-                <span>{formatTitle}</span>
                 <span
-                    className="d-flex mr-4 text-md	font-bold text-current"
-                >
-                    {extraInfo}
+                    className="workstation-header__divider"
+                    aria-hidden="true"
+                />
+                <span className="workstation-header__title">
+                    {formatTitle}
                 </span>
-            </span>
+                {extraInfo && (
+                    <span className="workstation-header__extra">
+                        {extraInfo}
+                    </span>
+                )}
+            </div>
             <button
+                type="button"
+                className="workstation-header__exit"
                 onClick={handleExit}
-                style={{
-                    padding: "5px 14px",
-                    background: "#fff",
-                    border: "1px solid #d1d5db",
-                    borderRadius: 6,
-                    fontSize: 13,
-                    color: "#374151",
-                    cursor: "pointer",
-                    flexShrink: 0
-                }}
             >
                 {t("station.exitStation")}
             </button>
